@@ -53,10 +53,10 @@ Any handwriting samples we collect from children are treated as sensitive. No ra
 
 ## Team
 
-Avaneesh Devendra Verma (Team-Leader)
-Sriram Gudlawar
-Embari Nitish Kumar
-Vaddem Srujani
+Avaneesh Devendra Verma (Team-Leader),
+Sriram Gudlawar,
+Embari Nitish Kumar,
+Vaddem Srujani,
 Kolloju Spoorthi
 
 ---
