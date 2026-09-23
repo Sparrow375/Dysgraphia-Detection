@@ -46,21 +46,27 @@ Multilingual, stylus-free dysgraphia screening system. Detects dysgraphia from p
 4. **Optimization Metric:** Recall (Sensitivity) prioritized for Potential Dysgraphia (PD) class (screening priority).
 5. **Deployment:** Colab notebook for model training & evaluation, with export of `model_bundle.pkl` to run a standalone local Gradio testing app (`app.py`).
 
-## BHK (Beknopte Beoordelingsmethode voor Kinderhandschriften) Features
-13 quality criteria:
-1. Letter size consistency
-2. Left-hand margin
-3. Word alignment / baseline adherence
-4. Word spacing
-5. Acute turns in joins/letters
-6. Irregularities in joins
-7. Collision of letters
-8. Inconsistent letter size
-9. Incorrect relative height
-10. Odd/distorted letters
-11. Ambiguous letter forms
-12. Letter corrections/overwriting
-13. Unsteady writing trace
+## Scale-Invariant BHK Feature Set (13 Dimensions)
+To guarantee generalization across different camera distances, smartphone resolutions (e.g. 440px vs 55px dataset images), and lighting conditions, all spatial features are dimensionless or normalized by median character height ($x$-height):
+1. `letter_size_cv`: Letter height inconsistency ($std/mean$) (BHK #8)
+2. `letter_area_cv`: Character area variation (BHK #8)
+3. `aspect_ratio_mean`: Average component aspect ratio ($w/h$)
+4. `aspect_ratio_std`: Component aspect ratio variation
+5. `baseline_drift_slope`: Baseline regression slope ($|dy/dx|$) (BHK #3)
+6. `baseline_drift_residual_norm`: Baseline waviness RMSE normalized by character scale (BHK #3)
+7. `inter_component_gap_norm`: Inter-character gap normalized by character scale (BHK #4)
+8. `inter_component_gap_cv`: Spacing irregularity ($std/mean$) (BHK #4)
+9. `letter_collision_ratio`: Horizontal overlap / collision ratio (BHK #7)
+10. `relative_height_ratio`: Ascender/descender height proportion ($P_{90} / P_{50}$) (BHK #9)
+11. `trace_unsteadiness_mean`: Contour curvature angle variance (BHK #13: shakiness)
+12. `ink_density`: Foreground stroke density within handwriting bounding box
+13. `component_count`: Valid detected letter units
+
+## Key Preprocessing & Scale Invariance Discovery (v2.0)
+- **Problem Diagnosed on Real-World Photos:** Standard phone photos of handwriting (e.g. "Normal text in english") initially misclassified as PD due to two root causes:
+  1. *Polarity/Lighting Inversion:* In room lighting, paper brightness is ~118 (< 127). The naive threshold caused the paper to be binarized as foreground and ink as background holes (giant white block). Fixed via illumination normalization (Gaussian background division).
+  2. *Scale Disparity:* Dataset images had 55px height, while mobile photos had 440px height. Un-normalized pixel metrics produced 8-sigma outliers. Fixed by normalizing all spatial distances by median character height ($x$-height) and filtering dots on 'i' ($h < 0.35 \times median\_h$).
+- **Validated Result:** The user's English sample "Normal text in english" now correctly classifies as **Low Potential Dysgraphia (Typical)** with 67.9% confidence and 0.325 letter size CoV.
 
 ## Repository Structure
 ```

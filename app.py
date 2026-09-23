@@ -157,19 +157,16 @@ def analyze_handwriting(image_input):
     # Format BHK feature table
     feature_rows = []
     descriptions = {
-        "letter_size_mean": "Mean character height (pixels)",
-        "letter_size_std": "Letter size standard deviation",
-        "letter_size_cv": "BHK #8: Letter size inconsistency (CoV)",
+        "letter_size_cv": "BHK #8: Letter size inconsistency (CoV = std/mean)",
         "letter_area_cv": "BHK #8: Character area variation (CoV)",
         "aspect_ratio_mean": "Mean component aspect ratio (w/h)",
         "aspect_ratio_std": "Component aspect ratio variation",
-        "left_margin_std": "BHK #2: Left margin variation",
-        "baseline_drift_slope": "BHK #3: Baseline alignment slope",
-        "baseline_drift_residual": "BHK #3: Baseline waviness / residual RMSE",
-        "inter_component_gap_mean": "BHK #4: Mean inter-character spacing",
-        "inter_component_gap_cv": "BHK #4: Spacing irregularity (CoV)",
+        "baseline_drift_slope": "BHK #3: Baseline alignment slope (|dy/dx|)",
+        "baseline_drift_residual_norm": "BHK #3: Baseline waviness RMSE normalized by character scale",
+        "inter_component_gap_norm": "BHK #4: Inter-character spacing normalized by character scale",
+        "inter_component_gap_cv": "BHK #4: Spacing irregularity (CoV = std/mean)",
         "letter_collision_ratio": "BHK #7: Overlapping / collision ratio",
-        "relative_height_ratio": "BHK #9: Ascender/Descender height ratio (P90/P50)",
+        "relative_height_ratio": "BHK #9: Ascenders/descenders ratio (P90/P50)",
         "trace_unsteadiness_mean": "BHK #13: Trace shakiness (contour curvature variance)",
         "ink_density": "Ink density in handwriting bounding box",
         "component_count": "Valid detected handwriting components"
