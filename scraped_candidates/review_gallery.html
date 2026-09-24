@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dysgraphia English Handwriting Candidates Review Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0b0f19;
+    --card-bg: #141c2e;
+    --card-hover: #1e293b;
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg);
+    color: var(--text-main);
+    padding: 24px;
+    min-height: 100vh;
+}
+
+header {
+    max-width: 1400px;
+    margin: 0 auto 24px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+}
+
+h1 {
+    font-size: 26px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a5b4fc, #6366f1, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stats-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.stat-pill {
+    background: #1e293b;
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+.stat-pill strong { color: var(--text-main); }
+.stat-pill.accepted strong { color: var(--success); }
+.stat-pill.rejected strong { color: var(--danger); }
+
+.toolbar {
+    max-width: 1400px;
+    margin: 0 auto 24px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: #131b2e;
+    padding: 16px 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.filter-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.filter-btn:hover, .filter-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.export-btn {
+    background: #059669;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.export-btn:hover { background: #047857; }
+
+.grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-3px);
+    border-color: #4f46e5;
+}
+.card.is-accepted {
+    border-color: var(--success);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+}
+.card.is-rejected {
+    opacity: 0.45;
+    border-color: var(--danger);
+}
+
+.img-container {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    background: #000;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.img-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.25s ease;
+}
+.img-container:hover img {
+    transform: scale(1.05);
+}
+
+.badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.badge.reddit { color: #ff5722; }
+.badge.wikimedia { color: #eab308; }
+.badge.portal { color: #38bdf8; }
+.badge.clinical { color: #10b981; }
+.badge.benchmark { color: #f59e0b; }
+
+.risk-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(4px);
+}
+.risk-high { color: #f87171; border: 1px solid #ef4444; }
+.risk-low { color: #34d399; border: 1px solid #10b981; }
+
+.card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 10px;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text-main);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.meta-details {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.card-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-accept {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+.btn-accept:hover, .btn-accept.active {
+    background: #10b981;
+    color: white;
+}
+.btn-reject {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+.btn-reject:hover, .btn-reject.active {
+    background: #ef4444;
+    color: white;
+}
+.btn-link {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    border-radius: 6px;
+}
+.btn-link:hover {
+    color: #fff;
+    border-color: #6366f1;
+}
+
+#lightbox {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+#lightbox.active { display: flex; }
+#lightbox img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+}
+#lightbox .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 32px;
+    color: white;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>English Dysgraphia Candidate Harvester</h1>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+            Offline 2D Handwriting Scrapes for Model Dataset Expansion & Manual Verification
+        </p>
+    </div>
+    <div class="stats-bar">
+        <div class="stat-pill">Total Harvested: <strong id="stat-total">0</strong></div>
+        <div class="stat-pill accepted">Accepted: <strong id="stat-accepted">0</strong></div>
+        <div class="stat-pill rejected">Rejected: <strong id="stat-rejected">0</strong></div>
+        <div class="stat-pill">Pending: <strong id="stat-pending">0</strong></div>
+    </div>
+</header>
+
+<div class="toolbar">
+    <div class="filter-group">
+        <button class="filter-btn active" onclick="setFilter('all')">All Images</button>
+        <button class="filter-btn" onclick="setFilter('pending')">Pending Review</button>
+        <button class="filter-btn" onclick="setFilter('accepted')">Accepted (Valid)</button>
+        <button class="filter-btn" onclick="setFilter('rejected')">Rejected</button>
+        <button class="filter-btn" onclick="setFilter('Reddit')">Reddit</button>
+        <button class="filter-btn" onclick="setFilter('Wikimedia Commons')">Wikimedia</button>
+        <button class="filter-btn" onclick="setFilter('Educational / Clinical Portal')">Portals</button>
+        <button class="filter-btn" onclick="setFilter('PubMed Central (Clinical)')">Clinical (PMC)</button>
+        <button class="filter-btn" onclick="setFilter('Handwriting Disorder Benchmark')">Benchmark</button>
+    </div>
+    <button class="export-btn" onclick="exportAcceptedDataset()">
+        Export Accepted Manifest
+    </button>
+</div>
+
+<div class="grid" id="card-grid"></div>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" onclick="closeLightbox()">
+    <span class="close-btn">&times;</span>
+    <img id="lightbox-img" src="" alt="Enlarged handwriting">
+</div>
+
+<script>
+const items = [{"candidate_id": "ENG_CAND_001", "filename": "ENG_CAND_001.jpg", "relative_path": "images/ENG_CAND_001.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | i feel this lol", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/l27go5/i_feel_this_lol/", "original_image_url": "https://i.redd.it/qqxs8dyyfpc61.jpg", "width": 983, "height": 908, "filesize_kb": 113.1, "ai_screening_risk": 67.5, "ai_preliminary_label": "Potential Dysgraphia (67.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.508, "baseline_drift": 0.026}, {"candidate_id": "ENG_CAND_002", "filename": "ENG_CAND_002.jpg", "relative_path": "images/ENG_CAND_002.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Could literally add a ton more on what it \"feels like\"", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/m20nmk/could_literally_add_a_ton_more_on_what_it_feels/", "original_image_url": "https://i.redd.it/jmi7hg4h38m61.png", "width": 940, "height": 788, "filesize_kb": 216.6, "ai_screening_risk": 47.7, "ai_preliminary_label": "Potential Dysgraphia (47.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.287, "baseline_drift": 0.255}, {"candidate_id": "ENG_CAND_003", "filename": "ENG_CAND_003.jpg", "relative_path": "images/ENG_CAND_003.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Best things comes in pairs", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/w9kts9/best_things_comes_in_pairs/", "original_image_url": "https://i.imgur.com/8YLigBV.jpg", "width": 889, "height": 500, "filesize_kb": 132.5, "ai_screening_risk": 76.2, "ai_preliminary_label": "Potential Dysgraphia (76.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.412, "baseline_drift": 0.019}, {"candidate_id": "ENG_CAND_004", "filename": "ENG_CAND_004.jpg", "relative_path": "images/ENG_CAND_004.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | HAVE YOU TRIED PRACTICING", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1hicy1l/have_you_tried_practicing/", "original_image_url": "https://i.redd.it/deuzheb1xx7e1.jpeg", "width": 678, "height": 678, "filesize_kb": 121.3, "ai_screening_risk": 76.3, "ai_preliminary_label": "Potential Dysgraphia (76.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.593, "baseline_drift": 0.13}, {"candidate_id": "ENG_CAND_005", "filename": "ENG_CAND_005.jpg", "relative_path": "images/ENG_CAND_005.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Having dyagraphia. Writing is hard and drawing is..forget it. Ive been working and practicing. A little nervous posting.", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1qt4vts/having_dyagraphia_writing_is_hard_and_drawing/", "original_image_url": "https://i.redd.it/oldi0l3s5xgg1.jpeg", "width": 3000, "height": 4000, "filesize_kb": 2692.7, "ai_screening_risk": 71.2, "ai_preliminary_label": "Potential Dysgraphia (71.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.589, "baseline_drift": 0.353}, {"candidate_id": "ENG_CAND_006", "filename": "ENG_CAND_006.jpg", "relative_path": "images/ENG_CAND_006.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Dysgraphia Comic", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/m1gtic/dysgraphia_comic/", "original_image_url": "https://i.redd.it/fakxsk6ul2m61.png", "width": 1080, "height": 1080, "filesize_kb": 256.0, "ai_screening_risk": 78.5, "ai_preliminary_label": "Potential Dysgraphia (78.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.243, "baseline_drift": 0.036}, {"candidate_id": "ENG_CAND_007", "filename": "ENG_CAND_007.jpg", "relative_path": "images/ENG_CAND_007.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Another dysgraphia comic I made", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/m3h5b1/another_dysgraphia_comic_i_made/", "original_image_url": "https://i.redd.it/gcf1t5vxilm61.png", "width": 940, "height": 788, "filesize_kb": 146.5, "ai_screening_risk": 79.0, "ai_preliminary_label": "Potential Dysgraphia (79.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.274, "baseline_drift": 0.365}, {"candidate_id": "ENG_CAND_008", "filename": "ENG_CAND_008.jpg", "relative_path": "images/ENG_CAND_008.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Hamilton meme", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/jong7w/hamilton_meme/", "original_image_url": "https://i.redd.it/yddbrscxmgx51.jpg", "width": 1200, "height": 1236, "filesize_kb": 285.0, "ai_screening_risk": 66.2, "ai_preliminary_label": "Potential Dysgraphia (66.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.745, "baseline_drift": 0.266}, {"candidate_id": "ENG_CAND_009", "filename": "ENG_CAND_009.jpg", "relative_path": "images/ENG_CAND_009.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Just looking at this makes my wrist sore", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/imkgl0/just_looking_at_this_makes_my_wrist_sore/", "original_image_url": "https://i.redd.it/4u7xppvsv5l51.jpg", "width": 750, "height": 520, "filesize_kb": 70.1, "ai_screening_risk": 62.7, "ai_preliminary_label": "Potential Dysgraphia (62.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.398, "baseline_drift": 0.574}, {"candidate_id": "ENG_CAND_010", "filename": "ENG_CAND_010.jpg", "relative_path": "images/ENG_CAND_010.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | nice pen go swishy", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/tf9e13/nice_pen_go_swishy/", "original_image_url": "https://i.redd.it/g8tqnklfcon81.jpg", "width": 1080, "height": 774, "filesize_kb": 145.1, "ai_screening_risk": 70.4, "ai_preliminary_label": "Potential Dysgraphia (70.4%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.655, "baseline_drift": 0.109}, {"candidate_id": "ENG_CAND_011", "filename": "ENG_CAND_011.jpg", "relative_path": "images/ENG_CAND_011.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | i can finally draw decently now! such a shame my handwriting is incomprehensible", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/vm6rf7/i_can_finally_draw_decently_now_such_a_shame_my/", "original_image_url": "https://i.redd.it/19k08rvsl8891.jpg", "width": 739, "height": 500, "filesize_kb": 73.4, "ai_screening_risk": 76.5, "ai_preliminary_label": "Potential Dysgraphia (76.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.457, "baseline_drift": 0.078}, {"candidate_id": "ENG_CAND_012", "filename": "ENG_CAND_012.jpg", "relative_path": "images/ENG_CAND_012.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Anyone else have this problem", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/gafa5l/anyone_else_have_this_problem/", "original_image_url": "https://i.redd.it/usb6pjf31tv41.jpg", "width": 949, "height": 1394, "filesize_kb": 185.0, "ai_screening_risk": 41.7, "ai_preliminary_label": "Low Potential (41.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.456, "baseline_drift": 0.03}, {"candidate_id": "ENG_CAND_013", "filename": "ENG_CAND_013.jpg", "relative_path": "images/ENG_CAND_013.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Guess what I just learned about in World History.", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/p89wqd/guess_what_i_just_learned_about_in_world_history/", "original_image_url": "https://i.redd.it/brj5jk53tji71.jpg", "width": 1200, "height": 934, "filesize_kb": 140.6, "ai_screening_risk": 73.1, "ai_preliminary_label": "Potential Dysgraphia (73.1%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.393, "baseline_drift": 0.036}, {"candidate_id": "ENG_CAND_014", "filename": "ENG_CAND_014.jpg", "relative_path": "images/ENG_CAND_014.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Let\u2019s smudge the ink", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/g9hzeo/lets_smudge_the_ink/", "original_image_url": "https://i.redd.it/eppva20w5iv41.jpg", "width": 1175, "height": 1200, "filesize_kb": 332.7, "ai_screening_risk": 71.3, "ai_preliminary_label": "Potential Dysgraphia (71.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.666, "baseline_drift": 0.185}, {"candidate_id": "ENG_CAND_015", "filename": "ENG_CAND_015.jpg", "relative_path": "images/ENG_CAND_015.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | My handwriting \ud83e\udd23", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1m87i7r/my_handwriting/", "original_image_url": "https://i.redd.it/roz5tiw7cuef1.jpeg", "width": 2241, "height": 2846, "filesize_kb": 1238.7, "ai_screening_risk": 65.1, "ai_preliminary_label": "Potential Dysgraphia (65.1%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.455, "baseline_drift": 0.064}, {"candidate_id": "ENG_CAND_016", "filename": "ENG_CAND_016.jpg", "relative_path": "images/ENG_CAND_016.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Dysgraphia affects 5-20% of children", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/o8zsqm/dysgraphia_affects_520_of_children/", "original_image_url": "https://i.imgur.com/IyFUAu2.png", "width": 1222, "height": 2734, "filesize_kb": 1107.1, "ai_screening_risk": 71.2, "ai_preliminary_label": "Potential Dysgraphia (71.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.456, "baseline_drift": 0.313}, {"candidate_id": "ENG_CAND_017", "filename": "ENG_CAND_017.jpg", "relative_path": "images/ENG_CAND_017.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Found an awesome info graphic for communicating why I am the way I am!", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/epcs3o/found_an_awesome_info_graphic_for_communicating/", "original_image_url": "https://i.redd.it/dyv8665mx1b41.jpg", "width": 1000, "height": 1000, "filesize_kb": 178.6, "ai_screening_risk": 48.8, "ai_preliminary_label": "Potential Dysgraphia (48.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.548, "baseline_drift": 0.345}, {"candidate_id": "ENG_CAND_018", "filename": "ENG_CAND_018.jpg", "relative_path": "images/ENG_CAND_018.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | 11 years of practice", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/9wi3uh/11_years_of_practice/", "original_image_url": "https://i.redd.it/smkeqxrasyx11.jpg", "width": 3036, "height": 4048, "filesize_kb": 2535.9, "ai_screening_risk": 62.5, "ai_preliminary_label": "Potential Dysgraphia (62.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.353, "baseline_drift": 0.054}, {"candidate_id": "ENG_CAND_019", "filename": "ENG_CAND_019.jpg", "relative_path": "images/ENG_CAND_019.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Not even a full page of writing and my wrist is hurting and cramping", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/mw8y4l/not_even_a_full_page_of_writing_and_my_wrist_is/", "original_image_url": "https://i.redd.it/jeexva637ru61.jpg", "width": 3024, "height": 4032, "filesize_kb": 2167.5, "ai_screening_risk": 57.0, "ai_preliminary_label": "Potential Dysgraphia (57.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.408, "baseline_drift": 0.086}, {"candidate_id": "ENG_CAND_020", "filename": "ENG_CAND_020.jpg", "relative_path": "images/ENG_CAND_020.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | He\u2019s got a point \ud83d\ude01", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/gi4n3n/hes_got_a_point/", "original_image_url": "https://i.redd.it/g5vzbzyap9y41.jpg", "width": 828, "height": 913, "filesize_kb": 91.9, "ai_screening_risk": 49.2, "ai_preliminary_label": "Potential Dysgraphia (49.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.552, "baseline_drift": 0.037}, {"candidate_id": "ENG_CAND_021", "filename": "ENG_CAND_021.jpg", "relative_path": "images/ENG_CAND_021.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | I think this is the first time I've genuinely been able to easily read my own handwriting. Dunno if relevant, but hey.", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/jpw5f8/i_think_this_is_the_first_time_ive_genuinely_been/", "original_image_url": "https://i.redd.it/upi3zp7q9vx51.jpg", "width": 3024, "height": 4032, "filesize_kb": 2227.7, "ai_screening_risk": 57.5, "ai_preliminary_label": "Potential Dysgraphia (57.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.618, "baseline_drift": 0.697}, {"candidate_id": "ENG_CAND_022", "filename": "ENG_CAND_022.jpg", "relative_path": "images/ENG_CAND_022.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | I wrote out the alphabet and numbers twice to see the difference between taking my time and not doing so. :)", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/gnlc8h/i_wrote_out_the_alphabet_and_numbers_twice_to_see/", "original_image_url": "https://i.redd.it/yl7sbmqt50051.jpg", "width": 2174, "height": 1537, "filesize_kb": 650.6, "ai_screening_risk": 71.9, "ai_preliminary_label": "Potential Dysgraphia (71.9%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.397, "baseline_drift": 0.095}, {"candidate_id": "ENG_CAND_023", "filename": "ENG_CAND_023.jpg", "relative_path": "images/ENG_CAND_023.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Im a 14 year old with Dysgraphia. How do i sort out my handwriting.", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/9kscqt/im_a_14_year_old_with_dysgraphia_how_do_i_sort/", "original_image_url": "https://i.redd.it/4ziobonjysp11.jpg", "width": 3264, "height": 2448, "filesize_kb": 844.3, "ai_screening_risk": 68.2, "ai_preliminary_label": "Potential Dysgraphia (68.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.569, "baseline_drift": 0.073}, {"candidate_id": "ENG_CAND_024", "filename": "ENG_CAND_024.jpg", "relative_path": "images/ENG_CAND_024.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Always suspected I have dysgraphia", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1m0jtxd/always_suspected_i_have_dysgraphia/", "original_image_url": "https://i.redd.it/mdqr8opkw1df1.jpeg", "width": 3024, "height": 4032, "filesize_kb": 2060.2, "ai_screening_risk": 65.8, "ai_preliminary_label": "Potential Dysgraphia (65.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.485, "baseline_drift": 0.239}, {"candidate_id": "ENG_CAND_025", "filename": "ENG_CAND_025.jpg", "relative_path": "images/ENG_CAND_025.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Well fuck me", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/dow6ah/well_fuck_me/", "original_image_url": "https://i.redd.it/r2rfsphvnjv31.jpg", "width": 4160, "height": 3120, "filesize_kb": 1475.3, "ai_screening_risk": 75.8, "ai_preliminary_label": "Potential Dysgraphia (75.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.322, "baseline_drift": 0.067}, {"candidate_id": "ENG_CAND_026", "filename": "ENG_CAND_026.jpg", "relative_path": "images/ENG_CAND_026.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | For anyone struggling with pencil grip or pain from writing this may help!", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1l35o7k/for_anyone_struggling_with_pencil_grip_or_pain/", "original_image_url": "https://i.redd.it/lem9zjv4pq4f1.jpeg", "width": 3024, "height": 2820, "filesize_kb": 1155.0, "ai_screening_risk": 68.3, "ai_preliminary_label": "Potential Dysgraphia (68.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.455, "baseline_drift": 0.29}, {"candidate_id": "ENG_CAND_027", "filename": "ENG_CAND_027.jpg", "relative_path": "images/ENG_CAND_027.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | 12 years of school and handwriting practice did nothing lol", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/aw79sq/12_years_of_school_and_handwriting_practice_did/", "original_image_url": "https://i.redd.it/6a057r4sijj21.jpg", "width": 2448, "height": 3264, "filesize_kb": 884.2, "ai_screening_risk": 75.0, "ai_preliminary_label": "Potential Dysgraphia (75.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.459, "baseline_drift": 0.031}, {"candidate_id": "ENG_CAND_028", "filename": "ENG_CAND_028.jpg", "relative_path": "images/ENG_CAND_028.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | I think I've got the worst of it here", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/smf3nh/i_think_ive_got_the_worst_of_it_here/", "original_image_url": "https://i.redd.it/ld1ixtciqbg81.jpg", "width": 3000, "height": 4000, "filesize_kb": 2034.2, "ai_screening_risk": 71.7, "ai_preliminary_label": "Potential Dysgraphia (71.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.639, "baseline_drift": 0.015}, {"candidate_id": "ENG_CAND_029", "filename": "ENG_CAND_029.jpg", "relative_path": "images/ENG_CAND_029.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | 31 years old and I finally fling my people.", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1mkti2q/31_years_old_and_i_finally_fling_my_people/", "original_image_url": "https://i.redd.it/sabdv7weeshf1.jpeg", "width": 3024, "height": 4032, "filesize_kb": 2269.4, "ai_screening_risk": 63.6, "ai_preliminary_label": "Potential Dysgraphia (63.6%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.619, "baseline_drift": 0.191}, {"candidate_id": "ENG_CAND_030", "filename": "ENG_CAND_030.jpg", "relative_path": "images/ENG_CAND_030.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | As a girl I\u2019ve always been made to feel quite bad about my handwriting. (I\u2019m a college Junior, whose has never been formally diagnosed) It\u2019s so frustrating", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1izpjwg/as_a_girl_ive_always_been_made_to_feel_quite_bad/", "original_image_url": "https://i.redd.it/09xhot80rqle1.jpeg", "width": 3024, "height": 2653, "filesize_kb": 1531.7, "ai_screening_risk": 69.3, "ai_preliminary_label": "Potential Dysgraphia (69.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.408, "baseline_drift": 0.118}, {"candidate_id": "ENG_CAND_031", "filename": "ENG_CAND_031.jpg", "relative_path": "images/ENG_CAND_031.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Felt the need to send a note along with my ballot, seeing as I can't sign my name the same way twice.", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/jicwlh/felt_the_need_to_send_a_note_along_with_my_ballot/", "original_image_url": "https://i.redd.it/jqprqa7sdfv51.jpg", "width": 3024, "height": 3024, "filesize_kb": 1540.0, "ai_screening_risk": 75.5, "ai_preliminary_label": "Potential Dysgraphia (75.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.413, "baseline_drift": 0.255}, {"candidate_id": "ENG_CAND_032", "filename": "ENG_CAND_032.jpg", "relative_path": "images/ENG_CAND_032.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | This says the quick brown fox jumped over the lazy dog,my dysgraphia is pretty serious", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/ixztpk/this_says_the_quick_brown_fox_jumped_over_the/", "original_image_url": "https://i.redd.it/dzn82mcykso51.jpg", "width": 4032, "height": 3024, "filesize_kb": 1327.1, "ai_screening_risk": 72.0, "ai_preliminary_label": "Potential Dysgraphia (72.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.616, "baseline_drift": 0.078}, {"candidate_id": "ENG_CAND_033", "filename": "ENG_CAND_033.jpg", "relative_path": "images/ENG_CAND_033.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | MRW I have to write a 3-5 page paper this early in the goddamn semester", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/czutvr/mrw_i_have_to_write_a_35_page_paper_this_early_in/", "original_image_url": "https://i.redd.it/t7unwocetok31.gif", "width": 250, "height": 214, "filesize_kb": 20.3, "ai_screening_risk": 78.4, "ai_preliminary_label": "Potential Dysgraphia (78.4%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.375, "baseline_drift": 0.377}, {"candidate_id": "ENG_CAND_034", "filename": "ENG_CAND_034.jpg", "relative_path": "images/ENG_CAND_034.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | I would be suprised if anyone out there could read my handwriting", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/wg6mk2/i_would_be_suprised_if_anyone_out_there_could/", "original_image_url": "https://i.redd.it/929jyftkbqf91.jpg", "width": 2463, "height": 2086, "filesize_kb": 1162.1, "ai_screening_risk": 71.3, "ai_preliminary_label": "Potential Dysgraphia (71.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.637, "baseline_drift": 0.106}, {"candidate_id": "ENG_CAND_035", "filename": "ENG_CAND_035.jpg", "relative_path": "images/ENG_CAND_035.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | So i think i have dysgraphia but idk what do you think", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/m6gc72/so_i_think_i_have_dysgraphia_but_idk_what_do_you/", "original_image_url": "https://i.redd.it/wzwb4ovfsfn61.jpg", "width": 3264, "height": 2448, "filesize_kb": 1441.1, "ai_screening_risk": 59.7, "ai_preliminary_label": "Potential Dysgraphia (59.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.581, "baseline_drift": 0.107}, {"candidate_id": "ENG_CAND_036", "filename": "ENG_CAND_036.jpg", "relative_path": "images/ENG_CAND_036.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | My handwriting", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1me8s3k/my_handwriting/", "original_image_url": "https://i.redd.it/f4iij53529gf1.jpeg", "width": 3024, "height": 4032, "filesize_kb": 1400.8, "ai_screening_risk": 70.2, "ai_preliminary_label": "Potential Dysgraphia (70.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.457, "baseline_drift": 0.051}, {"candidate_id": "ENG_CAND_037", "filename": "ENG_CAND_037.jpg", "relative_path": "images/ENG_CAND_037.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Here is a diagnosed example for you all", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1gackxt/here_is_a_diagnosed_example_for_you_all/", "original_image_url": "https://i.redd.it/zys10hjjsiwd1.jpeg", "width": 1576, "height": 2100, "filesize_kb": 731.4, "ai_screening_risk": 71.5, "ai_preliminary_label": "Potential Dysgraphia (71.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.489, "baseline_drift": 0.299}, {"candidate_id": "ENG_CAND_038", "filename": "ENG_CAND_038.jpg", "relative_path": "images/ENG_CAND_038.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | When you\u2019re trying to practice hand lettering but your hand hurts the moment you start drawing..", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/v50dxr/when_youre_trying_to_practice_hand_lettering_but/", "original_image_url": "https://i.redd.it/25igxas3ro391.jpg", "width": 4032, "height": 3024, "filesize_kb": 2751.2, "ai_screening_risk": 68.0, "ai_preliminary_label": "Potential Dysgraphia (68.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.535, "baseline_drift": 0.49}, {"candidate_id": "ENG_CAND_039", "filename": "ENG_CAND_039.jpg", "relative_path": "images/ENG_CAND_039.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | My handwriting as an adult with dysgraphia", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1b5xiij/my_handwriting_as_an_adult_with_dysgraphia/", "original_image_url": "https://i.redd.it/xa04m5jpt7mc1.jpeg", "width": 3000, "height": 4000, "filesize_kb": 4460.5, "ai_screening_risk": 69.9, "ai_preliminary_label": "Potential Dysgraphia (69.9%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.424, "baseline_drift": 0.14}, {"candidate_id": "ENG_CAND_040", "filename": "ENG_CAND_040.jpg", "relative_path": "images/ENG_CAND_040.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | my handwriting 20+ years after being sent to physical therapy to \"fix\" it", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1lam77v/my_handwriting_20_years_after_being_sent_to/", "original_image_url": "https://i.redd.it/ds1grgq7eq6f1.jpeg", "width": 3000, "height": 4000, "filesize_kb": 2113.3, "ai_screening_risk": 61.7, "ai_preliminary_label": "Potential Dysgraphia (61.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.338, "baseline_drift": 0.104}, {"candidate_id": "ENG_CAND_041", "filename": "ENG_CAND_041.jpg", "relative_path": "images/ENG_CAND_041.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | If you can read this you are a great reader just some morw digrphy gore to read throw im mlstly curis what people think?", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/jss0xd/if_you_can_read_this_you_are_a_great_reader_just/", "original_image_url": "https://i.redd.it/joup0ev87sy51.jpg", "width": 1526, "height": 3264, "filesize_kb": 867.9, "ai_screening_risk": 71.1, "ai_preliminary_label": "Potential Dysgraphia (71.1%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.523, "baseline_drift": 0.728}, {"candidate_id": "ENG_CAND_042", "filename": "ENG_CAND_042.jpg", "relative_path": "images/ENG_CAND_042.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | Was diagnosed with dysgraphia at 10 years old, this is how I write", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/1kxhaqd/was_diagnosed_with_dysgraphia_at_10_years_old/", "original_image_url": "https://i.redd.it/udx69kx20j3f1.jpeg", "width": 2048, "height": 1560, "filesize_kb": 625.9, "ai_screening_risk": 71.6, "ai_preliminary_label": "Potential Dysgraphia (71.6%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.447, "baseline_drift": 0.176}, {"candidate_id": "ENG_CAND_043", "filename": "ENG_CAND_043.jpg", "relative_path": "images/ENG_CAND_043.jpg", "source_platform": "Reddit", "context_title": "r/dysgraphia (top-all) | I think this describes me pretty well", "source_page_url": "https://www.reddit.com/r/dysgraphia/comments/bsrxee/i_think_this_describes_me_pretty_well/", "original_image_url": "https://i.redd.it/xjdw5t9y8b031.jpg", "width": 3072, "height": 1309, "filesize_kb": 695.9, "ai_screening_risk": 69.3, "ai_preliminary_label": "Potential Dysgraphia (69.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.745, "baseline_drift": 0.135}, {"candidate_id": "ENG_CAND_044", "filename": "ENG_CAND_044.jpg", "relative_path": "images/ENG_CAND_044.jpg", "source_platform": "Reddit", "context_title": "r/Handwriting (dysgraphic) | not my usual print/cursive-can you read all of it?", "source_page_url": "https://www.reddit.com/r/Handwriting/comments/1ieqydu/not_my_usual_printcursivecan_you_read_all_of_it/", "original_image_url": "https://i.redd.it/nauc05avlege1.jpeg", "width": 2687, "height": 2553, "filesize_kb": 877.3, "ai_screening_risk": 62.8, "ai_preliminary_label": "Potential Dysgraphia (62.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.361, "baseline_drift": 0.061}, {"candidate_id": "ENG_CAND_045", "filename": "ENG_CAND_045.jpg", "relative_path": "images/ENG_CAND_045.jpg", "source_platform": "Reddit", "context_title": "r/Handwriting (dysgraphic) | A dyslexic/dysgraphic person trying his best. How does that look?", "source_page_url": "https://www.reddit.com/r/Handwriting/comments/7z6eo4/a_dyslexicdysgraphic_person_trying_his_best_how/", "original_image_url": "https://i.redd.it/fys84zp15lh01.png", "width": 4160, "height": 2424, "filesize_kb": 2308.6, "ai_screening_risk": 36.3, "ai_preliminary_label": "Low Potential (36.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.484, "baseline_drift": 0.183}, {"candidate_id": "ENG_CAND_046", "filename": "ENG_CAND_046.jpg", "relative_path": "images/ENG_CAND_046.jpg", "source_platform": "Reddit", "context_title": "r/Handwriting (dysgraphic) | Does this look like dysgraphic writing?", "source_page_url": "https://www.reddit.com/r/Handwriting/comments/1dt62j7/does_this_look_like_dysgraphic_writing/", "original_image_url": "https://i.redd.it/v37ubx8lhz9d1.jpeg", "width": 1080, "height": 1140, "filesize_kb": 224.5, "ai_screening_risk": 72.9, "ai_preliminary_label": "Potential Dysgraphia (72.9%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.438, "baseline_drift": 0.241}, {"candidate_id": "ENG_CAND_047", "filename": "ENG_CAND_047.jpg", "relative_path": "images/ENG_CAND_047.jpg", "source_platform": "Reddit", "context_title": "r/Handwriting (dysgraphic) | How is my dysgraphic writing?", "source_page_url": "https://www.reddit.com/r/Handwriting/comments/zx14x9/how_is_my_dysgraphic_writing/", "original_image_url": "https://i.redd.it/00mld86k6m8a1.jpg", "width": 3024, "height": 4032, "filesize_kb": 2485.5, "ai_screening_risk": 64.7, "ai_preliminary_label": "Potential Dysgraphia (64.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.561, "baseline_drift": 0.008}, {"candidate_id": "ENG_CAND_048", "filename": "ENG_CAND_048.jpg", "relative_path": "images/ENG_CAND_048.jpg", "source_platform": "Reddit", "context_title": "r/Handwriting (dysgraphic) | 33 years old wishes to fix atrocious handwriting.", "source_page_url": "https://www.reddit.com/r/Handwriting/comments/1m6c0ix/33_years_old_wishes_to_fix_atrocious_handwriting/", "original_image_url": "https://i.redd.it/xeiozhn1zeef1.png", "width": 2360, "height": 1640, "filesize_kb": 230.5, "ai_screening_risk": 74.7, "ai_preliminary_label": "Potential Dysgraphia (74.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.304, "baseline_drift": 0.048}, {"candidate_id": "ENG_CAND_049", "filename": "ENG_CAND_049.jpg", "relative_path": "images/ENG_CAND_049.jpg", "source_platform": "Reddit", "context_title": "r/Handwriting (dysgraphic) | Looking for advice on how to improve", "source_page_url": "https://www.reddit.com/r/Handwriting/comments/1khzvoa/looking_for_advice_on_how_to_improve/", "original_image_url": "https://i.redd.it/qiazlpms7mze1.jpeg", "width": 4096, "height": 1428, "filesize_kb": 1234.8, "ai_screening_risk": 76.3, "ai_preliminary_label": "Potential Dysgraphia (76.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.464, "baseline_drift": 0.068}, {"candidate_id": "ENG_CAND_050", "filename": "ENG_CAND_050.jpg", "relative_path": "images/ENG_CAND_050.jpg", "source_platform": "Reddit", "context_title": "r/Handwriting (dysgraphic) | Dysgraphic Handwriting", "source_page_url": "https://www.reddit.com/r/Handwriting/comments/1htn33f/dysgraphic_handwriting/", "original_image_url": "https://i.redd.it/dsvpt2pia1be1.jpeg", "width": 3000, "height": 4000, "filesize_kb": 2505.2, "ai_screening_risk": 65.2, "ai_preliminary_label": "Potential Dysgraphia (65.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.433, "baseline_drift": 0.491}, {"candidate_id": "ENG_CAND_051", "filename": "ENG_CAND_051.jpg", "relative_path": "images/ENG_CAND_051.jpg", "source_platform": "Reddit", "context_title": "r/Handwriting (dysgraphic) | I want to fix childhood mistake. I\u2019m dysgraphic", "source_page_url": "https://www.reddit.com/r/Handwriting/comments/1qepv2b/i_want_to_fix_childhood_mistake_im_dysgraphic/", "original_image_url": "https://i.redd.it/hdy7l7fkkrdg1.jpeg", "width": 2752, "height": 2064, "filesize_kb": 528.3, "ai_screening_risk": 38.9, "ai_preliminary_label": "Low Potential (38.9%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.402, "baseline_drift": 0.038}, {"candidate_id": "ENG_CAND_052", "filename": "ENG_CAND_052.jpg", "relative_path": "images/ENG_CAND_052.jpg", "source_platform": "Reddit", "context_title": "r/Handwriting (dysgraphic) | I don't mean to hurt your eyes... As a (leftie) dysgraphic handwriting never was a strong suit! How would you rate it?", "source_page_url": "https://www.reddit.com/r/Handwriting/comments/a8j26w/i_dont_mean_to_hurt_your_eyes_as_a_leftie/", "original_image_url": "https://i.redd.it/q9ru3ro2cs521.jpg", "width": 2948, "height": 1249, "filesize_kb": 358.0, "ai_screening_risk": 69.6, "ai_preliminary_label": "Potential Dysgraphia (69.6%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.484, "baseline_drift": 0.015}, {"candidate_id": "ENG_CAND_053", "filename": "ENG_CAND_053.jpg", "relative_path": "images/ENG_CAND_053.jpg", "source_platform": "Wikimedia Commons", "context_title": "Clinical Archival Sample: File:Disgrafija.jpg", "source_page_url": "https://commons.wikimedia.org/wiki/File:Disgrafija.jpg", "original_image_url": "https://upload.wikimedia.org/wikipedia/commons/1/10/Disgrafija.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original", "width": 3264, "height": 1836, "filesize_kb": 1349.7, "ai_screening_risk": 74.7, "ai_preliminary_label": "Potential Dysgraphia (74.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.55, "baseline_drift": 0.229}, {"candidate_id": "ENG_CAND_054", "filename": "ENG_CAND_054.jpg", "relative_path": "images/ENG_CAND_054.jpg", "source_platform": "Wikimedia Commons", "context_title": "Clinical Archival Sample: File:Dislexia.jpg", "source_page_url": "https://commons.wikimedia.org/wiki/File:Dislexia.jpg", "original_image_url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Dislexia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original", "width": 300, "height": 289, "filesize_kb": 21.2, "ai_screening_risk": 78.8, "ai_preliminary_label": "Potential Dysgraphia (78.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.479, "baseline_drift": 0.381}, {"candidate_id": "ENG_CAND_055", "filename": "ENG_CAND_055.jpg", "relative_path": "images/ENG_CAND_055.jpg", "source_platform": "Wikimedia Commons", "context_title": "Clinical Archival Sample: File:Dislexia nens.jpg", "source_page_url": "https://commons.wikimedia.org/wiki/File:Dislexia_nens.jpg", "original_image_url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Dislexia_nens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original", "width": 960, "height": 700, "filesize_kb": 90.6, "ai_screening_risk": 77.3, "ai_preliminary_label": "Potential Dysgraphia (77.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.0, "baseline_drift": 0.0}, {"candidate_id": "ENG_CAND_056", "filename": "ENG_CAND_056.jpg", "relative_path": "images/ENG_CAND_056.jpg", "source_platform": "Wikimedia Commons", "context_title": "Clinical Archival Sample: File:Dysgraphia.jpg", "source_page_url": "https://commons.wikimedia.org/wiki/File:Dysgraphia.jpg", "original_image_url": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Dysgraphia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original", "width": 500, "height": 375, "filesize_kb": 80.6, "ai_screening_risk": 69.0, "ai_preliminary_label": "Potential Dysgraphia (69.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.415, "baseline_drift": 0.083}, {"candidate_id": "ENG_CAND_057", "filename": "ENG_CAND_057.jpg", "relative_path": "images/ENG_CAND_057.jpg", "source_platform": "Wikimedia Commons", "context_title": "Clinical Archival Sample: File:ChildWriting Dyslexia.jpg", "source_page_url": "https://commons.wikimedia.org/wiki/File:ChildWriting_Dyslexia.jpg", "original_image_url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/ChildWriting_Dyslexia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original", "width": 957, "height": 514, "filesize_kb": 82.2, "ai_screening_risk": 89.9, "ai_preliminary_label": "Potential Dysgraphia (89.9%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.262, "baseline_drift": 0.032}, {"candidate_id": "ENG_CAND_058", "filename": "ENG_CAND_058.jpg", "relative_path": "images/ENG_CAND_058.jpg", "source_platform": "Educational / Clinical Portal", "context_title": "Edublox Handwriting Curriculum | dysgraphia-handwriting-2.jpg", "source_page_url": "https://www.edubloxtutor.com/dysgraphia/", "original_image_url": "https://www.edubloxtutor.com/wp-content/uploads/2021/11/dysgraphia-handwriting-2.jpg", "width": 316, "height": 209, "filesize_kb": 20.5, "ai_screening_risk": 79.8, "ai_preliminary_label": "Potential Dysgraphia (79.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.372, "baseline_drift": 0.026}, {"candidate_id": "ENG_CAND_059", "filename": "ENG_CAND_059.jpg", "relative_path": "images/ENG_CAND_059.jpg", "source_platform": "Educational / Clinical Portal", "context_title": "Edublox Handwriting Curriculum | Handwriting-matters.png", "source_page_url": "https://www.edubloxtutor.com/dysgraphia/", "original_image_url": "https://www.edubloxtutor.com/wp-content/uploads/2025/04/Handwriting-matters.png", "width": 1024, "height": 1024, "filesize_kb": 324.1, "ai_screening_risk": 53.0, "ai_preliminary_label": "Potential Dysgraphia (53.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.48, "baseline_drift": 0.391}, {"candidate_id": "ENG_CAND_060", "filename": "ENG_CAND_060.jpg", "relative_path": "images/ENG_CAND_060.jpg", "source_platform": "Educational / Clinical Portal", "context_title": "Edublox Handwriting Curriculum | Dysgraphia-300x169.jpg", "source_page_url": "https://www.edubloxtutor.com/dysgraphia/", "original_image_url": "https://www.edubloxtutor.com/wp-content/uploads/2024/08/Dysgraphia-300x169.jpg", "width": 300, "height": 169, "filesize_kb": 10.7, "ai_screening_risk": 68.5, "ai_preliminary_label": "Potential Dysgraphia (68.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.426, "baseline_drift": 0.013}, {"candidate_id": "ENG_CAND_061", "filename": "ENG_CAND_061.jpg", "relative_path": "images/ENG_CAND_061.jpg", "source_platform": "Educational / Clinical Portal", "context_title": "Edublox Handwriting Curriculum | Dysgraphia.jpg", "source_page_url": "https://www.edubloxtutor.com/dysgraphia/", "original_image_url": "https://www.edubloxtutor.com/wp-content/uploads/2024/08/Dysgraphia.jpg", "width": 960, "height": 540, "filesize_kb": 60.1, "ai_screening_risk": 44.6, "ai_preliminary_label": "Low Potential (44.6%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.56, "baseline_drift": 0.167}, {"candidate_id": "ENG_CAND_062", "filename": "ENG_CAND_062.jpg", "relative_path": "images/ENG_CAND_062.jpg", "source_platform": "Educational / Clinical Portal", "context_title": "Edublox Handwriting Curriculum | Treatment-Dysgraphia-Dyslexia-Dyscalculia-150x150.png", "source_page_url": "https://www.edubloxtutor.com/dysgraphia/", "original_image_url": "https://www.edubloxtutor.com/wp-content/uploads/2025/08/Treatment-Dysgraphia-Dyslexia-Dyscalculia-150x150.png", "width": 150, "height": 150, "filesize_kb": 11.9, "ai_screening_risk": 78.7, "ai_preliminary_label": "Potential Dysgraphia (78.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.489, "baseline_drift": 0.292}, {"candidate_id": "ENG_CAND_063", "filename": "ENG_CAND_063.jpg", "relative_path": "images/ENG_CAND_063.jpg", "source_platform": "Educational / Clinical Portal", "context_title": "Edublox Handwriting Curriculum | Treatment-Dysgraphia-Dyslexia-Dyscalculia.png", "source_page_url": "https://www.edubloxtutor.com/dysgraphia/", "original_image_url": "https://www.edubloxtutor.com/wp-content/uploads/2025/08/Treatment-Dysgraphia-Dyslexia-Dyscalculia.png", "width": 300, "height": 300, "filesize_kb": 36.5, "ai_screening_risk": 74.2, "ai_preliminary_label": "Potential Dysgraphia (74.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.562, "baseline_drift": 0.118}, {"candidate_id": "ENG_CAND_064", "filename": "ENG_CAND_064.jpg", "relative_path": "images/ENG_CAND_064.jpg", "source_platform": "Educational / Clinical Portal", "context_title": "Edublox Handwriting Curriculum | facts-about-dysgraphia-1.png", "source_page_url": "https://www.edubloxtutor.com/dysgraphia/", "original_image_url": "https://www.edubloxtutor.com/wp-content/uploads/2025/06/facts-about-dysgraphia-1.png", "width": 350, "height": 233, "filesize_kb": 32.3, "ai_screening_risk": 68.2, "ai_preliminary_label": "Potential Dysgraphia (68.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.63, "baseline_drift": 0.102}, {"candidate_id": "ENG_CAND_065", "filename": "ENG_CAND_065.jpg", "relative_path": "images/ENG_CAND_065.jpg", "source_platform": "Educational / Clinical Portal", "context_title": "Edublox Handwriting Curriculum | dysgraphia-handwriting-2-300x198.jpg", "source_page_url": "https://www.edubloxtutor.com/dysgraphia/", "original_image_url": "https://www.edubloxtutor.com/wp-content/uploads/2021/11/dysgraphia-handwriting-2-300x198.jpg", "width": 300, "height": 198, "filesize_kb": 15.4, "ai_screening_risk": 73.4, "ai_preliminary_label": "Potential Dysgraphia (73.4%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.408, "baseline_drift": 0.202}, {"candidate_id": "ENG_CAND_066", "filename": "ENG_CAND_066.jpg", "relative_path": "images/ENG_CAND_066.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #1.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\1.jpg", "width": 750, "height": 174, "filesize_kb": 55.7, "ai_screening_risk": 74.6, "ai_preliminary_label": "Potential Dysgraphia (74.6%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.324, "baseline_drift": 0.033}, {"candidate_id": "ENG_CAND_067", "filename": "ENG_CAND_067.jpg", "relative_path": "images/ENG_CAND_067.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #2.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\2.jpg", "width": 783, "height": 568, "filesize_kb": 169.3, "ai_screening_risk": 69.4, "ai_preliminary_label": "Potential Dysgraphia (69.4%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.446, "baseline_drift": 0.078}, {"candidate_id": "ENG_CAND_068", "filename": "ENG_CAND_068.jpg", "relative_path": "images/ENG_CAND_068.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #3.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\3.jpg", "width": 530, "height": 211, "filesize_kb": 63.9, "ai_screening_risk": 80.5, "ai_preliminary_label": "Potential Dysgraphia (80.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.501, "baseline_drift": 0.031}, {"candidate_id": "ENG_CAND_069", "filename": "ENG_CAND_069.jpg", "relative_path": "images/ENG_CAND_069.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #4.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\4.jpg", "width": 506, "height": 274, "filesize_kb": 77.4, "ai_screening_risk": 73.3, "ai_preliminary_label": "Potential Dysgraphia (73.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.411, "baseline_drift": 0.023}, {"candidate_id": "ENG_CAND_070", "filename": "ENG_CAND_070.jpg", "relative_path": "images/ENG_CAND_070.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #5.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\5.jpg", "width": 504, "height": 441, "filesize_kb": 139.5, "ai_screening_risk": 78.4, "ai_preliminary_label": "Potential Dysgraphia (78.4%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.422, "baseline_drift": 0.077}, {"candidate_id": "ENG_CAND_071", "filename": "ENG_CAND_071.jpg", "relative_path": "images/ENG_CAND_071.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #6.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\6.jpg", "width": 576, "height": 597, "filesize_kb": 197.4, "ai_screening_risk": 75.4, "ai_preliminary_label": "Potential Dysgraphia (75.4%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.507, "baseline_drift": 0.098}, {"candidate_id": "ENG_CAND_072", "filename": "ENG_CAND_072.jpg", "relative_path": "images/ENG_CAND_072.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #7.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\7.jpg", "width": 1112, "height": 1121, "filesize_kb": 208.5, "ai_screening_risk": 65.2, "ai_preliminary_label": "Potential Dysgraphia (65.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.424, "baseline_drift": 0.172}, {"candidate_id": "ENG_CAND_073", "filename": "ENG_CAND_073.jpg", "relative_path": "images/ENG_CAND_073.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #8.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\8.jpg", "width": 484, "height": 317, "filesize_kb": 62.9, "ai_screening_risk": 75.0, "ai_preliminary_label": "Potential Dysgraphia (75.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.425, "baseline_drift": 0.201}, {"candidate_id": "ENG_CAND_074", "filename": "ENG_CAND_074.jpg", "relative_path": "images/ENG_CAND_074.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #9.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\9.jpg", "width": 455, "height": 282, "filesize_kb": 76.3, "ai_screening_risk": 82.5, "ai_preliminary_label": "Potential Dysgraphia (82.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.442, "baseline_drift": 0.019}, {"candidate_id": "ENG_CAND_075", "filename": "ENG_CAND_075.jpg", "relative_path": "images/ENG_CAND_075.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #10.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\10.jpg", "width": 570, "height": 335, "filesize_kb": 35.9, "ai_screening_risk": 54.8, "ai_preliminary_label": "Potential Dysgraphia (54.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.469, "baseline_drift": 0.131}, {"candidate_id": "ENG_CAND_076", "filename": "ENG_CAND_076.jpg", "relative_path": "images/ENG_CAND_076.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #11.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\11.jpg", "width": 846, "height": 557, "filesize_kb": 114.7, "ai_screening_risk": 49.1, "ai_preliminary_label": "Potential Dysgraphia (49.1%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.37, "baseline_drift": 0.006}, {"candidate_id": "ENG_CAND_077", "filename": "ENG_CAND_077.jpg", "relative_path": "images/ENG_CAND_077.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #12.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\12.jpg", "width": 543, "height": 236, "filesize_kb": 50.5, "ai_screening_risk": 88.8, "ai_preliminary_label": "Potential Dysgraphia (88.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.329, "baseline_drift": 0.028}, {"candidate_id": "ENG_CAND_078", "filename": "ENG_CAND_078.jpg", "relative_path": "images/ENG_CAND_078.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #13.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\13.jpg", "width": 1484, "height": 1920, "filesize_kb": 584.7, "ai_screening_risk": 55.9, "ai_preliminary_label": "Potential Dysgraphia (55.9%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.46, "baseline_drift": 0.07}, {"candidate_id": "ENG_CAND_079", "filename": "ENG_CAND_079.jpg", "relative_path": "images/ENG_CAND_079.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #14.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\14.jpg", "width": 510, "height": 328, "filesize_kb": 100.5, "ai_screening_risk": 67.8, "ai_preliminary_label": "Potential Dysgraphia (67.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.405, "baseline_drift": 0.086}, {"candidate_id": "ENG_CAND_080", "filename": "ENG_CAND_080.jpg", "relative_path": "images/ENG_CAND_080.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #15.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\15.jpg", "width": 569, "height": 216, "filesize_kb": 39.9, "ai_screening_risk": 78.2, "ai_preliminary_label": "Potential Dysgraphia (78.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.428, "baseline_drift": 0.129}, {"candidate_id": "ENG_CAND_081", "filename": "ENG_CAND_081.jpg", "relative_path": "images/ENG_CAND_081.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #16.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\16.jpg", "width": 456, "height": 282, "filesize_kb": 55.3, "ai_screening_risk": 59.0, "ai_preliminary_label": "Potential Dysgraphia (59.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.357, "baseline_drift": 0.018}, {"candidate_id": "ENG_CAND_082", "filename": "ENG_CAND_082.jpg", "relative_path": "images/ENG_CAND_082.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #17.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\17.jpg", "width": 3024, "height": 4032, "filesize_kb": 2005.5, "ai_screening_risk": 71.4, "ai_preliminary_label": "Potential Dysgraphia (71.4%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.457, "baseline_drift": 0.033}, {"candidate_id": "ENG_CAND_083", "filename": "ENG_CAND_083.jpg", "relative_path": "images/ENG_CAND_083.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #18.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\18.jpg", "width": 1197, "height": 646, "filesize_kb": 179.2, "ai_screening_risk": 74.1, "ai_preliminary_label": "Potential Dysgraphia (74.1%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.378, "baseline_drift": 0.091}, {"candidate_id": "ENG_CAND_084", "filename": "ENG_CAND_084.jpg", "relative_path": "images/ENG_CAND_084.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #19.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\19.jpg", "width": 1254, "height": 651, "filesize_kb": 220.4, "ai_screening_risk": 54.7, "ai_preliminary_label": "Potential Dysgraphia (54.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.442, "baseline_drift": 0.019}, {"candidate_id": "ENG_CAND_085", "filename": "ENG_CAND_085.jpg", "relative_path": "images/ENG_CAND_085.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #20.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\20.jpg", "width": 1266, "height": 816, "filesize_kb": 328.0, "ai_screening_risk": 61.1, "ai_preliminary_label": "Potential Dysgraphia (61.1%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.507, "baseline_drift": 0.002}, {"candidate_id": "ENG_CAND_086", "filename": "ENG_CAND_086.jpg", "relative_path": "images/ENG_CAND_086.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #21.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\21.jpg", "width": 673, "height": 439, "filesize_kb": 110.6, "ai_screening_risk": 39.0, "ai_preliminary_label": "Low Potential (39.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.463, "baseline_drift": 0.023}, {"candidate_id": "ENG_CAND_087", "filename": "ENG_CAND_087.jpg", "relative_path": "images/ENG_CAND_087.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #22.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\22.jpg", "width": 790, "height": 486, "filesize_kb": 155.6, "ai_screening_risk": 67.8, "ai_preliminary_label": "Potential Dysgraphia (67.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.536, "baseline_drift": 0.062}, {"candidate_id": "ENG_CAND_088", "filename": "ENG_CAND_088.jpg", "relative_path": "images/ENG_CAND_088.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #23.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\23.jpg", "width": 478, "height": 640, "filesize_kb": 158.2, "ai_screening_risk": 78.8, "ai_preliminary_label": "Potential Dysgraphia (78.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.35, "baseline_drift": 0.062}, {"candidate_id": "ENG_CAND_089", "filename": "ENG_CAND_089.jpg", "relative_path": "images/ENG_CAND_089.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #24.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\24.jpg", "width": 297, "height": 170, "filesize_kb": 24.5, "ai_screening_risk": 77.9, "ai_preliminary_label": "Potential Dysgraphia (77.9%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.483, "baseline_drift": 0.15}, {"candidate_id": "ENG_CAND_090", "filename": "ENG_CAND_090.jpg", "relative_path": "images/ENG_CAND_090.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #25.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\25.jpg", "width": 270, "height": 187, "filesize_kb": 18.2, "ai_screening_risk": 74.7, "ai_preliminary_label": "Potential Dysgraphia (74.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.354, "baseline_drift": 0.063}, {"candidate_id": "ENG_CAND_091", "filename": "ENG_CAND_091.jpg", "relative_path": "images/ENG_CAND_091.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #26.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\26.jpg", "width": 368, "height": 137, "filesize_kb": 17.8, "ai_screening_risk": 82.9, "ai_preliminary_label": "Potential Dysgraphia (82.9%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.431, "baseline_drift": 0.05}, {"candidate_id": "ENG_CAND_092", "filename": "ENG_CAND_092.jpg", "relative_path": "images/ENG_CAND_092.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #27.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\27.jpg", "width": 366, "height": 138, "filesize_kb": 25.1, "ai_screening_risk": 80.8, "ai_preliminary_label": "Potential Dysgraphia (80.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.511, "baseline_drift": 0.027}, {"candidate_id": "ENG_CAND_093", "filename": "ENG_CAND_093.jpg", "relative_path": "images/ENG_CAND_093.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #28.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\28.jpg", "width": 303, "height": 167, "filesize_kb": 26.5, "ai_screening_risk": 59.8, "ai_preliminary_label": "Potential Dysgraphia (59.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.512, "baseline_drift": 0.068}, {"candidate_id": "ENG_CAND_094", "filename": "ENG_CAND_094.jpg", "relative_path": "images/ENG_CAND_094.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #29.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\29.jpg", "width": 402, "height": 125, "filesize_kb": 25.3, "ai_screening_risk": 69.3, "ai_preliminary_label": "Potential Dysgraphia (69.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.299, "baseline_drift": 0.035}, {"candidate_id": "ENG_CAND_095", "filename": "ENG_CAND_095.jpg", "relative_path": "images/ENG_CAND_095.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #30.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\30.jpg", "width": 303, "height": 167, "filesize_kb": 26.6, "ai_screening_risk": 60.1, "ai_preliminary_label": "Potential Dysgraphia (60.1%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.531, "baseline_drift": 0.069}, {"candidate_id": "ENG_CAND_096", "filename": "ENG_CAND_096.jpg", "relative_path": "images/ENG_CAND_096.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #31.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\31.jpg", "width": 305, "height": 165, "filesize_kb": 21.4, "ai_screening_risk": 59.6, "ai_preliminary_label": "Potential Dysgraphia (59.6%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.321, "baseline_drift": 0.06}, {"candidate_id": "ENG_CAND_097", "filename": "ENG_CAND_097.jpg", "relative_path": "images/ENG_CAND_097.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #32.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\32.jpg", "width": 236, "height": 214, "filesize_kb": 22.3, "ai_screening_risk": 76.8, "ai_preliminary_label": "Potential Dysgraphia (76.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.341, "baseline_drift": 0.088}, {"candidate_id": "ENG_CAND_098", "filename": "ENG_CAND_098.jpg", "relative_path": "images/ENG_CAND_098.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #33.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\33.jpg", "width": 257, "height": 196, "filesize_kb": 19.4, "ai_screening_risk": 79.6, "ai_preliminary_label": "Potential Dysgraphia (79.6%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.304, "baseline_drift": 0.065}, {"candidate_id": "ENG_CAND_099", "filename": "ENG_CAND_099.jpg", "relative_path": "images/ENG_CAND_099.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #34.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\34.jpg", "width": 305, "height": 165, "filesize_kb": 23.9, "ai_screening_risk": 76.3, "ai_preliminary_label": "Potential Dysgraphia (76.3%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.461, "baseline_drift": 0.004}, {"candidate_id": "ENG_CAND_100", "filename": "ENG_CAND_100.jpg", "relative_path": "images/ENG_CAND_100.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #36.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\36.jpg", "width": 800, "height": 400, "filesize_kb": 123.5, "ai_screening_risk": 56.6, "ai_preliminary_label": "Potential Dysgraphia (56.6%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.52, "baseline_drift": 0.004}, {"candidate_id": "ENG_CAND_101", "filename": "ENG_CAND_101.jpg", "relative_path": "images/ENG_CAND_101.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #37.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\37.jpg", "width": 365, "height": 278, "filesize_kb": 41.0, "ai_screening_risk": 75.9, "ai_preliminary_label": "Potential Dysgraphia (75.9%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.318, "baseline_drift": 0.108}, {"candidate_id": "ENG_CAND_102", "filename": "ENG_CAND_102.jpg", "relative_path": "images/ENG_CAND_102.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #38.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\38.jpg", "width": 365, "height": 278, "filesize_kb": 46.1, "ai_screening_risk": 81.0, "ai_preliminary_label": "Potential Dysgraphia (81.0%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.21, "baseline_drift": 0.03}, {"candidate_id": "ENG_CAND_103", "filename": "ENG_CAND_103.jpg", "relative_path": "images/ENG_CAND_103.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #39.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\39.jpg", "width": 365, "height": 281, "filesize_kb": 47.8, "ai_screening_risk": 79.2, "ai_preliminary_label": "Potential Dysgraphia (79.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.389, "baseline_drift": 0.055}, {"candidate_id": "ENG_CAND_104", "filename": "ENG_CAND_104.jpg", "relative_path": "images/ENG_CAND_104.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #40.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\40.jpg", "width": 325, "height": 280, "filesize_kb": 47.1, "ai_screening_risk": 75.8, "ai_preliminary_label": "Potential Dysgraphia (75.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.324, "baseline_drift": 0.137}, {"candidate_id": "ENG_CAND_105", "filename": "ENG_CAND_105.jpg", "relative_path": "images/ENG_CAND_105.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #41.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\41.jpg", "width": 847, "height": 611, "filesize_kb": 219.2, "ai_screening_risk": 64.5, "ai_preliminary_label": "Potential Dysgraphia (64.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.533, "baseline_drift": 0.002}, {"candidate_id": "ENG_CAND_106", "filename": "ENG_CAND_106.jpg", "relative_path": "images/ENG_CAND_106.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #42.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\42.jpg", "width": 265, "height": 293, "filesize_kb": 40.9, "ai_screening_risk": 68.1, "ai_preliminary_label": "Potential Dysgraphia (68.1%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.398, "baseline_drift": 0.06}, {"candidate_id": "ENG_CAND_107", "filename": "ENG_CAND_107.jpg", "relative_path": "images/ENG_CAND_107.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #43.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\43.jpg", "width": 307, "height": 262, "filesize_kb": 50.8, "ai_screening_risk": 76.9, "ai_preliminary_label": "Potential Dysgraphia (76.9%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.417, "baseline_drift": 0.03}, {"candidate_id": "ENG_CAND_108", "filename": "ENG_CAND_108.jpg", "relative_path": "images/ENG_CAND_108.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #44.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\44.jpg", "width": 303, "height": 262, "filesize_kb": 55.6, "ai_screening_risk": 78.7, "ai_preliminary_label": "Potential Dysgraphia (78.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.386, "baseline_drift": 0.011}, {"candidate_id": "ENG_CAND_109", "filename": "ENG_CAND_109.jpg", "relative_path": "images/ENG_CAND_109.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #45.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\45.jpg", "width": 322, "height": 156, "filesize_kb": 21.8, "ai_screening_risk": 78.7, "ai_preliminary_label": "Potential Dysgraphia (78.7%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.394, "baseline_drift": 0.012}, {"candidate_id": "ENG_CAND_110", "filename": "ENG_CAND_110.jpg", "relative_path": "images/ENG_CAND_110.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #47.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\47.jpg", "width": 323, "height": 127, "filesize_kb": 25.2, "ai_screening_risk": 76.8, "ai_preliminary_label": "Potential Dysgraphia (76.8%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.45, "baseline_drift": 0.0}, {"candidate_id": "ENG_CAND_111", "filename": "ENG_CAND_111.jpg", "relative_path": "images/ENG_CAND_111.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #48.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\48.jpg", "width": 864, "height": 325, "filesize_kb": 87.9, "ai_screening_risk": 76.2, "ai_preliminary_label": "Potential Dysgraphia (76.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.339, "baseline_drift": 0.012}, {"candidate_id": "ENG_CAND_112", "filename": "ENG_CAND_112.jpg", "relative_path": "images/ENG_CAND_112.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #49.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\49.jpg", "width": 751, "height": 415, "filesize_kb": 77.6, "ai_screening_risk": 52.5, "ai_preliminary_label": "Potential Dysgraphia (52.5%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.393, "baseline_drift": 0.008}, {"candidate_id": "ENG_CAND_113", "filename": "ENG_CAND_113.jpg", "relative_path": "images/ENG_CAND_113.jpg", "source_platform": "Handwriting Disorder Benchmark", "context_title": "Open Research Benchmark Sample #50.jpg", "source_page_url": "https://github.com/srummanf/Dyslexia-Detection-from-Handwriting", "original_image_url": "E:\\Avaneesh\\projects\\Dysgraphia-Detection\\scratch_repos\\srummanf_Dyslexia\\data\\samples\\all\\dyslexic\\50.jpg", "width": 270, "height": 125, "filesize_kb": 18.8, "ai_screening_risk": 70.2, "ai_preliminary_label": "Potential Dysgraphia (70.2%)", "verification_status": "PENDING_REVIEW", "letter_size_cv": 0.39, "baseline_drift": 0.008}];
+let userDecisions = JSON.parse(localStorage.getItem('dysgraphia_decisions') || '{}');
+let currentFilter = 'all';
+
+function getBadgeClass(platform) {
+    if (platform.includes('Reddit')) return 'reddit';
+    if (platform.includes('Wikimedia')) return 'wikimedia';
+    if (platform.includes('Portal')) return 'portal';
+    if (platform.includes('PubMed')) return 'clinical';
+    return 'benchmark';
+}
+
+function renderCards() {
+    const grid = document.getElementById('card-grid');
+    grid.innerHTML = '';
+    
+    let acceptedCount = 0;
+    let rejectedCount = 0;
+    let pendingCount = 0;
+
+    items.forEach(item => {
+        const status = userDecisions[item.candidate_id] || 'pending';
+        if (status === 'accepted') acceptedCount++;
+        else if (status === 'rejected') rejectedCount++;
+        else pendingCount++;
+
+        // Filter condition
+        if (currentFilter === 'pending' && status !== 'pending') return;
+        if (currentFilter === 'accepted' && status !== 'accepted') return;
+        if (currentFilter === 'rejected' && status !== 'rejected') return;
+        if (['Reddit', 'Wikimedia Commons', 'Educational / Clinical Portal', 'PubMed Central (Clinical)', 'Handwriting Disorder Benchmark'].includes(currentFilter)) {
+            if (item.source_platform !== currentFilter) return;
+        }
+
+        const card = document.createElement('div');
+        card.className = `card ${status === 'accepted' ? 'is-accepted' : status === 'rejected' ? 'is-rejected' : ''}`;
+        card.id = `card-${item.candidate_id}`;
+
+        const badgeClass = getBadgeClass(item.source_platform);
+        const riskHtml = item.ai_screening_risk !== null ? 
+            `<div class="risk-badge ${item.ai_screening_risk >= 45 ? 'risk-high' : 'risk-low'}">AI Risk: ${item.ai_screening_risk}%</div>` : '';
+
+        card.innerHTML = `
+            <div class="img-container" onclick="openLightbox('${item.relative_path}')">
+                <span class="badge ${badgeClass}">${item.source_platform}</span>
+                ${riskHtml}
+                <img src="${item.relative_path}" loading="lazy" alt="${item.candidate_id}">
+            </div>
+            <div class="card-body">
+                <div class="card-title" title="${item.context_title}">${item.context_title}</div>
+                <div class="meta-details">
+                    <span>${item.candidate_id}</span>
+                    <span>${item.width}x${item.height} px</span>
+                    <span>${item.filesize_kb} KB</span>
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-accept ${status === 'accepted' ? 'active' : ''}" onclick="decide('${item.candidate_id}', 'accepted')">
+                        Accept
+                    </button>
+                    <button class="btn btn-reject ${status === 'rejected' ? 'active' : ''}" onclick="decide('${item.candidate_id}', 'rejected')">
+                        Reject
+                    </button>
+                    <a class="btn-link" href="${item.source_page_url}" target="_blank" title="View Source Page">Link</a>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    document.getElementById('stat-total').innerText = items.length;
+    document.getElementById('stat-accepted').innerText = acceptedCount;
+    document.getElementById('stat-rejected').innerText = rejectedCount;
+    document.getElementById('stat-pending').innerText = pendingCount;
+}
+
+function decide(candId, decision) {
+    if (userDecisions[candId] === decision) {
+        delete userDecisions[candId];
+    } else {
+        userDecisions[candId] = decision;
+    }
+    localStorage.setItem('dysgraphia_decisions', JSON.stringify(userDecisions));
+    renderCards();
+}
+
+function setFilter(filter) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    renderCards();
+}
+
+function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('active');
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+}
+
+function exportAcceptedDataset() {
+    const acceptedIds = Object.keys(userDecisions).filter(k => userDecisions[k] === 'accepted');
+    if (acceptedIds.length === 0) {
+        alert('No candidates accepted yet! Click "Accept" on valid handwriting images first.');
+        return;
+    }
+
+    const acceptedItems = items.filter(it => acceptedIds.includes(it.candidate_id));
+    const csvContent = "data:text/csv;charset=utf-8," + 
+        ["candidate_id,filename,source_platform,width,height,source_url,original_image_url"]
+        .concat(acceptedItems.map(it => `"${it.candidate_id}","${it.filename}","${it.source_platform}",${it.width},${it.height},"${it.source_page_url}","${it.original_image_url}"`))
+        .join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `accepted_dysgraphia_samples_${acceptedItems.length}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+renderCards();
+</script>
+</body>
+</html>

@@ -21,6 +21,7 @@ Multilingual, stylus-free dysgraphia screening system. Detects dysgraphia from p
 | E | Model/ensemble strategy | Pending B-D outputs |
 | F | Multilingual scope (Hindi first) | Task-set design |
 | G | Weak-label generation from school visit data | Pending visit |
+| H | English Dysgraphia Image Harvesting & Curation ("Jugaad Pipeline") | Active (113 Images Harvested) |
 
 ## Current Dataset: DATASET DYSGRAPHIA HANDWRITING
 - **Source:** External dataset (likely from Kaggle/research repository)
@@ -104,17 +105,103 @@ To guarantee generalization across different camera distances, smartphone resolu
    - Cell 14: Trains the final ensemble on the complete dataset and automatically downloads `model_bundle.pkl`.
 
 ### 2. Local Testing Ground (`app.py`)
-1. Place the generated `model_bundle.pkl` into the repository root.
-2. Install dependencies:
+1. Ensure dependencies from `requirements.txt` (`gradio`, `xgboost`, `imbalanced-learn`, `scikit-learn`, `opencv-python`, etc.) are installed in the Python environment:
    ```bash
    pip install -r requirements.txt
    ```
+2. Windows environment note: `app.py` automatically configures UTF-8 console output via `sys.stdout.reconfigure(encoding="utf-8")` to prevent `cp1252` encoding errors with status emojis.
 3. Run the Gradio testing app:
    ```bash
    python app.py
+   # Or using the local environment:
+   E:\Avaneesh\python\.venv\Scripts\python.exe app.py
    ```
-4. Open `http://127.0.0.1:7860` in any web browser:
+4. Open [http://127.0.0.1:7860](http://127.0.0.1:7860) in any web browser:
    - Upload any handwriting photo or scan (works on real-world paper with dark ink, or dataset images).
    - Inspect the cleaned binary ink mask and BHK visual explainability overlay.
    - View the diagnostic screening badge ("Low Potential Dysgraphia" vs "Potential Dysgraphia (Recommended for Clinical Review)").
    - Review numerical BHK geometric proxies (letter size inconsistency CoV, baseline drift slope, spacing regularity CoV, collision ratio, trace unsteadiness).
+
+## Local Server Status
+- **Status:** Active & Running (background daemon task)
+- **Local URL:** [http://127.0.0.1:7860](http://127.0.0.1:7860)
+- **Model Bundle:** `model_bundle.pkl` loaded with soft-voting ensemble (RF + XGBoost + SVM).
+
+## Validation & Clinical Metrics Benchmarks
+A standalone validation suite is available at [`run_validation.py`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/run_validation.py):
+```bash
+python run_validation.py
+```
+
+### 1. Deployed Model Bundle Performance (`model_bundle.pkl` on 249 images)
+- **Dataset:** 249 images (135 Low Potential Dysgraphia, 114 Potential Dysgraphia)
+- **ROC-AUC:** **0.9940**
+
+| Metric | Standard Threshold (0.50) | Calibrated Screening Threshold (0.45) | Clinical Interpretation |
+|---|---|---|---|
+| **Accuracy** | 95.58% | 95.18% | Overall correct classifications |
+| **Sensitivity (Recall - PD)** | 92.11% | **95.61%** | Catches 109 of 114 at-risk dysgraphic samples (only 5 missed) |
+| **Specificity (TNR - LPD)** | 98.52% | **94.81%** | 128 of 135 neurotypical samples correctly cleared |
+| **Precision (PPV)** | 98.13% | 93.97% | Positive predictive reliability |
+| **Negative Predictive Value (NPV)** | 96.24% | 96.24% | High assurance when screening clear |
+| **F1-Score** | 95.02% | 94.78% | Harmonic mean of precision & recall |
+| **Confusion Matrix** | `TP=105, FN=9, FP=2, TN=133` | `TP=109, FN=5, FP=7, TN=128` | FN drops from 9 down to 5 at 0.45 threshold |
+
+### 2. Stratified 5-Fold Cross-Validation (Unseen Fold Generalization)
+Evaluated with SMOTE and StandardScaler fitted exclusively within training folds (no data leakage):
+
+| Model | Accuracy | Sensitivity (Recall) | Specificity (TNR) | Precision (PPV) | F1-Score | ROC-AUC |
+|---|---|---|---|---|---|---|
+| **Random Forest** | 80.3 ± 4.6% | 75.5 ± 7.0% | 84.4 ± 5.4% | 80.6 ± 6.0% | 77.8 ± 5.5% | 0.890 ± 0.042 |
+| **XGBoost** | 80.7 ± 5.8% | 74.5 ± 7.0% | 85.9 ± 8.6% | 82.5 ± 8.7% | 78.0 ± 6.0% | 0.878 ± 0.041 |
+| **SVM (RBF)** | 79.5 ± 4.6% | 78.1 ± 7.7% | 80.7 ± 4.3% | 77.4 ± 4.4% | 77.6 ± 5.4% | 0.888 ± 0.039 |
+| **Soft-Voting Ensemble** | **81.1 ± 4.1%** | **78.1 ± 7.3%** | **83.7 ± 6.9%** | **80.7 ± 6.2%** | **79.0 ± 4.7%** | **0.894 ± 0.040** |
+
+### 3. Out-of-Fold Threshold Sensitivity Sweep (Screening Trade-off)
+| Threshold | Accuracy | Sensitivity (Recall) | Specificity | Precision | F1-Score | TP | FN (Missed PD) | FP | TN |
+|---|---|---|---|---|---|---|---|---|---|
+| 0.35 | 79.9% | 85.1% | 75.6% | 74.6% | 79.5% | 97 | 17 | 33 | 102 |
+| 0.40 | 80.3% | 82.5% | 78.5% | 76.4% | 79.3% | 94 | 20 | 29 | 106 |
+| **0.45 (Optimal)** | **81.1%** | **80.7%** | **81.5%** | **78.6%** | **79.7%** | **92** | **22** | **25** | **110** |
+| 0.50 (Standard) | 81.1% | 78.1% | 83.7% | 80.2% | 79.1% | 89 | 25 | 22 | 113 |
+| 0.55 | 81.1% | 73.7% | 87.4% | 83.2% | 78.1% | 84 | 30 | 17 | 118 |
+| 0.60 | 80.7% | 69.3% | 90.4% | 85.9% | 76.7% | 79 | 35 | 13 | 122 |
+
+## Workstream H: English Dysgraphia Dataset Harvesting ("Jugaad Pipeline")
+To solve the lack of English dysgraphia 2D offline handwriting datasets, an automated multi-source harvesting and curation engine was built at [`scrapers/harvest_dysgraphia_images.py`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/scrapers/harvest_dysgraphia_images.py).
+
+### 1. Data Sources & Architecture
+- **Reddit Harvester:** Polls `r/dysgraphia`, `r/Handwriting`, `r/dyslexia` across top/new feeds. Crucial discovery: converts preview thumbnail URLs (`preview.redd.it/...`) to uncompressed full-resolution original phone captures (`i.redd.it/...`) with stateless download headers.
+- **Wikimedia Commons Medical Archives:** Queries clinical and medical handwriting scans (`Dysgraphia.jpg`, `Disgrafija.jpg`, `Writing of a person diagnosed with dysgraphia.jpg`).
+- **Educational & Clinical Portals:** Scrapes verified before/after therapy and student case study handwriting samples from educational therapy sites (Edublox, Dysgraphia.life).
+- **PubMed Central (PMC) Clinical Case Figures:** Queries peer-reviewed medical and graphonomics papers (`dysgraphia handwriting`, `developmental dysgraphia`) using NCBI E-utilities.
+- **English Handwriting Disorder Benchmark Corpus:** Ingests benchmark samples with clinical motor/spelling impairments.
+
+### 2. Automated Quality Filtering & Pre-Screening
+Every candidate image passes through an automated pipeline:
+- **Dimension Check:** Discards microscopic icons or tracking pixels ($w < 120\text{px}$ or $h < 120\text{px}$).
+- **Aspect Ratio Filter:** Filters out banner ads or ribbon graphics ($\text{aspect} > 16.0$).
+- **Perceptual Deduplication:** Computes 64-bit difference hash (dHash) to guarantee zero duplicate downloads across sources.
+- **Foreground Variance Verification:** Filters out blank or solid color pages ($\sigma_{gray} \ge 8.0$).
+- **BHK Feature Extraction & AI Risk Scoring:** Automatically extracts 16-D BHK proxy metrics (`letter_size_cv`, `baseline_drift_slope`, etc.) and runs inference against the trained ensemble in `model_bundle.pkl` to compute an automated screening risk percentage.
+
+### 3. Harvest Summary (113 Validated Images)
+- **Reddit Community Uploads:** 52 images (real mobile phone photos of handwriting)
+- **Handwriting Disorder Benchmark:** 48 images
+- **Educational / Clinical Portals:** 8 images
+- **Wikimedia Commons Clinical Scans:** 5 images
+- **Total Validated Candidates:** **113 offline 2D handwriting images**
+- **Average Model Predicted Risk:** **68.9%**
+
+### 4. Interactive Review & Curation Dashboard
+- **Review Gallery:** [`scraped_candidates/review_gallery.html`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/scraped_candidates/review_gallery.html)
+  - Features a responsive offline web dashboard with category badges (Reddit, Wikimedia, Portals, Benchmark).
+  - Displays original resolutions, file sizes, source hyperlinks, and AI screening risk scores.
+  - Interactive status buttons (`Accept` / `Reject`) saved to browser `localStorage`.
+  - One-click **Export Accepted Manifest** button to export a CSV of verified images for training.
+- **Manifest Files:**
+  - [`scraped_candidates/manifest.csv`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/scraped_candidates/manifest.csv)
+  - [`scraped_candidates/metadata.json`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/scraped_candidates/metadata.json)
+
+
+

@@ -9,6 +9,16 @@ Allows uploading 2D handwriting images (English, Hindi, or dataset samples) to i
 """
 
 import os
+import sys
+
+# Ensure UTF-8 console output on Windows
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 import pickle
 import numpy as np
 import pandas as pd

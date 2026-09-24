@@ -33,3 +33,7 @@ scratch/
 
 # Environment variables
 .env
+
+# Feature caches
+data_*_cache.csv
+
