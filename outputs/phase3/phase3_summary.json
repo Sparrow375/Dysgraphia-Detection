@@ -1,0 +1,12 @@
+{
+  "total_samples_processed": 53,
+  "mean_latency_per_sample_sec": 2.427,
+  "total_pipeline_time_sec": 128.64,
+  "bhk_features_count": 9,
+  "kinematic_features_count": 8,
+  "total_multimodal_features": 17,
+  "datasets_represented": [
+    "Malay_Handwriting",
+    "Rendered_Tablet"
+  ]
+}
