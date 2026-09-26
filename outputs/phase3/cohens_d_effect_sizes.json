@@ -1,0 +1,22 @@
+{
+  "bhk_size_covariance": 0.2599,
+  "bhk_height_ratio_consistency": -0.2615,
+  "bhk_baseline_drift": -0.1786,
+  "bhk_spacing_entropy": -0.2057,
+  "bhk_stroke_width_variance": -1.0838,
+  "bhk_telescoping_overlap": 0.045,
+  "bhk_acute_turns": -0.5695,
+  "bhk_left_margin_drift": -0.2092,
+  "bhk_line_collisions": 0.2254,
+  "kin_mean_velocity": 1.8069,
+  "kin_peak_velocity": 0.637,
+  "kin_velocity_skewness": -0.83,
+  "kin_nvi_rate": -1.3079,
+  "kin_nvi_per_stroke": 1.9937,
+  "kin_nvi_per_100px": -0.6851,
+  "kin_jerk_metric": -1.8484,
+  "kin_dimensionless_jerk": 1.6315,
+  "kin_tremor_index_4_8hz": -1.2477,
+  "kin_pen_lift_count": 0.1044,
+  "kin_mean_stroke_length": 1.662
+}

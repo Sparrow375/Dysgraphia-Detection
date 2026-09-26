@@ -1,12 +1,48 @@
 {
-  "total_samples_processed": 53,
-  "mean_latency_per_sample_sec": 2.427,
-  "total_pipeline_time_sec": 128.64,
+  "total_samples_processed": 80,
+  "mean_latency_per_sample_sec": 1.462,
+  "total_pipeline_time_sec": 116.92,
   "bhk_features_count": 9,
-  "kinematic_features_count": 8,
-  "total_multimodal_features": 17,
+  "kinematic_features_count": 11,
+  "total_multimodal_features": 20,
   "datasets_represented": [
     "Malay_Handwriting",
-    "Rendered_Tablet"
+    "Rendered_Tablet",
+    "Drotar_Task5_Leto",
+    "Drotar_Task8_Sentence"
+  ],
+  "top_effect_sizes_cohens_d": [
+    [
+      "kin_nvi_per_stroke",
+      1.9937
+    ],
+    [
+      "kin_jerk_metric",
+      -1.8484
+    ],
+    [
+      "kin_mean_velocity",
+      1.8069
+    ],
+    [
+      "kin_mean_stroke_length",
+      1.662
+    ],
+    [
+      "kin_dimensionless_jerk",
+      1.6315
+    ],
+    [
+      "kin_nvi_rate",
+      -1.3079
+    ],
+    [
+      "kin_tremor_index_4_8hz",
+      -1.2477
+    ],
+    [
+      "bhk_stroke_width_variance",
+      -1.0838
+    ]
   ]
 }
