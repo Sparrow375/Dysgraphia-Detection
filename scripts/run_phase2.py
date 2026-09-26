@@ -149,12 +149,16 @@ def main():
             nrmse_v = val["nrmse_velocity"]
             nrmse_p = val["nrmse_pressure"]
 
+            kin = val["kinematic_features"]
             print(f"  [RESULT] Velocity Pearson r (whole doc): {r_v:+.4f} (p = {p_v:.2e}, NRMSE = {nrmse_v:.3f})")
             print(f"  [RESULT] Single-Stroke Level 1 Velocity: Mean r = {val['stroke_level_mean_r']:+.4f} (Median = {val['stroke_level_median_r']:+.4f}, Frac > 0.3 = {val['stroke_level_fraction_gt_03']:.1%}, N={val['stroke_level_count']})")
             print(f"  [RESULT] Pressure Pearson r:             {r_p:+.4f} (p = {p_p:.2e}, NRMSE = {nrmse_p:.3f})")
-            print(f"  [RESULT] NVI per Stroke:                 {val['kinematic_features']['nvi_per_stroke']:.2f}")
-            print(f"  [RESULT] NVI Rate:                       {val['kinematic_features']['nvi_rate']:.2f} inversions/s")
-            print(f"  [RESULT] Total Inversions:               {val['kinematic_features']['total_nvi']}")
+            print(f"  [RESULT] NVI per Stroke:                 {kin['nvi_per_stroke']:.2f}")
+            print(f"  [RESULT] NVI Rate:                       {kin['nvi_rate']:.2f} inversions/s")
+            print(f"  [RESULT] Flash & Hogan Dim. Jerk:        {kin['dimensionless_jerk']:.2f}")
+            print(f"  [RESULT] 4-8 Hz Tremor Power Ratio:      {kin['tremor_index_4_8hz']*100:.1f}%")
+            print(f"  [RESULT] Velocity Skewness (Impulse):    {kin['velocity_skewness']:+.3f}")
+            print(f"  [RESULT] Total Inversions:               {kin['total_nvi']}")
 
             # Save diagnostic plot
             plot_path = output_dir / f"{sid}_groundtruth_vs_reconstruction.png"
@@ -173,13 +177,15 @@ def main():
     with open(summary_path, "w", encoding="utf-8") as f:
         json.dump(validation_results, f, indent=2)
 
-    print("\n" + "=" * 80)
-    print("PHASE 2 GROUND-TRUTH VALIDATION SUMMARY (MULTI-LEVEL KINEMATICS)")
-    print("=" * 80)
-    print(f"{'Sample ID':<26} | {'Doc Vel r':<10} | {'Stroke Mean r':<14} | {'Frac r>0.3':<10} | {'Recovered / GT'}")
-    print("-" * 80)
+    print("\n" + "=" * 105)
+    print("PHASE 2 GROUND-TRUTH VALIDATION SUMMARY (MULTI-TASK & BIOPHYSICAL KINEMATICS)")
+    print("=" * 105)
+    print(f"{'Sample ID':<28} | {'Task':<22} | {'Doc Vel r':<9} | {'Stroke r':<8} | {'Dim Jerk':<8} | {'Tremor%':<7} | {'NVI/stk'}")
+    print("-" * 105)
     for r in validation_results:
-        print(f"{r['sample_id']:<26} | {r['pearson_r_velocity']:+8.4f}   | {r['stroke_level_mean_r']:+12.4f}   | {r['stroke_level_fraction_gt_03']:8.1%}   | {r['recovered_stroke_count']} / {r['gt_stroke_count']}")
+        k = r.get("kinematic_features", {})
+        task_str = r.get("task", "")[:22]
+        print(f"{r['sample_id']:<28} | {task_str:<22} | {r['pearson_r_velocity']:+7.4f}   | {r['stroke_level_mean_r']:+6.4f}   | {k.get('dimensionless_jerk', 0.0):7.2f}  | {k.get('tremor_index_4_8hz', 0.0)*100:5.1f}%  | {k.get('nvi_per_stroke', 0.0):5.2f}")
 
     print(f"\nSaved Phase 2 validation summary to: {summary_path}")
     print("Phase 2 Complete!")

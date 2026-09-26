@@ -110,7 +110,7 @@ def main():
     datasets_dir = PROJECT_ROOT / "Datasets"
     phase0_dir = PROJECT_ROOT / "outputs" / "phase0"
 
-    # 1. Gather samples
+    # 1. Gather samples across cohorts
     lpd_files = sorted(glob.glob(str(datasets_dir / "DATASET DYSGRAPHIA HANDWRITING" / "Low Potential Dysgraphia" / "*.jpg")))[:25]
     pd_files = sorted(glob.glob(str(datasets_dir / "DATASET DYSGRAPHIA HANDWRITING" / "Potential Dysgraphia" / "*.jpg")))[:25]
     rendered_files = sorted(glob.glob(str(phase0_dir / "*_rendered.png")))
@@ -123,7 +123,24 @@ def main():
     for f in rendered_files:
         sample_queue.append((f, "Rendered_Tablet", "Tablet_Rendered", -1))
 
-    print(f"Total samples to process through unified pipeline: {len(sample_queue)}")
+    # Add reconstructed Drotar dataset samples (word 'leto' & full sentence)
+    reconstructed_dir = datasets_dir / "reconstructed_dataset" / "by_task"
+    if reconstructed_dir.exists():
+        leto_ctrl = sorted(glob.glob(str(reconstructed_dir / "task_5_leto" / "control" / "*.png")))[:6]
+        leto_dys = sorted(glob.glob(str(reconstructed_dir / "task_5_leto" / "dysgraphic" / "*.png")))[:6]
+        sent_ctrl = sorted(glob.glob(str(reconstructed_dir / "task_8_sentence" / "control" / "*.png")))[:6]
+        sent_dys = sorted(glob.glob(str(reconstructed_dir / "task_8_sentence" / "dysgraphic" / "*.png")))[:6]
+
+        for f in leto_ctrl:
+            sample_queue.append((f, "Drotar_Task5_Leto", "Control (Drotar_T5)", 0))
+        for f in leto_dys:
+            sample_queue.append((f, "Drotar_Task5_Leto", "Dysgraphic (Drotar_T5)", 1))
+        for f in sent_ctrl:
+            sample_queue.append((f, "Drotar_Task8_Sentence", "Control (Drotar_T8)", 0))
+        for f in sent_dys:
+            sample_queue.append((f, "Drotar_Task8_Sentence", "Dysgraphic (Drotar_T8)", 1))
+
+    print(f"Total samples to process through 20D multimodal pipeline: {len(sample_queue)}")
 
     records = []
     times = []
@@ -140,11 +157,11 @@ def main():
             "elapsed_seconds": res["metadata"]["elapsed_seconds"],
         }
 
-        # Add 6 BHK features
+        # Add 9 BHK static features
         for name, val in zip(res["bhk_feature_names"], res["bhk_vector"]):
             rec[f"bhk_{name}"] = round(float(val), 4)
 
-        # Add 8 Kinematic features
+        # Add 11 Kinematic biophysical features
         for name, val in zip(res["kinematic_feature_names"], res["kinematic_vector"]):
             rec[f"kin_{name}"] = round(float(val), 4)
 
@@ -154,7 +171,7 @@ def main():
     df = pd.DataFrame(records)
     csv_path = output_dir / "consolidated_features.csv"
     df.to_csv(csv_path, index=False)
-    print(f"\nSaved consolidated feature matrix ({len(df)} rows, {len(df.columns)} cols) to: {csv_path}")
+    print(f"\nSaved consolidated 20D feature matrix ({len(df)} rows, {len(df.columns)} cols) to: {csv_path}")
 
     # Feature column names
     bhk_cols = [c for c in df.columns if c.startswith("bhk_")]
@@ -164,12 +181,33 @@ def main():
     # Correlation matrix
     corr_path = output_dir / "feature_correlation_matrix.png"
     plot_correlation_heatmap(df, all_feature_cols, str(corr_path))
-    print(f"Saved feature correlation matrix to: {corr_path}")
+    print(f"Saved 20D feature correlation matrix to: {corr_path}")
 
     # Standardized profile comparison
     prof_path = output_dir / "multimodal_profile_comparison.png"
     plot_consolidated_profile(df, all_feature_cols, str(prof_path))
     print(f"Saved multimodal profile comparison to: {prof_path}")
+
+    # Compute Cohen's d effect sizes on Malay cohort
+    malay_df = df[df["dataset"] == "Malay_Handwriting"].copy()
+    ctrl_sub = malay_df[malay_df["is_dysgraphic"] == 0]
+    dys_sub = malay_df[malay_df["is_dysgraphic"] == 1]
+
+    cohens_d = {}
+    for col in all_feature_cols:
+        x_c = ctrl_sub[col].values
+        x_d = dys_sub[col].values
+        n_c, n_d = len(x_c), len(x_d)
+        if n_c > 1 and n_d > 1:
+            var_c = np.var(x_c, ddof=1)
+            var_d = np.var(x_d, ddof=1)
+            pooled_sd = np.sqrt(((n_c - 1) * var_c + (n_d - 1) * var_d) / max(n_c + n_d - 2, 1))
+            d = (np.mean(x_d) - np.mean(x_c)) / max(pooled_sd, 1e-6)
+            cohens_d[col] = round(float(d), 4)
+
+    cohen_path = output_dir / "cohens_d_effect_sizes.json"
+    with open(cohen_path, "w", encoding="utf-8") as f:
+        json.dump(cohens_d, f, indent=2)
 
     # Performance stats
     summary_stats = {
@@ -180,18 +218,26 @@ def main():
         "kinematic_features_count": len(kin_cols),
         "total_multimodal_features": len(all_feature_cols),
         "datasets_represented": list(df["dataset"].unique()),
+        "top_effect_sizes_cohens_d": sorted(cohens_d.items(), key=lambda kv: abs(kv[1]), reverse=True)[:8],
     }
     summary_json_path = output_dir / "phase3_summary.json"
     with open(summary_json_path, "w", encoding="utf-8") as f:
         json.dump(summary_stats, f, indent=2)
 
-    print("\n" + "=" * 70)
-    print("PHASE 3 CONSOLIDATION SUMMARY")
-    print("=" * 70)
-    print(f"Processed {len(df)} samples across {len(summary_stats['datasets_represented'])} datasets.")
+    print("\n" + "=" * 80)
+    print("PHASE 3 CONSOLIDATION SUMMARY (20D MULTIMODAL FEATURE SPACE)")
+    print("=" * 80)
+    print(f"Processed {len(df)} samples across {len(summary_stats['datasets_represented'])} cohorts:")
+    for d in summary_stats['datasets_represented']:
+        cnt = len(df[df["dataset"] == d])
+        print(f"  - {d}: {cnt} samples")
     print(f"Average Pipeline Latency: {summary_stats['mean_latency_per_sample_sec']} seconds / image.")
-    print(f"Total Extracted Dimensions: {summary_stats['total_multimodal_features']} (9 BHK Spatial + 8 Neuromotor Kinematics).")
-    print("Consolidated Deliverable Ready!")
+    print(f"Total Extracted Dimensions: {summary_stats['total_multimodal_features']} (9 BHK Spatial + 11 Neuromotor Kinematics).")
+    print("\nTop Discriminating Biomarkers (Cohen's d):")
+    for feat, d_val in summary_stats["top_effect_sizes_cohens_d"]:
+        print(f"  {feat:<30}: d = {d_val:+.3f}")
+    print("=" * 80)
+    print("Phase 3 Complete!")
 
 
 if __name__ == "__main__":
