@@ -194,14 +194,29 @@ Every candidate image passes through an automated pipeline:
 - **Average Model Predicted Risk:** **68.9%**
 
 ### 4. Interactive Review & Curation Dashboard
-- **Review Gallery:** [`scraped_candidates/review_gallery.html`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/scraped_candidates/review_gallery.html)
+- **Review Gallery:** [`scraped_candidates/review_gallery.html`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/scraped_candidates/review_gallery.html)
   - Features a responsive offline web dashboard with category badges (Reddit, Wikimedia, Portals, Benchmark).
   - Displays original resolutions, file sizes, source hyperlinks, and AI screening risk scores.
   - Interactive status buttons (`Accept` / `Reject`) saved to browser `localStorage`.
   - One-click **Export Accepted Manifest** button to export a CSV of verified images for training.
 - **Manifest Files:**
-  - [`scraped_candidates/manifest.csv`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/scraped_candidates/manifest.csv)
-  - [`scraped_candidates/metadata.json`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/scraped_candidates/metadata.json)
+  - [`scraped_candidates/manifest.csv`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/scraped_candidates/manifest.csv)
+  - [`scraped_candidates/metadata.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/scraped_candidates/metadata.json)
 
-
-
+## Workstream A: Samsung S26 Ultra S-Pen Dysgraphia Note & Data Collection App
+- **Objective:** High-precision Android note-making and online handwriting kinematic data harvester specifically targeted for Samsung Galaxy S26 Ultra (and compatible S-Pen devices).
+- **Core Technology:** Android Native / Kotlin, Jetpack Compose, Hardware-accelerated custom Canvas View with `requestUnbufferedDispatch()` and historical event batch unpacking (`getHistoricalX`, `getHistoricalY`, `getHistoricalPressure`, etc.).
+- **Kinematic Matrix (24 Dimensions):**
+  - **Coordinates & Spatial:** Screen $(x, y)$ pixels, physical $(x_{\text{mm}}, y_{\text{mm}})$ calibrated via screen DPI.
+  - **Temporal:** Relative timestamp ($t_{\text{rel}}$ in ms/ns), wall time ($t_{\text{epoch}}$ UTC), inter-point $\Delta t$.
+  - **Pressure & Force:** Raw pressure $p \in [0.0, 1.0]$ across 4096 levels of Wacom EMR digitizer, dynamic pressure rate ($dp/dt$).
+  - **Spatial Angles & Geometry:** Tilt angle $\theta$ (`AXIS_TILT` in radians), Azimuth/Orientation $\phi$ (`AXIS_ORIENTATION` in radians), angular velocity ($d\phi/dt$).
+  - **In-Air Flight Dynamics:** Stylus hover tracking (`onGenericMotionEvent`, `ACTION_HOVER_MOVE`, `AXIS_DISTANCE`) measuring pen hesitation, in-air trajectory, and flight-to-touch transitions.
+  - **Neuromotor Kinematics:** Instantaneous velocity ($v$), acceleration ($a$), and jerk ($j = \Delta a / \Delta t$) for tremor and motor coordination profiling.
+  - **Tool & Button States:** Strict palm rejection (`TOOL_TYPE_STYLUS` vs `TOOL_TYPE_FINGER`), S-Pen button state (`BUTTON_STYLUS_PRIMARY`).
+- **Screening Modes:**
+  1. *Free Note-Taking:* Ruled/grid/blank paper canvas for everyday natural writing.
+  2. *Standardized Screening Protocol (Hindi & English):* Word, Pseudo-word, Complex/Conjunct Word, Sentence, and Archimedean spiral tests.
+  3. *Paired Paper Photo Scanner:* Built-in CameraX module to photograph real-world notebook paper samples for paired online/offline benchmark research.
+- **Export Format:** Structured session ZIP with `timeseries_raw.csv`, `timeseries_raw.jsonl`, `strokes_summary.json`, `rendered_digital.png`, and `metadata.json`.
+- **Architectural Plan Document:** [`samsung_spen_dysgraphia_app_plan.md`](file:///C:/Users/Avaneesh/.gemini/antigravity-ide/brain/c3dfc50e-f3aa-419f-8ec4-6ee3718f5c9b/samsung_spen_dysgraphia_app_plan.md)
