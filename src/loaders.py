@@ -191,10 +191,14 @@ def load_diagramo_json(filepath: str) -> SampleData:
 
     # Infer task name from filename
     task_name = "TSK"
-    if "TSK4" in sample_id:
-        task_name = "TSK4_dictation"
+    if "TSK3" in sample_id:
+        task_name = "TSK3_sentence_dictation"
+    elif "TSK4" in sample_id:
+        task_name = "TSK4_alphabet_dictation"
+    elif "TSK15" in sample_id:
+        task_name = "TSK15_word_copy"
     elif "TSK16" in sample_id:
-        task_name = "TSK16_copy_sentence"
+        task_name = "TSK16_sentence_copy"
     elif "TSK" in sample_id:
         task_name = sample_id.split("_")[1] if len(sample_id.split("_")) > 1 else "TSK"
 
@@ -209,3 +213,49 @@ def load_diagramo_json(filepath: str) -> SampleData:
         total_duration_sec=meta_stats["total_duration_sec"],
         in_air_ratio=meta_stats["in_air_ratio"],
     )
+
+
+def list_diagramo_text_tasks(
+    dataset_root: str = "Datasets/DiaGraMo-project"
+) -> Dict[str, List[str]]:
+    """
+    Discovers all available JSON files for the 4 standardized handwriting text tasks:
+    TSK3 (Sentence Dictation), TSK4 (Alphabet), TSK15 (Word Copy), TSK16 (Sentence Copy).
+    """
+    import glob
+    tasks = ["TSK3", "TSK4", "TSK15", "TSK16"]
+    task_files = {tsk: [] for tsk in tasks}
+
+    for tsk in tasks:
+        pattern = os.path.join(dataset_root, "**", f"*{tsk}*.json")
+        matches = sorted(glob.glob(pattern, recursive=True))
+        task_files[tsk] = matches
+
+    return task_files
+
+
+def load_diagramo_text_cohort(
+    dataset_root: str = "Datasets/DiaGraMo-project",
+    tasks: Optional[List[str]] = None,
+    max_per_task: int = 5
+) -> Dict[str, List[SampleData]]:
+    """
+    Loads multi-task cohorts across DiaGraMo standardized text tasks.
+    """
+    if tasks is None:
+        tasks = ["TSK3", "TSK4", "TSK15", "TSK16"]
+
+    all_files = list_diagramo_text_tasks(dataset_root)
+    cohort: Dict[str, List[SampleData]] = {tsk: [] for tsk in tasks}
+
+    for tsk in tasks:
+        files = all_files.get(tsk, [])[:max_per_task]
+        for f in files:
+            try:
+                sample = load_diagramo_json(f)
+                cohort[tsk].append(sample)
+            except Exception as e:
+                print(f"Warning: could not load {f}: {e}")
+
+    return cohort
+
