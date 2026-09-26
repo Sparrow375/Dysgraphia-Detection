@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stylus-Free Dysgraphia Screening & Kinematics Studio</title>
+  <title>Stylus-Free Dysgraphia Feature Extraction & Kinematics Studio</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
     <header>
-      <div class="header-badge">✨ Multi-Modal Biophysical Engine v2.0</div>
-      <h1>Stylus-Free Dysgraphia Screening & Kinematics Studio</h1>
+      <div class="header-badge">✨ Multimodal Biophysical Engine v2.0 • Pure Feature Extraction</div>
+      <h1>Stylus-Free Dysgraphia Feature Extraction & Kinematics Studio</h1>
       <p class="subtitle">
-        Upload or paste any offline 2D handwriting photo or scan. Our inverse physics engine recovers continuous 
-        neuromuscular velocity profiles, velocity inversions (NVI), and 9 clinical BHK spatial metrics in real-time.
+        Objective, unclassified extraction of 9 BHK clinical spatial indicators, 11 biophysical kinematic waveforms,
+        and real-time point-by-point speed inspection from offline 2D handwriting photographs.
       </p>
     </header>
 
@@ -34,101 +34,302 @@
           <input type="file" id="file-input" accept="image/*">
         </div>
 
-        <div id="preview-container" class="preview-container">
+        <div id="preview-container" class="preview-container" style="display: none;">
           <img id="preview-img" class="preview-img" alt="Uploaded Handwriting Preview">
           <button id="clear-btn" class="clear-btn" title="Remove image">✕</button>
         </div>
 
         <button id="analyze-btn" class="btn-primary" disabled>
-          <span id="btn-text">🔍 Analyze Handwriting Sample</span>
+          <span id="btn-text">🔍 Extract 20D Multimodal Features</span>
           <span id="btn-spinner" class="spinner" style="display: none;"></span>
         </button>
 
-        <!-- Demo Gallery -->
+        <!-- Quick Demo Presets -->
         <div class="demo-section">
           <div class="demo-title">📁 Quick Test Demos</div>
           <div id="demo-pills" class="demo-pills">
-            <button class="demo-pill" data-type="malay_lpd">🟢 Malay Typical (LPD)</button>
             <button class="demo-pill" data-type="malay_pd">🔴 Malay Dysgraphic (PD)</button>
-            <button class="demo-pill" data-type="drotar_leto_ctrl">🟢 Word 'leto' (Control)</button>
-            <button class="demo-pill" data-type="drotar_leto_dys">🔴 Word 'leto' (Dysgraphic)</button>
-            <button class="demo-pill" data-type="drotar_sentence">📝 Full Sentence (Drotár)</button>
+            <button class="demo-pill" data-type="malay_lpd">🟢 Malay Typical (LPD)</button>
+            <button class="demo-pill" data-type="drotar_dys">🔴 Word 'leto' (Dysgraphic)</button>
+            <button class="demo-pill" data-type="drotar_ctrl">🟢 Word 'leto' (Control)</button>
+            <button class="demo-pill" data-type="drotar_sentence">📝 Sentence (Drotár)</button>
           </div>
         </div>
 
-        <div class="disclaimer-box">
-          <strong>Pediatric Screening Disclaimer:</strong> This system is an exploratory screening aid designed to flag children who may benefit from a formal clinical evaluation by an occupational therapist or educator. It does not replace a medical diagnosis.
+        <div class="mode-info-box">
+          <strong>🔬 Extraction-Only Architecture:</strong>
+          This studio performs pure mathematical and biophysical feature extraction. It does not output speculative diagnostic classifications or risk labels. Every metric reflects true physical or kinematic properties of the handwriting geometry.
         </div>
       </section>
 
-      <!-- Right Column: Results & Explainability -->
+      <!-- Right Column: Results & Interactive Telemetry -->
       <section class="card results-card">
         <h2 class="card-title">
-          <span>📊</span> Diagnostic Screening & Kinematic Telemetry
+          <span>📊</span> Biophysical Extraction & Interactive Telemetry
         </h2>
 
         <!-- Initial Placeholder -->
         <div id="results-placeholder" class="results-placeholder">
           <div class="icon">🖋️</div>
           <h3>Awaiting Handwriting Input</h3>
-          <p>Upload a photo or click one of the quick test demos to initiate automated 20D multimodal analysis.</p>
+          <p>Upload a handwriting photo, paste from clipboard, or click a demo sample to extract 20D features and inspect instantaneous velocities.</p>
         </div>
 
         <!-- Populated Results Container -->
         <div id="results-container" style="display: none;">
-          <!-- Badge -->
-          <div id="screening-badge-card" class="screening-badge-card">
-            <div class="badge-info">
-              <h3 id="badge-title">Screening Verdict</h3>
-              <p id="badge-desc">Evaluated across 9 BHK indicators and 11 biophysical kinematic metrics.</p>
+          <!-- Top Quantitative Stat Badges -->
+          <div class="stat-badges-grid">
+            <div class="stat-badge">
+              <div class="stat-val" id="stat-strokes">0</div>
+              <div class="stat-lbl">Recovered Strokes</div>
             </div>
-            <div class="badge-score">
-              <div id="badge-score-val" class="badge-score-val">0%</div>
-              <div class="badge-score-lbl">Risk Score</div>
+            <div class="stat-badge">
+              <div class="stat-val" id="stat-speed">0 <span class="stat-unit">px/s</span></div>
+              <div class="stat-lbl">Mean Velocity</div>
+            </div>
+            <div class="stat-badge">
+              <div class="stat-val" id="stat-nvi">0.0</div>
+              <div class="stat-lbl">NVI Hesitations/Stroke</div>
+            </div>
+            <div class="stat-badge">
+              <div class="stat-val" id="stat-tremor">0%</div>
+              <div class="stat-lbl">4-8 Hz Tremor Power</div>
+            </div>
+            <div class="stat-badge">
+              <div class="stat-val" id="stat-size-cov">0.0</div>
+              <div class="stat-lbl">Letter Size CoV</div>
             </div>
           </div>
 
-          <!-- Tabs Navigation -->
+          <!-- Main Tabs Navigation -->
           <nav class="tabs-nav">
-            <button class="tab-btn active" data-tab="tab-overlay">🔍 BHK Explainability Overlay</button>
-            <button class="tab-btn" data-tab="tab-kinematics">⚡ Kinematic Waveform Studio</button>
-            <button class="tab-btn" data-tab="tab-ink">🖤 Cleaned Ink & Skeleton</button>
+            <button class="tab-btn active" data-tab="tab-interactive">📍 Interactive Point Kinematics</button>
+            <button class="tab-btn" data-tab="tab-waveforms">⚡ Togglable Waveforms</button>
+            <button class="tab-btn" data-tab="tab-stages">🔬 How We Extract Features</button>
             <button class="tab-btn" data-tab="tab-table">📋 20D Biomarker Table</button>
           </nav>
 
-          <!-- Tab 1: Spatial Explainability Overlay -->
-          <div id="tab-overlay" class="tab-pane active">
-            <div class="result-img-box">
-              <img id="overlay-img" alt="BHK Spatial Explainability Overlay">
+          <!-- Tab 1: Interactive Point Kinematics on Handwriting -->
+          <div id="tab-interactive" class="tab-pane active">
+            <div class="canvas-controls-bar">
+              <div class="controls-group">
+                <span class="ctrl-label">Visual Layers:</span>
+                <label class="toggle-chip"><input type="checkbox" id="toggle-heatmap" checked> <span>Velocity Heatmap</span></label>
+                <label class="toggle-chip"><input type="checkbox" id="toggle-boxes" checked> <span>BHK Character Boxes</span></label>
+                <label class="toggle-chip"><input type="checkbox" id="toggle-baselines" checked> <span>Baselines</span></label>
+                <label class="toggle-chip"><input type="checkbox" id="toggle-nvi" checked> <span>NVI Hesitations</span></label>
+              </div>
             </div>
+
+            <!-- Canvas Viewport with Hover HUD Tooltip -->
+            <div class="canvas-viewport" id="canvas-viewport">
+              <canvas id="writing-canvas"></canvas>
+              <div id="point-hud" class="point-hud" style="display: none;">
+                <div class="hud-title">📍 Point Kinematics</div>
+                <div class="hud-item"><span class="hud-lbl">Instant Speed:</span> <span class="hud-val hud-speed" id="hud-v">0 px/s</span></div>
+                <div class="hud-item"><span class="hud-lbl">Acceleration:</span> <span class="hud-val" id="hud-a">0 px/s²</span></div>
+                <div class="hud-item"><span class="hud-lbl">Local Curvature κ:</span> <span class="hud-val" id="hud-k">0 rad/px</span></div>
+                <div class="hud-item"><span class="hud-lbl">Stroke ID:</span> <span class="hud-val" id="hud-stroke">#1</span></div>
+                <div class="hud-item"><span class="hud-lbl">Motor Program:</span> <span class="hud-val" id="hud-status">Smooth</span></div>
+              </div>
+            </div>
+
+            <!-- Heatmap Color Legend -->
+            <div class="heatmap-legend">
+              <span class="legend-lbl">Speed:</span>
+              <div class="legend-bar"></div>
+              <div class="legend-scales">
+                <span>Slow / Tight Corner (&lt;20 px/s)</span>
+                <span>Cruising Velocity (~50 px/s)</span>
+                <span>Rapid Ballistic (&gt;80 px/s)</span>
+              </div>
+            </div>
+
+            <!-- Live Telemetry Status Bar -->
+            <div id="telemetry-bar" class="telemetry-bar">
+              <div class="telemetry-icon">💡</div>
+              <div class="telemetry-text" id="telemetry-text">
+                Hover or point your cursor anywhere on the handwriting above to inspect instantaneous velocity, acceleration, and curvature at that exact point in real time.
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Togglable Kinematic Waveforms -->
+          <div id="tab-waveforms" class="tab-pane">
+            <div class="waveforms-header">
+              <div class="ctrl-label">Toggle Active Kinematic Waves:</div>
+              <div class="wave-toggles">
+                <label class="wave-chip chip-velocity"><input type="checkbox" id="toggle-wave-v" checked> <span>Velocity v(t)</span></label>
+                <label class="wave-chip chip-accel"><input type="checkbox" id="toggle-wave-a" checked> <span>Acceleration a(t)</span></label>
+                <label class="wave-chip chip-jerk"><input type="checkbox" id="toggle-wave-j" checked> <span>Jerk j(t)</span></label>
+                <label class="wave-chip chip-curv"><input type="checkbox" id="toggle-wave-k"> <span>Curvature κ(t)</span></label>
+                <label class="wave-chip chip-nvi"><input type="checkbox" id="toggle-wave-nvi" checked> <span>NVI Hesitations</span></label>
+              </div>
+            </div>
+
+            <div class="waveform-canvas-box">
+              <canvas id="waveform-canvas" height="260"></canvas>
+              <div id="waveform-scrubber-info" class="waveform-scrubber-info"></div>
+            </div>
+
             <p class="img-legend">
-              <span style="color:#10b981;">■ Green Boxes:</span> Valid detected character units | 
-              <span style="color:#38bdf8;">● Cyan:</span> Centroids | 
-              <span style="color:#f43f5e;">━ Red Line:</span> Fitted baseline wander slope
+              Time-series waveforms synthesized via the <strong>Lacquaniti Two-Thirds Power Law</strong> ($v \propto \kappa^{-1/3}$) modulated by the <strong>Plamondon Asymmetric Sigma-Lognormal Impulse Model</strong>. Scrubber tracks values continuously across execution time.
             </p>
           </div>
 
-          <!-- Tab 2: Kinematic Waveform Studio -->
-          <div id="tab-kinematics" class="tab-pane">
-            <div class="result-img-box">
-              <img id="kinematics-plot-img" alt="Reconstructed Velocity and Acceleration Curves">
+          <!-- Tab 3: How We Extract Features (5-Stage Visual Walkthrough) -->
+          <div id="tab-stages" class="tab-pane">
+            <div class="stages-nav">
+              <button class="stage-nav-btn active" data-stage="1">1. Binarization</button>
+              <button class="stage-nav-btn" data-stage="2">2. Skeleton &amp; EDT</button>
+              <button class="stage-nav-btn" data-stage="3">3. Spatial BHK</button>
+              <button class="stage-nav-btn" data-stage="4">4. Stroke Graph</button>
+              <button class="stage-nav-btn" data-stage="5">5. Inverse Kinematics</button>
             </div>
-            <p class="img-legend">
-              Continuous velocity profile recovered via the <strong>Lacquaniti Two-Thirds Power Law</strong> and <strong>Asymmetric Sigma-Lognormal Impulse Envelope</strong>. Peaks and troughs represent Velocity Inversions (NVI).
-            </p>
+
+            <!-- Stage 1 View -->
+            <div id="stage-panel-1" class="stage-panel active">
+              <div class="stage-grid">
+                <div class="stage-img-box">
+                  <img id="stage-img-1" alt="Illumination-Normalized Binary Mask">
+                </div>
+                <div class="stage-desc">
+                  <h3>Stage 1: Adaptive Illumination &amp; Binarization</h3>
+                  <p>
+                    Handwriting photographs captured with smartphone cameras frequently contain non-uniform lighting, paper shadows, camera glare, and notebook ruled lines.
+                  </p>
+                  <h4>How It Works:</h4>
+                  <ul>
+                    <li>Converts RGB to grayscale intensity $I(x,y)$.</li>
+                    <li>Applies local adaptive Gaussian thresholding: $T(x,y) = \mu_{15\times15} - C$ to isolate dark ink strokes from notebook lines.</li>
+                    <li>Falls back to Otsu's global bimodal variance maximization on uniform scans.</li>
+                  </ul>
+                  <h4>Biomarkers Extracted:</h4>
+                  <div class="stage-tags">
+                    <span class="stage-tag">Foreground Ink Pixel Mass</span>
+                    <span class="stage-tag">Total Page Bounding Area</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stage 2 View -->
+            <div id="stage-panel-2" class="stage-panel">
+              <div class="stage-grid">
+                <div class="stage-img-box">
+                  <img id="stage-img-2" alt="1-Pixel Morphological Skeleton and Distance Map">
+                </div>
+                <div class="stage-desc">
+                  <h3>Stage 2: Medial Axis Skeletonization &amp; Distance Transform</h3>
+                  <p>
+                    Isolates the central topological trajectory of the handwriting motion while accurately capturing pen down-force thickness variations.
+                  </p>
+                  <h4>How It Works:</h4>
+                  <ul>
+                    <li>Applies the <strong>Zhang-Suen thinning algorithm</strong> to iteratively erode boundary pixels while strictly preserving 8-connectivity and Euler topology.</li>
+                    <li>Computes the exact <strong>Euclidean Distance Transform (EDT)</strong>: measures the minimum Euclidean distance from each skeleton pixel to the nearest background pixel.</li>
+                    <li>Local stroke width is calculated as $W(s) = 2 \cdot \text{EDT}(s)$.</li>
+                  </ul>
+                  <h4>Biomarkers Extracted:</h4>
+                  <div class="stage-tags">
+                    <span class="stage-tag">bhk_stroke_width_variance (Thickness CoV)</span>
+                    <span class="stage-tag">Optical Stylus Pressure Proxy</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stage 3 View -->
+            <div id="stage-panel-3" class="stage-panel">
+              <div class="stage-grid">
+                <div class="stage-img-box">
+                  <img id="stage-img-3" alt="BHK Character Segmentation and Baseline Fitting">
+                </div>
+                <div class="stage-desc">
+                  <h3>Stage 3: Spatial BHK Layout &amp; Character Decomposition</h3>
+                  <p>
+                    Measures physical handwriting layout consistency according to the Concise Assessment Scale for Children's Handwriting (BHK).
+                  </p>
+                  <h4>How It Works:</h4>
+                  <ul>
+                    <li>Connected component labeling identifies discrete character glyphs $[x_{\min}, y_{\min}, x_{\max}, y_{\max}]$.</li>
+                    <li>Calculates median character height ($H_{\text{med}}$) and width ($W_{\text{med}}$) to normalize all metrics against camera distance.</li>
+                    <li>Clusters glyphs into text lines via vertical projection profiles and fits linear baselines $y = \beta_0 + \beta_1 x$.</li>
+                    <li>Evaluates horizontal inter-character gaps for Shannon spacing entropy.</li>
+                  </ul>
+                  <h4>Biomarkers Extracted:</h4>
+                  <div class="stage-tags">
+                    <span class="stage-tag">bhk_size_covariance</span>
+                    <span class="stage-tag">bhk_height_ratio_consistency</span>
+                    <span class="stage-tag">bhk_baseline_drift</span>
+                    <span class="stage-tag">bhk_spacing_entropy</span>
+                    <span class="stage-tag">bhk_telescoping_overlap</span>
+                    <span class="stage-tag">bhk_left_margin_drift</span>
+                    <span class="stage-tag">bhk_line_collisions</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stage 4 View -->
+            <div id="stage-panel-4" class="stage-panel">
+              <div class="stage-grid">
+                <div class="stage-img-box">
+                  <img id="stage-img-4" alt="Topological Stroke Trajectory Graph">
+                </div>
+                <div class="stage-desc">
+                  <h3>Stage 4: Topological Graph Traversal &amp; Stroke Assembly</h3>
+                  <p>
+                    Resolves the 1,861 micro-fragment defect by reconstructing continuous physical pen strokes across intersection cliques and crossing loops.
+                  </p>
+                  <h4>How It Works:</h4>
+                  <ul>
+                    <li><strong>Junction Clique Contraction:</strong> Contracts adjacent degree $\ge 3$ junction pixels into single node centroids, eliminating dead-end cycles.</li>
+                    <li><strong>Tangent Fly-Through Continuation:</strong> Traces crossing paths by following the branch with smallest directional deflection ($&lt; 35^\circ$), mimicking the inertia of a moving pen.</li>
+                    <li><strong>Spatial Hash Stitching:</strong> Connects proximal stroke endpoints ($\le 4\text{ px}$) in $O(N)$ time.</li>
+                    <li><strong>Motor Prior Orientation:</strong> Reorients downstrokes top-to-bottom and crossbars left-to-right.</li>
+                  </ul>
+                  <h4>Biomarkers Extracted:</h4>
+                  <div class="stage-tags">
+                    <span class="stage-tag">kin_pen_lift_count (Recovered Strokes)</span>
+                    <span class="stage-tag">kin_mean_stroke_length (Arc Length)</span>
+                    <span class="stage-tag">bhk_acute_turns (Direction Reversals)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stage 5 View -->
+            <div id="stage-panel-5" class="stage-panel">
+              <div class="stage-grid">
+                <div class="stage-img-box">
+                  <img id="stage-img-5" alt="Inverse Kinematic Velocity Heatmap">
+                </div>
+                <div class="stage-desc">
+                  <h3>Stage 5: Inverse Kinematic Modeling &amp; Waveform Synthesis</h3>
+                  <p>
+                    Reconstructs the continuous speed, acceleration, and neuromuscular hesitation profile along every stroke.
+                  </p>
+                  <h4>How It Works:</h4>
+                  <ul>
+                    <li><strong>Two-Thirds Power Law:</strong> Human motor control links curvature to tangential speed: $v(s) \propto \kappa(s)^{-1/3}$. The hand decelerates at sharp turns and accelerates along straights.</li>
+                    <li><strong>Plamondon Asymmetric Impulse Envelope:</strong> Shapes speed by $u^{0.8}(1-u)^{1.4}$ ($u = s/L$), reflecting rapid initial acceleration to peak velocity at $\sim 36\%$ duration followed by smooth glide deceleration.</li>
+                    <li><strong>Fluency Metrics:</strong> Quantifies Number of Velocity Inversions (NVI), Flash &amp; Hogan dimensionless jerk ($T^5/L^2 \int j^2 dt$), and 4–8 Hz Welch tremor power.</li>
+                  </ul>
+                  <h4>Biomarkers Extracted:</h4>
+                  <div class="stage-tags">
+                    <span class="stage-tag">kin_nvi_per_stroke</span>
+                    <span class="stage-tag">kin_dimensionless_jerk</span>
+                    <span class="stage-tag">kin_tremor_index_4_8hz</span>
+                    <span class="stage-tag">kin_mean_velocity</span>
+                    <span class="stage-tag">kin_velocity_skewness</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Tab 3: Cleaned Ink & Skeleton -->
-          <div id="tab-ink" class="tab-pane">
-            <div class="result-img-box">
-              <img id="ink-skeleton-img" alt="Cleaned Ink Mask and 1-pixel Morphological Skeleton">
-            </div>
-            <p class="img-legend">
-              Left: Illumination-normalized foreground ink mask (shadows and notebook guide lines removed). Right: 1-pixel morphological skeleton spine.
-            </p>
-          </div>
-
-          <!-- Tab 4: Biomarker Measurement Table -->
+          <!-- Tab 4: 20D Biomarker Measurement Table -->
           <div id="tab-table" class="tab-pane">
             <div class="table-container">
               <table id="features-table">
@@ -137,7 +338,8 @@
                     <th>Domain</th>
                     <th>Clinical Biomarker</th>
                     <th>Measured Value</th>
-                    <th>Pediatric Reference Norm</th>
+                    <th>Mathematical Formula &amp; Basis</th>
+                    <th>Biophysical / Clinical Meaning</th>
                   </tr>
                 </thead>
                 <tbody id="features-table-body">
@@ -145,16 +347,14 @@
                 </tbody>
               </table>
             </div>
-
-            <!-- Risk Factor Explanations -->
-            <div id="risk-factors-container" class="risk-factor-list">
-              <h4>Identified Clinical Deviations:</h4>
-              <ul id="risk-factors-list"></ul>
-            </div>
           </div>
         </div>
       </section>
     </main>
+
+    <footer>
+      <p>Dysgraphia Detection Research Project • Multi-Modal Biophysical Kinematics &amp; BHK Spatial Architecture</p>
+    </footer>
   </div>
 
   <script src="app.js"></script>

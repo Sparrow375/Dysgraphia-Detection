@@ -1,9 +1,9 @@
 """
-Dysgraphia Screening & Kinematics Studio - Web Application Server
-Run with: python app.py
+Dysgraphia Feature Extraction & Kinematics Studio - Web Application Server
+Run with: C:\\Users\\embar\\miniconda3\\envs\\ai_env\\python.exe app.py
 Serves the modern glassmorphic web testing ground on http://127.0.0.1:7860
-Allows uploading or pasting live handwriting photos to extract 20D multimodal features,
-visualize spatial BHK explainability overlays, and inspect recovered kinematic velocity profiles.
+Provides objective 20D feature extraction, interactive point-by-point velocity inspection on handwriting,
+toggable kinematic waveforms (v, a, jerk, curvature, NVI), and a 5-stage extraction methodology walkthrough.
 """
 
 import os
@@ -13,7 +13,7 @@ import base64
 import glob
 import urllib.parse
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
-from typing import Dict, Any, Optional
+from typing import Dict, Any, List
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -22,7 +22,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 
-from src.pipeline import DysgraphiaFeaturePipeline, compute_dysgraphia_screening_verdict
+from src.pipeline import DysgraphiaFeaturePipeline
+from src.branch_b.kinematics import estimate_stroke_velocity, estimate_stroke_pressure_proxy
 
 # Global pipeline instance
 pipeline = DysgraphiaFeaturePipeline(compute_kinematics=True)
@@ -40,9 +41,7 @@ def render_overlay_b64(orig_img: Image.Image, results: Dict[str, Any]) -> str:
     - Coral fitted baseline wander line
     """
     img_rgb = orig_img.convert("RGB")
-    w, h = img_rgb.size
     draw = ImageDraw.Draw(img_rgb)
-
     text_lines = results.get("visual_artifacts", {}).get("text_lines", [])
 
     for line in text_lines:
@@ -50,17 +49,12 @@ def render_overlay_b64(orig_img: Image.Image, results: Dict[str, Any]) -> str:
         line_bottoms_y = []
 
         for c in line.components:
-            # Draw green bounding box: [x_min, y_min, x_max, y_max]
             draw.rectangle([c.x_min, c.y_min, c.x_max, c.y_max], outline="#10b981", width=2)
-
-            # Centroid
             cx, cy = int(round(c.x_center)), int(round(c.y_center))
             draw.ellipse([cx - 2, cy - 2, cx + 2, cy + 2], fill="#38bdf8", outline="#0284c7")
-
             line_pts_x.append(cx)
             line_bottoms_y.append(c.y_bottom)
 
-        # Draw line baseline fit
         if len(line_pts_x) >= 3 and (max(line_pts_x) - min(line_pts_x) > 20):
             try:
                 poly = np.polyfit(line_pts_x, line_bottoms_y, 1)
@@ -78,90 +72,346 @@ def render_overlay_b64(orig_img: Image.Image, results: Dict[str, Any]) -> str:
     return "data:image/jpeg;base64," + base64.b64encode(buf.read()).decode("ascii")
 
 
-def render_ink_and_skeleton_b64(results: Dict[str, Any]) -> str:
-    """
-    Renders side-by-side view:
-    Left: Illumination-normalized binary mask (black background, white ink)
-    Right: 1-pixel morphological skeleton spine
-    """
-    mask = results.get("visual_artifacts", {}).get("binary_mask", np.zeros((100, 100)))
-    skeleton = results.get("visual_artifacts", {}).get("skeleton", np.zeros((100, 100)))
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4), facecolor="#0b0f19")
-    ax1.imshow(mask, cmap="gray")
-    ax1.set_title("1. Cleaned Binary Ink Mask", color="#f8fafc", fontsize=11, fontweight="bold")
-    ax1.axis("off")
-
-    ax2.imshow(skeleton, cmap="gray")
-    ax2.set_title("2. Centerline Skeleton Spine (1-px)", color="#f8fafc", fontsize=11, fontweight="bold")
-    ax2.axis("off")
-
+def render_binary_mask_b64(mask: np.ndarray) -> str:
+    fig, ax = plt.subplots(figsize=(8, 5), facecolor="#0b0f19")
+    ax.set_facecolor("#0b0f19")
+    ax.imshow(mask, cmap="gray")
+    ax.axis("off")
+    ax.set_title("Stage 1: Illumination-Normalized Binary Ink Mask", color="#f8fafc", fontsize=11, fontweight="bold")
     plt.tight_layout()
     buf = io.BytesIO()
-    plt.savefig(buf, format="png", facecolor=fig.get_facecolor(), edgecolor="none", dpi=110)
+    plt.savefig(buf, format="png", facecolor=fig.get_facecolor(), dpi=110)
     plt.close(fig)
     buf.seek(0)
     return "data:image/png;base64," + base64.b64encode(buf.read()).decode("ascii")
 
 
-def render_kinematics_waveform_b64(results: Dict[str, Any]) -> str:
+def render_skeleton_b64(skeleton: np.ndarray) -> str:
+    fig, ax = plt.subplots(figsize=(8, 5), facecolor="#0b0f19")
+    ax.set_facecolor("#0b0f19")
+    ax.imshow(skeleton, cmap="gray")
+    ax.axis("off")
+    ax.set_title("Stage 2: 1-Pixel Morphological Centerline Spine (Zhang-Suen)", color="#f8fafc", fontsize=11, fontweight="bold")
+    plt.tight_layout()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", facecolor=fig.get_facecolor(), dpi=110)
+    plt.close(fig)
+    buf.seek(0)
+    return "data:image/png;base64," + base64.b64encode(buf.read()).decode("ascii")
+
+
+def render_strokes_graph_b64(strokes: List[np.ndarray], orig_w: int, orig_h: int) -> str:
+    fig, ax = plt.subplots(figsize=(8, 5), facecolor="#0b0f19")
+    ax.set_facecolor("#131b2e")
+    colors = plt.cm.tab20(np.linspace(0, 1, 20))
+    for idx, s in enumerate(strokes):
+        if len(s) < 2:
+            continue
+        c = colors[idx % len(colors)]
+        ax.plot(s[:, 0], s[:, 1], color=c, lw=2.2)
+        ax.plot(s[0, 0], s[0, 1], "o", color=c, markersize=3.5)
+    ax.set_xlim(0, orig_w)
+    ax.set_ylim(orig_h, 0)
+    ax.axis("off")
+    ax.set_title(f"Stage 4: Topological Recovered Strokes ({len(strokes)} Motor Programs)", color="#f8fafc", fontsize=11, fontweight="bold")
+    plt.tight_layout()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", facecolor=fig.get_facecolor(), dpi=110)
+    plt.close(fig)
+    buf.seek(0)
+    return "data:image/png;base64," + base64.b64encode(buf.read()).decode("ascii")
+
+
+def render_velocity_heatmap_b64(strokes: List[np.ndarray], orig_w: int, orig_h: int) -> str:
+    fig, ax = plt.subplots(figsize=(8, 5.5), facecolor="#0b0f19")
+    ax.set_facecolor("#131b2e")
+    all_v = []
+    stroke_velocities = []
+
+    for s in strokes:
+        if len(s) >= 3:
+            _, v, _ = estimate_stroke_velocity(s)
+            all_v.extend(v)
+            stroke_velocities.append(v)
+        else:
+            stroke_velocities.append(np.array([]))
+
+    v_min, v_max = (np.percentile(all_v, 5), np.percentile(all_v, 95)) if all_v else (10, 100)
+    if v_max <= v_min:
+        v_max = v_min + 50.0
+
+    norm = plt.Normalize(vmin=v_min, vmax=v_max)
+    cmap = plt.cm.turbo
+
+    for idx, s in enumerate(strokes):
+        if len(s) < 3 or idx >= len(stroke_velocities):
+            continue
+        v = stroke_velocities[idx]
+        if len(v) != len(s):
+            continue
+        for j in range(len(s) - 1):
+            seg_v = (v[j] + v[j+1]) / 2.0
+            ax.plot([s[j, 0], s[j+1, 0]], [s[j, 1], s[j+1, 1]], color=cmap(norm(seg_v)), lw=2.4)
+
+    ax.set_xlim(0, orig_w)
+    ax.set_ylim(orig_h, 0)
+    ax.axis("off")
+
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=ax, orientation="horizontal", fraction=0.045, pad=0.05)
+    cbar.set_label("Reconstructed Instantaneous Velocity (px/s)", color="#f8fafc", fontsize=9, fontweight="bold")
+    cbar.ax.tick_params(colors="#94a3b8", labelsize=8)
+
+    ax.set_title("Stage 5: Centerline Kinematic Velocity Heatmap v(s)", color="#f8fafc", fontsize=11, fontweight="bold")
+    plt.tight_layout()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", facecolor=fig.get_facecolor(), dpi=110)
+    plt.close(fig)
+    buf.seek(0)
+    return "data:image/png;base64," + base64.b64encode(buf.read()).decode("ascii")
+
+
+def prepare_point_kinematics(strokes: List[np.ndarray], nominal_dt: float = 0.01) -> List[List[Any]]:
     """
-    Renders the continuous reconstructed velocity curve v(t) with:
-    - Speed line in vibrant cyan
-    - Local velocity peaks marked in emerald green dots
-    - Velocity Inversion (NVI) hesitations marked in orange triangles
+    Extracts compact point-level kinematics for interactive hover inspection:
+    Returns list of [x, y, v, a, kappa, stroke_id, is_nvi]
+    """
+    pts_data = []
+    for s_idx, s in enumerate(strokes):
+        if len(s) < 3:
+            continue
+        _, v, kappa = estimate_stroke_velocity(s)
+        acc = np.gradient(v, nominal_dt)
+        pks, _ = find_peaks(v) if len(v) >= 5 else ([], None)
+        trgs, _ = find_peaks(-v) if len(v) >= 5 else ([], None)
+        pks_set = set(pks)
+        trgs_set = set(trgs)
+
+        for j in range(len(s)):
+            is_nvi = int(j in pks_set or j in trgs_set)
+            pts_data.append([
+                round(float(s[j, 0]), 1),
+                round(float(s[j, 1]), 1),
+                round(float(v[j]), 1),
+                round(float(acc[j]), 1),
+                round(float(kappa[j]), 3),
+                s_idx + 1,
+                is_nvi
+            ])
+    return pts_data
+
+
+def prepare_waveform_series(results: Dict[str, Any], nominal_dt: float = 0.01) -> Dict[str, Any]:
+    """
+    Extracts time-series arrays for client-side togglable waveform chart:
+    - time, velocity, acceleration, jerk, curvature, peaks, troughs
     """
     v = results.get("visual_artifacts", {}).get("velocity_profile", np.array([]))
-    dt = 0.01
-
     if len(v) == 0:
         v = np.zeros(50)
 
-    t = np.arange(len(v)) * dt
+    # Downsample if very long for fluid 60fps rendering in browser (max 1500 points)
+    step = max(1, len(v) // 1500)
+    v_sub = v[::step]
+    dt = nominal_dt * step
 
-    fig, (ax_v, ax_a) = plt.subplots(2, 1, figsize=(10, 4.5), sharex=True, facecolor="#0b0f19")
-    for ax in (ax_v, ax_a):
-        ax.set_facecolor("#131b2e")
-        ax.tick_params(colors="#94a3b8", labelsize=9)
-        for spine in ax.spines.values():
-            spine.set_color("#334155")
-        ax.grid(True, color="#334155", linestyle="--", alpha=0.5)
+    t = (np.arange(len(v_sub)) * dt).tolist()
+    acc = np.gradient(v_sub, dt)
+    jerk = np.gradient(acc, dt)
 
-    # Plot velocity
-    ax_v.plot(t, v, color="#38bdf8", lw=1.6, label="Reconstructed Velocity v(t)")
+    # Estimate curvature approximation from velocity
+    gamma = 1.2
+    v_norm = np.maximum(v_sub, 1.0)
+    kappa_approx = np.clip((np.maximum(100.0 / v_norm - 1.0, 0.0) / gamma)**3, 0.0, 5.0)
 
-    # Find and annotate peaks & troughs (NVI)
-    if len(v) >= 5:
-        peaks, _ = find_peaks(v)
-        troughs, _ = find_peaks(-v)
-        ax_v.plot(t[peaks], v[peaks], "o", color="#34d399", markersize=4, label=f"Velocity Peaks ({len(peaks)})")
-        ax_v.plot(t[troughs], v[troughs], "v", color="#fbbf24", markersize=4, label=f"Velocity Troughs/Hesitations ({len(troughs)})")
+    pks, _ = find_peaks(v_sub) if len(v_sub) >= 5 else ([], None)
+    trgs, _ = find_peaks(-v_sub) if len(v_sub) >= 5 else ([], None)
 
-    ax_v.set_ylabel("Speed (px/s)", color="#f8fafc", fontsize=10, fontweight="bold")
-    ax_v.set_title("Reconstructed Neuromuscular Velocity Profile v(t) & NVI Markers", color="#f8fafc", fontsize=11, fontweight="bold")
-    ax_v.legend(loc="upper right", facecolor="#1e293b", edgecolor="none", labelcolor="#f8fafc", fontsize=8)
+    return {
+        "time": [round(float(val), 3) for val in t],
+        "velocity": [round(float(val), 1) for val in v_sub],
+        "acceleration": [round(float(val), 1) for val in acc],
+        "jerk": [round(float(val), 1) for val in jerk],
+        "curvature": [round(float(val), 3) for val in kappa_approx],
+        "peaks": [int(p) for p in pks],
+        "troughs": [int(tr) for tr in trgs],
+    }
 
-    # Plot acceleration
-    acc = np.gradient(v, dt)
-    ax_a.plot(t, acc, color="#a78bfa", lw=1.2, label="Acceleration a(t)")
-    ax_a.axhline(0, color="#475569", linestyle=":", lw=1)
-    ax_a.set_xlabel("Reconstructed Time (seconds)", color="#f8fafc", fontsize=10)
-    ax_a.set_ylabel("Accel (px/s²)", color="#f8fafc", fontsize=10, fontweight="bold")
-    ax_a.legend(loc="upper right", facecolor="#1e293b", edgecolor="none", labelcolor="#f8fafc", fontsize=8)
 
-    plt.tight_layout()
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png", facecolor=fig.get_facecolor(), edgecolor="none", dpi=110)
-    plt.close(fig)
-    buf.seek(0)
-    return "data:image/png;base64," + base64.b64encode(buf.read()).decode("ascii")
+def format_biomarkers_20d(results: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Builds comprehensive 20D feature items with formulas and clinical significance."""
+    bhk = results.get("bhk_metrics", {})
+    kin = results.get("kinematic_metrics", {})
+
+    return [
+        {
+            "domain": "Spatial BHK",
+            "name": "BHK #1 & #8: Letter Size CoV",
+            "val": bhk.get("size_covariance_score", 0.0),
+            "unit": "",
+            "formula": "0.6 * CV(Height) + 0.4 * CV(Area)",
+            "meaning": "Quantifies inconsistency in letter dimensions and area across words and lines."
+        },
+        {
+            "domain": "Spatial BHK",
+            "name": "BHK #9: Relative Height Ratio (IQR)",
+            "val": bhk.get("height_iqr_ratio", 0.0),
+            "unit": "",
+            "formula": "IQR(Height) / Median(Height)",
+            "meaning": "Measures vertical dispersion between ascenders, descenders, and body x-height."
+        },
+        {
+            "domain": "Spatial BHK",
+            "name": "BHK #3: Baseline Drift & Wander",
+            "val": bhk.get("baseline_drift_score", 0.0),
+            "unit": "",
+            "formula": "|Slope| + 2 * RMSE(Residuals)",
+            "meaning": "Captures macro line tilt and micro baseline wobble along letter bottoms."
+        },
+        {
+            "domain": "Spatial BHK",
+            "name": "BHK #4: Spacing Entropy",
+            "val": bhk.get("spacing_entropy", 0.0),
+            "unit": "nats",
+            "formula": "-Σ p_i * ln(p_i) of gaps / H_med",
+            "meaning": "Shannon entropy measuring irregularity and lack of rhythm in horizontal letter gaps."
+        },
+        {
+            "domain": "Spatial BHK",
+            "name": "BHK #6: Stroke Width CoV",
+            "val": bhk.get("stroke_width_cv", 0.0),
+            "unit": "",
+            "formula": "Std(Width) / Mean(Width) via EDT",
+            "meaning": "Measures pen tremor, ink blobbing, and unstable stylus down-force down the stroke."
+        },
+        {
+            "domain": "Spatial BHK",
+            "name": "BHK #7: Telescoping Overlap",
+            "val": bhk.get("telescoping_score", 0.0),
+            "unit": "%",
+            "formula": "Collision Count + Mean Overlap Depth",
+            "meaning": "Frequency of horizontal letter intrusions where adjacent characters collide."
+        },
+        {
+            "domain": "Spatial BHK",
+            "name": "BHK #5: Acute Directional Turns",
+            "val": bhk.get("acute_turns_score", 0.0),
+            "unit": "turns/stroke",
+            "formula": "Points where |Δθ| ≥ 110° / stroke",
+            "meaning": "Quantifies jagged high-curvature direction reversals reflecting fine motor tremor."
+        },
+        {
+            "domain": "Spatial BHK",
+            "name": "BHK #2: Left Margin Alignment Drift",
+            "val": bhk.get("left_margin_score", 0.0),
+            "unit": "",
+            "formula": "|Slope(x_start)| + Std(x_start) / H_med",
+            "meaning": "Evaluates child's inability to maintain a straight vertical left page margin."
+        },
+        {
+            "domain": "Spatial BHK",
+            "name": "BHK #13: Inter-Line Collisions",
+            "val": bhk.get("line_collision_score", 0.0),
+            "unit": "",
+            "formula": "Line Overlap Ratio + CV(Line Distances)",
+            "meaning": "Frequency with which descenders crash into ascenders of preceding lines."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "NVI per Stroke (Scale-Invariant Fluency)",
+            "val": kin.get("nvi_per_stroke", 0.0),
+            "unit": "inversions/stroke",
+            "formula": "Total Inversions / Recovered Strokes",
+            "meaning": "Primary scale-invariant marker: number of neuromotor hesitations per physical motor stroke."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "NVI per 100px Arc Length",
+            "val": kin.get("nvi_per_100px", 0.0),
+            "unit": "inv/100px",
+            "formula": "Total Inversions / Total Arc Length * 100",
+            "meaning": "Spatial density of velocity reversals along physical ink trajectories."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "NVI Rate (Frequency of Hesitations)",
+            "val": kin.get("nvi_rate", 0.0),
+            "unit": "Hz (inv/sec)",
+            "formula": "Total Inversions / Total Duration",
+            "meaning": "Temporal frequency of speed reversals and motor planning interruptions."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "Flash & Hogan Dimensionless Jerk",
+            "val": kin.get("dimensionless_jerk", 0.0),
+            "unit": "",
+            "formula": "(T^5 / L^2) * ∫ (da/dt)^2 dt",
+            "meaning": "Coordinate-free neuromotor smoothness metric; elevated values indicate rough motor execution."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "4–8 Hz Neuromuscular Tremor Power",
+            "val": round(kin.get("tremor_index_4_8hz", 0.0) * 100, 1),
+            "unit": "%",
+            "formula": "PSD(4-8 Hz) / PSD(0.5-20 Hz) via Welch",
+            "meaning": "Proportion of motor energy consumed by involuntary 4–8 Hz physiological micro-tremor."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "Velocity Skewness (Asymmetry Tail)",
+            "val": kin.get("velocity_skewness", 0.0),
+            "unit": "",
+            "formula": "E[(v - μ)^3] / σ^3",
+            "meaning": "Quantifies asymmetry between acceleration burst phase and extended deceleration glide."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "Mean Kinematic Velocity",
+            "val": kin.get("mean_velocity", 0.0),
+            "unit": "px/s",
+            "formula": "Average v(s) via Two-Thirds Power Law",
+            "meaning": "Nominal execution speed across all continuous reconstructed trajectory strokes."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "Peak Kinematic Velocity",
+            "val": kin.get("peak_velocity", 0.0),
+            "unit": "px/s",
+            "formula": "Max(v) across ballistic straight segments",
+            "meaning": "Peak ballistic impulse velocity achieved during straight stroke segments."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "Pen Lift Count (Recovered Strokes)",
+            "val": kin.get("pen_lift_count", 0),
+            "unit": "strokes",
+            "formula": "Count of Continuous Recovered Paths",
+            "meaning": "Reflects motor program segmentation and pen-lift fragmentation."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "Mean Stroke Arc Length",
+            "val": kin.get("mean_stroke_length", 0.0),
+            "unit": "px",
+            "formula": "Total Arc Length / Stroke Count",
+            "meaning": "Average length of unbroken continuous motor trajectories."
+        },
+        {
+            "domain": "Biophysical Kinematics",
+            "name": "Total Velocity Inversions (NVI)",
+            "val": kin.get("total_nvi", 0),
+            "unit": "inversions",
+            "formula": "Count of Local Minima & Maxima in v(t)",
+            "meaning": "Total count of velocity peaks and troughs across the entire handwriting sample."
+        },
+    ]
 
 
 class StudioHandler(BaseHTTPRequestHandler):
-    """HTTP request handler for the Dysgraphia Screening Studio."""
+    """HTTP request handler for the Dysgraphia Feature Extraction Studio."""
 
     def log_message(self, format, *args):
-        # Concise logging
         print(f"[{self.log_date_time_string()}] {args[0]} {args[1]}")
 
     def do_GET(self):
@@ -200,19 +450,18 @@ class StudioHandler(BaseHTTPRequestHandler):
 
     def _handle_demo(self, query_str: str):
         params = urllib.parse.parse_qs(query_str)
-        demo_type = params.get("type", ["malay_lpd"])[0]
+        demo_type = params.get("type", ["malay_pd"])[0]
 
         file_map = {
-            "malay_lpd": "Datasets/DATASET DYSGRAPHIA HANDWRITING/Low Potential Dysgraphia/LPD (10).jpg",
             "malay_pd": "Datasets/DATASET DYSGRAPHIA HANDWRITING/Potential Dysgraphia/PD (10).jpg",
-            "drotar_leto_ctrl": "Datasets/reconstructed_dataset/by_task/task_5_leto/control/user_00050_task_5_leto.png",
-            "drotar_leto_dys": "Datasets/reconstructed_dataset/by_task/task_5_leto/dysgraphic/user_00006_task_5_leto.png",
+            "malay_lpd": "Datasets/DATASET DYSGRAPHIA HANDWRITING/Low Potential Dysgraphia/LPD (10).jpg",
+            "drotar_dys": "Datasets/reconstructed_dataset/by_task/task_5_leto/dysgraphic/user_00006_task_5_leto.png",
+            "drotar_ctrl": "Datasets/reconstructed_dataset/by_task/task_5_leto/control/user_00050_task_5_leto.png",
             "drotar_sentence": "Datasets/reconstructed_dataset/by_task/task_8_sentence/control/user_00050_task_8_sentence.png",
         }
 
         rel_path = file_map.get(demo_type)
         if not rel_path or not os.path.exists(rel_path):
-            # Fallback to any file
             candidates = glob.glob("Datasets/**/*.jpg", recursive=True) or glob.glob("Datasets/**/*.png", recursive=True)
             if candidates:
                 rel_path = candidates[0]
@@ -238,11 +487,9 @@ class StudioHandler(BaseHTTPRequestHandler):
                 return
 
             body = self.rfile.read(content_length)
-
-            # Simple multipart/form-data or raw image extraction
             content_type = self.headers.get("Content-Type", "")
+
             if "multipart/form-data" in content_type:
-                # Find image boundary
                 boundary = content_type.split("boundary=")[1].encode()
                 parts = body.split(b"--" + boundary)
                 image_bytes = None
@@ -261,31 +508,77 @@ class StudioHandler(BaseHTTPRequestHandler):
 
             # Load into PIL
             orig_pil = Image.open(io.BytesIO(image_bytes))
+            orig_w, orig_h = orig_pil.size
 
             # Run 20D feature extraction pipeline
             results = pipeline.extract(orig_pil)
 
-            # Evaluate clinical risk verdict
-            verdict = compute_dysgraphia_screening_verdict(results)
+            strokes = results.get("visual_artifacts", {}).get("recovered_strokes", [])
+            mask = results.get("visual_artifacts", {}).get("binary_mask", np.zeros((100, 100)))
+            skeleton = results.get("visual_artifacts", {}).get("skeleton", np.zeros((100, 100)))
 
-            # Generate visual plots
-            overlay_b64 = render_overlay_b64(orig_pil, results)
-            ink_skeleton_b64 = render_ink_and_skeleton_b64(results)
-            kinematics_plot_b64 = render_kinematics_waveform_b64(results)
+            # Stage Visuals
+            stage1_b64 = render_binary_mask_b64(mask)
+            stage2_b64 = render_skeleton_b64(skeleton)
+            stage3_b64 = render_overlay_b64(orig_pil, results)
+            stage4_b64 = render_strokes_graph_b64(strokes, orig_w, orig_h)
+            stage5_b64 = render_velocity_heatmap_b64(strokes, orig_w, orig_h)
+
+            # Interactive point kinematics & waveform series
+            pts_data = prepare_point_kinematics(strokes)
+            waveform_data = prepare_waveform_series(results)
+            biomarkers_20d = format_biomarkers_20d(results)
+
+            # Text line bounding boxes & baselines for client-side drawing
+            text_lines = results.get("visual_artifacts", {}).get("text_lines", [])
+            boxes_data = []
+            baselines_data = []
+            for line in text_lines:
+                lx, ly = [], []
+                for c in line.components:
+                    boxes_data.append([c.x_min, c.y_min, c.x_max, c.y_max, round(c.x_center, 1), round(c.y_center, 1)])
+                    lx.append(c.x_center)
+                    ly.append(c.y_bottom)
+                if len(lx) >= 3 and (max(lx) - min(lx) > 20):
+                    try:
+                        poly = np.polyfit(lx, ly, 1)
+                        x0 = int(min(lx))
+                        x1 = int(max(lx))
+                        y0 = int(np.polyval(poly, x0))
+                        y1 = int(np.polyval(poly, x1))
+                        baselines_data.append([x0, y0, x1, y1])
+                    except Exception:
+                        pass
+
+            kin = results.get("kinematic_metrics", {})
+            bhk = results.get("bhk_metrics", {})
 
             response_payload = {
                 "status": "success",
-                "verdict": verdict,
-                "visuals": {
-                    "overlay_b64": overlay_b64,
-                    "ink_skeleton_b64": ink_skeleton_b64,
-                    "kinematics_plot_b64": kinematics_plot_b64,
+                "dimensions": {"width": orig_w, "height": orig_h},
+                "summary": {
+                    "strokes_count": len(strokes),
+                    "mean_velocity": round(float(kin.get("mean_velocity", 0.0)), 1),
+                    "peak_velocity": round(float(kin.get("peak_velocity", 0.0)), 1),
+                    "nvi_per_stroke": round(float(kin.get("nvi_per_stroke", 0.0)), 2),
+                    "tremor_percent": round(float(kin.get("tremor_index_4_8hz", 0.0)) * 100, 1),
+                    "size_covariance": round(float(bhk.get("size_covariance_score", 0.0)), 2),
+                    "line_collisions": round(float(bhk.get("line_collision_score", 0.0)), 2),
+                    "total_points": len(pts_data)
                 },
-                "features": {
-                    "bhk": results["bhk_metrics"],
-                    "kinematics": results["kinematic_metrics"],
+                "stages": {
+                    "stage1_binarization": stage1_b64,
+                    "stage2_skeleton": stage2_b64,
+                    "stage3_bhk": stage3_b64,
+                    "stage4_strokes": stage4_b64,
+                    "stage5_heatmap": stage5_b64,
                 },
-                "metadata": results["metadata"]
+                "point_kinematics": pts_data,
+                "waveform": waveform_data,
+                "spatial_boxes": boxes_data,
+                "spatial_baselines": baselines_data,
+                "biomarkers_20d": biomarkers_20d,
+                "metadata": results.get("metadata", {})
             }
 
             self._send_json(response_payload, 200)
@@ -307,7 +600,7 @@ class StudioHandler(BaseHTTPRequestHandler):
 def run_server(port: int = 7860):
     server = ThreadingHTTPServer(("127.0.0.1", port), StudioHandler)
     print("\n" + "=" * 70)
-    print(">> Dysgraphia Screening & Kinematics Studio Active!")
+    print(">> Dysgraphia Feature Extraction & Kinematics Studio Active!")
     print(f">> Open in your web browser: http://127.0.0.1:{port}")
     print("=" * 70 + "\n")
     try:
