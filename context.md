@@ -14,7 +14,7 @@ Multilingual, stylus-free dysgraphia screening system. Detects dysgraphia from p
 ## Workstreams
 | Code | Workstream | Status |
 |------|-----------|--------|
-| A | Data collection app (S-Pen capture) & school visit | Planning |
+| A | Data collection app (S-Pen capture) & school visit | Prototype Ready (v1.0 Built) |
 | B | Baseline replication (DenseNet201 + feature fusion) | Phase 0 |
 | C | Motor/geometric feature extraction (script-agnostic) | Research |
 | D | Physics/kinematic reconstruction from static images | Research |
@@ -214,9 +214,13 @@ Every candidate image passes through an automated pipeline:
   - **In-Air Flight Dynamics:** Stylus hover tracking (`onGenericMotionEvent`, `ACTION_HOVER_MOVE`, `AXIS_DISTANCE`) measuring pen hesitation, in-air trajectory, and flight-to-touch transitions.
   - **Neuromotor Kinematics:** Instantaneous velocity ($v$), acceleration ($a$), and jerk ($j = \Delta a / \Delta t$) for tremor and motor coordination profiling.
   - **Tool & Button States:** Strict palm rejection (`TOOL_TYPE_STYLUS` vs `TOOL_TYPE_FINGER`), S-Pen button state (`BUTTON_STYLUS_PRIMARY`).
-- **Screening Modes:**
-  1. *Free Note-Taking:* Ruled/grid/blank paper canvas for everyday natural writing.
-  2. *Standardized Screening Protocol (Hindi & English):* Word, Pseudo-word, Complex/Conjunct Word, Sentence, and Archimedean spiral tests.
-  3. *Paired Paper Photo Scanner:* Built-in CameraX module to photograph real-world notebook paper samples for paired online/offline benchmark research.
-- **Export Format:** Structured session ZIP with `timeseries_raw.csv`, `timeseries_raw.jsonl`, `strokes_summary.json`, `rendered_digital.png`, and `metadata.json`.
+- **Prototype Build Status (v1.0 Ready):**
+  - **Scope Focus:** Pure distraction-free note canvas with S-Pen hardware capture and instant 1-click export (guided prompts/languages on hold for subsequent phases).
+  - **Source Code Directory:** [`spen_note_collector/`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/spen_note_collector/)
+  - **Core S-Pen View:** [`SPenDrawingView.kt`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/spen_note_collector/app/src/main/java/com/example/spennotecollector/ui/canvas/SPenDrawingView.kt) (Unbuffered dispatch, historical 240Hz+ unpacking, in-air hover tracking via `AXIS_DISTANCE`, palm rejection).
+  - **Note Workspace UI:** [`NoteWorkspaceScreen.kt`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/spen_note_collector/app/src/main/java/com/example/spennotecollector/ui/screens/NoteWorkspaceScreen.kt) (Full-screen canvas, ruled/grid/blank paper switchers, live S-Pen telemetry HUD).
+  - **Kinematic Math Engine:** [`KinematicCalculator.kt`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/spen_note_collector/app/src/main/java/com/example/spennotecollector/data/kinematics/KinematicCalculator.kt) (Instantaneous velocity, acceleration, jerk, azimuth rate, and pressure rate).
+  - **Session Exporter:** [`SessionExporter.kt`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/spen_note_collector/app/src/main/java/com/example/spennotecollector/data/export/SessionExporter.kt) (Packages `timeseries_raw.csv`, `timeseries_raw.jsonl`, `strokes_summary.json`, `note_render.png`, `session_metadata.json` into a `.zip` and opens Android Sharesheet).
+  - **Compiled Debug APK:** [`spen_note_collector/app/build/outputs/apk/debug/app-debug.apk`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/spen_note_collector/app/build/outputs/apk/debug/app-debug.apk) (11.9 MB, verified compiled and ready for sideloading/install on Samsung Galaxy S26 Ultra).
 - **Architectural Plan Document:** [`samsung_spen_dysgraphia_app_plan.md`](file:///C:/Users/Avaneesh/.gemini/antigravity-ide/brain/c3dfc50e-f3aa-419f-8ec4-6ee3718f5c9b/samsung_spen_dysgraphia_app_plan.md)
+
