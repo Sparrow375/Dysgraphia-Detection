@@ -284,8 +284,27 @@ def recover_strokes_from_graph(g: nx.Graph) -> List[np.ndarray]:
     # 5. Tangent stitching
     stitched = stitch_strokes(filtered, max_gap=4.0, max_angle_deg=50.0)
 
+    # 6. Apply physiological handwriting motor orientation:
+    # Most human downstrokes flow top-to-bottom; horizontal strokes flow left-to-right.
+    oriented_strokes = []
+    for s in stitched:
+        if len(s) < 2:
+            continue
+        p_start, p_end = s[0], s[-1]
+        dy = p_end[0] - p_start[0]
+        dx = p_end[1] - p_start[1]
+        # If stroke has significant vertical component and runs bottom-to-top, reverse it
+        if dy < -8 and abs(dy) > abs(dx) * 0.8:
+            s_oriented = list(reversed(s))
+        # If predominantly horizontal and runs right-to-left, reverse it
+        elif abs(dy) <= 8 and dx < -12:
+            s_oriented = list(reversed(s))
+        else:
+            s_oriented = s
+        oriented_strokes.append(s_oriented)
+
     # Format as (x, y) numpy coordinate arrays
-    recovered = [np.array([(p[1], p[0]) for p in s], dtype=np.float64) for s in stitched]
+    recovered = [np.array([(p[1], p[0]) for p in s], dtype=np.float64) for s in oriented_strokes]
     return recovered
 
 
