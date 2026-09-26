@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stylus-Free Dysgraphia Screening & Kinematics Studio</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-badge">✨ Multi-Modal Biophysical Engine v2.0</div>
+      <h1>Stylus-Free Dysgraphia Screening & Kinematics Studio</h1>
+      <p class="subtitle">
+        Upload or paste any offline 2D handwriting photo or scan. Our inverse physics engine recovers continuous 
+        neuromuscular velocity profiles, velocity inversions (NVI), and 9 clinical BHK spatial metrics in real-time.
+      </p>
+    </header>
+
+    <main class="dashboard-grid">
+      <!-- Left Column: Input and Controls -->
+      <section class="card input-card">
+        <h2 class="card-title">
+          <span>📤</span> Upload Handwriting Sample
+        </h2>
+
+        <div id="dropzone" class="dropzone">
+          <div class="dropzone-icon">📷</div>
+          <p>Drag & drop handwriting image here, or <span>browse file</span></p>
+          <p class="dropzone-hint">Supports JPG, PNG, WEBP — or press <strong>Ctrl+V</strong> to paste from clipboard</p>
+          <input type="file" id="file-input" accept="image/*">
+        </div>
+
+        <div id="preview-container" class="preview-container">
+          <img id="preview-img" class="preview-img" alt="Uploaded Handwriting Preview">
+          <button id="clear-btn" class="clear-btn" title="Remove image">✕</button>
+        </div>
+
+        <button id="analyze-btn" class="btn-primary" disabled>
+          <span id="btn-text">🔍 Analyze Handwriting Sample</span>
+          <span id="btn-spinner" class="spinner" style="display: none;"></span>
+        </button>
+
+        <!-- Demo Gallery -->
+        <div class="demo-section">
+          <div class="demo-title">📁 Quick Test Demos</div>
+          <div id="demo-pills" class="demo-pills">
+            <button class="demo-pill" data-type="malay_lpd">🟢 Malay Typical (LPD)</button>
+            <button class="demo-pill" data-type="malay_pd">🔴 Malay Dysgraphic (PD)</button>
+            <button class="demo-pill" data-type="drotar_leto_ctrl">🟢 Word 'leto' (Control)</button>
+            <button class="demo-pill" data-type="drotar_leto_dys">🔴 Word 'leto' (Dysgraphic)</button>
+            <button class="demo-pill" data-type="drotar_sentence">📝 Full Sentence (Drotár)</button>
+          </div>
+        </div>
+
+        <div class="disclaimer-box">
+          <strong>Pediatric Screening Disclaimer:</strong> This system is an exploratory screening aid designed to flag children who may benefit from a formal clinical evaluation by an occupational therapist or educator. It does not replace a medical diagnosis.
+        </div>
+      </section>
+
+      <!-- Right Column: Results & Explainability -->
+      <section class="card results-card">
+        <h2 class="card-title">
+          <span>📊</span> Diagnostic Screening & Kinematic Telemetry
+        </h2>
+
+        <!-- Initial Placeholder -->
+        <div id="results-placeholder" class="results-placeholder">
+          <div class="icon">🖋️</div>
+          <h3>Awaiting Handwriting Input</h3>
+          <p>Upload a photo or click one of the quick test demos to initiate automated 20D multimodal analysis.</p>
+        </div>
+
+        <!-- Populated Results Container -->
+        <div id="results-container" style="display: none;">
+          <!-- Badge -->
+          <div id="screening-badge-card" class="screening-badge-card">
+            <div class="badge-info">
+              <h3 id="badge-title">Screening Verdict</h3>
+              <p id="badge-desc">Evaluated across 9 BHK indicators and 11 biophysical kinematic metrics.</p>
+            </div>
+            <div class="badge-score">
+              <div id="badge-score-val" class="badge-score-val">0%</div>
+              <div class="badge-score-lbl">Risk Score</div>
+            </div>
+          </div>
+
+          <!-- Tabs Navigation -->
+          <nav class="tabs-nav">
+            <button class="tab-btn active" data-tab="tab-overlay">🔍 BHK Explainability Overlay</button>
+            <button class="tab-btn" data-tab="tab-kinematics">⚡ Kinematic Waveform Studio</button>
+            <button class="tab-btn" data-tab="tab-ink">🖤 Cleaned Ink & Skeleton</button>
+            <button class="tab-btn" data-tab="tab-table">📋 20D Biomarker Table</button>
+          </nav>
+
+          <!-- Tab 1: Spatial Explainability Overlay -->
+          <div id="tab-overlay" class="tab-pane active">
+            <div class="result-img-box">
+              <img id="overlay-img" alt="BHK Spatial Explainability Overlay">
+            </div>
+            <p class="img-legend">
+              <span style="color:#10b981;">■ Green Boxes:</span> Valid detected character units | 
+              <span style="color:#38bdf8;">● Cyan:</span> Centroids | 
+              <span style="color:#f43f5e;">━ Red Line:</span> Fitted baseline wander slope
+            </p>
+          </div>
+
+          <!-- Tab 2: Kinematic Waveform Studio -->
+          <div id="tab-kinematics" class="tab-pane">
+            <div class="result-img-box">
+              <img id="kinematics-plot-img" alt="Reconstructed Velocity and Acceleration Curves">
+            </div>
+            <p class="img-legend">
+              Continuous velocity profile recovered via the <strong>Lacquaniti Two-Thirds Power Law</strong> and <strong>Asymmetric Sigma-Lognormal Impulse Envelope</strong>. Peaks and troughs represent Velocity Inversions (NVI).
+            </p>
+          </div>
+
+          <!-- Tab 3: Cleaned Ink & Skeleton -->
+          <div id="tab-ink" class="tab-pane">
+            <div class="result-img-box">
+              <img id="ink-skeleton-img" alt="Cleaned Ink Mask and 1-pixel Morphological Skeleton">
+            </div>
+            <p class="img-legend">
+              Left: Illumination-normalized foreground ink mask (shadows and notebook guide lines removed). Right: 1-pixel morphological skeleton spine.
+            </p>
+          </div>
+
+          <!-- Tab 4: Biomarker Measurement Table -->
+          <div id="tab-table" class="tab-pane">
+            <div class="table-container">
+              <table id="features-table">
+                <thead>
+                  <tr>
+                    <th>Domain</th>
+                    <th>Clinical Biomarker</th>
+                    <th>Measured Value</th>
+                    <th>Pediatric Reference Norm</th>
+                  </tr>
+                </thead>
+                <tbody id="features-table-body">
+                  <!-- Dynamically populated rows -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Risk Factor Explanations -->
+            <div id="risk-factors-container" class="risk-factor-list">
+              <h4>Identified Clinical Deviations:</h4>
+              <ul id="risk-factors-list"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
