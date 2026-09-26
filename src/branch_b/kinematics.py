@@ -63,11 +63,21 @@ def estimate_stroke_velocity(
     # Slows down at sharp corners; speeds up along straight trajectories
     base_speed = v_nominal / (1.0 + gamma_curvature * (curvature**(1.0 / 3.0)))
 
-    # 4. Neuromuscular boundary envelope (smooth acceleration from zero at touchdown,
-    # and smooth deceleration to zero at lift-off)
+    # 4. Asymmetric Plamondon Sigma-Lognormal Boundary Envelope
+    # Human neuromuscular strokes exhibit an asymmetric impulse response:
+    # Rapid acceleration to peak velocity at ~30-35% of stroke length,
+    # followed by an extended smooth deceleration glide to liftoff.
     norm_s = s / max(total_len, 1e-4)
-    # Bell-shaped boundary ramp using sine envelope: sin(pi * s / L)
-    envelope = np.sin(np.pi * norm_s) ** 0.5
+    norm_s = np.clip(norm_s, 0.0, 1.0)
+
+    # Asymmetric beta/lognormal kernel: u^p * (1 - u)^q, with p=0.8, q=1.4
+    # Peak analytically occurs at u* = p / (p + q) = 0.8 / 2.2 = ~0.364 (36% of stroke)
+    p_exp, q_exp = 0.8, 1.4
+    u_peak = p_exp / (p_exp + q_exp)
+    peak_norm = (u_peak**p_exp) * ((1.0 - u_peak)**q_exp)
+    raw_envelope = (norm_s**p_exp) * ((1.0 - norm_s + 1e-6)**q_exp)
+    envelope = np.clip(raw_envelope / max(peak_norm, 1e-6), 0.0, 1.0)
+
     reconstructed_v = base_speed * envelope
 
     # Smooth the final velocity curve
@@ -99,6 +109,36 @@ def estimate_stroke_pressure_proxy(
     return np.maximum(p_smooth, 0.5)
 
 
+def compute_tremor_spectral_power(
+    velocity_series: np.ndarray,
+    fs: float = 100.0,
+    tremor_band: Tuple[float, float] = (4.0, 8.0),
+    total_band: Tuple[float, float] = (0.5, 20.0)
+) -> float:
+    """
+    Computes the relative Power Spectral Density (PSD) in the neuromuscular tremor band (4-8 Hz)
+    versus total handwriting motor band (0.5-20 Hz).
+    Dysgraphic children exhibit involuntary micro-oscillations in the 4-8 Hz band.
+    """
+    if len(velocity_series) < 32:
+        return 0.0
+
+    from scipy.signal import welch
+    nperseg = min(len(velocity_series), 128)
+    freqs, psd = welch(velocity_series - np.mean(velocity_series), fs=fs, nperseg=nperseg)
+
+    tremor_mask = (freqs >= tremor_band[0]) & (freqs <= tremor_band[1])
+    total_mask = (freqs >= total_band[0]) & (freqs <= total_band[1])
+
+    tremor_power = float(np.sum(psd[tremor_mask]))
+    total_power = float(np.sum(psd[total_mask]))
+
+    if total_power <= 1e-9:
+        return 0.0
+
+    return float(np.clip(tremor_power / total_power, 0.0, 1.0))
+
+
 def extract_kinematic_features(
     recovered_strokes: List[np.ndarray],
     dist_map: np.ndarray,
@@ -106,7 +146,11 @@ def extract_kinematic_features(
 ) -> Dict[str, Any]:
     """
     Reconstructs velocity and pressure profiles across all strokes and extracts
-    neuromotor fluency and kinematic features.
+    neuromotor fluency and kinematic features including:
+    - Asymmetric Sigma-Lognormal velocity distributions
+    - Flash & Hogan Dimensionless Jerk
+    - 4-8 Hz Neuromuscular Tremor Spectral Power Index
+    - Normalized Velocity Inversions (NVI per stroke & per 100px)
     """
     if not recovered_strokes:
         return {
@@ -114,8 +158,12 @@ def extract_kinematic_features(
             "peak_velocity": 0.0,
             "velocity_skewness": 0.0,
             "nvi_rate": 0.0,
+            "nvi_per_stroke": 0.0,
+            "nvi_per_100px": 0.0,
             "total_nvi": 0,
             "jerk_metric": 0.0,
+            "dimensionless_jerk": 0.0,
+            "tremor_index_4_8hz": 0.0,
             "pen_lift_count": 0,
             "mean_stroke_length": 0.0,
             "pressure_proxy_mean": 0.0,
@@ -128,6 +176,7 @@ def extract_kinematic_features(
     all_p = []
     total_inversions = 0
     stroke_lens = []
+    stroke_dimensionless_jerks = []
 
     for stroke in recovered_strokes:
         if len(stroke) < 3:
@@ -145,14 +194,29 @@ def extract_kinematic_features(
             troughs, _ = find_peaks(-v)
             total_inversions += (len(peaks) + len(troughs))
 
+            # Flash & Hogan dimensionless jerk per stroke: (T^5 / L^2) * integral(jerk^2 dt)
+            stroke_dt = nominal_dt
+            stroke_duration = max(len(v) * stroke_dt, 1e-3)
+            stroke_length = max(s[-1], 1.0)
+            stk_acc = np.gradient(v, stroke_dt)
+            stk_jerk = np.gradient(stk_acc, stroke_dt)
+            mean_sq_jerk = np.mean(stk_jerk**2)
+            # Dimensionless normalization
+            dim_jerk = float((stroke_duration**5 / (stroke_length**2)) * mean_sq_jerk * 1e-4)
+            stroke_dimensionless_jerks.append(dim_jerk)
+
     if not all_v:
         return {
             "mean_velocity": 0.0,
             "peak_velocity": 0.0,
             "velocity_skewness": 0.0,
             "nvi_rate": 0.0,
+            "nvi_per_stroke": 0.0,
+            "nvi_per_100px": 0.0,
             "total_nvi": 0,
             "jerk_metric": 0.0,
+            "dimensionless_jerk": 0.0,
+            "tremor_index_4_8hz": 0.0,
             "pen_lift_count": len(recovered_strokes),
             "mean_stroke_length": 0.0,
             "pressure_proxy_mean": 0.0,
@@ -168,12 +232,19 @@ def extract_kinematic_features(
     peak_v = float(np.max(v_concat))
     v_skew = float(skew(v_concat)) if len(v_concat) > 2 else 0.0
 
-    # Acceleration and jerk
+    # Acceleration and jerk across concatenated series
     acc = np.gradient(v_concat, nominal_dt)
     jerk = np.gradient(acc, nominal_dt)
     jerk_val = float(np.mean(jerk**2))
 
-    # NVI normalized by stroke count and arc length to prevent stroke length artifacts
+    # Mean dimensionless jerk
+    mean_dim_jerk = float(np.mean(stroke_dimensionless_jerks)) if stroke_dimensionless_jerks else 0.0
+
+    # 4-8 Hz Neuromuscular Tremor Spectral Power Index
+    fs_nominal = 1.0 / nominal_dt
+    tremor_index = compute_tremor_spectral_power(v_concat, fs=fs_nominal)
+
+    # NVI normalized by stroke count and arc length
     total_arc = sum(stroke_lens) if stroke_lens else 0.0
     nvi_rate = float(total_inversions) / max(len(v_concat) * nominal_dt, 0.1)
     nvi_per_stroke = float(total_inversions) / max(len(recovered_strokes), 1)
@@ -191,6 +262,8 @@ def extract_kinematic_features(
         "nvi_per_100px": nvi_per_100px,
         "total_nvi": int(total_inversions),
         "jerk_metric": jerk_val,
+        "dimensionless_jerk": mean_dim_jerk,
+        "tremor_index_4_8hz": tremor_index,
         "pen_lift_count": len(recovered_strokes),
         "mean_stroke_length": float(np.mean(stroke_lens)) if stroke_lens else 0.0,
         "pressure_proxy_mean": mean_press,
@@ -198,6 +271,7 @@ def extract_kinematic_features(
         "reconstructed_v_full": v_concat,
         "reconstructed_p_full": p_concat,
     }
+
 
 
 def validate_kinematics_against_ground_truth(
@@ -356,6 +430,9 @@ def validate_kinematics_against_ground_truth(
             "nvi_per_stroke": kin["nvi_per_stroke"],
             "nvi_per_100px": kin["nvi_per_100px"],
             "total_nvi": kin["total_nvi"],
+            "dimensionless_jerk": kin["dimensionless_jerk"],
+            "jerk_metric": kin["jerk_metric"],
+            "tremor_index_4_8hz": kin["tremor_index_4_8hz"],
             "pen_lift_count": kin["pen_lift_count"],
             "pressure_proxy_mean": kin["pressure_proxy_mean"],
         },
