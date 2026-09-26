@@ -52,7 +52,10 @@ class DysgraphiaFeaturePipeline:
         "velocity_skewness",
         "nvi_rate",
         "nvi_per_stroke",
+        "nvi_per_100px",
         "jerk_metric",
+        "dimensionless_jerk",
+        "tremor_index_4_8hz",
         "pen_lift_count",
         "mean_stroke_length",
     ]
@@ -70,10 +73,11 @@ class DysgraphiaFeaturePipeline:
         Returns:
           - bhk_vector: (9,) NumPy array
           - bhk_metrics: Dict of individual static indicators
-          - kinematic_vector: (8,) NumPy array (or empty if disabled)
+          - kinematic_vector: (11,) NumPy array (or empty if disabled)
           - kinematic_metrics: Dict of kinematic fluency indicators
-          - combined_vector: Concatenated (17,) NumPy array
-          - combined_feature_names: List of all 17 feature names
+          - combined_vector: Concatenated (20,) NumPy array
+          - combined_feature_names: List of all 20 feature names
+          - visual_artifacts: binary mask, skeleton, recovered strokes, and velocity series
           - metadata: Processing time, image dimensions, component counts
         """
         t0 = time.time()
@@ -127,6 +131,7 @@ class DysgraphiaFeaturePipeline:
         }
 
         # 4. Branch B: Kinematic fluency modeling
+        kin_res = {}
         if do_kinematics and recovered_strokes:
             kin_res = extract_kinematic_features(recovered_strokes, dist_map)
 
@@ -136,7 +141,10 @@ class DysgraphiaFeaturePipeline:
                 kin_res["velocity_skewness"],
                 kin_res["nvi_rate"],
                 kin_res["nvi_per_stroke"],
+                kin_res["nvi_per_100px"],
                 kin_res["jerk_metric"],
+                kin_res["dimensionless_jerk"],
+                kin_res["tremor_index_4_8hz"],
                 float(kin_res["pen_lift_count"]),
                 kin_res["mean_stroke_length"],
             ], dtype=np.float64)
@@ -168,6 +176,14 @@ class DysgraphiaFeaturePipeline:
             "kinematic_metrics": kinematic_metrics,
             "combined_vector": combined_vector,
             "combined_feature_names": combined_feature_names,
+            "visual_artifacts": {
+                "binary_mask": binary_mask,
+                "skeleton": skeleton,
+                "text_lines": text_lines,
+                "recovered_strokes": recovered_strokes,
+                "velocity_profile": kin_res.get("reconstructed_v_full", np.array([])),
+                "pressure_profile": kin_res.get("reconstructed_p_full", np.array([])),
+            },
             "metadata": {
                 "elapsed_seconds": round(elapsed_sec, 3),
                 "image_shape": binary_mask.shape,
@@ -177,3 +193,77 @@ class DysgraphiaFeaturePipeline:
                 "computed_kinematics": do_kinematics,
             }
         }
+
+
+def compute_dysgraphia_screening_verdict(results: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Evaluates extracted multimodal features against pediatric clinical screening thresholds
+    to compute an overall risk score (0-100%), diagnostic badge, and contributing risk factors.
+    """
+    bhk = results.get("bhk_metrics", {})
+    kin = results.get("kinematic_metrics", {})
+
+    risk_factors = []
+    sub_scores = []
+
+    # 1. Letter Size Inconsistency (BHK #1 & #8)
+    size_cov = bhk.get("size_covariance_score", 0.0)
+    if size_cov > 2.2:
+        risk_factors.append(f"Elevated letter size inconsistency (CoV = {size_cov:.2f}, norm < 1.9)")
+        sub_scores.append(min(1.0, (size_cov - 1.8) / 1.0) * 0.25)
+    else:
+        sub_scores.append(max(0.0, (size_cov - 1.2) / 1.0) * 0.10)
+
+    # 2. Velocity Inversion Hesitations (Kinematic NVI)
+    nvi_stroke = kin.get("nvi_per_stroke", 0.0)
+    if nvi_stroke > 3.0:
+        risk_factors.append(f"High velocity hesitations/inversions ({nvi_stroke:.2f} per stroke, norm < 2.3)")
+        sub_scores.append(min(1.0, (nvi_stroke - 2.0) / 2.5) * 0.30)
+    else:
+        sub_scores.append(max(0.0, (nvi_stroke - 1.5) / 2.0) * 0.10)
+
+    # 3. Character Collisions & Telescoping (BHK #7)
+    telescope = bhk.get("telescoping_score", 0.0)
+    if telescope > 28.0:
+        risk_factors.append(f"Frequent character collisions ({telescope:.1f}% overlapping, norm < 24%)")
+        sub_scores.append(min(1.0, (telescope - 24.0) / 15.0) * 0.15)
+    else:
+        sub_scores.append(0.0)
+
+    # 4. Neuromuscular Tremor (4-8 Hz band)
+    tremor = kin.get("tremor_index_4_8hz", 0.0)
+    if tremor > 0.20:
+        risk_factors.append(f"Elevated motor tremor index ({tremor*100:.1f}% power in 4-8Hz band)")
+        sub_scores.append(min(1.0, (tremor - 0.15) / 0.20) * 0.15)
+
+    # 5. Baseline Drift (BHK #3)
+    drift = bhk.get("baseline_drift_score", 0.0)
+    if drift > 1.2:
+        risk_factors.append(f"Significant baseline alignment wander (score {drift:.2f})")
+        sub_scores.append(min(1.0, (drift - 0.8) / 1.0) * 0.15)
+
+    # Composite risk score (0.0 to 1.0)
+    composite = min(1.0, max(0.0, sum(sub_scores)))
+    risk_pct = round(composite * 100, 1)
+
+    if composite >= 0.45:
+        badge = "⚠️ Potential Dysgraphia (Recommended for Clinical Review)"
+        status = "at_risk"
+        color = "#ef4444"
+    elif composite >= 0.28:
+        badge = "⚡ Mild Motor Irregularity (Monitor / Teacher Support)"
+        status = "borderline"
+        color = "#f59e0b"
+    else:
+        badge = "✅ Low Potential Dysgraphia (Typical Range)"
+        status = "typical"
+        color = "#10b981"
+
+    return {
+        "risk_score_percent": risk_pct,
+        "screening_badge": badge,
+        "status": status,
+        "badge_color": color,
+        "contributing_risk_factors": risk_factors if risk_factors else ["All features within typical pediatric ranges"],
+    }
+
