@@ -112,7 +112,7 @@ def analyze_handwriting(image_input):
         # Apply calibrated screening threshold (prioritizing recall)
         is_pd = prob_pd >= threshold
         confidence_text = (
-            f"**Model:** Soft-Voting Ensemble (RF + XGBoost + SVM)\\n"
+            f"**Model:** Multi-Lingual Soft-Voting Ensemble (RF + XGBoost + SVM on 369 Subjects)\\n"
             f"**Screening Threshold:** {threshold:.2f} (Recall-prioritized)\\n"
             f"**Potential Dysgraphia Risk Score:** `{prob_pd * 100:.1f}%`"
         )
@@ -124,7 +124,6 @@ def analyze_handwriting(image_input):
         collisions = feat_dict.get("letter_collision_ratio", 0.0)
         unsteadiness = feat_dict.get("trace_unsteadiness_mean", 0.0)
         
-        # Composite score
         heuristic_score = min(1.0, max(0.0, (
             (cv_h * 0.35) +
             (min(drift_slope, 0.3) / 0.3 * 0.20) +
@@ -137,25 +136,74 @@ def analyze_handwriting(image_input):
         prob_lpd = float(1.0 - prob_pd)
         is_pd = prob_pd >= 0.45
         confidence_text = (
-            f"⚠️ **Note:** `model_bundle.pkl` not found in root. Using **BHK Heuristic Scoring Engine**.\\n"
-            f"*(Run `dysgraphia_detection_v1.ipynb` in Colab and place the exported `model_bundle.pkl` here for full ML accuracy)*\\n\\n"
+            f"⚠️ **Note:** Running in **BHK Heuristic Scoring Engine**.\\n"
             f"**Estimated Risk Score:** `{prob_pd * 100:.1f}%`"
         )
 
-    # Build result badge
+    # Subtype and script indicators
+    line_count = int(feat_dict.get("line_count", 1))
+    is_cursive = bool(feat_dict.get("is_cursive", 0.0))
+    cursive_index = feat_dict.get("cursive_index", 1.0)
+    cursive_fluidity = feat_dict.get("cursive_fluidity_index", 0.5)
+    spatial_score = feat_dict.get("spatial_dysgraphia_score", 0.0)
+    motor_score = feat_dict.get("motor_dysgraphia_score", 0.0)
+    dyslexic_score = feat_dict.get("dyslexic_risk_score", 0.0)
+
+    # Cursive compensation banner
+    cursive_banner = ""
+    if is_cursive:
+        cursive_banner = (
+            f"<div style='margin-top:8px; padding:8px 12px; background:#fef9c3; border-left:4px solid #eab308; border-radius:4px; font-size:13px; color:#854d0e;'>"
+            f"🖋️ <strong>Cursive Script Detected</strong> (Cursive Index: {cursive_index:.2f}). "
+            f"Connected letter ligatures are compensated. Fluidity Rating: <strong>{cursive_fluidity*100:.1f}%</strong>."
+            f"</div>"
+        )
+
+    # Multi-line banner
+    line_banner = (
+        f"<div style='margin-top:6px; font-size:13px; color:#475569;'>"
+        f"📐 <strong>Multi-Baseline Analysis:</strong> {line_count} independent text line(s) segmented and modeled."
+        f"</div>"
+    )
+
+    # Subtype breakdown cards
+    subtype_html = (
+        f"<div style='margin-top:12px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;'>"
+        f"  <div style='background:#f1f5f9; padding:8px; border-radius:6px; text-align:center; border:1px solid #cbd5e1;'>"
+        f"    <div style='font-size:11px; font-weight:600; color:#475569;'>SPATIAL (LAYOUT)</div>"
+        f"    <div style='font-size:16px; font-weight:700; color:{'#b91c1c' if spatial_score >= 0.5 else '#0f766e'};'>{spatial_score*100:.1f}%</div>"
+        f"  </div>"
+        f"  <div style='background:#f1f5f9; padding:8px; border-radius:6px; text-align:center; border:1px solid #cbd5e1;'>"
+        f"    <div style='font-size:11px; font-weight:600; color:#475569;'>MOTOR (TREMOR)</div>"
+        f"    <div style='font-size:16px; font-weight:700; color:{'#b91c1c' if motor_score >= 0.5 else '#0f766e'};'>{motor_score*100:.1f}%</div>"
+        f"  </div>"
+        f"  <div style='background:#f1f5f9; padding:8px; border-radius:6px; text-align:center; border:1px solid #cbd5e1;'>"
+        f"    <div style='font-size:11px; font-weight:600; color:#475569;'>DYSLEXIC / SPACING</div>"
+        f"    <div style='font-size:16px; font-weight:700; color:{'#b91c1c' if dyslexic_score >= 0.5 else '#0f766e'};'>{dyslexic_score*100:.1f}%</div>"
+        f"  </div>"
+        f"</div>"
+    )
+
+    # Build primary result badge
     if is_pd:
         badge_html = (
             "<div style='background-color:#fee2e2; border-left: 6px solid #ef4444; padding:12px 16px; border-radius:6px;'>"
             "<h3 style='color:#b91c1c; margin:0 0 4px 0;'>⚠️ Potential Dysgraphia Indicated</h3>"
             "<p style='color:#7f1d1d; margin:0;'>Sample exhibits elevated stroke/letter size variance, baseline drift, or spacing irregularity. "
             "<strong>Screening recommendation:</strong> Worth an evaluation by a teacher or specialist.</p>"
+            f"{line_banner}"
+            f"{cursive_banner}"
+            f"{subtype_html}"
             "</div>"
         )
     else:
         badge_html = (
             "<div style='background-color:#ecfdf5; border-left: 6px solid #10b981; padding:12px 16px; border-radius:6px;'>"
-            "<h3 style='color:#047857; margin:0 0 4px 0;'>✅ Low Potential Dysgraphia</h3>"
+            "<h3 style='color:#047857; margin:0 0 4px 0;'>✅ Low Potential Dysgraphia (Typical)</h3>"
             "<p style='color:#065f46; margin:0;'>Handwriting features fall within standard consistency, alignment, and spacing ranges.</p>"
+            f"{line_banner}"
+            f"{cursive_banner}"
+            f"{subtype_html}"
             "</div>"
         )
 
@@ -164,25 +212,39 @@ def analyze_handwriting(image_input):
         "Potential Dysgraphia (At-Risk)": prob_pd
     }
 
-    # Format BHK feature table
+    # Format comprehensive BHK feature table
     feature_rows = []
     descriptions = {
         "letter_size_cv": "BHK #8: Letter size inconsistency (CoV = std/mean)",
         "letter_area_cv": "BHK #8: Character area variation (CoV)",
-        "aspect_ratio_mean": "Mean component aspect ratio (w/h)",
+        "aspect_ratio_mean": "Mean component aspect ratio (w/h, cursive-compensated)",
         "aspect_ratio_std": "Component aspect ratio variation",
-        "baseline_drift_slope": "BHK #3: Baseline alignment slope (|dy/dx|)",
-        "baseline_drift_residual_norm": "BHK #3: Baseline waviness RMSE normalized by character scale",
-        "inter_component_gap_norm": "BHK #4: Inter-character spacing normalized by character scale",
+        "baseline_drift_slope": "BHK #3: Baseline alignment slope (|dy/dx| averaged across lines)",
+        "baseline_drift_residual_norm": "BHK #3: Baseline waviness RMSE across lines (normalized)",
+        "inter_component_gap_norm": "BHK #4: Inter-component / inter-word spacing normalized",
         "inter_component_gap_cv": "BHK #4: Spacing irregularity (CoV = std/mean)",
         "letter_collision_ratio": "BHK #7: Overlapping / collision ratio",
         "relative_height_ratio": "BHK #9: Ascenders/descenders ratio (P90/P50)",
         "trace_unsteadiness_mean": "BHK #13: Trace shakiness (contour curvature variance)",
         "ink_density": "Ink density in handwriting bounding box",
-        "component_count": "Valid detected handwriting components"
+        "component_count": "Valid detected handwriting components",
+        "line_count": "Total independent text lines segmented",
+        "line_parallelism_std": "Baseline slope variation across lines (Spatial dysgraphia)",
+        "line_spacing_cv": "Inter-line vertical spacing irregularity (Spatial dysgraphia)",
+        "cursive_index": "Median component width / height ratio (Cursive detector)",
+        "slant_angle_mean": "Dominant stroke slant angle (degrees from horizontal)",
+        "slant_angle_std": "Stroke slant irregularity (Motor dysgraphia)",
+        "stroke_tremor_high_freq": "High-frequency stroke micro-tremor (Motor dysgraphia)",
+        "cursive_fluidity_index": "Fluidity and consistency of cursive execution"
     }
     
-    for name in FEATURE_NAMES:
+    # Core + extended features
+    all_keys = FEATURE_NAMES + [
+        "line_count", "line_parallelism_std", "line_spacing_cv",
+        "cursive_index", "slant_angle_mean", "slant_angle_std",
+        "stroke_tremor_high_freq", "cursive_fluidity_index"
+    ]
+    for name in all_keys:
         val = feat_dict.get(name, 0.0)
         feature_rows.append({
             "BHK Feature Metric": name,
@@ -191,7 +253,6 @@ def analyze_handwriting(image_input):
         })
         
     df_features = pd.DataFrame(feature_rows)
-    
     status_markdown = f"{badge_html}\\n\\n{confidence_text}"
     
     return (
@@ -203,18 +264,19 @@ def analyze_handwriting(image_input):
     )
 
 
-# Build sample examples if dataset is present locally
+# Build diverse sample examples from available datasets
 sample_examples = []
-example_dir = "DATASET DYSGRAPHIA HANDWRITING"
-if os.path.exists(example_dir):
-    lpd_dir = os.path.join(example_dir, "Low Potential Dysgraphia")
-    pd_dir = os.path.join(example_dir, "Potential Dysgraphia")
-    if os.path.exists(lpd_dir):
-        lpd_files = sorted(os.listdir(lpd_dir))[:2]
-        sample_examples.extend([os.path.join(lpd_dir, f) for f in lpd_files])
-    if os.path.exists(pd_dir):
-        pd_files = sorted(os.listdir(pd_dir))[:2]
-        sample_examples.extend([os.path.join(pd_dir, f) for f in pd_files])
+candidates_to_check = [
+    "reconstructed_dataset/full_page/control/user_00050_full.png",
+    "reconstructed_dataset/full_page/dysgraphic/user_00006_full.png",
+    "DATASET DYSGRAPHIA HANDWRITING/Low Potential Dysgraphia/LPD (1).jpg",
+    "DATASET DYSGRAPHIA HANDWRITING/Potential Dysgraphia/PD (1).jpg",
+    "scraped_candidates/images/ENG_CAND_023.jpg",
+    "scraped_candidates/images/ENG_CAND_015.jpg"
+]
+for p in candidates_to_check:
+    if os.path.exists(p):
+        sample_examples.append(p)
 
 
 # Gradio UI Construction

@@ -1,0 +1,59 @@
+{
+  "dataset_name": "dataSciRep_public Dysgraphia Handwriting Dataset",
+  "source_paper": "Drotar & Dobes, Scientific Reports (2020)",
+  "total_subjects": 120,
+  "dysgraphic_count": 39,
+  "control_count": 81,
+  "tasks": [
+    {
+      "name": "task_1_l_normal",
+      "description": "Letter 'l' (normal speed)"
+    },
+    {
+      "name": "task_2_l_fast",
+      "description": "Letter 'l' (fast speed)"
+    },
+    {
+      "name": "task_3_le_normal",
+      "description": "Syllable 'le' (normal speed)"
+    },
+    {
+      "name": "task_4_le_fast",
+      "description": "Syllable 'le' (fast speed)"
+    },
+    {
+      "name": "task_5_leto",
+      "description": "Word 'leto'"
+    },
+    {
+      "name": "task_6_lamoken",
+      "description": "Pseudoword 'lamoken'"
+    },
+    {
+      "name": "task_7_hrackarstvo",
+      "description": "Word 'hrackarstvo'"
+    },
+    {
+      "name": "task_8_sentence",
+      "description": "Sentence 'V lete bude teplo a sucho'"
+    }
+  ],
+  "age_distribution": {
+    "8": 3,
+    "9": 4,
+    "10": 9,
+    "11": 9,
+    "12": 20,
+    "13": 11,
+    "14": 7,
+    "15": 8
+  },
+  "sex_distribution": {
+    "male": 50,
+    "female": 21
+  },
+  "handedness_distribution": {
+    "right": 60,
+    "left": 11
+  }
+}

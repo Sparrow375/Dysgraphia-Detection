@@ -36,4 +36,5 @@ scratch/
 
 # Feature caches
 data_*_cache.csv
+cache_*.csv
 

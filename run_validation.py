@@ -59,16 +59,23 @@ from src.bhk_features import extract_bhk_features, FEATURE_NAMES
 
 DATASET_DIR = "DATASET DYSGRAPHIA HANDWRITING"
 BUNDLE_PATH = "model_bundle.pkl"
-CACHE_PATH = "data_bhk_features_cache.csv"
+CACHE_PATH = "cache_malay_features.csv"
+SLOVAK_CACHE_PATH = "cache_slovak_fullpage_features.csv"
 
 
 def load_dataset_features() -> Tuple[np.ndarray, np.ndarray, pd.DataFrame]:
-    """Loads images, extracts BHK features (or loads cache), and returns X, y, df."""
+    """Loads features from the multi-lingual dataset (Malay + Slovak Full Page = 369 samples)."""
+    dfs = []
     if os.path.exists(CACHE_PATH):
-        print(f"📦 Loading cached BHK features from {CACHE_PATH}...")
-        df = pd.read_csv(CACHE_PATH)
+        dfs.append(pd.read_csv(CACHE_PATH))
+    if os.path.exists(SLOVAK_CACHE_PATH):
+        dfs.append(pd.read_csv(SLOVAK_CACHE_PATH))
+
+    if dfs:
+        df = pd.concat(dfs, ignore_index=True)
+        print(f"📦 Loaded {len(df)} multi-lingual samples from cache ({np.sum(df['label'] == 0)} Control, {np.sum(df['label'] == 1)} Dysgraphic).")
         X = df[FEATURE_NAMES].values
-        y = df['label'].values
+        y = df['label'].values.astype(int)
         return X, y, df
 
     print(f"🔍 Extracting 13-D scale-invariant BHK features from {DATASET_DIR}...")
@@ -108,7 +115,7 @@ def load_dataset_features() -> Tuple[np.ndarray, np.ndarray, pd.DataFrame]:
     df.to_csv(CACHE_PATH, index=False)
     print(f"💾 Cached extracted features to {CACHE_PATH} ({len(df)} samples).")
     X = df[FEATURE_NAMES].values
-    y = df['label'].values
+    y = df['label'].values.astype(int)
     return X, y, df
 
 

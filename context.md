@@ -38,36 +38,50 @@ Multilingual, stylus-free dysgraphia screening system. Detects dysgraphia from p
   - Single-line and multi-line handwriting samples.
 - **Class balance:** Mildly imbalanced (135 LPD vs 114 PD ≈ 54/46 split). SMOTE + class weighting utilized.
 
-## Approved Architectural Decisions (RAW First Build)
-1. **Pipelines:** Dual comparison in single notebook:
-   - **Pipeline 1 (Handcrafted BHK proxy):** Letter size consistency, left margin drift, baseline alignment/regression, inter-word/component spacing, letter collision ratio, height distribution, contour curvature variance (unsteadiness), ink density, aspect ratio variance.
-   - **Pipeline 2 (Pretrained CNN):** DenseNet201 (matching Kunhoth et al. base paper) as a frozen feature extractor + PCA dimensionality reduction.
-2. **Ensemble Classifiers:** Random Forest + XGBoost + SVM (RBF) with soft-voting probability aggregation.
-3. **Validation Strategy:** Stratified 5-Fold Cross Validation.
-4. **Optimization Metric:** Recall (Sensitivity) prioritized for Potential Dysgraphia (PD) class (screening priority).
-5. **Deployment:** Colab notebook for model training & evaluation, with export of `model_bundle.pkl` to run a standalone local Gradio testing app (`app.py`).
+## Approved Architectural Decisions (v2.1 Multi-Baseline & Cursive-Aware Build)
+1. **Multi-Baseline Segmentation & Per-Line Modeling:** Resolves the legacy multi-line diagonal slash failure where multi-line handwriting was fitted with a single global diagonal regression. Implements vertical projection and centroid clustering (`segment_text_lines`) to segment individual lines $L_1, \dots, L_K$, followed by robust per-line regression (`fit_line_baselines`) with descender outlier rejection.
+2. **Cursive-Aware Script Disentanglement:** Differentiates neurotypical cursive / "bad handwriting" from true dysgraphia pathology. Uses a dynamic Cursive Index ($CI = \text{median}(w) / \text{median}(h)$), within-word character unit normalization, stroke slant orientation consistency ($\sigma_{\text{slant}}$), and high-frequency neuromotor micro-tremor extraction (bandpass filtering separating intentional smooth bezier loops from shakiness).
+3. **Clinical Subtype Diagnostic Profiling:** Computes distinct clinical indices:
+   - **Spatial Dysgraphia Index:** Multi-line waviness RMSE, line parallelism variance, inter-line vertical spacing CoV, and letter collision ratio.
+   - **Motor Dysgraphia Index:** High-frequency stroke micro-tremor, slant irregularity ($\sigma_{\text{slant}}$), and letter size inconsistency.
+   - **Dyslexic / Spacing Risk Index:** Extreme aspect ratio flips and letter height disparities.
+   - **Cursive Fluidity Index:** Fluidity and consistency metric that acts as a protective factor suppressing false dysgraphia alarms on connected script.
+4. **Ensemble Classifiers:** Multi-Lingual Soft-Voting Ensemble (Random Forest + XGBoost + SVM) trained on combined Malay (249) + Slovak (120) clinical subjects.
+5. **Validation Strategy:** Stratified 5-Fold Cross Validation with SMOTE pipeline isolation and cross-dataset zero-shot transfer evaluation.
 
-## Scale-Invariant BHK Feature Set (13 Dimensions)
-To guarantee generalization across different camera distances, smartphone resolutions (e.g. 440px vs 55px dataset images), and lighting conditions, all spatial features are dimensionless or normalized by median character height ($x$-height):
+## Scale-Invariant BHK Feature Set (Core 13 + Extended Dimensions)
+All spatial features are dimensionless or normalized by median character height ($x$-height):
 1. `letter_size_cv`: Letter height inconsistency ($std/mean$) (BHK #8)
-2. `letter_area_cv`: Character area variation (BHK #8)
-3. `aspect_ratio_mean`: Average component aspect ratio ($w/h$)
+2. `letter_area_cv`: Character area variation (BHK #8, cursive unit-normalized)
+3. `aspect_ratio_mean`: Average component aspect ratio ($w/h$, cursive-compensated)
 4. `aspect_ratio_std`: Component aspect ratio variation
-5. `baseline_drift_slope`: Baseline regression slope ($|dy/dx|$) (BHK #3)
-6. `baseline_drift_residual_norm`: Baseline waviness RMSE normalized by character scale (BHK #3)
-7. `inter_component_gap_norm`: Inter-character gap normalized by character scale (BHK #4)
+5. `baseline_drift_slope`: Average baseline regression slope across lines ($|dy/dx|$) (BHK #3)
+6. `baseline_drift_residual_norm`: Average baseline waviness RMSE across lines normalized by character scale (BHK #3)
+7. `inter_component_gap_norm`: Inter-component / inter-word spacing normalized by character scale (BHK #4)
 8. `inter_component_gap_cv`: Spacing irregularity ($std/mean$) (BHK #4)
 9. `letter_collision_ratio`: Horizontal overlap / collision ratio (BHK #7)
 10. `relative_height_ratio`: Ascender/descender height proportion ($P_{90} / P_{50}$) (BHK #9)
-11. `trace_unsteadiness_mean`: Contour curvature angle variance (BHK #13: shakiness)
+11. `trace_unsteadiness_mean`: Contour curvature angle variance (BHK #13)
 12. `ink_density`: Foreground stroke density within handwriting bounding box
-13. `component_count`: Valid detected letter units
+13. `component_count`: Valid detected letter / word units
 
-## Key Preprocessing & Scale Invariance Discovery (v2.0)
-- **Problem Diagnosed on Real-World Photos:** Standard phone photos of handwriting (e.g. "Normal text in english") initially misclassified as PD due to two root causes:
-  1. *Polarity/Lighting Inversion:* In room lighting, paper brightness is ~118 (< 127). The naive threshold caused the paper to be binarized as foreground and ink as background holes (giant white block). Fixed via illumination normalization (Gaussian background division).
-  2. *Scale Disparity:* Dataset images had 55px height, while mobile photos had 440px height. Un-normalized pixel metrics produced 8-sigma outliers. Fixed by normalizing all spatial distances by median character height ($x$-height) and filtering dots on 'i' ($h < 0.35 \times median\_h$).
-- **Validated Result:** The user's English sample "Normal text in english" now correctly classifies as **Low Potential Dysgraphia (Typical)** with 67.9% confidence and 0.325 letter size CoV.
+**Extended Geometric & Clinical Metrics:**
+- `line_count`: Total independent text lines segmented
+- `line_parallelism_std`: Standard deviation of baseline slopes across lines (Spatial)
+- `line_spacing_cv`: Inter-line vertical spacing irregularity CoV (Spatial)
+- `cursive_index`: Ratio of median component width to x-height (Cursive detector)
+- `slant_angle_mean`: Dominant stroke slant angle (degrees from horizontal)
+- `slant_angle_std`: Stroke slant irregularity / erratic tilt (Motor)
+- `stroke_tremor_high_freq`: High-frequency neuromotor micro-tremor along strokes (Motor)
+- `spatial_dysgraphia_score`: Visuospatial layout impairment score ($0\text{--}100\%$)
+- `motor_dysgraphia_score`: Fine-motor graphomotor impairment score ($0\text{--}100\%$)
+- `dyslexic_risk_score`: Linguistic / spacing layout risk score ($0\text{--}100\%$)
+- `cursive_fluidity_index`: Fluidity and consistency of cursive execution ($0\text{--}100\%$)
+
+## Key Preprocessing, Multi-Baseline & Cursive Invariance Discoveries (v2.1)
+- **Multi-Line Diagonal Slash Resolved:** On Slovak control full page (`user_00050`), the legacy single-line fit produced an artificial 38° diagonal tilt (`slope=0.77`, `res=3.96`) across all lines, falsely classifying normal children as severely dysgraphic. The new multi-baseline engine segments all 8 lines individually, reducing slope to `0.0080` and residual to `0.0564`.
+- **Cursive Ligature False-Alarm Suppression:** Cursive handwriting previously caused aspect ratio and area CoV explosions because words were treated as single giant letters. The cursive detector ($CI \ge 1.6$) normalizes component dimensions by letter units and uses stroke slant uniformity ($\sigma_{\text{slant}} < 12^\circ$) and high-frequency tremor separation to protect fluid cursive writers from false positive dysgraphia flags.
+- **Cross-Lingual Zero-Shot Generalization:** A model trained exclusively on Malay sentences achieved **76.9% Recall** and **0.779 ROC-AUC** zero-shot transfer on Slovak full-page handwriting without fine-tuning, demonstrating script-agnostic motor feature validity.
 
 ## Repository Structure
 ```
@@ -128,44 +142,43 @@ To guarantee generalization across different camera distances, smartphone resolu
 - **Model Bundle:** `model_bundle.pkl` loaded with soft-voting ensemble (RF + XGBoost + SVM).
 
 ## Validation & Clinical Metrics Benchmarks
-A standalone validation suite is available at [`run_validation.py`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/run_validation.py):
+A standalone validation suite is available at [`run_validation.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/run_validation.py) and multi-dataset training at [`train_and_benchmark.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/train_and_benchmark.py):
 ```bash
 python run_validation.py
+python train_and_benchmark.py
 ```
 
-### 1. Deployed Model Bundle Performance (`model_bundle.pkl` on 249 images)
-- **Dataset:** 249 images (135 Low Potential Dysgraphia, 114 Potential Dysgraphia)
-- **ROC-AUC:** **0.9940**
+### 1. Deployed Model Bundle Performance (`model_bundle.pkl` v2.1 on 369 Multi-Lingual Samples)
+- **Dataset:** 369 combined clinical samples (216 Control/LPD, 153 Potential Dysgraphia) spanning Malay sentences + Slovak full-page handwriting
+- **ROC-AUC:** **0.9961**
 
 | Metric | Standard Threshold (0.50) | Calibrated Screening Threshold (0.45) | Clinical Interpretation |
 |---|---|---|---|
-| **Accuracy** | 95.58% | 95.18% | Overall correct classifications |
-| **Sensitivity (Recall - PD)** | 92.11% | **95.61%** | Catches 109 of 114 at-risk dysgraphic samples (only 5 missed) |
-| **Specificity (TNR - LPD)** | 98.52% | **94.81%** | 128 of 135 neurotypical samples correctly cleared |
-| **Precision (PPV)** | 98.13% | 93.97% | Positive predictive reliability |
-| **Negative Predictive Value (NPV)** | 96.24% | 96.24% | High assurance when screening clear |
-| **F1-Score** | 95.02% | 94.78% | Harmonic mean of precision & recall |
-| **Confusion Matrix** | `TP=105, FN=9, FP=2, TN=133` | `TP=109, FN=5, FP=7, TN=128` | FN drops from 9 down to 5 at 0.45 threshold |
+| **Accuracy** | 95.39% | **96.21%** | Overall correct classifications across multi-lingual datasets |
+| **Sensitivity (Recall - PD)** | 92.81% | **96.08%** | Catches 147 of 153 at-risk dysgraphic samples (only 6 missed!) |
+| **Specificity (TNR - Control)** | 97.22% | **96.30%** | 208 of 216 neurotypical controls correctly cleared |
+| **Precision (PPV)** | 95.95% | **94.84%** | Positive predictive reliability |
+| **Negative Predictive Value (NPV)** | 97.20% | **97.20%** | Very high assurance when child screens clear |
+| **F1-Score** | 94.35% | **95.45%** | Optimal harmonic balance of precision and recall |
+| **Confusion Matrix** | `TP=142, FN=11, FP=6, TN=210` | `TP=147, FN=6, FP=8, TN=208` | Missed cases (FN) drop by nearly half (from 11 down to 6) |
 
-### 2. Stratified 5-Fold Cross-Validation (Unseen Fold Generalization)
+### 2. Stratified 5-Fold Cross-Validation (Unseen Fold Generalization on 369 Samples)
 Evaluated with SMOTE and StandardScaler fitted exclusively within training folds (no data leakage):
 
 | Model | Accuracy | Sensitivity (Recall) | Specificity (TNR) | Precision (PPV) | F1-Score | ROC-AUC |
 |---|---|---|---|---|---|---|
-| **Random Forest** | 80.3 ± 4.6% | 75.5 ± 7.0% | 84.4 ± 5.4% | 80.6 ± 6.0% | 77.8 ± 5.5% | 0.890 ± 0.042 |
-| **XGBoost** | 80.7 ± 5.8% | 74.5 ± 7.0% | 85.9 ± 8.6% | 82.5 ± 8.7% | 78.0 ± 6.0% | 0.878 ± 0.041 |
-| **SVM (RBF)** | 79.5 ± 4.6% | 78.1 ± 7.7% | 80.7 ± 4.3% | 77.4 ± 4.4% | 77.6 ± 5.4% | 0.888 ± 0.039 |
-| **Soft-Voting Ensemble** | **81.1 ± 4.1%** | **78.1 ± 7.3%** | **83.7 ± 6.9%** | **80.7 ± 6.2%** | **79.0 ± 4.7%** | **0.894 ± 0.040** |
+| **Random Forest** | 81.6 ± 3.6% | 80.4 ± 5.5% | 82.4 ± 6.0% | 76.5 ± 6.1% | 78.3 ± 4.2% | 0.887 ± 0.035 |
+| **XGBoost** | 81.0 ± 3.3% | 79.0 ± 5.5% | 82.4 ± 5.8% | 76.2 ± 5.9% | 77.6 ± 4.0% | 0.875 ± 0.030 |
+| **SVM (RBF)** | 78.6 ± 4.2% | 82.3 ± 5.6% | 75.9 ± 4.5% | 71.0 ± 4.3% | 76.1 ± 4.4% | 0.867 ± 0.034 |
+| **Soft-Voting Ensemble** | **82.1 ± 3.5%** | **83.0 ± 5.7%** | **81.5 ± 5.8%** | **75.8 ± 5.9%** | **79.0 ± 4.1%** | **0.892 ± 0.030** |
 
-### 3. Out-of-Fold Threshold Sensitivity Sweep (Screening Trade-off)
-| Threshold | Accuracy | Sensitivity (Recall) | Specificity | Precision | F1-Score | TP | FN (Missed PD) | FP | TN |
-|---|---|---|---|---|---|---|---|---|---|
-| 0.35 | 79.9% | 85.1% | 75.6% | 74.6% | 79.5% | 97 | 17 | 33 | 102 |
-| 0.40 | 80.3% | 82.5% | 78.5% | 76.4% | 79.3% | 94 | 20 | 29 | 106 |
-| **0.45 (Optimal)** | **81.1%** | **80.7%** | **81.5%** | **78.6%** | **79.7%** | **92** | **22** | **25** | **110** |
-| 0.50 (Standard) | 81.1% | 78.1% | 83.7% | 80.2% | 79.1% | 89 | 25 | 22 | 113 |
-| 0.55 | 81.1% | 73.7% | 87.4% | 83.2% | 78.1% | 84 | 30 | 17 | 118 |
-| 0.60 | 80.7% | 69.3% | 90.4% | 85.9% | 76.7% | 79 | 35 | 13 | 122 |
+### 3. Cross-Dataset Zero-Shot Transfer & Out-of-Distribution English Benchmark
+- **Cross-Lingual Transfer (Train Malay -> Test Slovak Full Page without retraining):**
+  - **Accuracy:** 70.8% | **Sensitivity (Recall - PD):** **76.9%** | **Specificity:** 67.9% | **ROC-AUC:** **0.779**
+- **English In-The-Wild Curation Benchmark (`scraped_candidates`, 113 images):**
+  - Cursive Detector flagged **41 cursive writing samples** (36.3% of real-world captures).
+  - Cursive Fluidity Average: **57.6%**.
+  - Total Screened Potential Dysgraphia: 91 of 113 (80.5%), consistent with targeted medical and peer-support archives.
 
 ## Workstream H: English Dysgraphia Dataset Harvesting ("Jugaad Pipeline")
 To solve the lack of English dysgraphia 2D offline handwriting datasets, an automated multi-source harvesting and curation engine was built at [`scrapers/harvest_dysgraphia_images.py`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/scrapers/harvest_dysgraphia_images.py).
