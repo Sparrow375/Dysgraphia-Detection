@@ -264,6 +264,121 @@ def analyze_handwriting(image_input):
     )
 
 
+# ---------------------------------------------------------------------------
+# Context-Aware OCR Transcription Integration
+# ---------------------------------------------------------------------------
+_ocr_pipeline_instance = None
+
+def get_ocr_pipeline():
+    global _ocr_pipeline_instance
+    if _ocr_pipeline_instance is None:
+        from src.ocr.pipeline import ContextAwareOCRPipeline
+        _ocr_pipeline_instance = ContextAwareOCRPipeline(
+            crnn_model_path=None,
+            use_neural_lm=False,
+            beam_width=15,
+        )
+    return _ocr_pipeline_instance
+
+
+def transcribe_handwriting_view(image_input):
+    """
+    Runs Context-Aware OCR on handwriting sample and produces:
+    1. Stylized HTML transcription with confidence badges
+    2. Interactive confidence overlay image
+    3. Alternative candidates dataframe
+    4. OCR clinical dysgraphia indicators dataframe
+    """
+    if image_input is None:
+        return (
+            "<p style='color:#64748b;'>⚠️ Please upload or select a handwriting image to transcribe.</p>",
+            None,
+            pd.DataFrame(),
+            pd.DataFrame()
+        )
+
+    try:
+        from src.ocr.utils import ConfidenceTier
+
+        pipeline = get_ocr_pipeline()
+        transcription = pipeline.transcribe(image_input)
+
+        # 1. Stylized HTML transcription
+        html_lines = []
+        for line in transcription.lines:
+            word_spans = []
+            for w in line.words:
+                tier = w.tier
+                if tier == ConfidenceTier.HIGH:
+                    bg, text_col, border = "#ecfdf5", "#047857", "#10b981"
+                elif tier == ConfidenceTier.MEDIUM:
+                    bg, text_col, border = "#fef3c7", "#b45309", "#f59e0b"
+                else:
+                    bg, text_col, border = "#fee2e2", "#b91c1c", "#ef4444"
+
+                rescue_str = " 🔄 (rescued by LM)" if w.metadata.get("context_rescued") else ""
+                span = (
+                    f"<span style='display:inline-block; margin:3px 5px; padding:4px 8px; "
+                    f"background:{bg}; color:{text_col}; border:1px solid {border}; border-radius:5px; "
+                    f"font-weight:600; font-size:15px;' title='Confidence: {w.confidence:.0%}{rescue_str}'>"
+                    f"{w.text}"
+                    f"<small style='font-size:10px; margin-left:4px; opacity:0.8;'>{w.confidence:.0%}</small></span>"
+                )
+                word_spans.append(span)
+            html_lines.append("<div style='margin-bottom:8px;'>" + "".join(word_spans) + "</div>")
+
+        rendered_html = (
+            "<div style='background:#f8fafc; padding:16px; border-radius:8px; border:1px solid #e2e8f0; line-height:2.0;'>"
+            + ("".join(html_lines) if html_lines else "<em>No words recognized.</em>")
+            + "</div>"
+        )
+
+        # 2. Render confidence overlay
+        if isinstance(image_input, np.ndarray):
+            bgr = cv2.cvtColor(image_input, cv2.COLOR_RGB2BGR) if len(image_input.shape) == 3 else cv2.cvtColor(image_input, cv2.COLOR_GRAY2BGR)
+        else:
+            bgr = cv2.imread(str(image_input))
+
+        overlay_bgr = pipeline.render_overlay(bgr, transcription)
+        overlay_rgb = cv2.cvtColor(overlay_bgr, cv2.COLOR_BGR2RGB)
+
+        # 3. Alternatives dataframe
+        alt_rows = []
+        for line_idx, line in enumerate(transcription.lines):
+            for w_idx, w in enumerate(line.words):
+                alts_text = ", ".join(a.text for a in w.alternatives[:3]) if w.alternatives else "—"
+                alt_rows.append({
+                    "Line": line_idx + 1,
+                    "Position": w_idx + 1,
+                    "Decoded Word": w.text,
+                    "Confidence": f"{w.confidence:.1%}",
+                    "Tier": w.tier.name,
+                    "Context Rescued": "✅ Yes" if w.metadata.get("context_rescued") else "No",
+                    "Alternatives": alts_text,
+                })
+        df_alts = pd.DataFrame(alt_rows)
+
+        # 4. OCR Clinical Metrics
+        ocr_feats = transcription.metadata.get("ocr_dysgraphia_features")
+        metric_rows = []
+        if ocr_feats:
+            metric_rows = [
+                {"OCR Metric": "Mean Word Confidence", "Value": f"{ocr_feats.mean_word_confidence:.2%}", "Clinical Meaning": "Overall legibility index"},
+                {"OCR Metric": "Fraction Low-Confidence Words", "Value": f"{ocr_feats.fraction_low_confidence_words:.2%}", "Clinical Meaning": "Proportion of severely degraded words"},
+                {"OCR Metric": "Confidence Variance", "Value": f"{ocr_feats.word_confidence_variance:.4f}", "Clinical Meaning": "Legibility inconsistency across document"},
+                {"OCR Metric": "Context Rescue Rate", "Value": f"{ocr_feats.context_rescue_rate:.2%}", "Clinical Meaning": "Words salvaged via sentence context"},
+                {"OCR Metric": "Mean Stroke Agreement", "Value": f"{ocr_feats.mean_stroke_agreement:.2%}", "Clinical Meaning": "Observed skeleton vs character typography"},
+                {"OCR Metric": "Visual vs LM Disagreement", "Value": f"{ocr_feats.visual_language_disagreement:.2%}", "Clinical Meaning": "Grammatical vs visual ambiguity tension"},
+            ]
+        df_metrics = pd.DataFrame(metric_rows)
+
+        return rendered_html, overlay_rgb, df_alts, df_metrics
+
+    except Exception as e:
+        err_msg = f"<p style='color:#dc2626;'>⚠️ OCR Pipeline Error: {str(e)}</p>"
+        return err_msg, None, pd.DataFrame(), pd.DataFrame()
+
+
 # Build diverse sample examples from available datasets
 sample_examples = []
 candidates_to_check = [
@@ -287,69 +402,139 @@ custom_css = """
 .header-box p { margin: 0; color: #94a3b8; font-size: 14px; }
 """
 
-with gr.Blocks(title="Dysgraphia Screening Ground — Stylus-Free Testing") as demo:
+with gr.Blocks(title="Dysgraphia Screening Ground & Context-Aware OCR") as demo:
     with gr.Column(elem_classes=["header-box"]):
         gr.Markdown(
-            "<h1>🖋️ Stylus-Free Dysgraphia Screening Ground</h1>"
-            "<p>Upload an offline 2D handwriting photo or scan (English, Hindi, or dataset image) to analyze BHK motor features and screen for potential dysgraphia.</p>"
+            "<h1>🖋️ Stylus-Free Dysgraphia Screening & Context-Aware OCR Ground</h1>"
+            "<p>Multi-layered offline handwriting diagnostics: BHK motor feature screening & human-like context-aware transcription for illegible text.</p>"
         )
-        
-    with gr.Row():
-        with gr.Column(scale=4):
-            gr.Markdown("### 📤 Upload Handwriting Sample")
-            image_input = gr.Image(
-                type="numpy",
-                label="Handwriting Photo / Scan",
-                sources=["upload", "clipboard"]
-            )
-            analyze_btn = gr.Button("🔍 Analyze Handwriting Sample", variant="primary", size="lg")
-            
-            if sample_examples:
-                gr.Markdown("#### 📁 Quick Dataset Examples")
-                gr.Examples(examples=sample_examples, inputs=image_input)
-                
-            gr.Markdown(
-                "> **Screening Disclaimer:** This is an exploratory screening aid, not a diagnostic medical device. "
-                "Any flag suggests that a child might benefit from an evaluation by an educator or occupational therapist."
-            )
 
-        with gr.Column(scale=5):
-            gr.Markdown("### 📊 Diagnostic Screening Result")
-            result_badge = gr.Markdown()
-            prob_label = gr.Label(num_top_classes=2, label="Ensemble Classification Confidence")
-            
-            with gr.Tabs():
-                with gr.TabItem("🔍 BHK Explainability Overlay"):
-                    overlay_output = gr.Image(
-                        label="Overlay (Green = Bounding Boxes, Cyan = Centroids, Coral = Fitted Baseline)",
-                        type="numpy"
+    with gr.Tabs() as main_navigation_tabs:
+
+        # -------------------------------------------------------------------
+        # TAB 1: BHK Diagnostic Screening
+        # -------------------------------------------------------------------
+        with gr.TabItem("📊 BHK Diagnostic Screening"):
+            with gr.Row():
+                with gr.Column(scale=4):
+                    gr.Markdown("### 📤 Upload Handwriting Sample")
+                    image_input = gr.Image(
+                        type="numpy",
+                        label="Handwriting Photo / Scan",
+                        sources=["upload", "clipboard"]
                     )
-                with gr.TabItem("🖤 Preprocessed Ink Mask"):
-                    mask_output = gr.Image(
-                        label="Cleaned Foreground Ink (Guide lines filtered)",
-                        type="numpy"
-                    )
-                with gr.TabItem("📋 BHK Numerical Feature Breakdown"):
-                    feature_table = gr.Dataframe(
-                        headers=["BHK Feature Metric", "Clinical / CV Meaning", "Value"],
-                        datatype=["str", "str", "str"],
-                        interactive=False,
-                        label="Extracted BHK Geometric Proxies"
+                    analyze_btn = gr.Button("🔍 Analyze Handwriting Sample", variant="primary", size="lg")
+                    
+                    if sample_examples:
+                        gr.Markdown("#### 📁 Quick Dataset Examples")
+                        gr.Examples(examples=sample_examples, inputs=image_input)
+                        
+                    gr.Markdown(
+                        "> **Screening Disclaimer:** This is an exploratory screening aid, not a diagnostic medical device. "
+                        "Any flag suggests that a child might benefit from an evaluation by an educator or occupational therapist."
                     )
 
-    analyze_btn.click(
-        fn=analyze_handwriting,
-        inputs=[image_input],
-        outputs=[mask_output, overlay_output, result_badge, prob_label, feature_table]
-    )
-    
-    # Auto-analyze when image changes (e.g., when clicking an example)
-    image_input.change(
-        fn=analyze_handwriting,
-        inputs=[image_input],
-        outputs=[mask_output, overlay_output, result_badge, prob_label, feature_table]
-    )
+                with gr.Column(scale=5):
+                    gr.Markdown("### 📊 Diagnostic Screening Result")
+                    result_badge = gr.Markdown()
+                    prob_label = gr.Label(num_top_classes=2, label="Ensemble Classification Confidence")
+                    
+                    with gr.Tabs():
+                        with gr.TabItem("🔍 BHK Explainability Overlay"):
+                            overlay_output = gr.Image(
+                                label="Overlay (Green = Bounding Boxes, Cyan = Centroids, Coral = Fitted Baseline)",
+                                type="numpy"
+                            )
+                        with gr.TabItem("🖤 Preprocessed Ink Mask"):
+                            mask_output = gr.Image(
+                                label="Cleaned Foreground Ink (Guide lines filtered)",
+                                type="numpy"
+                            )
+                        with gr.TabItem("📋 BHK Numerical Feature Breakdown"):
+                            feature_table = gr.Dataframe(
+                                headers=["BHK Feature Metric", "Clinical / CV Meaning", "Value"],
+                                datatype=["str", "str", "str"],
+                                interactive=False,
+                                label="Extracted BHK Geometric Proxies"
+                            )
+
+            analyze_btn.click(
+                fn=analyze_handwriting,
+                inputs=[image_input],
+                outputs=[mask_output, overlay_output, result_badge, prob_label, feature_table]
+            )
+            
+            image_input.change(
+                fn=analyze_handwriting,
+                inputs=[image_input],
+                outputs=[mask_output, overlay_output, result_badge, prob_label, feature_table]
+            )
+
+        # -------------------------------------------------------------------
+        # TAB 2: Context-Aware OCR Transcription
+        # -------------------------------------------------------------------
+        with gr.TabItem("🔍 Context-Aware OCR Transcription"):
+            with gr.Row():
+                with gr.Column(scale=4):
+                    gr.Markdown("### 📤 Handwriting Image for OCR")
+                    ocr_img_input = gr.Image(
+                        type="numpy",
+                        label="Handwriting Photo / Scan",
+                        sources=["upload", "clipboard"]
+                    )
+                    transcribe_btn = gr.Button("🧠 Transcribe Bad Handwriting (Context-Aware)", variant="primary", size="lg")
+                    
+                    if sample_examples:
+                        gr.Markdown("#### 📁 Quick Dataset Examples")
+                        gr.Examples(examples=sample_examples, inputs=ocr_img_input)
+
+                    gr.Markdown(
+                        "> **How Context-Aware OCR Works:** Mimics human reading of messy writing. "
+                        "Anchors on recognizable words, extracts stroke geometry (ascenders, descenders, loops), "
+                        "and uses sentence linguistic context to resolve distorted or illegible words."
+                    )
+
+                with gr.Column(scale=5):
+                    gr.Markdown("### 📝 Probabilistic Transcription Output")
+                    ocr_transcription_html = gr.HTML(
+                        label="Transcription with Word Confidence Badges",
+                        value="<p style='color:#64748b;'>Upload an image to view transcription.</p>"
+                    )
+
+                    with gr.Tabs():
+                        with gr.TabItem("🗺️ Word Confidence Overlay"):
+                            ocr_overlay_img = gr.Image(
+                                label="Overlay (Green = High Confidence, Amber = Medium, Red = Low / Distorted)",
+                                type="numpy"
+                            )
+                        with gr.TabItem("💡 Word Candidates & Alternatives"):
+                            ocr_alts_df = gr.Dataframe(
+                                headers=["Line", "Position", "Decoded Word", "Confidence", "Tier", "Context Rescued", "Alternatives"],
+                                datatype=["number", "number", "str", "str", "str", "str", "str"],
+                                interactive=False,
+                                label="Candidate Words Lattice Breakdown"
+                            )
+                        with gr.TabItem("📈 OCR-Derived Dysgraphia Metrics"):
+                            ocr_metrics_df = gr.Dataframe(
+                                headers=["OCR Metric", "Value", "Clinical Meaning"],
+                                datatype=["str", "str", "str"],
+                                interactive=False,
+                                label="Clinical Legibility & Distortion Signals"
+                            )
+
+            transcribe_btn.click(
+                fn=transcribe_handwriting_view,
+                inputs=[ocr_img_input],
+                outputs=[ocr_transcription_html, ocr_overlay_img, ocr_alts_df, ocr_metrics_df]
+            )
+
+            ocr_img_input.change(
+                fn=transcribe_handwriting_view,
+                inputs=[ocr_img_input],
+                outputs=[ocr_transcription_html, ocr_overlay_img, ocr_alts_df, ocr_metrics_df]
+            )
+
 
 if __name__ == "__main__":
-    print("🚀 Starting Dysgraphia Screening Gradio Web Application...")
+    print("🚀 Starting Dysgraphia Screening & OCR Gradio Web Application...")
     demo.launch(server_name="127.0.0.1", server_port=7860, share=False, css=custom_css)

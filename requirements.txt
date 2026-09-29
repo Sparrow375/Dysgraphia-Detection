@@ -19,3 +19,11 @@ gradio>=4.20.0
 
 # Deep Learning (for Pipeline 2 in Colab)
 # tensorflow>=2.14.0
+
+# OCR Engine & Language Modeling Dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.35.0
+scikit-image>=0.21.0
+Pillow>=10.0.0
+editdistance>=0.6.0
