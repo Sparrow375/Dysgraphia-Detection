@@ -122,7 +122,7 @@ def render_strokes_graph_b64(strokes: List[np.ndarray], orig_w: int, orig_h: int
     return "data:image/png;base64," + base64.b64encode(buf.read()).decode("ascii")
 
 
-def render_velocity_heatmap_b64(strokes: List[np.ndarray], orig_w: int, orig_h: int) -> str:
+def render_velocity_heatmap_b64(strokes: List[np.ndarray], orig_w: int, orig_h: int, h_med: float = 25.0) -> str:
     fig, ax = plt.subplots(figsize=(8, 5.5), facecolor="#0b0f19")
     ax.set_facecolor("#131b2e")
     all_v = []
@@ -130,15 +130,15 @@ def render_velocity_heatmap_b64(strokes: List[np.ndarray], orig_w: int, orig_h: 
 
     for s in strokes:
         if len(s) >= 3:
-            _, v, _ = estimate_stroke_velocity(s)
+            _, v, _ = estimate_stroke_velocity(s, h_med=h_med)
             all_v.extend(v)
             stroke_velocities.append(v)
         else:
             stroke_velocities.append(np.array([]))
 
-    v_min, v_max = (np.percentile(all_v, 5), np.percentile(all_v, 95)) if all_v else (10, 100)
+    v_min, v_max = (np.percentile(all_v, 5), np.percentile(all_v, 95)) if all_v else (0.2, 4.0)
     if v_max <= v_min:
-        v_max = v_min + 50.0
+        v_max = v_min + 2.0
 
     norm = plt.Normalize(vmin=v_min, vmax=v_max)
     cmap = plt.cm.turbo
@@ -160,7 +160,7 @@ def render_velocity_heatmap_b64(strokes: List[np.ndarray], orig_w: int, orig_h: 
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     cbar = plt.colorbar(sm, ax=ax, orientation="horizontal", fraction=0.045, pad=0.05)
-    cbar.set_label("Reconstructed Instantaneous Velocity (px/s)", color="#f8fafc", fontsize=9, fontweight="bold")
+    cbar.set_label("Reconstructed Instantaneous Velocity (H_med/s)", color="#f8fafc", fontsize=9, fontweight="bold")
     cbar.ax.tick_params(colors="#94a3b8", labelsize=8)
 
     ax.set_title("Stage 5: Centerline Kinematic Velocity Heatmap v(s)", color="#f8fafc", fontsize=11, fontweight="bold")
@@ -172,32 +172,60 @@ def render_velocity_heatmap_b64(strokes: List[np.ndarray], orig_w: int, orig_h: 
     return "data:image/png;base64," + base64.b64encode(buf.read()).decode("ascii")
 
 
-def prepare_point_kinematics(strokes: List[np.ndarray], nominal_dt: float = 0.01) -> List[List[Any]]:
+def prepare_point_kinematics(strokes: List[np.ndarray], dist_map: np.ndarray = None, h_med: float = 25.0, nominal_dt: float = 0.01) -> List[List[Any]]:
     """
     Extracts compact point-level kinematics for interactive hover inspection:
-    Returns list of [x, y, v, a, kappa, stroke_id, is_nvi]
+    Returns list of [x, y, v (H_med/s), a (H_med/s²), kappa_norm, stroke_id, is_nvi,
+                     ink_width_px, pressure_proxy, stroke_len_px, stroke_len_hmed, arc_pos_px]
     """
     pts_data = []
+    h_med = max(float(h_med), 1.0)
+    h_dm, w_dm = (dist_map.shape if dist_map is not None else (0, 0))
+
     for s_idx, s in enumerate(strokes):
         if len(s) < 3:
             continue
-        _, v, kappa = estimate_stroke_velocity(s)
+        _, v, kappa = estimate_stroke_velocity(s, h_med=h_med)
         acc = np.gradient(v, nominal_dt)
         pks, _ = find_peaks(v) if len(v) >= 5 else ([], None)
         trgs, _ = find_peaks(-v) if len(v) >= 5 else ([], None)
         pks_set = set(pks)
         trgs_set = set(trgs)
 
+        # Cumulative arc length along stroke
+        diffs = np.diff(s, axis=0)
+        seg_lens = np.sqrt(diffs[:, 0]**2 + diffs[:, 1]**2)
+        s_arc = np.concatenate([[0.0], np.cumsum(seg_lens)])
+        total_len_px = float(s_arc[-1])
+        total_len_hmed = float(total_len_px / h_med)
+
         for j in range(len(s)):
             is_nvi = int(j in pks_set or j in trgs_set)
+            px_x = float(s[j, 0])
+            px_y = float(s[j, 1])
+
+            if dist_map is not None and h_dm > 0 and w_dm > 0:
+                ix = int(np.clip(np.round(px_x), 0, w_dm - 1))
+                iy = int(np.clip(np.round(px_y), 0, h_dm - 1))
+                ink_w = float(2.0 * dist_map[iy, ix])
+                press = float(ink_w / h_med)
+            else:
+                ink_w = 2.0
+                press = float(2.0 / h_med)
+
             pts_data.append([
-                round(float(s[j, 0]), 1),
-                round(float(s[j, 1]), 1),
-                round(float(v[j]), 1),
-                round(float(acc[j]), 1),
+                round(px_x, 1),
+                round(px_y, 1),
+                round(float(v[j]), 2),
+                round(float(acc[j]), 2),
                 round(float(kappa[j]), 3),
                 s_idx + 1,
-                is_nvi
+                is_nvi,
+                round(ink_w, 1),
+                round(press, 3),
+                round(total_len_px, 1),
+                round(total_len_hmed, 2),
+                round(float(s_arc[j]), 1)
             ])
     return pts_data
 
@@ -205,15 +233,23 @@ def prepare_point_kinematics(strokes: List[np.ndarray], nominal_dt: float = 0.01
 def prepare_waveform_series(results: Dict[str, Any], nominal_dt: float = 0.01) -> Dict[str, Any]:
     """
     Extracts time-series arrays for client-side togglable waveform chart:
-    - time, velocity, acceleration, jerk, curvature, peaks, troughs
+    - time, velocity, pressure, acceleration, jerk, curvature, peaks, troughs
     """
     v = results.get("visual_artifacts", {}).get("velocity_profile", np.array([]))
+    p = results.get("visual_artifacts", {}).get("pressure_profile", np.array([]))
     if len(v) == 0:
         v = np.zeros(50)
+    if len(p) == 0:
+        p = np.zeros(len(v))
 
     # Downsample if very long for fluid 60fps rendering in browser (max 1500 points)
     step = max(1, len(v) // 1500)
     v_sub = v[::step]
+    if len(p) >= len(v):
+        p_sub = p[::step]
+    else:
+        p_sub = np.resize(p, len(v_sub)) if len(p) > 0 else np.zeros(len(v_sub))
+
     dt = nominal_dt * step
 
     t = (np.arange(len(v_sub)) * dt).tolist()
@@ -231,179 +267,251 @@ def prepare_waveform_series(results: Dict[str, Any], nominal_dt: float = 0.01) -
     return {
         "time": [round(float(val), 3) for val in t],
         "velocity": [round(float(val), 1) for val in v_sub],
+        "pressure": [round(float(val), 3) for val in p_sub],
         "acceleration": [round(float(val), 1) for val in acc],
         "jerk": [round(float(val), 1) for val in jerk],
         "curvature": [round(float(val), 3) for val in kappa_approx],
-        "peaks": [int(p) for p in pks],
+        "peaks": [int(pk) for pk in pks],
         "troughs": [int(tr) for tr in trgs],
     }
 
 
 def format_biomarkers_20d(results: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Builds comprehensive 20D feature items with formulas and clinical significance."""
+    """Builds comprehensive 20D feature items with formulas, units, estimated tags, and per-feature confidence."""
     bhk = results.get("bhk_metrics", {})
     kin = results.get("kinematic_metrics", {})
+    pfc = results.get("per_feature_confidence", {})
 
     return [
         {
             "domain": "Spatial BHK",
+            "feature_id": "bhk_size_covariance",
             "name": "BHK #1 & #8: Letter Size CoV",
             "val": bhk.get("size_covariance_score", 0.0),
-            "unit": "",
+            "unit": "CV",
+            "confidence": pfc.get("bhk_size_covariance", 1.0),
             "formula": "0.6 * CV(Height) + 0.4 * CV(Area)",
             "meaning": "Quantifies inconsistency in letter dimensions and area across words and lines."
         },
         {
             "domain": "Spatial BHK",
+            "feature_id": "bhk_height_ratio_consistency",
             "name": "BHK #9: Relative Height Ratio (IQR)",
             "val": bhk.get("height_iqr_ratio", 0.0),
-            "unit": "",
+            "unit": "IQR/median",
+            "confidence": pfc.get("bhk_height_ratio_consistency", 1.0),
             "formula": "IQR(Height) / Median(Height)",
             "meaning": "Measures vertical dispersion between ascenders, descenders, and body x-height."
         },
         {
             "domain": "Spatial BHK",
+            "feature_id": "bhk_baseline_drift",
             "name": "BHK #3: Baseline Drift & Wander",
             "val": bhk.get("baseline_drift_score", 0.0),
-            "unit": "",
+            "unit": "1/H_med",
+            "confidence": pfc.get("bhk_baseline_drift", 1.0),
             "formula": "|Slope| + 2 * RMSE(Residuals)",
             "meaning": "Captures macro line tilt and micro baseline wobble along letter bottoms."
         },
         {
             "domain": "Spatial BHK",
+            "feature_id": "bhk_spacing_entropy",
             "name": "BHK #4: Spacing Entropy",
             "val": bhk.get("spacing_entropy", 0.0),
             "unit": "nats",
+            "confidence": pfc.get("bhk_spacing_entropy", 1.0),
             "formula": "-Σ p_i * ln(p_i) of gaps / H_med",
             "meaning": "Shannon entropy measuring irregularity and lack of rhythm in horizontal letter gaps."
         },
         {
             "domain": "Spatial BHK",
+            "feature_id": "bhk_stroke_width_variance",
             "name": "BHK #6: Stroke Width CoV",
             "val": bhk.get("stroke_width_cv", 0.0),
-            "unit": "",
+            "unit": "CV",
+            "confidence": pfc.get("bhk_stroke_width_variance", 1.0),
             "formula": "Std(Width) / Mean(Width) via EDT",
-            "meaning": "Measures pen tremor, ink blobbing, and unstable stylus down-force down the stroke."
+            "meaning": "Measures pen tremor and down-force variability. Note: sensitive to pen nib type."
         },
         {
             "domain": "Spatial BHK",
+            "feature_id": "bhk_telescoping_overlap",
             "name": "BHK #7: Telescoping Overlap",
             "val": bhk.get("telescoping_score", 0.0),
-            "unit": "%",
+            "unit": "ratio",
+            "confidence": pfc.get("bhk_telescoping_overlap", 1.0),
             "formula": "Collision Count + Mean Overlap Depth",
             "meaning": "Frequency of horizontal letter intrusions where adjacent characters collide."
         },
         {
             "domain": "Spatial BHK",
+            "feature_id": "bhk_acute_turns",
             "name": "BHK #5: Acute Directional Turns",
             "val": bhk.get("acute_turns_score", 0.0),
-            "unit": "turns/stroke",
-            "formula": "Points where |Δθ| ≥ 110° / stroke",
-            "meaning": "Quantifies jagged high-curvature direction reversals reflecting fine motor tremor."
+            "unit": "turns/H_med",
+            "confidence": pfc.get("bhk_acute_turns", 1.0),
+            "formula": "Points where |Δθ| ≥ 110° / H_med",
+            "meaning": "Quantifies jagged high-curvature direction reversals reflecting fine motor stiffness."
         },
         {
             "domain": "Spatial BHK",
+            "feature_id": "bhk_left_margin_drift",
             "name": "BHK #2: Left Margin Alignment Drift",
             "val": bhk.get("left_margin_score", 0.0),
-            "unit": "",
+            "unit": "1/H_med",
+            "confidence": pfc.get("bhk_left_margin_drift", 1.0),
             "formula": "|Slope(x_start)| + Std(x_start) / H_med",
-            "meaning": "Evaluates child's inability to maintain a straight vertical left page margin."
+            "meaning": "Evaluates line-to-line alignment along the left vertical page boundary."
         },
         {
             "domain": "Spatial BHK",
+            "feature_id": "bhk_line_collisions",
             "name": "BHK #13: Inter-Line Collisions",
             "val": bhk.get("line_collision_score", 0.0),
-            "unit": "",
+            "unit": "ratio",
+            "confidence": pfc.get("bhk_line_collisions", 1.0),
             "formula": "Line Overlap Ratio + CV(Line Distances)",
             "meaning": "Frequency with which descenders crash into ascenders of preceding lines."
         },
         {
-            "domain": "Biophysical Kinematics",
-            "name": "NVI per Stroke (Scale-Invariant Fluency)",
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_nvi_per_stroke",
+            "name": "NVI per Stroke (Fluency Proxy, ESTIMATED)",
             "val": kin.get("nvi_per_stroke", 0.0),
-            "unit": "inversions/stroke",
+            "unit": "inv/stroke (EST)",
+            "confidence": pfc.get("kin_nvi_per_stroke", 0.0),
             "formula": "Total Inversions / Recovered Strokes",
-            "meaning": "Primary scale-invariant marker: number of neuromotor hesitations per physical motor stroke."
+            "meaning": "Primary scale-invariant fluency estimate: velocity inversions per physical motor stroke."
         },
         {
-            "domain": "Biophysical Kinematics",
-            "name": "NVI per 100px Arc Length",
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_nvi_per_100px",
+            "name": "NVI per 100px Arc Length (ESTIMATED)",
             "val": kin.get("nvi_per_100px", 0.0),
-            "unit": "inv/100px",
+            "unit": "inv/100px (EST)",
+            "confidence": pfc.get("kin_nvi_per_100px", 0.0),
             "formula": "Total Inversions / Total Arc Length * 100",
             "meaning": "Spatial density of velocity reversals along physical ink trajectories."
         },
         {
-            "domain": "Biophysical Kinematics",
-            "name": "NVI Rate (Frequency of Hesitations)",
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_nvi_rate",
+            "name": "NVI Rate (Frequency of Hesitations, ESTIMATED)",
             "val": kin.get("nvi_rate", 0.0),
-            "unit": "Hz (inv/sec)",
+            "unit": "Hz (EST)",
+            "confidence": pfc.get("kin_nvi_rate", 0.0),
             "formula": "Total Inversions / Total Duration",
-            "meaning": "Temporal frequency of speed reversals and motor planning interruptions."
+            "meaning": "Temporal frequency estimate of speed reversals and motor planning interruptions."
         },
         {
-            "domain": "Biophysical Kinematics",
-            "name": "Flash & Hogan Dimensionless Jerk",
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_dimensionless_jerk",
+            "name": "Flash & Hogan Dimensionless Jerk (ESTIMATED)",
             "val": kin.get("dimensionless_jerk", 0.0),
-            "unit": "",
+            "unit": "dimensionless (EST)",
+            "confidence": pfc.get("kin_dimensionless_jerk", 0.0),
             "formula": "(T^5 / L^2) * ∫ (da/dt)^2 dt",
-            "meaning": "Coordinate-free neuromotor smoothness metric; elevated values indicate rough motor execution."
+            "meaning": "Coordinate-free neuromotor smoothness proxy; elevated values indicate rough motor execution."
         },
         {
-            "domain": "Biophysical Kinematics",
-            "name": "4–8 Hz Neuromuscular Tremor Power",
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_tremor_index_4_8hz",
+            "name": "4–8 Hz Tremor Power Ratio (ESTIMATED)",
             "val": round(kin.get("tremor_index_4_8hz", 0.0) * 100, 1),
-            "unit": "%",
+            "unit": "% (EST)",
+            "confidence": pfc.get("kin_tremor_index_4_8hz", 0.0),
             "formula": "PSD(4-8 Hz) / PSD(0.5-20 Hz) via Welch",
-            "meaning": "Proportion of motor energy consumed by involuntary 4–8 Hz physiological micro-tremor."
+            "meaning": "Proportion of motor power consumed by involuntary 4–8 Hz physiological micro-tremor."
         },
         {
-            "domain": "Biophysical Kinematics",
-            "name": "Velocity Skewness (Asymmetry Tail)",
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_velocity_skewness",
+            "name": "Velocity Skewness (Asymmetry Tail, ESTIMATED)",
             "val": kin.get("velocity_skewness", 0.0),
-            "unit": "",
+            "unit": "dimensionless (EST)",
+            "confidence": pfc.get("kin_velocity_skewness", 0.0),
             "formula": "E[(v - μ)^3] / σ^3",
             "meaning": "Quantifies asymmetry between acceleration burst phase and extended deceleration glide."
         },
         {
-            "domain": "Biophysical Kinematics",
-            "name": "Mean Kinematic Velocity",
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_mean_velocity",
+            "name": "Estimated Mean Velocity (ESTIMATED)",
             "val": kin.get("mean_velocity", 0.0),
-            "unit": "px/s",
+            "unit": "H_med/s (EST)",
+            "confidence": pfc.get("kin_mean_velocity", 0.0),
             "formula": "Average v(s) via Two-Thirds Power Law",
-            "meaning": "Nominal execution speed across all continuous reconstructed trajectory strokes."
+            "meaning": "Relative execution speed proxy across continuous reconstructed trajectory strokes."
         },
         {
-            "domain": "Biophysical Kinematics",
-            "name": "Peak Kinematic Velocity",
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_peak_velocity",
+            "name": "Estimated Peak Velocity (ESTIMATED)",
             "val": kin.get("peak_velocity", 0.0),
-            "unit": "px/s",
+            "unit": "H_med/s (EST)",
+            "confidence": pfc.get("kin_peak_velocity", 0.0),
             "formula": "Max(v) across ballistic straight segments",
-            "meaning": "Peak ballistic impulse velocity achieved during straight stroke segments."
+            "meaning": "Peak ballistic impulse velocity estimate achieved during straight stroke segments."
         },
         {
-            "domain": "Biophysical Kinematics",
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_pen_lift_count",
             "name": "Pen Lift Count (Recovered Strokes)",
             "val": kin.get("pen_lift_count", 0),
             "unit": "strokes",
+            "confidence": pfc.get("kin_pen_lift_count", 0.0),
             "formula": "Count of Continuous Recovered Paths",
-            "meaning": "Reflects motor program segmentation and pen-lift fragmentation."
+            "meaning": "Reflects motor program segmentation and topological stroke connectivity."
         },
         {
-            "domain": "Biophysical Kinematics",
-            "name": "Mean Stroke Arc Length",
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_mean_stroke_length",
+            "name": "Mean Stroke Arc Length (ESTIMATED)",
             "val": kin.get("mean_stroke_length", 0.0),
-            "unit": "px",
+            "unit": "px (EST)",
+            "confidence": pfc.get("kin_mean_stroke_length", 0.0),
             "formula": "Total Arc Length / Stroke Count",
-            "meaning": "Average length of unbroken continuous motor trajectories."
+            "meaning": "Average pixel length of unbroken continuous recovered motor trajectories."
         },
         {
-            "domain": "Biophysical Kinematics",
-            "name": "Total Velocity Inversions (NVI)",
-            "val": kin.get("total_nvi", 0),
-            "unit": "inversions",
-            "formula": "Count of Local Minima & Maxima in v(t)",
-            "meaning": "Total count of velocity peaks and troughs across the entire handwriting sample."
+            "domain": "Biophysical Kinematics (ESTIMATED)",
+            "feature_id": "kin_jerk_metric",
+            "name": "Total Jerk Metric (ESTIMATED)",
+            "val": kin.get("jerk_metric", 0.0),
+            "unit": "H_med/s³ (EST)",
+            "confidence": pfc.get("kin_jerk_metric", 0.0),
+            "formula": "∫ (da/dt)² dt",
+            "meaning": "Integrated trajectory jerk estimate; sensitive to skeleton spurs and noise."
+        },
+        {
+            "domain": "Biophysical Pressure & Ink",
+            "feature_id": "kin_ink_width_ratio_mean",
+            "name": "Optical Stylus Pressure Proxy (Mean)",
+            "val": kin.get("ink_width_ratio_mean", 0.0),
+            "unit": "W/H_med (EST)",
+            "confidence": pfc.get("bhk_stroke_width_variance", 0.8),
+            "formula": "Mean(2 * EDT / H_med) along recovered strokes",
+            "meaning": "Scale-invariant optical proxy for pen down-force; thicker strokes correlate with heavier stylus pressure."
+        },
+        {
+            "domain": "Biophysical Pressure & Ink",
+            "feature_id": "kin_ink_width_ratio_std",
+            "name": "Optical Pressure Variability (Std)",
+            "val": kin.get("ink_width_ratio_std", 0.0),
+            "unit": "W/H_med (EST)",
+            "confidence": pfc.get("bhk_stroke_width_variance", 0.8),
+            "formula": "Std(2 * EDT / H_med) along recovered strokes",
+            "meaning": "Variability in pen down-force; elevated in children with dysgraphic grip instability."
+        },
+        {
+            "domain": "Biophysical Pressure & Ink",
+            "feature_id": "bhk_mean_stroke_width_px",
+            "name": "Mean Ink Stroke Width (Physical)",
+            "val": bhk.get("stroke_width_mean", 0.0),
+            "unit": "px",
+            "confidence": pfc.get("bhk_stroke_width_variance", 0.9),
+            "formula": "Mean(2 * EDT) sampled along skeleton",
+            "meaning": "Absolute physical stroke thickness in pixels across the handwriting image."
         },
     ]
 
@@ -517,15 +625,22 @@ class StudioHandler(BaseHTTPRequestHandler):
             mask = results.get("visual_artifacts", {}).get("binary_mask", np.zeros((100, 100)))
             skeleton = results.get("visual_artifacts", {}).get("skeleton", np.zeros((100, 100)))
 
+            h_med = float(results.get("image_scale_metadata", {}).get("h_med_px", 25.0))
+
             # Stage Visuals
             stage1_b64 = render_binary_mask_b64(mask)
             stage2_b64 = render_skeleton_b64(skeleton)
             stage3_b64 = render_overlay_b64(orig_pil, results)
             stage4_b64 = render_strokes_graph_b64(strokes, orig_w, orig_h)
-            stage5_b64 = render_velocity_heatmap_b64(strokes, orig_w, orig_h)
+            stage5_b64 = render_velocity_heatmap_b64(strokes, orig_w, orig_h, h_med=h_med)
+
+            dist_map = results.get("visual_artifacts", {}).get("dist_map", None)
+            if dist_map is None and np.any(mask):
+                from scipy.ndimage import distance_transform_edt
+                dist_map = distance_transform_edt(mask)
 
             # Interactive point kinematics & waveform series
-            pts_data = prepare_point_kinematics(strokes)
+            pts_data = prepare_point_kinematics(strokes, dist_map=dist_map, h_med=h_med)
             waveform_data = prepare_waveform_series(results)
             biomarkers_20d = format_biomarkers_20d(results)
 
@@ -553,19 +668,42 @@ class StudioHandler(BaseHTTPRequestHandler):
             kin = results.get("kinematic_metrics", {})
             bhk = results.get("bhk_metrics", {})
 
+            strokes_data = results.get("strokes", [])
+            stroke_lengths_px = [s.get("arc_length_px", 0.0) for s in strokes_data]
+            stroke_lengths_hmed = [s.get("arc_length_h_med", 0.0) for s in strokes_data]
+            mean_stk_len_px = float(np.mean(stroke_lengths_px)) if stroke_lengths_px else 0.0
+            mean_stk_len_hmed = float(np.mean(stroke_lengths_hmed)) if stroke_lengths_hmed else 0.0
+            total_arc_len_px = float(np.sum(stroke_lengths_px)) if stroke_lengths_px else 0.0
+
+            mean_ink_w_px = float(bhk.get("stroke_width_mean", 0.0))
+            mean_ink_w_hmed = float(mean_ink_w_px / max(h_med, 1.0))
+            ink_w_cv = float(bhk.get("stroke_width_cv", 0.0))
+
+            mean_press = float(kin.get("ink_width_ratio_mean", 0.0))
+            std_press = float(kin.get("ink_width_ratio_std", 0.0))
+
             response_payload = {
                 "status": "success",
                 "dimensions": {"width": orig_w, "height": orig_h},
                 "summary": {
                     "strokes_count": len(strokes),
-                    "mean_velocity": round(float(kin.get("mean_velocity", 0.0)), 1),
-                    "peak_velocity": round(float(kin.get("peak_velocity", 0.0)), 1),
+                    "mean_stroke_length_px": round(mean_stk_len_px, 1),
+                    "mean_stroke_length_hmed": round(mean_stk_len_hmed, 2),
+                    "total_arc_length_px": round(total_arc_len_px, 1),
+                    "mean_ink_width_px": round(mean_ink_w_px, 2),
+                    "mean_ink_width_hmed": round(mean_ink_w_hmed, 3),
+                    "ink_width_cv": round(ink_w_cv, 3),
+                    "mean_ink_width_ratio": round(mean_press, 3),
+                    "ink_width_ratio_std": round(std_press, 3),
+                    "mean_velocity": round(float(kin.get("mean_velocity", 0.0)), 2),
+                    "peak_velocity": round(float(kin.get("peak_velocity", 0.0)), 2),
                     "nvi_per_stroke": round(float(kin.get("nvi_per_stroke", 0.0)), 2),
                     "tremor_percent": round(float(kin.get("tremor_index_4_8hz", 0.0)) * 100, 1),
                     "size_covariance": round(float(bhk.get("size_covariance_score", 0.0)), 2),
                     "line_collisions": round(float(bhk.get("line_collision_score", 0.0)), 2),
                     "total_points": len(pts_data)
                 },
+                "strokes_data": strokes_data,
                 "stages": {
                     "stage1_binarization": stage1_b64,
                     "stage2_skeleton": stage2_b64,
@@ -578,6 +716,11 @@ class StudioHandler(BaseHTTPRequestHandler):
                 "spatial_boxes": boxes_data,
                 "spatial_baselines": baselines_data,
                 "biomarkers_20d": biomarkers_20d,
+                "export_payload": results.get("export_payload", {}),
+                "image_scale_metadata": results.get("image_scale_metadata", {}),
+                "quality_flags": results.get("quality_flags", {}),
+                "per_feature_confidence": results.get("per_feature_confidence", {}),
+                "extraction_quality_flags": results.get("quality_flags", {}),
                 "metadata": results.get("metadata", {})
             }
 
