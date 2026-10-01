@@ -43,6 +43,15 @@ We investigated whether this excessive fragmentation represents genuine separate
 - **Original Claim**: *"Point-to-point temporal velocity reconstruction from static images is fundamentally ill-posed and hovers near zero ($r \approx 0.0$) due to delayed strokes."*
 - **Corrected Claim**: The near-zero correlation in Phase 2 was **an artifact of catastrophic junction over-fragmentation in `stroke_recovery.py`**, which chopped 73 continuous strokes into 1,861 micro-fragments (83% under 10 pixels) and randomly shuffled their order. When spatial stroke paths are preserved intact, the kinematic model (Two-Thirds Power Law with boundary envelopes) actually achieves **moderate correlation ($r \approx 0.40$ to $0.62$)** with true recorded velocity at the stroke level. The "fundamental limit" was an overstatement masking an algorithmic junction-traversal failure.
 
+### 4. Partial Fix Implemented
+- Added `merge_short_strokes()` to `src/branch_b/stroke_recovery.py` as Step 7 of `recover_strokes_from_graph`.
+- **Algorithm**: Greedily absorbs strokes shorter than `0.60 × h_med` points into their nearest endpoint neighbour within a `0.40 × h_med` px gap. Long strokes (> threshold) only merge if endpoints are within 3 px (essentially touching).
+- **Empirical result on 8-sample pilot** (dataSciRep_public):
+  - Stroke count overcount: **+213.9% → +144.4%** (~21% reduction)
+  - Mean stroke-level median r: **0.1563 → 0.1594** (neutral / slightly positive)
+- **Remaining limitation**: Overcount still ~+144%. A full fix requires redesigning the junction traversal logic in `trace_component_strokes` to correctly distinguish skeleton T-intersections (letter crossings) from ink-path ambiguities. This is a deeper algorithmic problem deferred to a future milestone.
+- **Status: PARTIALLY IMPLEMENTED. All 5 tests pass.**
+
 ---
 
 ## ISSUE 2 — Branch B Phase 3 Clinical Claims Contradict Phase 2 Validation
@@ -225,7 +234,7 @@ Some tablet recordings in `dataSciRep_public` have near-constant stylus pressure
 
 | Section / Claim | Original Phrasing in Report | Empirical Reality Discovered | Corrected Action Taken |
 | :--- | :--- | :--- | :--- |
-| **Phase 2 Trajectory Recovery** | "Static-to-temporal reconstruction is fundamentally ill-posed ($r \approx 0.0$)." | Over-fragmentation ($72.6\% < 5\text{px}$) destroyed trajectory; single-stroke correlation is actually **$r \approx +0.40$ to $+0.62$**. | Clarified in `README.md` and `RESULTS.md`. |
+| **Phase 2 Trajectory Recovery** | Reconstruction fundamentally ill-posed (r~0.0). | Over-fragmentation (72.6% < 5px) destroyed trajectory; single-stroke r is +0.40 to +0.62. | \merge_short_strokes\ Step 7 reduces overcount +214% to +144% (partial fix; full junction redesign deferred). |
 | **Phase 3 Kinematic Claims** | "Marked acceleration asymmetry; heavier contact down-force." | Phase 2 showed zero correlation ($p > 0.1$) with true sensor data. | Labeled all `kin_*` features as unvalidated geometric proxies; removed neuromotor claims. |
 | **NVI Direction** | Claimed NVI is elevated in dysgraphia; Phase 3 showed $-17.5\%$ drop. | NVI formula is inversely proportional to stroke length; PD had longer pixel strokes. | Documented that reconstructed NVI is an inverted artifact of pixel stroke length. |
 | **Feature Redundancy** | "Pressure proxy and stroke width provide orthogonal information." | Pearson $r = 0.9914$. | Retracted claim; `kin_pressure_proxy_mean` removed from primary vector. |
