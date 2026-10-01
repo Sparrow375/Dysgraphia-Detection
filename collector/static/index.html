@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Universal Stylus Data Collector | Dysgraphia Research</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --panel-bg: rgba(30, 41, 59, 0.95);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --accent-blue: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --canvas-bg: #131b2e;
+      --ruling-single: rgba(56, 189, 248, 0.22);
+      --ruling-red: rgba(244, 63, 94, 0.45);
+      --ruling-blue: rgba(56, 189, 248, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      touch-action: none;
+      -webkit-touch-callout: none;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP OPERATOR CONTROL BAR */
+    header.operator-bar {
+      height: 60px;
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 50;
+      gap: 12px;
+      backdrop-filter: blur(12px);
+    }
+
+    .roster-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .student-badge {
+      display: flex;
+      align-items: center;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 8px;
+      padding: 4px 10px;
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    .input-field {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    select, input[type="number"] {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      border-radius: 6px;
+      padding: 5px 8px;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    select:focus, input[type="number"]:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .roll-stepper {
+      display: flex;
+      align-items: center;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .roll-stepper button {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: background 0.15s;
+    }
+
+    .roll-stepper button:hover {
+      background: #334155;
+    }
+
+    .roll-stepper input {
+      width: 48px;
+      text-align: center;
+      border: none;
+      background: transparent;
+      padding: 5px 0;
+    }
+
+    .hand-toggle {
+      display: flex;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .hand-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .hand-btn.active {
+      background: var(--accent-blue);
+      color: #0f172a;
+    }
+
+    .task-selector-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #1e293b;
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .task-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .task-btn.active {
+      background: #38bdf8;
+      color: #0f172a;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+    }
+    .btn-next:hover { opacity: 0.92; transform: translateY(-1px); }
+
+    .btn-rotate {
+      background: #334155;
+      color: var(--text-main);
+    }
+    .btn-rotate:hover { background: #475569; }
+
+    .btn-ruling {
+      background: #334155;
+      color: var(--text-main);
+    }
+    .btn-ruling:hover { background: #475569; }
+
+    /* STIMULUS PROMPT BAND */
+    .stimulus-banner {
+      background: #1e293b;
+      border-bottom: 1px solid var(--panel-border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 58px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .prompt-content {
+      flex: 1;
+    }
+
+    .prompt-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent-blue);
+      margin-bottom: 2px;
+    }
+
+    .prompt-text-hi {
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.4;
+      letter-spacing: 0.3px;
+    }
+
+    .prompt-text-en {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .pattern-visual-guide {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      padding: 4px 0;
+    }
+
+    .pattern-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+    }
+
+    .pattern-icon {
+      font-size: 22px;
+      color: var(--accent-amber);
+      font-weight: bold;
+    }
+
+    .pattern-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .stimulus-operator-script {
+      font-size: 12px;
+      color: #cbd5e1;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .btn-done-child {
+      background: #10b981;
+      color: #064e3b;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 2px solid #34d399;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-done-child:hover {
+      background: #34d399;
+      transform: scale(1.02);
+    }
+
+    /* MAIN WRITING WORKSPACE */
+    .workspace-container {
+      flex: 1;
+      position: relative;
+      background-color: var(--canvas-bg);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    canvas#drawingCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    /* TELEMETRY HUD OVERLAY */
+    .telemetry-hud {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 260px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 12px 14px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      z-index: 40;
+      transition: opacity 0.2s ease;
+    }
+
+    .hud-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--accent-blue);
+      font-weight: 700;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      letter-spacing: 0.5px;
+    }
+
+    .hud-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      color: #94a3b8;
+    }
+
+    .hud-val {
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+
+    .hud-pressure-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: #334155;
+      border-radius: 3px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+
+    .hud-pressure-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-blue);
+      transition: width 0.04s ease;
+    }
+
+    /* BOTTOM STATUS & STATS */
+    footer.bottom-bar {
+      height: 38px;
+      background: #0f172a;
+      border-top: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+      z-index: 50;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    .warning-banner {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(245, 158, 11, 0.95);
+      color: #0f172a;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      display: none;
+      z-index: 60;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, 10px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP OPERATOR BAR -->
+  <header class="operator-bar">
+    <div class="roster-group">
+      <div class="student-badge" id="studentBadge">G3-A-01</div>
+
+      <div class="input-field">
+        <label for="gradeSelect">Grade:</label>
+        <select id="gradeSelect">
+          <option value="3">Grade 3</option>
+          <option value="4">Grade 4</option>
+          <option value="5" selected>Grade 5</option>
+          <option value="6">Grade 6</option>
+          <option value="7">Grade 7</option>
+        </select>
+      </div>
+
+      <div class="input-field">
+        <label for="sectionSelect">Sec:</label>
+        <select id="sectionSelect">
+          <option value="A" selected>A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+        </select>
+      </div>
+
+      <div class="input-field">
+        <label for="rollInput">Roll #:</label>
+        <div class="roll-stepper">
+          <button id="rollMinusBtn" type="button">−</button>
+          <input type="number" id="rollInput" value="1" min="1" max="99">
+          <button id="rollPlusBtn" type="button">+</button>
+        </div>
+      </div>
+
+      <div class="hand-toggle">
+        <button type="button" class="hand-btn active" id="handRBtn" data-hand="R">R-Hand</button>
+        <button type="button" class="hand-btn" id="handLBtn" data-hand="L">L-Hand</button>
+      </div>
+    </div>
+
+    <!-- TASK TABS -->
+    <div class="task-selector-group">
+      <button type="button" class="task-btn active" data-task="S1">S1: Patterns</button>
+      <button type="button" class="task-btn" data-task="S2">S2: Hindi</button>
+      <button type="button" class="task-btn" data-task="S3">S3: English</button>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="action-group">
+      <button type="button" class="btn btn-ruling" id="rulingToggleBtn" title="Switch Ruling Style">
+        📐 <span id="rulingLabel">Single Ruled</span>
+      </button>
+
+      <button type="button" class="btn btn-rotate" id="rotateBtn" title="Rotate Canvas">
+        🔄 <span id="rotationLabel">0°</span>
+      </button>
+
+      <button type="button" class="btn btn-next" id="nextStudentBtn" title="Save session and auto-increment roll number">
+        <span>Save & Next</span> ⏩
+      </button>
+    </div>
+  </header>
+
+  <!-- STIMULUS PROMPT BAND -->
+  <div class="stimulus-banner" id="stimulusBanner">
+    <div class="prompt-content" id="promptContainer">
+      <!-- Injected via JavaScript -->
+    </div>
+
+    <button type="button" class="btn-done-child" id="childDoneBtn">
+      <span>Done</span> ✓
+    </button>
+  </div>
+
+  <!-- WRITING CANVAS CONTAINER -->
+  <main class="workspace-container" id="workspaceContainer">
+    <div class="canvas-wrapper" id="canvasWrapper">
+      <canvas id="drawingCanvas"></canvas>
+    </div>
+
+    <!-- TELEMETRY HUD -->
+    <div class="telemetry-hud" id="telemetryHud">
+      <div class="hud-title">
+        <span>KINEMATICS HUD</span>
+        <span id="hudStatus" style="color: #94a3b8; font-size: 10px;">STANDBY</span>
+      </div>
+      <div class="hud-row"><span>Position</span><span class="hud-val" id="hudPos">0.0, 0.0</span></div>
+      <div class="hud-row"><span>Pressure</span><span class="hud-val" id="hudPressure">0.0000</span></div>
+      <div class="hud-row"><span>Tilt (X, Y)</span><span class="hud-val" id="hudTilt">0°, 0°</span></div>
+      <div class="hud-row"><span>Velocity</span><span class="hud-val" id="hudVelocity">0.0 px/s</span></div>
+      <div class="hud-row"><span>Acceleration</span><span class="hud-val" id="hudAccel">0.0 px/s²</span></div>
+      <div class="hud-row"><span>Jerk</span><span class="hud-val" id="hudJerk">0.0 px/s³</span></div>
+      <div class="hud-row"><span>Sampling Rate</span><span class="hud-val" id="hudHz">0 Hz</span></div>
+      <div class="hud-row"><span>Strokes / Samples</span><span class="hud-val" id="hudCounts">0 / 0</span></div>
+      <div class="hud-pressure-bar-bg">
+        <div class="hud-pressure-bar-fill" id="hudPressureFill"></div>
+      </div>
+    </div>
+
+    <!-- FINGER TOUCH BANNER -->
+    <div class="warning-banner" id="touchWarningBanner">
+      ⚠️ Please use the Stylus / Pen (कृपया पेन से लिखें)
+    </div>
+  </main>
+
+  <!-- BOTTOM STATUS BAR -->
+  <footer class="bottom-bar">
+    <div class="status-badge">
+      <div class="status-dot" id="serverStatusDot"></div>
+      <span id="serverStatusText">Server: Connected</span>
+    </div>
+    <div id="sessionStatsText">Current Task: 0 strokes | 0 samples</div>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <span id="screenInfoText">1920x1080 @ 1.0x</span>
+      <button type="button" id="clearCanvasBtn" style="background: transparent; border: 1px solid #475569; color: #94a3b8; padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">Clear Task</button>
+      <button type="button" id="manualExportBtn" style="background: transparent; border: 1px solid #475569; color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">Backup JSON</button>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       UNIVERSAL STYLUS DATA COLLECTOR - JAVASCRIPT CORE
+       ========================================================================== */
+
+    // App Configuration & State
+    const AppConfig = {
+      grades: [3, 4, 5, 6, 7],
+      sections: ["A", "B", "C", "D"],
+      rulingModes: ["single", "four_line", "blank"],
+      rotations: [0, 90, 180, 270],
+      tasks: {
+        "S1": {
+          id: "S1",
+          title: "S1: Graphomotor Patterns",
+          lang: "pattern",
+          cap_sec: 35,
+          instructions_hi: "लाइन के अंत तक पैटर्न बनाओ। फिर बिंदु से शुरू करके गोल-गोल घुमाते हुए बाहर की ओर बनाओ।",
+          instructions_en: "Continue the patterns to the end of the line, then draw a spiral outward from the dot.",
+        },
+        "S2": {
+          id: "S2",
+          title: "S2: Hindi Copy",
+          lang: "hi",
+          cap_sec: 75,
+          instructions_hi: "यह वाक्य सुंदर और साफ़ लिखो, जैसे कक्षा में लिखते हो।",
+          instructions_en: "Copy this sentence neatly, like you do in class.",
+          stimuli: {
+            "3": "हमारे स्कूल में एक सुंदर बगीचा है।",
+            "4": "रविवार को हम सब क्रिकेट खेलते हैं।",
+            "5": "हमारे शिक्षक हर दिन नई कहानी सुनाते हैं।",
+            "6": "वर्षा ऋतु में नदियाँ पानी से भर जाती हैं।",
+            "7": "भारत एक विशाल देश है, जहाँ अनेक भाषाएँ बोली जाती हैं。"
+          }
+        },
+        "S3": {
+          id: "S3",
+          title: "S3: English Copy",
+          lang: "en",
+          cap_sec: 45,
+          instructions_hi: "अब इस English वाक्य को उसी तरह लिखो।",
+          instructions_en: "Now copy this sentence the same way.",
+          stimuli: {
+            "3": "My mother cooks food in the kitchen.",
+            "4": "On Sundays we play cricket with our friends.",
+            "5": "Our teacher tells us a new story every day.",
+            "6": "Rain falls from the clouds and fills the rivers and lakes.",
+            "7": "The quick brown fox jumps over the lazy dog."
+          }
+        }
+      }
+    };
+
+    // Session State
+    let currentGrade = 5;
+    let currentSection = "A";
+    let currentRoll = 1;
+    let dominantHand = "R";
+    let activeTaskId = "S1";
+    let currentRulingMode = "single"; // 'single', 'four_line', 'blank'
+    let currentRotation = 0;          // 0, 90, 180, 270
+
+    // Drawing & Kinematic Recording State
+    let canvas, ctx;
+    let records = [];                 // Full time-series kinematic records for current task
+    let strokes = [];                 // Array of strokes (each stroke is an array of point objects)
+    let currentStroke = [];
+    let strokeCount = 0;
+    let isPenDown = false;
+    let taskStartTime = null;         // Starts at first pen down
+    let taskShownTime = Date.now();
+    let sessionTaskData = {};         // Saves completed tasks for the current student before final save
+
+    // DOM Elements
+    const studentBadge = document.getElementById("studentBadge");
+    const gradeSelect = document.getElementById("gradeSelect");
+    const sectionSelect = document.getElementById("sectionSelect");
+    const rollInput = document.getElementById("rollInput");
+    const rollMinusBtn = document.getElementById("rollMinusBtn");
+    const rollPlusBtn = document.getElementById("rollPlusBtn");
+    const handRBtn = document.getElementById("handRBtn");
+    const handLBtn = document.getElementById("handLBtn");
+    const taskBtns = document.querySelectorAll(".task-btn");
+    const rulingToggleBtn = document.getElementById("rulingToggleBtn");
+    const rulingLabel = document.getElementById("rulingLabel");
+    const rotateBtn = document.getElementById("rotateBtn");
+    const rotationLabel = document.getElementById("rotationLabel");
+    const nextStudentBtn = document.getElementById("nextStudentBtn");
+    const childDoneBtn = document.getElementById("childDoneBtn");
+    const promptContainer = document.getElementById("promptContainer");
+    const touchWarningBanner = document.getElementById("touchWarningBanner");
+    const clearCanvasBtn = document.getElementById("clearCanvasBtn");
+    const manualExportBtn = document.getElementById("manualExportBtn");
+    const serverStatusDot = document.getElementById("serverStatusDot");
+    const serverStatusText = document.getElementById("serverStatusText");
+    const sessionStatsText = document.getElementById("sessionStatsText");
+    const screenInfoText = document.getElementById("screenInfoText");
+    const canvasWrapper = document.getElementById("canvasWrapper");
+
+    // Telemetry HUD Elements
+    const hudStatus = document.getElementById("hudStatus");
+    const hudPos = document.getElementById("hudPos");
+    const hudPressure = document.getElementById("hudPressure");
+    const hudTilt = document.getElementById("hudTilt");
+    const hudVelocity = document.getElementById("hudVelocity");
+    const hudAccel = document.getElementById("hudAccel");
+    const hudJerk = document.getElementById("hudJerk");
+    const hudHz = document.getElementById("hudHz");
+    const hudCounts = document.getElementById("hudCounts");
+    const hudPressureFill = document.getElementById("hudPressureFill");
+
+    // Initialize Canvas & High DPI Resolution
+    function initCanvas() {
+      canvas = document.getElementById("drawingCanvas");
+      ctx = canvas.getContext("2d", { desynchronized: true, alpha: false });
+
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
+
+      // Register Pointer Events for high-precision Stylus tracking
+      canvas.addEventListener("pointerdown", handlePointerDown);
+      canvas.addEventListener("pointermove", handlePointerMove);
+      canvas.addEventListener("pointerup", handlePointerUp);
+      canvas.addEventListener("pointercancel", handlePointerCancel);
+
+      // Prevent default gestures and context menus
+      canvas.addEventListener("contextmenu", e => e.preventDefault());
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1.0;
+
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+
+      screenInfoText.innerText = `${rect.width.toFixed(0)}x${rect.height.toFixed(0)} @ ${dpr.toFixed(1)}x`;
+
+      redrawAll();
+    }
+
+    function getStudentId() {
+      const r = String(currentRoll).padStart(2, '0');
+      return `G${currentGrade}_${currentSection}_Roll${r}`;
+    }
+
+    function updateStudentBadge() {
+      studentBadge.innerText = `${getStudentId()} (${dominantHand})`;
+    }
+
+    // Render Ruled Lines
+    function drawRulingLines() {
+      const dpr = window.devicePixelRatio || 1.0;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Fill background
+      ctx.fillStyle = "#131b2e";
+      ctx.fillRect(0, 0, w, h);
+
+      if (currentRulingMode === "blank") return;
+
+      const marginLeft = 50 * dpr;
+      const marginRight = w - 30 * dpr;
+
+      if (currentRulingMode === "single") {
+        // Standard notebook ruling (8mm / ~40px scaled)
+        const lineSpacing = 42 * dpr;
+        const startY = 50 * dpr;
+
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.22)";
+        ctx.lineWidth = 1 * dpr;
+
+        for (let y = startY; y < h - 30 * dpr; y += lineSpacing) {
+          ctx.beginPath();
+          ctx.moveTo(marginLeft, y);
+          ctx.lineTo(marginRight, y);
+          ctx.stroke();
+
+          // Left margin line
+          ctx.strokeStyle = "rgba(244, 63, 94, 0.25)";
+          ctx.beginPath();
+          ctx.moveTo(marginLeft, 0);
+          ctx.lineTo(marginLeft, h);
+          ctx.stroke();
+          ctx.strokeStyle = "rgba(56, 189, 248, 0.22)";
+        }
+      } else if (currentRulingMode === "four_line") {
+        // 4-Line Cursive Guide (Top Red, Mid Blue, Base Blue, Bottom Red)
+        const groupHeight = 64 * dpr;
+        const subGap = groupHeight / 3.0;
+        const groupGap = 35 * dpr;
+        let y = 50 * dpr;
+
+        while (y + groupHeight < h - 20 * dpr) {
+          // Line 1: Ascender (Red)
+          ctx.strokeStyle = "rgba(244, 63, 94, 0.45)";
+          ctx.lineWidth = 1.2 * dpr;
+          ctx.beginPath();
+          ctx.moveTo(marginLeft, y);
+          ctx.lineTo(marginRight, y);
+          ctx.stroke();
+
+          // Line 2: Midline (Blue dashed)
+          ctx.strokeStyle = "rgba(56, 189, 248, 0.35)";
+          ctx.setLineDash([4 * dpr, 4 * dpr]);
+          ctx.beginPath();
+          ctx.moveTo(marginLeft, y + subGap);
+          ctx.lineTo(marginRight, y + subGap);
+          ctx.stroke();
+          ctx.setLineDash([]); // reset
+
+          // Line 3: Baseline (Blue solid)
+          ctx.strokeStyle = "rgba(56, 189, 248, 0.5)";
+          ctx.beginPath();
+          ctx.moveTo(marginLeft, y + subGap * 2);
+          ctx.lineTo(marginRight, y + subGap * 2);
+          ctx.stroke();
+
+          // Line 4: Descender (Red)
+          ctx.strokeStyle = "rgba(244, 63, 94, 0.45)";
+          ctx.beginPath();
+          ctx.moveTo(marginLeft, y + groupHeight);
+          ctx.lineTo(marginRight, y + groupHeight);
+          ctx.stroke();
+
+          y += groupHeight + groupGap;
+        }
+      }
+    }
+
+    // Render Stimulus Banner
+    function updateStimulusBanner() {
+      taskShownTime = Date.now();
+      const task = AppConfig.tasks[activeTaskId];
+      if (!task) return;
+
+      if (activeTaskId === "S1") {
+        // Graphomotor Patterns
+        promptContainer.innerHTML = `
+          <div class="prompt-label">S1: Graphomotor Patterns (लूप्स, ज़िग-ज़ैग, स्पाइरल)</div>
+          <div class="pattern-visual-guide">
+            <div class="pattern-item">
+              <span class="pattern-icon">ℓℓℓℓ</span>
+              <span class="pattern-desc">Loops (Continuous)</span>
+            </div>
+            <div class="pattern-item">
+              <span class="pattern-icon">⋀⋀⋀</span>
+              <span class="pattern-desc">Zigzag (Sharp Peaks)</span>
+            </div>
+            <div class="pattern-item">
+              <span class="pattern-icon">◎</span>
+              <span class="pattern-desc">Spiral (Outward from dot)</span>
+            </div>
+          </div>
+          <div class="stimulus-operator-script">${task.instructions_hi}</div>
+        `;
+      } else if (activeTaskId === "S2") {
+        // Hindi Copy
+        const sentence = task.stimuli[String(currentGrade)] || "हमारे स्कूल में एक सुंदर बगीचा है।";
+        promptContainer.innerHTML = `
+          <div class="prompt-label">S2: Hindi Copy — Grade ${currentGrade} (Comfortable Pace)</div>
+          <div class="prompt-text-hi">${sentence}</div>
+          <div class="stimulus-operator-script">${task.instructions_hi}</div>
+        `;
+      } else if (activeTaskId === "S3") {
+        // English Copy
+        const sentence = task.stimuli[String(currentGrade)] || "The quick brown fox jumps over the lazy dog.";
+        promptContainer.innerHTML = `
+          <div class="prompt-label">S3: English Copy — Grade ${currentGrade} (Comfortable Pace)</div>
+          <div class="prompt-text-en">${sentence}</div>
+          <div class="stimulus-operator-script">${task.instructions_en}</div>
+        `;
+      }
+    }
+
+    // Pointer Event Handlers & High-Precision Kinematic Extraction
+    function getCanvasCoordinates(e) {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1.0;
+      return {
+        x: (e.clientX - rect.left) * dpr,
+        y: (e.clientY - rect.top) * dpr
+      };
+    }
+
+    function handlePointerDown(e) {
+      if (e.pointerType !== "pen") {
+        showTouchWarning();
+        return;
+      }
+
+      canvas.setPointerCapture(e.pointerId);
+      isPenDown = true;
+      const now = performance.now();
+
+      if (taskStartTime === null) {
+        taskStartTime = now;
+      }
+
+      strokeCount++;
+      currentStroke = [];
+      strokes.push(currentStroke);
+
+      recordSample(e, true);
+      hudStatus.innerText = "WRITING";
+      hudStatus.style.color = "#38bdf8";
+    }
+
+    function handlePointerMove(e) {
+      if (e.pointerType !== "pen") return;
+
+      const isDown = (e.buttons & 1) === 1 || e.pressure > 0.0;
+
+      // Extract all hardware coalesced events (120Hz/240Hz S-Pen / Wacom)
+      const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+
+      for (const ev of events) {
+        recordSample(ev, isDown);
+        if (isDown) {
+          const pt = getCanvasCoordinates(ev);
+          currentStroke.push({ x: pt.x, y: pt.y, pressure: ev.pressure || 0.5 });
+          drawStrokeSegment(currentStroke);
+        }
+      }
+
+      updateTelemetryHUD(events[events.length - 1], isDown);
+    }
+
+    function handlePointerUp(e) {
+      if (e.pointerType !== "pen") return;
+      isPenDown = false;
+      hudStatus.innerText = "HOVER / UP";
+      hudStatus.style.color = "#94a3b8";
+    }
+
+    function handlePointerCancel(e) {
+      if (e.pointerType !== "pen") return;
+      isPenDown = false;
+      hudStatus.innerText = "STANDBY";
+    }
+
+    function showTouchWarning() {
+      touchWarningBanner.style.display = "block";
+      setTimeout(() => {
+        touchWarningBanner.style.display = "none";
+      }, 2500);
+    }
+
+    // Kinematics Calculation Engine (Identical to test.py.txt math)
+    function recordSample(ev, isDown) {
+      const now = performance.now();
+      const relTime = taskStartTime ? (now - taskStartTime) / 1000.0 : 0.0;
+      const pt = getCanvasCoordinates(ev);
+      const pressure = ev.pressure !== undefined ? ev.pressure : (isDown ? 0.5 : 0.0);
+      const xTilt = ev.tiltX || 0;
+      const yTilt = ev.tiltY || 0;
+
+      let dt = 0.0;
+      let ds = 0.0;
+      let velocity = 0.0;
+      let accel = 0.0;
+      let jerk = 0.0;
+      let hz = 0.0;
+
+      if (records.length > 0) {
+        const prev = records[records.length - 1];
+        dt = relTime - prev.time_sec;
+
+        if (dt > 1e-6) {
+          hz = 1.0 / dt;
+          if (isDown && prev.is_down) {
+            const dx = pt.x - prev.x;
+            const dy = pt.y - prev.y;
+            ds = Math.hypot(dx, dy);
+            velocity = ds / dt;
+            accel = (velocity - prev.velocity) / dt;
+            jerk = (accel - prev.acceleration) / dt;
+          }
+        }
+      }
+
+      const sample = {
+        timestamp: Date.now(),
+        time_sec: relTime,
+        stroke_id: isDown ? strokeCount : 0,
+        dt: dt,
+        x: pt.x,
+        y: pt.y,
+        pressure: pressure,
+        x_tilt: xTilt,
+        y_tilt: yTilt,
+        is_down: isDown ? 1 : 0,
+        displacement: ds,
+        velocity: velocity,
+        acceleration: accel,
+        jerk: jerk,
+        hz: hz
+      };
+
+      records.push(sample);
+      sessionStatsText.innerText = `Current Task: ${strokes.length} strokes | ${records.length} samples`;
+    }
+
+    // Real-Time Canvas Stroke Rendering with Variable Pressure
+    function drawStrokeSegment(stroke) {
+      if (stroke.length < 2) return;
+      const dpr = window.devicePixelRatio || 1.0;
+      const p1 = stroke[stroke.length - 2];
+      const p2 = stroke[stroke.length - 1];
+
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+
+      // Width scaled by stylus pressure
+      const width = Math.max(1.8 * dpr, p2.pressure * 7.5 * dpr);
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = "rgba(56, 189, 248, 0.95)";
+      ctx.stroke();
+    }
+
+    function redrawAll() {
+      drawRulingLines();
+      const dpr = window.devicePixelRatio || 1.0;
+
+      for (const stroke of strokes) {
+        for (let i = 1; i < stroke.length; i++) {
+          const p1 = stroke[i - 1];
+          const p2 = stroke[i];
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          const width = Math.max(1.8 * dpr, p2.pressure * 7.5 * dpr);
+          ctx.lineWidth = width;
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.strokeStyle = "rgba(56, 189, 248, 0.95)";
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Telemetry HUD Update
+    function updateTelemetryHUD(ev, isDown) {
+      if (records.length === 0) return;
+      const last = records[records.length - 1];
+
+      hudPos.innerText = `${last.x.toFixed(1)}, ${last.y.toFixed(1)}`;
+      hudPressure.innerText = `${last.pressure.toFixed(4)}`;
+      hudTilt.innerText = `${last.x_tilt}°, ${last.y_tilt}°`;
+      hudVelocity.innerText = `${last.velocity.toFixed(1)} px/s`;
+      hudAccel.innerText = `${last.acceleration.toFixed(1)} px/s²`;
+      hudJerk.innerText = `${last.jerk.toFixed(1)} px/s³`;
+      hudHz.innerText = `${last.hz.toFixed(0)} Hz`;
+      hudCounts.innerText = `${strokeCount} / ${records.length}`;
+
+      hudPressureFill.style.width = `${Math.min(100, Math.round(last.pressure * 100))}%`;
+    }
+
+    // Save Active Task into Temporary Session Cache
+    function captureActiveTask() {
+      const durationMs = taskStartTime ? Math.round(performance.now() - taskStartTime) : 0;
+      
+      // Generate clean PNG render
+      const pngBase64 = canvas.toDataURL("image/png");
+
+      sessionTaskData[activeTaskId] = {
+        task_id: activeTaskId,
+        grade: currentGrade,
+        ruling_mode: currentRulingMode,
+        rotation: currentRotation,
+        duration_ms: durationMs,
+        strokes: strokes,
+        records: records,
+        png_base64: pngBase64
+      };
+    }
+
+    function clearActiveTask() {
+      records = [];
+      strokes = [];
+      currentStroke = [];
+      strokeCount = 0;
+      isPenDown = false;
+      taskStartTime = null;
+      redrawAll();
+      sessionStatsText.innerText = `Current Task: 0 strokes | 0 samples`;
+    }
+
+    // Switch Tasks
+    function switchTask(newTaskId) {
+      if (newTaskId === activeTaskId) return;
+
+      // Auto-cache current task if user drew something
+      if (records.length > 0) {
+        captureActiveTask();
+      }
+
+      activeTaskId = newTaskId;
+      taskBtns.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.task === newTaskId);
+      });
+
+      clearActiveTask();
+      updateStimulusBanner();
+    }
+
+    // Submit Complete Student Session to Server
+    async function saveFullSessionAndAdvance() {
+      // Capture the active task first
+      if (records.length > 0) {
+        captureActiveTask();
+      }
+
+      const tasksList = Object.values(sessionTaskData);
+      if (tasksList.length === 0) {
+        alert("Canvas is empty. Please have the student complete at least one task before advancing.");
+        return;
+      }
+
+      const payload = {
+        grade: currentGrade,
+        section: currentSection,
+        roll_number: currentRoll,
+        student_id: getStudentId(),
+        dominant_hand: dominantHand,
+        device_id: navigator.userAgent.includes("Android") ? "Android-Tablet" : "Windows-Stylus",
+        operator: "SchoolVisitOp",
+        notes: `Ruling: ${currentRulingMode}, Orientation: ${currentRotation}°`,
+        tasks: tasksList
+      };
+
+      try {
+        nextStudentBtn.disabled = true;
+        nextStudentBtn.innerHTML = `<span>Saving...</span> ⏳`;
+
+        const res = await fetch("/api/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+
+        const result = await res.json();
+        console.log("Session saved successfully:", result);
+
+        // Advance to next roll number
+        currentRoll = result.next_roll || (currentRoll + 1);
+        rollInput.value = currentRoll;
+        updateStudentBadge();
+
+        // Reset session state for next child
+        sessionTaskData = {};
+        clearActiveTask();
+        switchTask("S1");
+
+        serverStatusDot.style.background = "#10b981";
+        serverStatusText.innerText = `Saved ${payload.student_id}! Next: Roll ${currentRoll}`;
+
+      } catch (err) {
+        console.warn("Server unavailable, storing offline in localStorage:", err);
+        // Fallback: Offline persistence
+        const offlineKey = `offline_${payload.student_id}_${Date.now()}`;
+        localStorage.setItem(offlineKey, JSON.stringify(payload));
+
+        serverStatusDot.style.background = "#f59e0b";
+        serverStatusText.innerText = `Saved Offline (${payload.student_id})!`;
+
+        currentRoll += 1;
+        rollInput.value = currentRoll;
+        updateStudentBadge();
+        sessionTaskData = {};
+        clearActiveTask();
+        switchTask("S1");
+      } finally {
+        nextStudentBtn.disabled = false;
+        nextStudentBtn.innerHTML = `<span>Save & Next</span> ⏩`;
+      }
+    }
+
+    // Toggle Ruling Modes
+    function toggleRuling() {
+      const modes = ["single", "four_line", "blank"];
+      const labels = {
+        "single": "Single Ruled",
+        "four_line": "4-Line Cursive",
+        "blank": "Blank Paper"
+      };
+
+      const currIdx = modes.indexOf(currentRulingMode);
+      currentRulingMode = modes[(currIdx + 1) % modes.length];
+      rulingLabel.innerText = labels[currentRulingMode];
+      redrawAll();
+    }
+
+    // Rotate Canvas Orientation
+    function rotateCanvas() {
+      const angles = [0, 90, 180, 270];
+      const currIdx = angles.indexOf(currentRotation);
+      currentRotation = angles[(currIdx + 1) % angles.length];
+      rotationLabel.innerText = `${currentRotation}°`;
+
+      canvasWrapper.style.transform = `rotate(${currentRotation}deg)`;
+      setTimeout(resizeCanvas, 320);
+    }
+
+    // Manual Export Backup
+    function manualExportJSON() {
+      captureActiveTask();
+      const payload = {
+        grade: currentGrade,
+        section: currentSection,
+        roll_number: currentRoll,
+        student_id: getStudentId(),
+        dominant_hand: dominantHand,
+        tasks: Object.values(sessionTaskData)
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `${getStudentId()}_backup.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    // Attach Event Listeners
+    gradeSelect.addEventListener("change", (e) => {
+      currentGrade = parseInt(e.target.value);
+      updateStudentBadge();
+      updateStimulusBanner();
+    });
+
+    sectionSelect.addEventListener("change", (e) => {
+      currentSection = e.target.value;
+      updateStudentBadge();
+    });
+
+    rollInput.addEventListener("change", (e) => {
+      currentRoll = Math.max(1, parseInt(e.target.value) || 1);
+      e.target.value = currentRoll;
+      updateStudentBadge();
+    });
+
+    rollMinusBtn.addEventListener("click", () => {
+      if (currentRoll > 1) {
+        currentRoll--;
+        rollInput.value = currentRoll;
+        updateStudentBadge();
+      }
+    });
+
+    rollPlusBtn.addEventListener("click", () => {
+      currentRoll++;
+      rollInput.value = currentRoll;
+      updateStudentBadge();
+    });
+
+    handRBtn.addEventListener("click", () => {
+      dominantHand = "R";
+      handRBtn.classList.add("active");
+      handLBtn.classList.remove("active");
+      updateStudentBadge();
+    });
+
+    handLBtn.addEventListener("click", () => {
+      dominantHand = "L";
+      handLBtn.classList.add("active");
+      handRBtn.classList.remove("active");
+      updateStudentBadge();
+    });
+
+    taskBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        switchTask(btn.dataset.task);
+      });
+    });
+
+    rulingToggleBtn.addEventListener("click", toggleRuling);
+    rotateBtn.addEventListener("click", rotateCanvas);
+    nextStudentBtn.addEventListener("click", saveFullSessionAndAdvance);
+    childDoneBtn.addEventListener("click", () => {
+      captureActiveTask();
+      alert(`Task ${activeTaskId} marked Done ✓. Click 'Save & Next' or switch to the next task.`);
+    });
+
+    clearCanvasBtn.addEventListener("click", () => {
+      if (confirm("Clear current task strokes?")) {
+        clearActiveTask();
+      }
+    });
+
+    manualExportBtn.addEventListener("click", manualExportJSON);
+
+    // Initial Setup
+    window.addEventListener("DOMContentLoaded", () => {
+      initCanvas();
+      updateStudentBadge();
+      updateStimulusBanner();
+
+      // Check Server Heartbeat
+      fetch("/api/status")
+        .then(res => res.json())
+        .then(data => {
+          serverStatusDot.style.background = "#10b981";
+          serverStatusText.innerText = `Server: Connected (${data.total_sessions} sessions saved)`;
+        })
+        .catch(err => {
+          serverStatusDot.style.background = "#f59e0b";
+          serverStatusText.innerText = "Server: Offline (Using Local Storage)";
+        });
+    });
+  </script>
+</body>
+</html>

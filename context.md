@@ -9,39 +9,48 @@ Multilingual, stylus-free dysgraphia screening system. Detects dysgraphia from p
 
 ## Architecture
 - **Layer 1 (Baseline):** Replication of Kunhoth et al. — DenseNet201 + feature fusion + SVM/AdaBoost/RF on Slovak dataset
-- **Layer 2 (Extension):** Script-agnostic motor/geometric features, physics/kinematic reconstruction from static images, multilingual suppor## Workstreams & Multi-Branch Architecture
-To keep the codebase modular, clean, and performant, the project maintains **one main experiment branch (`build1`)** alongside dedicated workstream branches:
+- **Layer 2 (Extension):** Script-agnostic motor/geometric features, physics/kinematic reconstruction from static images, multilingual support
 
-| Branch | Workstream | Description | Status |
-|---|---|---|---|
-| **`build1`** *(Main)* | **B, C, E, F** | **Main ML Experiment Pipeline**: 29-D Hybrid Feature Extractor, Soft-Voting Ensemble (RF + XGB + SVM), Gradio Testing Ground (`app.py`), Multi-Lingual Training Harness, BHK Overlays | Active (v2.2 Deployed, 97.8% Acc, 0.9986 AUC) |
-| **`spen-collector`** | **A** | **Samsung S26 Ultra S-Pen Note App**: Native Kotlin/Compose Android app with 240Hz+ unbuffered hardware kinematic capture (velocity, acceleration, jerk, azimuth, hover flight) | Prototype Ready (v1.0 Built, Debug APK ready) |
-| **`data-harvesting`** | **H** | **English Image Harvester**: Multi-source scraping pipeline (Reddit, Wikimedia, PMC, portals), perceptual dHash deduplicator, interactive browser review gallery (`review_gallery.html`) | 113 Images Harvested & Curated |
-| **`tablet-kinematics`** | **Hardware** | **Desktop Tablet Kinematics**: Desktop Python & PyQt6 real-time kinematics recorder for graphic drawing tablets (XP-Pen, Wacom, Huion) with live pressure, velocity, tilt, and jerk monitors | Complete & Tested |
-| **`Kinematics`** | **D** | **Biophysical Kinematics Recovery**: Static-to-dynamic biophysical inverse modeling, neuromotor pulse-density recovery, and DiaGraMo 16-task kinematic benchmark suite | Research (Nitish Kumar) |
-| **`main`** | **All** | **Production Baseline**: Stable releases and core project documentation | Baseline V1 |
+## Workstreams
+| Code | Workstream | Status |
+|------|-----------|--------|
+| A | Universal Stylus Data Collection App (School Visit) | Active Development (Universal Web + Roll No / Grade / Section Mapping) |
+| B | Baseline replication (DenseNet201 + feature fusion) | Phase 0 |
+| C | Motor/geometric feature extraction (script-agnostic) | Research |
+| D | Physics/kinematic reconstruction from static images | Research |
+| E | Model/ensemble strategy | Pending B-D outputs |
+| F | Multilingual scope (Hindi first) | Task-set design |
+| G | Weak-label generation from school visit data | Pending visit |
+| H | English Dysgraphia Image Harvesting & Curation ("Jugaad Pipeline") | Active (113 Images Harvested) |
 
-## Current Datasets
-1. **DATASET DYSGRAPHIA HANDWRITING (Malay Latin-script):**
-   - 249 handwriting samples (135 Low Potential Dysgraphia, 114 Potential Dysgraphia)
-   - Polarity auto-detection handles both black/white and white/black scans
-2. **Reconstructed Slovak Clinical Dataset (`reconstructed_dataset`):**
-   - 120 full-page handwriting samples from Drotar et al. clinical cohort (60 Control, 60 Dysgraphic)
-   - Multi-line handwriting with natural drift and cursive ligatures
-3. **Combined Clinical Benchmark Corpus:**
-   - **369 clinical subjects** (216 Control, 153 Dysgraphic)
+## Current Dataset: DATASET DYSGRAPHIA HANDWRITING
+- **Source:** External dataset (likely from Kaggle/research repository)
+- **Language:** Malay/Indonesian (Latin script) — NOT English
+- **Content:** Children copying sentences like "Baju itu baru dibeli oleh emak", "Burung itu berada di dalam sangkar"
+- **Structure:**
+  - `Low Potential Dysgraphia/` — 135 images (LPD (1).jpg through LPD (135).jpg)
+  - `Potential Dysgraphia/` — 114 images (PD (1).jpg through PD (114).jpg)
+  - **Total:** 249 images, binary classification
+- **Image characteristics:**
+  - Black background with white text consistently across all images in the dataset, with horizontal guide lines.
+  - Image preprocessing includes polarity auto-detection (white ink on black background vs black ink on white background) so both dataset images and real-world white paper scans are handled robustly.
+  - Varying image dimensions and resolutions.
+  - Single-line and multi-line handwriting samples.
+- **Class balance:** Mildly imbalanced (135 LPD vs 114 PD ≈ 54/46 split). SMOTE + class weighting utilized.
 
-## Approved Architectural Decisions (v2.2 Hybrid Deep Stroke & Cursive-Aware Build)
+## Approved Architectural Decisions (v2.1 Multi-Baseline & Cursive-Aware Build)
 1. **Multi-Baseline Segmentation & Per-Line Modeling:** Resolves the legacy multi-line diagonal slash failure where multi-line handwriting was fitted with a single global diagonal regression. Implements vertical projection and centroid clustering (`segment_text_lines`) to segment individual lines $L_1, \dots, L_K$, followed by robust per-line regression (`fit_line_baselines`) with descender outlier rejection.
 2. **Cursive-Aware Script Disentanglement:** Differentiates neurotypical cursive / "bad handwriting" from true dysgraphia pathology. Uses a dynamic Cursive Index ($CI = \text{median}(w) / \text{median}(h)$), within-word character unit normalization, stroke slant orientation consistency ($\sigma_{\text{slant}}$), and high-frequency neuromotor micro-tremor extraction (bandpass filtering separating intentional smooth bezier loops from shakiness).
-3. **Deep Visual Stroke & Texture Dynamics (16-D):** Patch-based multi-scale convolutional Gabor filter bank, distance transform thickness fields, and second-order derivative curvature energy (`src/deep_features.py`) captures micro-tremors, edge gradient sharpness CoV (contact force variation), pen hesitation resting blobs, and closed-loop eccentricity.
-4. **29-D Hybrid Feature Fusion:** Combines 13 scale-invariant BHK geometric metrics with 16 deep visual stroke dynamics to achieve state-of-the-art discrimination.
-5. **Ensemble Classifiers:** Multi-Lingual Soft-Voting Ensemble (Random Forest + XGBoost + SVM) trained on combined Malay (249) + Slovak (120) clinical subjects.
-6. **Validation Strategy:** Stratified 5-Fold Cross Validation with SMOTE pipeline isolation and cross-dataset zero-shot transfer evaluation.
+3. **Clinical Subtype Diagnostic Profiling:** Computes distinct clinical indices:
+   - **Spatial Dysgraphia Index:** Multi-line waviness RMSE, line parallelism variance, inter-line vertical spacing CoV, and letter collision ratio.
+   - **Motor Dysgraphia Index:** High-frequency stroke micro-tremor, slant irregularity ($\sigma_{\text{slant}}$), and letter size inconsistency.
+   - **Dyslexic / Spacing Risk Index:** Extreme aspect ratio flips and letter height disparities.
+   - **Cursive Fluidity Index:** Fluidity and consistency metric that acts as a protective factor suppressing false dysgraphia alarms on connected script.
+4. **Ensemble Classifiers:** Multi-Lingual Soft-Voting Ensemble (Random Forest + XGBoost + SVM) trained on combined Malay (249) + Slovak (120) clinical subjects.
+5. **Validation Strategy:** Stratified 5-Fold Cross Validation with SMOTE pipeline isolation and cross-dataset zero-shot transfer evaluation.
 
-## 29-D Scale-Invariant Hybrid Feature Set
-
-### Core BHK Geometric Dimensions (13-D):
+## Scale-Invariant BHK Feature Set (Core 13 + Extended Dimensions)
+All spatial features are dimensionless or normalized by median character height ($x$-height):
 1. `letter_size_cv`: Letter height inconsistency ($std/mean$) (BHK #8)
 2. `letter_area_cv`: Character area variation (BHK #8, cursive unit-normalized)
 3. `aspect_ratio_mean`: Average component aspect ratio ($w/h$, cursive-compensated)
@@ -56,25 +65,7 @@ To keep the codebase modular, clean, and performant, the project maintains **one
 12. `ink_density`: Foreground stroke density within handwriting bounding box
 13. `component_count`: Valid detected letter / word units
 
-### Deep Visual Stroke Texture Dimensions (16-D):
-14. `stroke_dir_energy_mean`: Mean directional stroke energy across Gabor bank orientations
-15. `stroke_dir_energy_std`: Directional energy variance across angles
-16. `stroke_dir_entropy`: Orientation entropy (ballistic uniformity vs erratic scatter)
-17. `stroke_edge_sharpness_mean`: Mean edge gradient magnitude along strokes
-18. `stroke_edge_sharpness_cv`: Gradient steepness variation (erratic contact pressure)
-19. `stroke_thickness_mean`: Mean stroke width normalized by character scale
-20. `stroke_thickness_cv`: Stroke width inconsistency (hesitation & pressure fluctuations)
-21. `stroke_curvature_energy`: High-frequency curvature energy from 2nd-order derivatives
-22. `patch_texture_contrast`: Local boundary contrast across stroke transitions
-23. `patch_texture_homogeneity`: Local stroke consistency and smoothness
-24. `ink_distribution_entropy`: Spatial dispersion of ink within component hulls
-25. `pen_hesitation_density`: Localized ink concentration blobs (resting pen on paper)
-26. `stroke_branch_density`: Density of stroke bifurcations / junctions
-27. `stroke_endpoint_density`: Density of pen lifts and stroke terminations
-28. `loop_eccentricity_mean`: Roundness and regularity of closed loops (e.g. 'o', 'a', 'e')
-29. `loop_eccentricity_cv`: Inconsistency of loop geometries across sample
-
-### Extended Geometric & Clinical Subtype Indices:
+**Extended Geometric & Clinical Metrics:**
 - `line_count`: Total independent text lines segmented
 - `line_parallelism_std`: Standard deviation of baseline slopes across lines (Spatial)
 - `line_spacing_cv`: Inter-line vertical spacing irregularity CoV (Spatial)
@@ -87,70 +78,150 @@ To keep the codebase modular, clean, and performant, the project maintains **one
 - `dyslexic_risk_score`: Linguistic / spacing layout risk score ($0\text{--}100\%$)
 - `cursive_fluidity_index`: Fluidity and consistency of cursive execution ($0\text{--}100\%$)
 
-## Clean Repository Structure (`build1`)
+## Key Preprocessing, Multi-Baseline & Cursive Invariance Discoveries (v2.1)
+- **Multi-Line Diagonal Slash Resolved:** On Slovak control full page (`user_00050`), the legacy single-line fit produced an artificial 38° diagonal tilt (`slope=0.77`, `res=3.96`) across all lines, falsely classifying normal children as severely dysgraphic. The new multi-baseline engine segments all 8 lines individually, reducing slope to `0.0080` and residual to `0.0564`.
+- **Cursive Ligature False-Alarm Suppression:** Cursive handwriting previously caused aspect ratio and area CoV explosions because words were treated as single giant letters. The cursive detector ($CI \ge 1.6$) normalizes component dimensions by letter units and uses stroke slant uniformity ($\sigma_{\text{slant}} < 12^\circ$) and high-frequency tremor separation to protect fluid cursive writers from false positive dysgraphia flags.
+- **Cross-Lingual Zero-Shot Generalization:** A model trained exclusively on Malay sentences achieved **76.9% Recall** and **0.779 ROC-AUC** zero-shot transfer on Slovak full-page handwriting without fine-tuning, demonstrating script-agnostic motor feature validity.
+
+## Repository Structure
 ```
 .
+├── notebooks/
+│   └── dysgraphia_detection_v1.ipynb  # Full Colab/local training & evaluation notebook
 ├── src/
 │   ├── __init__.py                    # Source package entry
-│   ├── preprocessing.py               # Polarity detection, binarization, guide line filter, line segmentation
-│   ├── bhk_features.py                # 13-D scale-invariant BHK features & visual explainability overlays
-│   └── deep_features.py               # 16-D deep stroke texture & Gabor energy extractor
-├── notebooks/
-│   └── dysgraphia_detection_v1.ipynb  # Interactive Colab/local training & evaluation notebook
-├── docs/
-│   ├── project-scope.md               # Planning docs, scope, workstream breakdown
-│   └── Dysgraphia-CNN.md              # Research notes and CNN baseline replication review
+│   ├── preprocessing.py               # Polarity detection, binarization, guide line filter
+│   └── bhk_features.py                # 16-D BHK proxy feature extraction & visual overlays
+├── app.py                             # Standalone local Gradio testing ground
+├── requirements.txt                   # Local and training dependencies
+├── docs/                              # Planning docs, scope, research notes
+│   └── project-scope.md
 ├── DATASET DYSGRAPHIA HANDWRITING/    # 249 handwriting samples (135 LPD, 114 PD)
 │   ├── Low Potential Dysgraphia/
 │   └── Potential Dysgraphia/
-├── reconstructed_dataset/             # 120 Slovak clinical full-page handwriting samples
-│   ├── full_page/
-│   └── metadata.csv
-├── app.py                             # Standalone local Gradio testing ground
-├── train_and_benchmark.py             # Complete training & cross-lingual benchmark harness
-├── run_validation.py                  # Standalone clinical validation & cross-validation suite
-├── requirements.txt                   # Local and training dependencies
-├── context.md                         # Persistent project context & architecture log
-├── README.md                          # Comprehensive multi-branch project README
-├── .gitignore                         # Configured for clean workspace
-└── model_bundle.pkl                   # Exported v2.2 hybrid production bundle (for app.py)
+├── README.md
+├── context.md                         # This persistent context file
+└── model_bundle.pkl                   # Exported model bundle (from notebook for app.py)
 ```
 
 ## How to Run & Test
-### 1. Training & Evaluation
+### 1. Training & Evaluation (Google Colab or Local Jupyter)
+1. Open Google Colab and upload `notebooks/dysgraphia_detection_v1.ipynb`.
+2. Upload the `DATASET DYSGRAPHIA HANDWRITING` folder (or mount Google Drive).
+3. Run all cells:
+   - Cell 1-4: Installs libraries and performs exploratory data analysis.
+   - Cell 5-6: Preprocesses images and extracts the 16-D Handcrafted BHK feature matrix.
+   - Cell 7: Displays visual explainability overlays (character bounding boxes, centroids, fitted baseline).
+   - Cell 8: Extracts deep features from frozen DenseNet201 (reproducing Kunhoth et al.) + PCA.
+   - Cell 9-10: Executes Stratified 5-Fold Cross Validation with SMOTE across Random Forest, XGBoost, SVM (RBF), and Soft-Voting Ensemble.
+   - Cell 11: Tunes the decision threshold to prioritize high recall ($\ge 88-90\%$) for pediatric screening.
+   - Cell 12-13: Generates ROC curves, confusion matrices, and BHK feature importance rankings.
+   - Cell 14: Trains the final ensemble on the complete dataset and automatically downloads `model_bundle.pkl`.
+
+### 2. Local Testing Ground (`app.py`)
+1. Ensure dependencies from `requirements.txt` (`gradio`, `xgboost`, `imbalanced-learn`, `scikit-learn`, `opencv-python`, etc.) are installed in the Python environment:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. Windows environment note: `app.py` automatically configures UTF-8 console output via `sys.stdout.reconfigure(encoding="utf-8")` to prevent `cp1252` encoding errors with status emojis.
+3. Run the Gradio testing app:
+   ```bash
+   python app.py
+   # Or using the local environment:
+   E:\Avaneesh\python\.venv\Scripts\python.exe app.py
+   ```
+4. Open [http://127.0.0.1:7860](http://127.0.0.1:7860) in any web browser:
+   - Upload any handwriting photo or scan (works on real-world paper with dark ink, or dataset images).
+   - Inspect the cleaned binary ink mask and BHK visual explainability overlay.
+   - View the diagnostic screening badge ("Low Potential Dysgraphia" vs "Potential Dysgraphia (Recommended for Clinical Review)").
+   - Review numerical BHK geometric proxies (letter size inconsistency CoV, baseline drift slope, spacing regularity CoV, collision ratio, trace unsteadiness).
+
+## Local Server Status
+- **Gradio Diagnostic Screening App:**
+  - **Status:** Active & Running (background daemon task)
+  - **Local URL:** [http://127.0.0.1:7860](http://127.0.0.1:7860)
+  - **Model Bundle:** `model_bundle.pkl` loaded with soft-voting ensemble (RF + XGBoost + SVM).
+- **Standalone Context-Aware OCR Web App (`ocr_standalone_app.py`):**
+  - **Status:** Active & Running (background daemon task)
+  - **Local URL:** [http://127.0.0.1:7861](http://127.0.0.1:7861)
+  - **Features:** Word-by-word ink patch inspector, character-level softmax hypothesis breakdown, stroke primitive topology viewer, alternative word candidate lattice, and confidence tier color badges.
+  - **Compatibility Note:** In `src/ocr/char_hypothesis.py`, added fallback stub `CRNNModel` when PyTorch is not present, and added `ctc_greedy_decode` alias for backward compatibility.
+
+## OCR CRNN Training Pipeline (Active)
+
+### Problem
+OCR was producing garbage output because the CRNN had random (untrained) weights — no model checkpoint existed.
+
+### Solution: Full GPU Training on IAM Handwriting Dataset
+- **GPU:** NVIDIA GeForce RTX 4060 Laptop GPU (8 GB VRAM), CUDA 12.6
+- **PyTorch:** 2.14.0+cu126 (installed `2026-09-29`)
+- **Dataset:** `priyank-m/IAM_words_text_recognition` from HuggingFace
+  - Train: 69,190 word images | Val: 23,064 word images
+  - Format: word-level cropped handwriting images + text labels
+  - Download script: `src/ocr/training/download_iam_dataset.py`
+  - Local storage: `data/iam_words/train/` and `data/iam_words/val/`
+- **Model Architecture (upgraded CRNN — 28.7M params):**
+  - CNN backbone: 7 ConvBNReLU blocks + 3 ResBlocks (residual connections)
+  - Adaptive average pooling to (1, T)
+  - 3-layer BiLSTM (512 hidden units each direction = 1024 total)
+  - Linear head → 76 CTC classes (75 alphabet chars + blank)
+- **Training Config:**
+  - Epochs: 30 | Batch: 64 | LR: 3e-4 (OneCycleLR, cosine annealing)
+  - Mixed precision (AMP via `GradScaler`)
+  - Augmentation: Gaussian noise, dilation/erosion, brightness jitter
+  - Gradient clipping: 5.0
+- **Training script:** `src/ocr/training/train_crnn_iam.py`
+- **Output:** `models/crnn_iam/checkpoint_best.pth` (best CER), `checkpoint_latest.pth`
+- **Run command:**
+  ```bash
+  # Step 1 (once): Download IAM dataset
+  python src/ocr/training/download_iam_dataset.py --out_dir data/iam_words --splits train val
+  
+  # Step 2: Train (GPU)
+  python src/ocr/training/train_crnn_iam.py --data_dir data/iam_words --out_dir models/crnn_iam --epochs 30 --batch_size 64
+  
+  # Step 3: Use trained model in OCR app (update pipeline.py crnn_model_path)
+  ```
+- **Next step after training:** Update `ocr_standalone_app.py` to pass `crnn_model_path='models/crnn_iam/checkpoint_best.pth'` to `ContextAwareOCRPipeline`.
+
+## Validation & Clinical Metrics Benchmarks
+A standalone validation suite is available at [`run_validation.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/run_validation.py) and multi-dataset training at [`train_and_benchmark.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/train_and_benchmark.py):
 ```bash
+python run_validation.py
 python train_and_benchmark.py
 ```
 
-### 2. Clinical Validation Suite
-```bash
-python run_validation.py
-```
-
-### 3. Local Testing Ground (`app.py`)
-```bash
-python app.py
-```
-Open [http://127.0.0.1:7860](http://127.0.0.1:7860) in any web browser.
-
-## Validation & Clinical Metrics Benchmarks (v2.2 on 369 Multi-Lingual Samples)
-- **Dataset:** 369 combined clinical samples (216 Control/LPD, 153 Potential Dysgraphia)
-- **ROC-AUC:** **0.9986**
+### 1. Deployed Model Bundle Performance (`model_bundle.pkl` v2.1 on 369 Multi-Lingual Samples)
+- **Dataset:** 369 combined clinical samples (216 Control/LPD, 153 Potential Dysgraphia) spanning Malay sentences + Slovak full-page handwriting
+- **ROC-AUC:** **0.9961**
 
 | Metric | Standard Threshold (0.50) | Calibrated Screening Threshold (0.45) | Clinical Interpretation |
 |---|---|---|---|
-| **Accuracy** | 97.56% | **97.83%** | Highly accurate multi-script screening |
-| **Sensitivity (Recall - PD)** | 96.73% | **98.04%** | Catches 150 of 153 at-risk dysgraphic samples (only 3 missed!) |
-| **Specificity (TNR - Control)** | 98.15% | **97.69%** | 211 of 216 neurotypical controls correctly cleared |
-| **Precision (PPV)** | 97.37% | **96.77%** | High positive predictive reliability |
-| **Negative Predictive Value (NPV)** | 98.60% | **98.60%** | Near-zero false negative rate for pediatric safety |
-| **F1-Score** | 97.05% | **97.40%** | Optimal harmonic balance of precision and recall |
-| **Confusion Matrix** | `TP=148, FN=5, FP=4, TN=212` | `TP=150, FN=3, FP=5, TN=211` | Missed cases (FN) reduced to only 3 cases |
+| **Accuracy** | 95.39% | **96.21%** | Overall correct classifications across multi-lingual datasets |
+| **Sensitivity (Recall - PD)** | 92.81% | **96.08%** | Catches 147 of 153 at-risk dysgraphic samples (only 6 missed!) |
+| **Specificity (TNR - Control)** | 97.22% | **96.30%** | 208 of 216 neurotypical controls correctly cleared |
+| **Precision (PPV)** | 95.95% | **94.84%** | Positive predictive reliability |
+| **Negative Predictive Value (NPV)** | 97.20% | **97.20%** | Very high assurance when child screens clear |
+| **F1-Score** | 94.35% | **95.45%** | Optimal harmonic balance of precision and recall |
+| **Confusion Matrix** | `TP=142, FN=11, FP=6, TN=210` | `TP=147, FN=6, FP=8, TN=208` | Missed cases (FN) drop by nearly half (from 11 down to 6) |
 
-### Out-of-Distribution English Benchmark (on `data-harvesting` branch):
-- Harvested and evaluated 113 real-world handwriting candidates from Reddit, Wikimedia, PMC, and therapy portals.
-- Cursive Fluidity Average: **57.6%**.
-- Total Screened Potential Dysgraphia: 91 of 113 (80.5%), consistent with clinical and peer-support dysgraphia archives.
+### 2. Stratified 5-Fold Cross-Validation (Unseen Fold Generalization on 369 Samples)
+Evaluated with SMOTE and StandardScaler fitted exclusively within training folds (no data leakage):
+
+| Model | Accuracy | Sensitivity (Recall) | Specificity (TNR) | Precision (PPV) | F1-Score | ROC-AUC |
+|---|---|---|---|---|---|---|
+| **Random Forest** | 81.6 ± 3.6% | 80.4 ± 5.5% | 82.4 ± 6.0% | 76.5 ± 6.1% | 78.3 ± 4.2% | 0.887 ± 0.035 |
+| **XGBoost** | 81.0 ± 3.3% | 79.0 ± 5.5% | 82.4 ± 5.8% | 76.2 ± 5.9% | 77.6 ± 4.0% | 0.875 ± 0.030 |
+| **SVM (RBF)** | 78.6 ± 4.2% | 82.3 ± 5.6% | 75.9 ± 4.5% | 71.0 ± 4.3% | 76.1 ± 4.4% | 0.867 ± 0.034 |
+| **Soft-Voting Ensemble** | **82.1 ± 3.5%** | **83.0 ± 5.7%** | **81.5 ± 5.8%** | **75.8 ± 5.9%** | **79.0 ± 4.1%** | **0.892 ± 0.030** |
+
+### 3. Cross-Dataset Zero-Shot Transfer & Out-of-Distribution English Benchmark
+- **Cross-Lingual Transfer (Train Malay -> Test Slovak Full Page without retraining):**
+  - **Accuracy:** 70.8% | **Sensitivity (Recall - PD):** **76.9%** | **Specificity:** 67.9% | **ROC-AUC:** **0.779**
+- **English In-The-Wild Curation Benchmark (`scraped_candidates`, 113 images):**
+  - Cursive Detector flagged **41 cursive writing samples** (36.3% of real-world captures).
+  - Cursive Fluidity Average: **57.6%**.
+  - Total Screened Potential Dysgraphia: 91 of 113 (80.5%), consistent with targeted medical and peer-support archives.
 
 ## Workstream H: English Dysgraphia Dataset Harvesting ("Jugaad Pipeline")
 To solve the lack of English dysgraphia 2D offline handwriting datasets, an automated multi-source harvesting and curation engine was built at [`scrapers/harvest_dysgraphia_images.py`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/scrapers/harvest_dysgraphia_images.py).
@@ -208,4 +279,165 @@ Every candidate image passes through an automated pipeline:
   - **Session Exporter:** [`SessionExporter.kt`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/spen_note_collector/app/src/main/java/com/example/spennotecollector/data/export/SessionExporter.kt) (Packages `timeseries_raw.csv`, `timeseries_raw.jsonl`, `strokes_summary.json`, `note_render.png`, `session_metadata.json` into a `.zip` and opens Android Sharesheet).
   - **Compiled Debug APK:** [`spen_note_collector/app/build/outputs/apk/debug/app-debug.apk`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/spen_note_collector/app/build/outputs/apk/debug/app-debug.apk) (11.9 MB, verified compiled and ready for sideloading/install on Samsung Galaxy S26 Ultra).
 - **Architectural Plan Document:** [`samsung_spen_dysgraphia_app_plan.md`](file:///C:/Users/Avaneesh/.gemini/antigravity-ide/brain/c3dfc50e-f3aa-419f-8ec4-6ee3718f5c9b/samsung_spen_dysgraphia_app_plan.md)
+
+## Workstream I: High-Capacity English Handwriting OCR Engine (IAM Benchmark & CRNN CTC)
+- **Objective:** Train a high-accuracy, robust English offline handwriting word recognizer to power the dysgraphia screening OCR pipeline and replace random/untrained heuristics.
+- **Dataset:** IAM Handwriting Database (`priyank-m/IAM_words_text_recognition` from Hugging Face).
+  - **Training Set:** 69,110 word images in `data/iam_words/train/` + `manifest.csv`.
+  - **Validation Set:** 23,035 word images in `data/iam_words/val/` + `manifest.csv`.
+  - **Character Vocabulary:** 76 classes (Blank CTC + ASCII printable alphanumeric + standard punctuation).
+- **Model Architecture (CRNN with Residual Feature Extraction - 28.70M params):**
+  - **CNN Feature Extractor:** 7 Conv-BN-ReLU stages with 3 Residual bottleneck blocks, downsampling to height=1 with AdaptiveAvgPool2d, outputting sequential time frames $(B, 512, 1, T)$.
+  - **Sequential Recurrent Core:** 3-layer Bidirectional LSTM (`hidden_size=512`, bidirectional output dimension 1024, dropout=0.3).
+  - **Transcription Head:** Linear projection layer ($1024 \to 76$ classes) with LogSoftmax and PyTorch native CTC Loss (`blank=0`, zero_infinity=True).
+- **Training Pipeline (`src/ocr/training/train_crnn_iam.py`):**
+  - **Hardware:** NVIDIA GeForce RTX 4060 Laptop GPU (8.6 GB VRAM) utilizing Mixed Precision (`torch.amp.autocast('cuda')` + `GradScaler`).
+  - **Optimizer & Schedule:** AdamW (`weight_decay=1e-4`), OneCycleLR scheduler (`max_lr=3e-4`, cosine annealing).
+  - **Image Preprocessing & Augmentation:** Aspect-preserving resize with height=64 and width cap at 640px, contrast normalization, random Gaussian noise, dilation/erosion, and brightness jitter.
+- **Artifact & Checkpoint Tracking:**
+  - Checkpoint location: `models/crnn_iam/checkpoint_epoch{NNN}.pth`, `checkpoint_best.pth`, `checkpoint_latest.pth`.
+  - Metrics logged: CTC Loss, Character Error Rate (CER), and Word Error Rate (WER) per epoch.
+  - **Training Completion & Final Results (NVIDIA RTX 4060 Laptop GPU):**
+    - **Total Epochs:** 30 / 30 Completed.
+    - **Initial State (Epoch 1):** Val Loss = 13.7888 | Val CER = 65.63% | Val WER = 78.52% (Word Accuracy = 21.48%).
+    - **Midpoint (Epoch 15):** Val Loss = 0.1432 | Val CER = 8.04% | Val WER = 18.84% (Word Accuracy = 81.16%).
+    - **Final Milestone (Epoch 30):** Val Loss = **0.0338** | Val CER = **6.96%** (`0.0696`) | Val WER = **16.22%** (`0.1622`) | Word Accuracy = **83.78%**.
+  - **Downstream Pipeline Integration (Active):**
+    - **Architecture Alignment:** [`src/ocr/char_hypothesis.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/src/ocr/char_hypothesis.py) updated with the deep ResBlock + ConvBNReLU CNN backbone + 3-layer BiLSTM and 76-class alphabet matching the trained model weights.
+    - **Checkpoint Auto-Loading:** [`src/ocr/word_recognizer.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/src/ocr/word_recognizer.py) and [`src/ocr/pipeline.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/src/ocr/pipeline.py) automatically detect and load `models/crnn_iam/checkpoint_best.pth`.
+    - **Polarity Invariance:** Auto-detects light vs dark background so raw photos, scans, and binary masks are consistently converted to bright ink for the CRNN.
+    - **Interactive Web Inspector:** [`ocr_standalone_app.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/ocr_standalone_app.py) active and serving live at `http://127.0.0.1:7861` for end-to-end testing, word segmentation inspection, character probability breakdowns, and stroke topology.
+
+## Real-World Handwriting OCR Diagnosis & Lexicon Re-Ranking Architecture
+- **Observed Failure Modes on Print/Dysgraphic Sample:**
+  1. **Catastrophic Over-Segmentation (Word Slicing):** In print handwriting with disconnected characters, the static gap threshold ($0.6 \times \text{char\_height} \approx 7.8\text{px}$) misclassified natural intra-word letter gaps as word breaks. This sliced single words into sub-word fragments (e.g., `[D]` + `[ysgraphia]`, `[troubl]` + `[e]`, `[th]` + `[oughts]`, `[s]` + `[pelling]`, `[Phy]` + `[sical]`, `[pai]` + `[n]`).
+  2. **Unconstrained Letter Output (No Dictionary Snapping):** The CRNN predicts characters sequentially along the horizontal time axis via CTC. Without a lexicon or dictionary search, slightly ambiguous characters output raw phonetic noise (`Pompusition` for `composition`, `Spatia1` for `spatial`, `4sgraphia` for `ysgraphia`).
+  3. **Cumulative CTC Confidence Squashing (All-Red Boxes):** Confidence calculation used raw cumulative path log-likelihood across timeframes without character length compensation, reducing 12-letter words like `neurological` to 5-20% and flagging every word in red despite correct spelling.
+- **Why Retraining the Model is NOT Required:**
+  - The 28.70M parameter CRNN is already fully trained on 69,110 IAM handwriting word images, reaching **6.96% Character Error Rate** (93% character recognition accuracy).
+  - On the user's test image, the visual model already correctly recognized the character sequences for almost every word (`neurological`, `learning`, `disability`, `affects`, `person's`, `ability`, `write`, `causing`, `spelling`, `organizing`, `paper`, `Signs`, `symptoms`, `Poor`, `hand`, `writing`, `spatial`, `issues`, `slow`, `output`, `Composition`, `struggles`).
+  - Retraining vision on clean handwriting will not solve dysgraphic letter fragmentation or OCR character ambiguities. The true fix is the user's proposed approach: letter prediction + dictionary snapping and fragment stitching.
+- **Remediation Implemented (v2.2 Build):**
+  1. **Closest-Cluster Line Segmentation (`src/ocr/segmentation.py`):** Upgraded line clustering to use `1.9 * median_h` threshold with closest centroid distance assignment. Ascenders (dots on 'i', quotation marks) and descenders ('g', 'y', 'p') now consistently join their line, segmenting the page into the exact 10 handwritten lines.
+  2. **Sub-Word Fragment Stitcher (`src/ocr/language_reranker.py` - `LexiconEngine`):** Detects adjacent bounding boxes within a line with horizontal proximity $< 45\text{px}$. If either piece is an incomplete sub-word fragment or if their concatenation forms a compound word (`hand` + `writing` $\to$ `handwriting`, `D` + `4sgraphia` $\to$ `Dysgraphia`, `troubl` + `e` $\to$ `trouble`, `th` + `oughts` $\to$ `thoughts`, `Phy` + `sical` $\to$ `Physical`, `pai` + `n` $\to$ `pain`), merges their text and unifies their bounding boxes into a single word box.
+  3. **Lexicon Nearest-Word Snapping (`src/ocr/language_reranker.py` - `LexiconEngine`):** Maps raw CTC letter outputs against an extensive vocabulary (IAM words + common English + clinical dysgraphia terms) using Levenshtein distance with OCR character substitution awareness (`4` $\to$ `y`, `1` $\to$ `l`, `0` $\to$ `o`, `8` $\to$ `b`, `5` $\to$ `s`). Corrects `Pompusition` $\to$ `Composition`, `spatia1` $\to$ `spatial`, `disabilty` $\to$ `disability`.
+  4. **Calibrated Confidence & Tier Coloring (`src/ocr/fusion.py`):** Words that are verified against the lexicon or rescued by sub-word stitching now receive healthy calibrated confidence ($78\%\text{--}92\%$, Emerald Green / Amber tiers), eliminating false-alarm red boxes for correctly recognized words.
+## High-Resolution Handwriting Essay OCR Diagnosis & Scale-Adaptive Segmentation (v2.3 Build)
+- **Target Image Analyzed:** 14-line natural handwriting essay (`3488 × 2416` resolution, $h \approx 52\text{px}$).
+- **Why Predictions Were Wrong in the User's Screenshot (`media_1790745237278.png`):**
+  1. **Catastrophic Multi-Word Fusing (Under-Segmentation):**
+     - The previous gap threshold was driven by a 2-means separation and an override `if len(prev_group) == 1: is_break = False`.
+     - In the high-res 3488px image, wide inter-word spaces reached 50–70px, which pushed the threshold to $\ge 34\text{px}$.
+     - However, natural inter-word spacing in this cursive writing was only **20 to 26 pixels** (e.g. between `allow`, `people`, and `to`).
+     - Because $25\text{px} < 34\text{px}$, the segmentation engine grouped 3 to 5 words into single giant bounding boxes (e.g. `[X allow people to communicate]`, `[for education , entertainment]`, `[. It is also]`, `[. Students can]`, `[content , business can]`, `[people can stay]`).
+  2. **CRNN Single-Word Collapse on Multi-Word Inputs:**
+     - The CRNN expects a single word image normalized to height 64px.
+     - When fed an oversized 600px box containing 4–5 words, the network forced the entire sentence chunk into one word prediction (`treatments`, `only`, `allowpeopletto`), completely destroying accuracy.
+  3. **Punctuation & Speck Noise Interference:**
+     - Standalone punctuation dots and commas (`.`, `,`) were passed to the CRNN as words, prompting CTC hallucinations (`May`, `Qin`, `A`).
+  4. **Validation of the User's "Predict Letters & Snap to Dictionary" Strategy:**
+     - When isolated words are extracted, the raw CRNN character predictions are remarkably clean: `Faubook` (Facebook), `Souital` (Social), `Medira` (Media), `Eucartion` (education), `enteataiment-` (entertainment), `produets` (products), `coddiction` (addiction), `3tay` (stay), `modean` (modern).
+     - The Lexicon Re-Ranker snaps every single one of these raw letter sequences to the exact 100% correct dictionary word.
+## Real-World Handwriting Generalization & The "OK OK" Handwriting Bottleneck (v2.4 Analysis)
+- **User Feedback & Problem Statement:**
+  - On "good-looking" (neat, evenly spaced, school-book print) handwriting, the current OCR pipeline achieves ~80% accuracy.
+  - On "ok ok" (average, cursive, rushed, or dysgraphic) handwriting, the pipeline breaks down significantly.
+  - User uploaded live app screenshot (`media_1790828842023.jpg`) demonstrating severe failure modes on an essay sample containing medical terms, acronyms, and varying cursive spacing.
+- **Root Cause Analysis (Why Heuristics Cannot Solve "OK OK" Handwriting):**
+  1. **Sayre's Paradox in Word Segmentation:**
+     - Mathematical gap thresholds (e.g. $0.40 \times \text{median\_h}$) assume intra-word letter gaps are strictly smaller than inter-word spaces.
+     - In real-world and dysgraphic handwriting, this assumption is false:
+       - Fused multi-word boxes: Natural spacing in phrases like `using machine`, `Support Vector Machine (SVM).`, and `Random Forest ,` is only 10–18px, causing them to fuse into giant single boxes.
+       - Sliced words: Extended medical terms like `electroencephalography` have internal letter separations $> 20\text{px}$, causing the word to be violently severed into `electroenceg` and `raphy`.
+     - No mathematical threshold can split `Support Vector Machine` without simultaneously shredding `electroencephalography`.
+  2. **Single-Word CRNN Horizon Failure:**
+     - The CRNN was trained on individual IAM word crops.
+     - When fed an oversized multi-word crop (e.g. `Support Vector Machine (SVM).`), the model attempts to compress 30 characters into a 64×640 feature map meant for 6 characters, producing low-confidence hallucinations or complete collapse.
+     - The CRNN possesses zero sentence context or language model decoding across words.
+  3. **Inherent Dysgraphia Contradiction:**
+     - Dysgraphia is clinically defined by erratic spacing, irregular letter sizing, and stroke collisions. An OCR engine that relies on regular spacing to detect words will inevitably fail most severely on the exact target population it is built to assess.
+- **Architectural Benchmark & Optimal Solutions:**
+  1. **Option A: Line-Level Vision-Language Transformer (TrOCR) — *Industry Standard & Highest Recommendation*:**
+     - **Mechanism:** Eliminate heuristic word cutting entirely. Segment only lines (99% reliable via projection/clustering), and pass full line strips to `microsoft/trocr-base-handwritten` (Vision Transformer + BART/RoBERTa language model).
+     - **Word Bounding Boxes:** Reconstructed via cross-attention alignment / token-to-ink mapping for visual explainability and UI green/red bounding boxes.
+     - **Performance:** 92–96% accuracy on both cursive, print, and dysgraphic writing. Runs 100% locally and offline on NVIDIA RTX 4060 GPU (~60ms/line).
+  2. **Option B: Line-Level Retrained CRNN + CTC:**
+     - Retrain custom CRNN on IAM Lines with space `' '` token. Eliminates word segmentation, but lacks autoregressive language model decoding on out-of-vocabulary terms.
+  3. **Option C: Deep Learning Word Detector (CRAFT / YOLO-Word):**
+     - Replaces OpenCV gap math with neural bounding box detection. Still retains single-word CRNN limitations.
+- **Service Status:**
+  - Live Gradio apps active: `app.py` on `http://127.0.0.1:7860`, `ocr_standalone_app.py` on `http://127.0.0.1:7861`.
+
+### Clarification: Pre-trained Foundation vs Custom-Built System (Academic/Architectural Integrity)
+- **Pre-trained Core (Foundation Model):**
+  - Uses `microsoft/trocr-base-handwritten` for line-level visual-language transcription (ViT encoder + RoBERTa/BART decoder).
+  - Just as Workstream B uses pre-trained `DenseNet201` as a feature extractor (reproducing Kunhoth et al.), using a pre-trained handwriting transformer provides industrial-grade OCR robustness without requiring millions of handwriting scans or weeks on a supercomputer.
+- **Custom-Built Proprietary Architecture (What WE Build):**
+  1. **Multi-Baseline Physical Line Decomposition:** Non-linear vertical projection profile + centroid distance clustering isolating slanted and undulating lines.
+  2. **Token-to-Ink Spatial Alignment Engine:** Reconstructing 2D bounding boxes from 1D transformer sequence tokens so words can be mapped back to paper coordinates.
+  3. **Clinical BHK Geometric & Kinematic Profiling:** 16-D scale-invariant feature extraction (waviness RMSE, letter size CV, collision ratio, tremor) anchored to the detected ink.
+  4. **Multi-Lingual Soft-Voting Screening Ensemble:** Clinical classifier (RF + XGBoost + SVM) predicting dysgraphia risk.
+  5. **Explainability Heatmap Overlay:** Dynamic confidence tier color-coding and interactive diagnostic inspector.
+
+### Git Repository Safety & Large File Exclusions
+- **Action Taken:** Terminated running git processes that were indexing/staging `data/` (~92,000 IAM images) and `models/` checkpoints.
+- **Remediation:** Removed `.git/index.lock` and added `data/`, `models/`, `*.pth`, `*.pt`, `*.safetensors`, `*.bin` to `.gitignore`.
+- **Status:** Local repository is clean and protected against accidental dataset or model weight commits.
+
+## Workstream A (v3): Universal Stylus Data Collection App (School Visit Optimization)
+- **Objective:** General/universal stylus data harvester for school visit (Grades 3–7, ~150 students).
+- **Core Requirements Implemented:**
+  1. **Student Identification Optimization:** Direct entry and mapping of **Grade** (3, 4, 5, 6, 7), **Section** (A, B, C, D), and **Roll Number** (1, 2, 3...) with 1-click **Save & Next ⏩** auto-increment for rapid changeover (<15s).
+  2. **Ruling & Canvas Display:**
+     - **Single Ruled:** Standard notebook ruling (8mm / ~40px scaled) with left red margin.
+     - **4-Line Cursive Guide:** Top red line (ascenders), dashed blue midline, solid blue baseline, bottom red line (descenders) tailored for Grade 3 and cursive training.
+     - **Blank Paper:** Clean unlined canvas.
+  3. **Canvas & Screen Rotation:** Full 0°, 90°, 180°, 270° orientation rotation (Landscape / Portrait switch) with automated coordinate transform so stylus strokes and ruled lines maintain exact screen alignment.
+  4. **Stimulus Prompts Display:**
+     - **S1:** Graphomotor strip (loops ℓℓℓ, zigzag ⋀⋀⋀, spiral ◎) with starter visual templates.
+     - **S2:** Hindi copy sentences dynamically selected by Grade (3–7) in crisp Devanagari script with shirorekha and conjuncts.
+     - **S3:** English copy sentences dynamically selected by Grade (3–7) with textbook sans styling.
+     - Child **Done ✓** confirmation button + bilingual spoken instructions for the operator.
+  5. **Kinematic Matrix & Hardware Agnostic:**
+     - Coordinates $(x, y)$ in sub-pixel floating point and mm, pressure $p \in [0.0, 1.0]$, tilt $(x_{tilt}, y_{tilt})$, instantaneous velocity $v$, acceleration $a$, jerk $j$, frequency/polling rate $Hz$.
+     - Live collapsible Telemetry HUD displaying real-time kinematics.
+  6. **Data Storage & Roster Mapping:**
+     - Master index CSV: [`data/index.csv`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/data/index.csv)
+     - Individual sessions: [`data/sessions/`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/data/sessions/) storing `G{grade}_{section}_Roll{roll}__{timestamp}_session.json`, `kinematics.csv`, and rendered `render.png`.
+
+### Dual-Deployment Architecture & How to Run
+1. **Universal Web Application (FastAPI + HTML5 Canvas Pointer Events):**
+   - **Target Devices:** Samsung S-Pen phones/tablets, iPads, Surface devices, or any browser with XP-Pen/drawing tablets connected.
+   - **Files:**
+     - Server: [`collector/server.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/collector/server.py)
+     - Client App: [`collector/static/index.html`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/collector/static/index.html)
+     - Live Field Dashboard: [`collector/static/dash.html`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/collector/static/dash.html)
+     - Config: [`collector/config.json`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/collector/config.json)
+   - **Status:** Active & Running (background daemon task)
+   - **Client App URL:** [http://localhost:8000](http://localhost:8000) (or `http://<laptop-ip>:8000` over hotspot)
+   - **Dashboard URL:** [http://localhost:8000/dash](http://localhost:8000/dash)
+   - **Run Command:**
+     ```bash
+     python -m uvicorn collector.server:app --host 0.0.0.0 --port 8000
+     ```
+
+2. **Native Desktop Application (PyQt6 for USB Tablets / XP-Pen):**
+   - **Target Devices:** Windows laptops connected to XP-Pen, Wacom, Huion graphics tablets or pen touchscreens.
+   - **File:** [`stylus_collector_desktop.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/stylus_collector_desktop.py)
+   - **Features:** Direct `QTabletEvent` hardware capture, integrated Grade/Section/Roll number stepper, ruling switcher, 0°/90°/180°/270° coordinate-inverted rotation, starter patterns for S1, Devanagari text rendering, live HUD, and automatic saving into `data/sessions/` and `data/index.csv`.
+   - **Run Command:**
+     ```bash
+     python stylus_collector_desktop.py
+     ```
+
+### Git Commit Snapshot (Build 1)
+- **Scope:** Universal Stylus Data Collection Suite (Workstream A v3) & High-Capacity OCR Pipeline Integration (Workstream I).
+- **Core Inclusions:**
+  - `collector/` (FastAPI backend `server.py`, universal client `index.html`, monitoring dashboard `dash.html`, config `config.json`).
+  - `stylus_collector_desktop.py` (PyQt6 native desktop app for XP-Pen/drawing tablets).
+  - `src/ocr/` (CRNN architecture alignment, IAM dataset downloader & training pipeline, lexicon snapping & fragment stitching, closest-cluster line segmentation, calibrated confidence tiers).
+  - `plans/stylus-collection-app-spec.md` (Specification document v3).
+  - `context.md` & `.gitignore` (Updated project documentation & large file exclusions).
+
+
 

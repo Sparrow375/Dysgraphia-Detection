@@ -1,0 +1,83 @@
+{
+  "app_version": "1.0.0",
+  "name": "Universal Stylus Data Collector",
+  "grades": [3, 4, 5, 6, 7],
+  "sections": ["A", "B", "C", "D"],
+  "default_roll": 1,
+  "ruling_modes": [
+    {
+      "id": "single",
+      "label": "Single Ruled (Notebook 8mm)",
+      "line_spacing_px": 40,
+      "color": "rgba(60, 130, 246, 0.28)",
+      "margin_left_px": 50
+    },
+    {
+      "id": "four_line",
+      "label": "4-Line Cursive Guide",
+      "group_height_px": 60,
+      "top_line_color": "rgba(239, 68, 68, 0.4)",
+      "mid_line_color": "rgba(59, 130, 246, 0.35)",
+      "base_line_color": "rgba(59, 130, 246, 0.35)",
+      "bottom_line_color": "rgba(239, 68, 68, 0.4)",
+      "margin_left_px": 50
+    },
+    {
+      "id": "blank",
+      "label": "Blank Paper",
+      "margin_left_px": 50
+    }
+  ],
+  "orientations": [
+    {"angle": 0, "label": "Landscape (0°)"},
+    {"angle": 90, "label": "Portrait (90°)"},
+    {"angle": 180, "label": "Inverted Landscape (180°)"},
+    {"angle": 270, "label": "Inverted Portrait (270°)"}
+  ],
+  "tasks": [
+    {
+      "id": "S1",
+      "title": "S1: Graphomotor Strip",
+      "lang": "pattern",
+      "cap_sec": 35,
+      "instructions_hi": "लाइन के अंत तक पैटर्न बनाओ। फिर बिंदु से शुरू करके गोल-गोल घुमाते हुए बाहर की ओर बनाओ।",
+      "instructions_en": "Continue the patterns to the end of the line, then draw a spiral outward from the dot.",
+      "stimulus_type": "patterns",
+      "patterns": [
+        {"type": "loops", "label": "Loops (ℓℓℓ)", "hint": "Draw smooth continuous loops"},
+        {"type": "zigzag", "label": "Zigzag (⋀⋀⋀)", "hint": "Draw sharp alternating peaks and valleys"},
+        {"type": "spiral", "label": "Spiral (◎)", "hint": "Start at center dot and draw outwards"}
+      ]
+    },
+    {
+      "id": "S2",
+      "title": "S2: Hindi Copy",
+      "lang": "hi",
+      "cap_sec": 75,
+      "instructions_hi": "यह वाक्य सुंदर और साफ़ लिखो, जैसे कक्षा में लिखते हो।",
+      "instructions_en": "Copy this sentence neatly, like you do in class.",
+      "stimuli_by_grade": {
+        "3": "हमारे स्कूल में एक सुंदर बगीचा है।",
+        "4": "रविवार को हम सब क्रिकेट खेलते हैं।",
+        "5": "हमारे शिक्षक हर दिन नई कहानी सुनाते हैं।",
+        "6": "वर्षा ऋतु में नदियाँ पानी से भर जाती हैं।",
+        "7": "भारत एक विशाल देश है, जहाँ अनेक भाषाएँ बोली जाती हैं।"
+      }
+    },
+    {
+      "id": "S3",
+      "title": "S3: English Copy",
+      "lang": "en",
+      "cap_sec": 45,
+      "instructions_hi": "अब इस English वाक्य को उसी तरह लिखो।",
+      "instructions_en": "Now copy this sentence the same way.",
+      "stimuli_by_grade": {
+        "3": "My mother cooks food in the kitchen.",
+        "4": "On Sundays we play cricket with our friends.",
+        "5": "Our teacher tells us a new story every day.",
+        "6": "Rain falls from the clouds and fills the rivers and lakes.",
+        "7": "The quick brown fox jumps over the lazy dog."
+      }
+    }
+  ]
+}

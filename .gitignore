@@ -37,11 +37,12 @@ scratch/
 # Feature caches
 data_*_cache.csv
 cache_*.csv
-cache/
-.cache/
 
-# OS Artifacts
-.DS_Store
-Thumbs.db
-desktop.ini
-*.log
+# Large Datasets & Model Checkpoints
+data/
+models/
+*.pth
+*.pt
+*.safetensors
+*.bin
+

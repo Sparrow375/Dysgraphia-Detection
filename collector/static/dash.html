@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stylus Collector — Live Field Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b1329;
+      --card-bg: #131d38;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #38bdf8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-live {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid var(--success);
+      color: var(--success);
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    /* METRIC CARDS */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .card-val {
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .grade-pills {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .grade-pill {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* CONTROLS & TABLE */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="text"], select {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #0b1329;
+      font-weight: 600;
+      font-size: 13px;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .btn:hover { opacity: 0.9; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.03);
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+      color: #e2e8f0;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    .tag-student {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .tag-hand {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>
+        🏫 Stylus Data Collection Dashboard
+        <span class="badge-live"><span class="badge-dot"></span> LIVE FIELD OPS</span>
+      </h1>
+      <p style="color: var(--muted); font-size: 13px; margin-top: 4px;">Universal Stylus Field Visit — Grade & Roll Number Mapping Tracker</p>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <a href="/" target="_blank" class="btn" style="text-decoration: none;">
+        🖊️ Open Stylus App
+      </a>
+      <button class="btn" id="refreshBtn" style="background: #334155; color: #fff;">
+        🔄 Refresh
+      </button>
+    </div>
+  </header>
+
+  <!-- METRIC CARDS -->
+  <div class="metrics-grid">
+    <div class="card">
+      <div class="card-title">Total Students Screened</div>
+      <div class="card-val" id="totalSessionsCount">0</div>
+      <div class="grade-pills" id="gradePillsContainer">
+        <!-- Injected -->
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Target Progress</div>
+      <div class="card-val"><span id="progressPercent">0%</span></div>
+      <div style="color: var(--muted); font-size: 12px; margin-top: 8px;">Target: 150 Students (Grades 3–7)</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Last Completed Subject</div>
+      <div class="card-val" id="lastStudentId" style="font-size: 24px; color: var(--accent); font-family: 'JetBrains Mono', monospace;">None</div>
+      <div style="color: var(--muted); font-size: 12px; margin-top: 8px;" id="lastStudentTime">Waiting for first session...</div>
+    </div>
+  </div>
+
+  <!-- TABLE CONTROLS -->
+  <div class="toolbar">
+    <div class="filter-group">
+      <input type="text" id="searchInput" placeholder="Search Student ID (e.g. G5_A)...">
+      <select id="gradeFilter">
+        <option value="ALL">All Grades</option>
+        <option value="3">Grade 3</option>
+        <option value="4">Grade 4</option>
+        <option value="5">Grade 5</option>
+        <option value="6">Grade 6</option>
+        <option value="7">Grade 7</option>
+      </select>
+      <select id="sectionFilter">
+        <option value="ALL">All Sections</option>
+        <option value="A">Section A</option>
+        <option value="B">Section B</option>
+        <option value="C">Section C</option>
+        <option value="D">Section D</option>
+      </select>
+    </div>
+
+    <div>
+      <button class="btn" id="exportCsvBtn" style="background: #10b981; color: white;">
+        📥 Download Master index.csv
+      </button>
+    </div>
+  </div>
+
+  <!-- ROSTER TABLE -->
+  <table>
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Student ID</th>
+        <th>Grade</th>
+        <th>Section</th>
+        <th>Roll #</th>
+        <th>Hand</th>
+        <th>Tasks</th>
+        <th>Samples</th>
+        <th>Strokes</th>
+        <th>Duration</th>
+        <th>Notes / Device</th>
+      </tr>
+    </thead>
+    <tbody id="rosterTableBody">
+      <tr>
+        <td colspan="11" style="text-align: center; color: var(--muted); padding: 30px;">
+          No sessions recorded yet. Launch the stylus app on the tablet to begin collecting!
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    let allRecords = [];
+
+    async function fetchStatusAndRoster() {
+      try {
+        const [resStatus, resRoster] = await Promise.all([
+          fetch("/api/status"),
+          fetch("/api/roster")
+        ]);
+
+        const statusData = await resStatus.json();
+        const rosterData = await resRoster.json();
+
+        // Update Overview Cards
+        const total = statusData.total_sessions || 0;
+        document.getElementById("totalSessionsCount").innerText = total;
+        
+        const pct = Math.min(100, Math.round((total / 150) * 100));
+        document.getElementById("progressPercent").innerText = `${pct}%`;
+
+        // Update Grade breakdown pills
+        const pillsContainer = document.getElementById("gradePillsContainer");
+        pillsContainer.innerHTML = "";
+        const byGrade = statusData.by_grade || {};
+        for (let g = 3; g <= 7; g++) {
+          const count = byGrade[String(g)] || 0;
+          const pill = document.createElement("div");
+          pill.className = "grade-pill";
+          pill.innerText = `G${g}: ${count}`;
+          pillsContainer.appendChild(pill);
+        }
+
+        // Last student
+        if (statusData.recent_sessions && statusData.recent_sessions.length > 0) {
+          const last = statusData.recent_sessions[0];
+          document.getElementById("lastStudentId").innerText = last.student_id;
+          document.getElementById("lastStudentTime").innerText = `${last.timestamp_iso} (${last.total_duration_sec}s)`;
+        }
+
+        // Update Table
+        allRecords = rosterData.records || [];
+        renderTable();
+
+      } catch (err) {
+        console.error("Error fetching dashboard updates:", err);
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("rosterTableBody");
+      const search = document.getElementById("searchInput").value.trim().toLowerCase();
+      const gradeF = document.getElementById("gradeFilter").value;
+      const secF = document.getElementById("sectionFilter").value;
+
+      const filtered = allRecords.filter(r => {
+        if (gradeF !== "ALL" && String(r.grade) !== gradeF) return false;
+        if (secF !== "ALL" && String(r.section).toUpperCase() !== secF) return false;
+        if (search && !String(r.student_id).toLowerCase().includes(search)) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--muted); padding: 30px;">No matching student sessions found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => `
+        <tr>
+          <td>${r.timestamp_iso}</td>
+          <td><span class="tag-student">${r.student_id}</span></td>
+          <td>${r.grade}</td>
+          <td>${r.section}</td>
+          <td><strong>${r.roll_number}</strong></td>
+          <td><span class="tag-hand">${r.dominant_hand || 'R'}</span></td>
+          <td>${r.tasks_completed || 'S1;S2;S3'}</td>
+          <td>${r.total_samples || 0}</td>
+          <td>${r.total_strokes || 0}</td>
+          <td>${r.total_duration_sec} s</td>
+          <td style="color: var(--muted); font-size: 12px;">${r.notes || r.device_id || ''}</td>
+        </tr>
+      `).join('');
+    }
+
+    document.getElementById("searchInput").addEventListener("input", renderTable);
+    document.getElementById("gradeFilter").addEventListener("change", renderTable);
+    document.getElementById("sectionFilter").addEventListener("change", renderTable);
+    document.getElementById("refreshBtn").addEventListener("click", fetchStatusAndRoster);
+
+    document.getElementById("exportCsvBtn").addEventListener("click", () => {
+      window.open("/api/status", "_blank");
+    });
+
+    // Auto-refresh every 5 seconds
+    setInterval(fetchStatusAndRoster, 5000);
+    fetchStatusAndRoster();
+  </script>
+</body>
+</html>
