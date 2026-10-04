@@ -30,6 +30,7 @@ FEATURE_NAMES = [
 # Extended features including multi-line geometry and clinical subtype indicators
 EXTENDED_FEATURE_NAMES = FEATURE_NAMES + [
     "line_count",                  # Total detected text lines
+    "components_per_line",         # Line-density normalized component count
     "line_parallelism_std",        # Standard deviation of baseline slopes across lines (Spatial)
     "line_spacing_cv",             # Inter-line vertical spacing irregularity CoV (Spatial)
     "cursive_index",               # Ratio of median component width to x-height (Cursive detection)
@@ -420,8 +421,9 @@ def extract_bhk_features(binary_mask: np.ndarray) -> Tuple[Dict[str, float], np.
     bbox_area = max(1.0, (max_x - min_x) * (max_y - min_y))
     features["ink_density"] = float(total_ink / bbox_area)
 
-    # 9. Valid component count
+    # 9. Valid component count & line-density normalization
     features["component_count"] = float(len(letters))
+    features["components_per_line"] = float(len(letters)) / max(1.0, features.get("line_count", 1.0))
 
     # 10. Clinical Subtype Diagnostic Indices
     # Cursive Fluidity Index: high fluidity = neurotypical cursive (suppresses false dysgraphia alarms)

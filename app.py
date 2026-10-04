@@ -32,6 +32,16 @@ from src.bhk_features import (
     get_feature_names,
     FEATURE_NAMES
 )
+try:
+    from src.deep_features import (
+        extract_deep_stroke_features,
+        get_deep_feature_names,
+        DEEP_FEATURE_NAMES
+    )
+    HAS_DEEP_FEATURES = True
+except ImportError:
+    HAS_DEEP_FEATURES = False
+    DEEP_FEATURE_NAMES = []
 
 # Path to model bundle
 BUNDLE_PATH = "model_bundle.pkl"
@@ -85,10 +95,24 @@ def analyze_handwriting(image_input):
     # 2. Extract BHK Features
     feat_dict, feat_vector = extract_bhk_features(binary_mask)
     
-    # 3. Generate BHK Explainability Overlay (boxes + fitted baseline)
+    # 3. Extract Deep Stroke Features if available
+    deep_dict = {}
+    if HAS_DEEP_FEATURES:
+        try:
+            gray_img = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+            deep_dict, _ = extract_deep_stroke_features(binary_mask, gray_img)
+        except Exception as e:
+            print(f"⚠️ Deep feature extraction warning: {e}")
+            deep_dict = {}
+
+    all_features = {}
+    all_features.update(feat_dict)
+    all_features.update(deep_dict)
+
+    # 4. Generate BHK Explainability Overlay (boxes + fitted baseline)
     overlay_img = generate_feature_visualization(binary_mask, cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB))
     
-    # 4. Predict using Ensemble or Heuristic Fallback
+    # 5. Predict using Ensemble or Heuristic Fallback
     global loaded_bundle
     # Check again in case bundle was placed during runtime
     if loaded_bundle is None and os.path.exists(BUNDLE_PATH):
@@ -99,21 +123,47 @@ def analyze_handwriting(image_input):
             pass
 
     if loaded_bundle is not None:
-        ensemble = loaded_bundle["ensemble_model"]
-        scaler = loaded_bundle["scaler"]
         threshold = loaded_bundle.get("optimal_threshold", 0.45)
+        ensemble = loaded_bundle.get("ensemble_model")
+        scaler = loaded_bundle.get("scaler")
         
-        # Scale features
-        scaled_feat = scaler.transform(feat_vector.reshape(1, -1))
-        probs = ensemble.predict_proba(scaled_feat)[0]
+        # Check if bundle uses 29-D hybrid model or 13-D BHK model
+        feature_names = loaded_bundle.get("feature_names", [])
+        expected_n = getattr(scaler, "n_features_in_", len(feature_names))
+
+        if expected_n == 29 and len(all_features) >= 29:
+            # Full 29-D Hybrid Feature Vector
+            hyb_names = loaded_bundle.get("hybrid_feature_names", feature_names)
+            vec = np.array([all_features.get(k, 0.0) for k in hyb_names], dtype=np.float32).reshape(1, -1)
+            scaled_feat = scaler.transform(vec)
+            probs = ensemble.predict_proba(scaled_feat)[0]
+            model_info = "Multi-Lingual 29-D Hybrid Ensemble (RF + XGBoost + SVM on 369 Subjects)"
+        elif "bhk_model" in loaded_bundle and "bhk_scaler" in loaded_bundle:
+            # Backward-compatible 13-D BHK model
+            bhk_model = loaded_bundle["bhk_model"]
+            bhk_scaler = loaded_bundle["bhk_scaler"]
+            scaled_feat = bhk_scaler.transform(feat_vector.reshape(1, -1))
+            probs = bhk_model.predict_proba(scaled_feat)[0]
+            model_info = "Multi-Lingual 13-D BHK Ensemble (RF + XGBoost + SVM on 369 Subjects)"
+        elif expected_n == 13:
+            scaled_feat = scaler.transform(feat_vector.reshape(1, -1))
+            probs = ensemble.predict_proba(scaled_feat)[0]
+            model_info = "Multi-Lingual BHK Ensemble (369 Subjects)"
+        else:
+            # Adaptive vector construction based on feature names
+            vec = np.array([all_features.get(k, 0.0) for k in feature_names], dtype=np.float32).reshape(1, -1)
+            scaled_feat = scaler.transform(vec)
+            probs = ensemble.predict_proba(scaled_feat)[0]
+            model_info = "Ensemble Screening Pipeline"
+
         prob_pd = float(probs[1])
         prob_lpd = float(probs[0])
         
         # Apply calibrated screening threshold (prioritizing recall)
         is_pd = prob_pd >= threshold
         confidence_text = (
-            f"**Model:** Multi-Lingual Soft-Voting Ensemble (RF + XGBoost + SVM on 369 Subjects)\\n"
-            f"**Screening Threshold:** {threshold:.2f} (Recall-prioritized)\\n"
+            f"**Model:** {model_info}\n"
+            f"**Screening Threshold:** {threshold:.2f} (Recall-prioritized)\n"
             f"**Potential Dysgraphia Risk Score:** `{prob_pd * 100:.1f}%`"
         )
     else:
@@ -136,7 +186,7 @@ def analyze_handwriting(image_input):
         prob_lpd = float(1.0 - prob_pd)
         is_pd = prob_pd >= 0.45
         confidence_text = (
-            f"⚠️ **Note:** Running in **BHK Heuristic Scoring Engine**.\\n"
+            f"⚠️ **Note:** Running in **BHK Heuristic Scoring Engine**.\n"
             f"**Estimated Risk Score:** `{prob_pd * 100:.1f}%`"
         )
 
@@ -235,25 +285,36 @@ def analyze_handwriting(image_input):
         "slant_angle_mean": "Dominant stroke slant angle (degrees from horizontal)",
         "slant_angle_std": "Stroke slant irregularity (Motor dysgraphia)",
         "stroke_tremor_high_freq": "High-frequency stroke micro-tremor (Motor dysgraphia)",
-        "cursive_fluidity_index": "Fluidity and consistency of cursive execution"
+        "cursive_fluidity_index": "Fluidity and consistency of cursive execution",
+        "stroke_dir_energy_mean": "Mean directional stroke energy across Gabor bank",
+        "stroke_dir_entropy": "Stroke orientation entropy (ballistic uniformity vs erratic scatter)",
+        "stroke_edge_sharpness_cv": "Edge gradient variation (erratic contact pressure / tremor)",
+        "stroke_thickness_cv": "Stroke width inconsistency (hesitation & pressure variation)",
+        "stroke_curvature_energy": "2nd-order derivative high-frequency curvature energy",
+        "pen_hesitation_density": "Resting pen hesitation / localized ink pooling density",
+        "stroke_endpoint_density": "Density of stroke terminations & frequent pen lifts",
+        "loop_eccentricity_cv": "Inconsistency of closed letter loop roundness ('o', 'a', 'e')"
     }
     
-    # Core + extended features
+    # Core BHK + extended + deep features
     all_keys = FEATURE_NAMES + [
         "line_count", "line_parallelism_std", "line_spacing_cv",
         "cursive_index", "slant_angle_mean", "slant_angle_std",
         "stroke_tremor_high_freq", "cursive_fluidity_index"
     ]
+    if HAS_DEEP_FEATURES:
+        all_keys += [k for k in DEEP_FEATURE_NAMES if k in all_features]
+
     for name in all_keys:
-        val = feat_dict.get(name, 0.0)
+        val = all_features.get(name, 0.0)
         feature_rows.append({
-            "BHK Feature Metric": name,
-            "Clinical / CV Meaning": descriptions.get(name, name),
+            "Feature Metric": name,
+            "Clinical / Diagnostic Interpretation": descriptions.get(name, name),
             "Value": f"{val:.4f}"
         })
         
     df_features = pd.DataFrame(feature_rows)
-    status_markdown = f"{badge_html}\\n\\n{confidence_text}"
+    status_markdown = f"{badge_html}\n\n{confidence_text}"
     
     return (
         binary_mask,
@@ -271,8 +332,8 @@ candidates_to_check = [
     "reconstructed_dataset/full_page/dysgraphic/user_00006_full.png",
     "DATASET DYSGRAPHIA HANDWRITING/Low Potential Dysgraphia/LPD (1).jpg",
     "DATASET DYSGRAPHIA HANDWRITING/Potential Dysgraphia/PD (1).jpg",
-    "scraped_candidates/images/ENG_CAND_023.jpg",
-    "scraped_candidates/images/ENG_CAND_015.jpg"
+    "DATASET DYSGRAPHIA HANDWRITING/Low Potential Dysgraphia/LPD (25).jpg",
+    "DATASET DYSGRAPHIA HANDWRITING/Potential Dysgraphia/PD (25).jpg"
 ]
 for p in candidates_to_check:
     if os.path.exists(p):

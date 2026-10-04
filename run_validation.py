@@ -61,6 +61,8 @@ DATASET_DIR = "DATASET DYSGRAPHIA HANDWRITING"
 BUNDLE_PATH = "model_bundle.pkl"
 CACHE_PATH = "cache_malay_features.csv"
 SLOVAK_CACHE_PATH = "cache_slovak_fullpage_features.csv"
+HYBRID_MALAY_CACHE = "cache_malay_hybrid_features.csv"
+HYBRID_SLOVAK_CACHE = "cache_slovak_fullpage_hybrid_features.csv"
 
 
 def load_dataset_features() -> Tuple[np.ndarray, np.ndarray, pd.DataFrame]:
@@ -170,18 +172,37 @@ def run_deployed_bundle_validation(X: np.ndarray, y: np.ndarray):
     scaler = bundle["scaler"]
     optimal_th = bundle.get("optimal_threshold", 0.45)
     meta = bundle.get("metadata", {})
+    expected_n = getattr(scaler, "n_features_in_", len(bundle.get("feature_names", [])))
 
+    if expected_n == 29 and os.path.exists(HYBRID_MALAY_CACHE) and os.path.exists(HYBRID_SLOVAK_CACHE):
+        df_hyb = pd.concat([pd.read_csv(HYBRID_MALAY_CACHE), pd.read_csv(HYBRID_SLOVAK_CACHE)], ignore_index=True)
+        feat_cols = bundle.get("hybrid_feature_names", bundle.get("feature_names"))
+        X_eval = df_hyb[feat_cols].values
+        y_eval = df_hyb["label"].values.astype(int)
+        model_title = "Hybrid 29-D Feature Model"
+    elif "bhk_scaler" in bundle and "bhk_model" in bundle and X.shape[1] == 13:
+        scaler = bundle["bhk_scaler"]
+        ensemble = bundle["bhk_model"]
+        X_eval = X
+        y_eval = y
+        model_title = "BHK 13-D Core Model"
+    else:
+        X_eval = X
+        y_eval = y
+        model_title = "Deployed Model"
+
+    print(f"• Evaluated Model: {model_title}")
     print(f"• Bundle Version: {meta.get('version', 'N/A')}")
-    print(f"• Total Evaluated Samples: {len(y)} (LPD: {np.sum(y == 0)}, PD: {np.sum(y == 1)})")
+    print(f"• Total Evaluated Samples: {len(y_eval)} (LPD: {np.sum(y_eval == 0)}, PD: {np.sum(y_eval == 1)})")
     print(f"• Deployed Calibrated Threshold: {optimal_th:.2f}")
 
-    X_scaled = scaler.transform(X)
+    X_scaled = scaler.transform(X_eval)
     y_prob = ensemble.predict_proba(X_scaled)[:, 1]
 
     # Metrics at standard 0.50 threshold
-    m_std = calculate_clinical_metrics(y, y_prob, threshold=0.50)
+    m_std = calculate_clinical_metrics(y_eval, y_prob, threshold=0.50)
     # Metrics at calibrated screening threshold
-    m_opt = calculate_clinical_metrics(y, y_prob, threshold=optimal_th)
+    m_opt = calculate_clinical_metrics(y_eval, y_prob, threshold=optimal_th)
 
     print("\n--- Summary Performance Table (Deployed Bundle) ---")
     data_table = [
