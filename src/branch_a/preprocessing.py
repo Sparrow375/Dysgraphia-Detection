@@ -36,8 +36,19 @@ def load_and_binarize(image_input, otsu_fallback: bool = True) -> np.ndarray:
     sigma = max(img_gray.shape) / 30.0
     bg_estimate = gaussian_filter(img_gray, sigma=sigma)
 
-    # Relative difference: ink is darker than estimated local background
-    diff = bg_estimate - img_gray
+    # Auto-detect inverted images (light ink on dark background, e.g. stylus app
+    # screenshots, chalkboards, whiteboards on dark paper).
+    # Strategy: estimate background brightness; if predominantly dark, the ink
+    # is brighter than background so we must flip the difference direction.
+    bg_mean = float(bg_estimate.mean())
+    is_inverted = bg_mean < 85.0  # dark background = inverted polarity
+
+    if is_inverted:
+        # Ink is BRIGHTER than background: diff = gray - bg
+        diff = img_gray - bg_estimate
+    else:
+        # Ink is DARKER than background: diff = bg - gray  (standard)
+        diff = bg_estimate - img_gray
 
     # Otsu thresholding on the difference map
     diff_clipped = np.clip(diff, 0, 255)
@@ -55,8 +66,9 @@ def load_and_binarize(image_input, otsu_fallback: bool = True) -> np.ndarray:
     sb = (mu_t * omega - mu)**2 / denom
     best_thresh = np.nanargmax(sb) if not np.all(np.isnan(sb)) else 25.0
 
-    # Ensure a reasonable minimum threshold to ignore flat background noise
-    thresh = max(best_thresh, 15.0)
+    # For very dark backgrounds the ink contrast can be lower; relax min threshold
+    min_thresh = 8.0 if is_inverted else 15.0
+    thresh = max(best_thresh, min_thresh)
     binary = (diff_clipped >= thresh).astype(np.uint8)
 
     # Clean isolated speckles: remove tiny 1-2 pixel components
