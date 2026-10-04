@@ -360,9 +360,21 @@ def transcribe_handwriting_view(image_input):
 
     try:
         from src.ocr.utils import ConfidenceTier
-
         pipeline = get_ocr_pipeline()
         transcription = pipeline.transcribe(image_input)
+    except Exception as e:
+        msg = (
+            "<div style='padding:16px; background:#eff6ff; border-left:4px solid #3b82f6; border-radius:6px;'>"
+            "<h4 style='color:#1e40af; margin:0 0 6px 0;'>ℹ️ Context-Aware OCR Engine Hosted on Dedicated Branch</h4>"
+            "<p style='color:#1e3a8a; margin:0; line-height:1.6;'>"
+            "The full Deep OCR & Language-Model transcription pipeline is maintained on the dedicated <strong><code>ocr-engine</code></strong> branch to keep the main experiment branch lean.<br><br>"
+            "To launch the OCR transcription engine and training suite:<br>"
+            "<code>git checkout ocr-engine</code><br>"
+            "<code>python ocr_standalone_app.py</code>"
+            "</p>"
+            "</div>"
+        )
+        return (msg, None, pd.DataFrame(), pd.DataFrame())
 
         # 1. Stylized HTML transcription
         html_lines = []

@@ -1,3 +1,0 @@
-"""
-OCR Training & Evaluation Package.
-"""
