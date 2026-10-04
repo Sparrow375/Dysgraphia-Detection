@@ -8,8 +8,17 @@ build1/
 
 # Scratch & temporary development files
 scratch/
+scraps/
+scraps
+*scrap*
 __pycache__/
 *.pyc
 *.zip
 *.tar
 .system_generated/
+
+# Kinematics CSV and PNG exports
+kinematics*.csv
+kinematics*.png
+*kinematics*.csv
+*kinematics*.png
