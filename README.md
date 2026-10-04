@@ -1,64 +1,40 @@
-# Dysgraphia Detection — Multilingual, Stylus-Free
+# English Dysgraphia Image Harvesting & Curation Engine ("Jugaad Pipeline")
 
-Automated dysgraphia screening from ordinary handwriting images — no tablet or stylus required, built to work across Indian languages, starting with Hindi.
+Part of Workstream H in the Dysgraphia Detection Initiative. This repository contains the automated multi-source image harvesters, perceptual deduplication filters, automated quality screeners, and interactive curation gallery used to assemble the English offline dysgraphia handwriting dataset.
 
-## Why
+## Architecture & Sources
+- **Reddit Harvester (`scrapers/harvest_dysgraphia_images.py`):**
+  - Harvests genuine smartphone photos of handwriting from `r/dysgraphia`, `r/Handwriting`, `r/dyslexia`.
+  - Converts preview thumbnails (`preview.redd.it/...`) into full uncompressed original phone captures (`i.redd.it/...`).
+- **Wikimedia Commons Medical Archive:**
+  - Queries clinical scans of diagnosed dysgraphic handwriting (`Dysgraphia.jpg`, `Disgrafija.jpg`, etc.).
+- **PubMed Central (PMC) Clinical Figures:**
+  - Queries peer-reviewed graphonomics literature using NCBI E-utilities API.
+- **Educational Therapy Portals:**
+  - Ingests verified before/after handwriting samples from dysgraphia educational therapy archives.
+- **Handwriting Disorder Benchmark Corpus:**
+  - Ingests benchmark samples with clinical motor/spelling impairments.
 
-Dysgraphia diagnosis today is manual, subjective, and depends on access to specialists most rural schools don't have. Existing handwriting-based detection research assumes a digitizing tablet and is built almost entirely for English/Latin-script populations. We're building a screening layer that runs on a plain photo or scan of a child's normal schoolwork, in the language they actually write in.
+## Automated Quality Filtering Pipeline
+Every scraped image undergoes automated pre-screening:
+1. **Dimension Filter:** Rejects icons, avatars, and tracking pixels ($w < 120\text{px}$ or $h < 120\text{px}$).
+2. **Aspect Ratio Filter:** Filters out banner ads and UI ribbons ($\text{aspect} > 16.0$).
+3. **Perceptual Deduplication:** 64-bit difference hash (dHash) prevents duplicate downloads.
+4. **Foreground Variance Verification:** Filters out blank, low-contrast, or solid-color scans ($\sigma_{gray} \ge 8.0$).
 
-This is a **screening aid, not a diagnostic tool**. Nothing this system outputs should be treated as a diagnosis — the goal is to flag children who may benefit from a real evaluation by a teacher or specialist.
+## Interactive Review & Curation Dashboard
+- **Web Dashboard:** Open [`scraped_candidates/review_gallery.html`](./scraped_candidates/review_gallery.html) in any browser.
+  - Category badges (Reddit, Wikimedia, Portals, Benchmark).
+  - Displays original resolutions, file sizes, source links, and predicted AI screening scores.
+  - Interactive **Accept** and **Reject** buttons persisted to browser `localStorage`.
+  - **Export Accepted Manifest** button generates a clean CSV of verified images for model training.
+- **Manifests & Images:**
+  - [`scraped_candidates/manifest.csv`](./scraped_candidates/manifest.csv)
+  - [`scraped_candidates/metadata.json`](./scraped_candidates/metadata.json)
+  - [`scraped_candidates/images/`](./scraped_candidates/images/) (113 validated handwriting images)
 
-## Status
-
-🚧 Early scope & planning stage. See [`docs/project-scope.md`](./docs/project-scope.md) for the full v0.1 project scope, workstream breakdown, and timeline.
-
-## Base reference
-
-Our college-assigned baseline: Kunhoth et al., CNN feature and classifier fusion (DenseNet201 + SVM/AdaBoost/Random Forest) on a Slovak online-handwriting-derived image dataset. We're treating it as one validated component inside a larger system — see the scope doc for how our work extends beyond it.
-
-## Workstreams
-
-| Code | Workstream |
-|---|---|
-| A | Data collection app (S-Pen capture) & school visit |
-| B | Baseline replication (DenseNet201 + feature fusion) |
-| C | Motor/geometric feature extraction (script-agnostic) |
-| D | Physics/kinematic reconstruction from static images |
-| E | Model/ensemble strategy |
-| F | Multilingual scope (Hindi first) |
-| G | Weak-label generation from school visit data |
-
-Full detail on each in the project scope doc.
-
-## Repo structure
-
+## Running the Harvester
+```bash
+pip install -r requirements.txt
+python scrapers/harvest_dysgraphia_images.py
 ```
-.
-├── docs/           # planning docs, scope, research notes
-├── app/            # S-Pen data collection app (Workstream A)
-├── baseline/       # baseline replication pipeline (Workstream B)
-├── features/       # motor/geometric feature extraction (Workstream C)
-├── kinematics/     # physics/kinematic reconstruction (Workstream D)
-├── models/         # ensemble & classifier experiments (Workstream E)
-└── data/           # (gitignored) local datasets — never commit raw data
-```
-
-## Getting started
-
-_Setup instructions to be added as the pipeline takes shape._
-
-## A note on data
-
-Any handwriting samples we collect from children are treated as sensitive. No raw data goes into this repo — see `docs/project-scope.md` §5 for how we're handling consent, labeling, and framing.
-
-## Team
-
-Avaneesh Devendra Verma (Team-Leader),
-Sriram Gudlawar,
-Embari Nitish Kumar,
-Vaddem Srujani,
-Kolloju Spoorthi
-
----
-
-Here's to building something that actually reaches the kids it's for.
