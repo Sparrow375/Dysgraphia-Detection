@@ -59,10 +59,15 @@ from src.bhk_features import extract_bhk_features, FEATURE_NAMES
 
 DATASET_DIR = "DATASET DYSGRAPHIA HANDWRITING"
 BUNDLE_PATH = "model_bundle.pkl"
-CACHE_PATH = "cache_malay_features.csv"
-SLOVAK_CACHE_PATH = "cache_slovak_fullpage_features.csv"
-HYBRID_MALAY_CACHE = "cache_malay_hybrid_features.csv"
-HYBRID_SLOVAK_CACHE = "cache_slovak_fullpage_hybrid_features.csv"
+def find_cache_path(filename: str) -> str:
+    if os.path.exists(os.path.join("cache", filename)):
+        return os.path.join("cache", filename)
+    return filename
+
+CACHE_PATH = find_cache_path("cache_malay_features.csv")
+SLOVAK_CACHE_PATH = find_cache_path("cache_slovak_fullpage_features.csv")
+HYBRID_MALAY_CACHE = find_cache_path("cache_malay_hybrid_features.csv")
+HYBRID_SLOVAK_CACHE = find_cache_path("cache_slovak_fullpage_hybrid_features.csv")
 
 
 def load_dataset_features() -> Tuple[np.ndarray, np.ndarray, pd.DataFrame]:

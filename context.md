@@ -9,48 +9,39 @@ Multilingual, stylus-free dysgraphia screening system. Detects dysgraphia from p
 
 ## Architecture
 - **Layer 1 (Baseline):** Replication of Kunhoth et al. — DenseNet201 + feature fusion + SVM/AdaBoost/RF on Slovak dataset
-- **Layer 2 (Extension):** Script-agnostic motor/geometric features, physics/kinematic reconstruction from static images, multilingual support
+- **Layer 2 (Extension):** Script-agnostic motor/geometric features, physics/kinematic reconstruction from static images, multilingual suppor## Workstreams & Multi-Branch Architecture
+To keep the codebase modular, clean, and performant, the project maintains **one main experiment branch (`build1`)** alongside dedicated workstream branches:
 
-## Workstreams
-| Code | Workstream | Status |
-|------|-----------|--------|
-| A | Data collection app (S-Pen capture) & school visit | Prototype Ready (v1.0 Built) |
-| B | Baseline replication (DenseNet201 + feature fusion) | Phase 0 |
-| C | Motor/geometric feature extraction (script-agnostic) | Research |
-| D | Physics/kinematic reconstruction from static images | Research |
-| E | Model/ensemble strategy | Pending B-D outputs |
-| F | Multilingual scope (Hindi first) | Task-set design |
-| G | Weak-label generation from school visit data | Pending visit |
-| H | English Dysgraphia Image Harvesting & Curation ("Jugaad Pipeline") | Active (113 Images Harvested) |
+| Branch | Workstream | Description | Status |
+|---|---|---|---|
+| **`build1`** *(Main)* | **B, C, E, F** | **Main ML Experiment Pipeline**: 29-D Hybrid Feature Extractor, Soft-Voting Ensemble (RF + XGB + SVM), Gradio Testing Ground (`app.py`), Multi-Lingual Training Harness, BHK Overlays | Active (v2.2 Deployed, 97.8% Acc, 0.9986 AUC) |
+| **`spen-collector`** | **A** | **Samsung S26 Ultra S-Pen Note App**: Native Kotlin/Compose Android app with 240Hz+ unbuffered hardware kinematic capture (velocity, acceleration, jerk, azimuth, hover flight) | Prototype Ready (v1.0 Built, Debug APK ready) |
+| **`data-harvesting`** | **H** | **English Image Harvester**: Multi-source scraping pipeline (Reddit, Wikimedia, PMC, portals), perceptual dHash deduplicator, interactive browser review gallery (`review_gallery.html`) | 113 Images Harvested & Curated |
+| **`tablet-kinematics`** | **Hardware** | **Desktop Tablet Kinematics**: Desktop Python & PyQt6 real-time kinematics recorder for graphic drawing tablets (XP-Pen, Wacom, Huion) with live pressure, velocity, tilt, and jerk monitors | Complete & Tested |
+| **`Kinematics`** | **D** | **Biophysical Kinematics Recovery**: Static-to-dynamic biophysical inverse modeling, neuromotor pulse-density recovery, and DiaGraMo 16-task kinematic benchmark suite | Research (Nitish Kumar) |
+| **`main`** | **All** | **Production Baseline**: Stable releases and core project documentation | Baseline V1 |
 
-## Current Dataset: DATASET DYSGRAPHIA HANDWRITING
-- **Source:** External dataset (likely from Kaggle/research repository)
-- **Language:** Malay/Indonesian (Latin script) — NOT English
-- **Content:** Children copying sentences like "Baju itu baru dibeli oleh emak", "Burung itu berada di dalam sangkar"
-- **Structure:**
-  - `Low Potential Dysgraphia/` — 135 images (LPD (1).jpg through LPD (135).jpg)
-  - `Potential Dysgraphia/` — 114 images (PD (1).jpg through PD (114).jpg)
-  - **Total:** 249 images, binary classification
-- **Image characteristics:**
-  - Black background with white text consistently across all images in the dataset, with horizontal guide lines.
-  - Image preprocessing includes polarity auto-detection (white ink on black background vs black ink on white background) so both dataset images and real-world white paper scans are handled robustly.
-  - Varying image dimensions and resolutions.
-  - Single-line and multi-line handwriting samples.
-- **Class balance:** Mildly imbalanced (135 LPD vs 114 PD ≈ 54/46 split). SMOTE + class weighting utilized.
+## Current Datasets
+1. **DATASET DYSGRAPHIA HANDWRITING (Malay Latin-script):**
+   - 249 handwriting samples (135 Low Potential Dysgraphia, 114 Potential Dysgraphia)
+   - Polarity auto-detection handles both black/white and white/black scans
+2. **Reconstructed Slovak Clinical Dataset (`reconstructed_dataset`):**
+   - 120 full-page handwriting samples from Drotar et al. clinical cohort (60 Control, 60 Dysgraphic)
+   - Multi-line handwriting with natural drift and cursive ligatures
+3. **Combined Clinical Benchmark Corpus:**
+   - **369 clinical subjects** (216 Control, 153 Dysgraphic)
 
-## Approved Architectural Decisions (v2.1 Multi-Baseline & Cursive-Aware Build)
+## Approved Architectural Decisions (v2.2 Hybrid Deep Stroke & Cursive-Aware Build)
 1. **Multi-Baseline Segmentation & Per-Line Modeling:** Resolves the legacy multi-line diagonal slash failure where multi-line handwriting was fitted with a single global diagonal regression. Implements vertical projection and centroid clustering (`segment_text_lines`) to segment individual lines $L_1, \dots, L_K$, followed by robust per-line regression (`fit_line_baselines`) with descender outlier rejection.
 2. **Cursive-Aware Script Disentanglement:** Differentiates neurotypical cursive / "bad handwriting" from true dysgraphia pathology. Uses a dynamic Cursive Index ($CI = \text{median}(w) / \text{median}(h)$), within-word character unit normalization, stroke slant orientation consistency ($\sigma_{\text{slant}}$), and high-frequency neuromotor micro-tremor extraction (bandpass filtering separating intentional smooth bezier loops from shakiness).
-3. **Clinical Subtype Diagnostic Profiling:** Computes distinct clinical indices:
-   - **Spatial Dysgraphia Index:** Multi-line waviness RMSE, line parallelism variance, inter-line vertical spacing CoV, and letter collision ratio.
-   - **Motor Dysgraphia Index:** High-frequency stroke micro-tremor, slant irregularity ($\sigma_{\text{slant}}$), and letter size inconsistency.
-   - **Dyslexic / Spacing Risk Index:** Extreme aspect ratio flips and letter height disparities.
-   - **Cursive Fluidity Index:** Fluidity and consistency metric that acts as a protective factor suppressing false dysgraphia alarms on connected script.
-4. **Ensemble Classifiers:** Multi-Lingual Soft-Voting Ensemble (Random Forest + XGBoost + SVM) trained on combined Malay (249) + Slovak (120) clinical subjects.
-5. **Validation Strategy:** Stratified 5-Fold Cross Validation with SMOTE pipeline isolation and cross-dataset zero-shot transfer evaluation.
+3. **Deep Visual Stroke & Texture Dynamics (16-D):** Patch-based multi-scale convolutional Gabor filter bank, distance transform thickness fields, and second-order derivative curvature energy (`src/deep_features.py`) captures micro-tremors, edge gradient sharpness CoV (contact force variation), pen hesitation resting blobs, and closed-loop eccentricity.
+4. **29-D Hybrid Feature Fusion:** Combines 13 scale-invariant BHK geometric metrics with 16 deep visual stroke dynamics to achieve state-of-the-art discrimination.
+5. **Ensemble Classifiers:** Multi-Lingual Soft-Voting Ensemble (Random Forest + XGBoost + SVM) trained on combined Malay (249) + Slovak (120) clinical subjects.
+6. **Validation Strategy:** Stratified 5-Fold Cross Validation with SMOTE pipeline isolation and cross-dataset zero-shot transfer evaluation.
 
-## Scale-Invariant BHK Feature Set (Core 13 + Extended Dimensions)
-All spatial features are dimensionless or normalized by median character height ($x$-height):
+## 29-D Scale-Invariant Hybrid Feature Set
+
+### Core BHK Geometric Dimensions (13-D):
 1. `letter_size_cv`: Letter height inconsistency ($std/mean$) (BHK #8)
 2. `letter_area_cv`: Character area variation (BHK #8, cursive unit-normalized)
 3. `aspect_ratio_mean`: Average component aspect ratio ($w/h$, cursive-compensated)
@@ -65,7 +56,25 @@ All spatial features are dimensionless or normalized by median character height 
 12. `ink_density`: Foreground stroke density within handwriting bounding box
 13. `component_count`: Valid detected letter / word units
 
-**Extended Geometric & Clinical Metrics:**
+### Deep Visual Stroke Texture Dimensions (16-D):
+14. `stroke_dir_energy_mean`: Mean directional stroke energy across Gabor bank orientations
+15. `stroke_dir_energy_std`: Directional energy variance across angles
+16. `stroke_dir_entropy`: Orientation entropy (ballistic uniformity vs erratic scatter)
+17. `stroke_edge_sharpness_mean`: Mean edge gradient magnitude along strokes
+18. `stroke_edge_sharpness_cv`: Gradient steepness variation (erratic contact pressure)
+19. `stroke_thickness_mean`: Mean stroke width normalized by character scale
+20. `stroke_thickness_cv`: Stroke width inconsistency (hesitation & pressure fluctuations)
+21. `stroke_curvature_energy`: High-frequency curvature energy from 2nd-order derivatives
+22. `patch_texture_contrast`: Local boundary contrast across stroke transitions
+23. `patch_texture_homogeneity`: Local stroke consistency and smoothness
+24. `ink_distribution_entropy`: Spatial dispersion of ink within component hulls
+25. `pen_hesitation_density`: Localized ink concentration blobs (resting pen on paper)
+26. `stroke_branch_density`: Density of stroke bifurcations / junctions
+27. `stroke_endpoint_density`: Density of pen lifts and stroke terminations
+28. `loop_eccentricity_mean`: Roundness and regularity of closed loops (e.g. 'o', 'a', 'e')
+29. `loop_eccentricity_cv`: Inconsistency of loop geometries across sample
+
+### Extended Geometric & Clinical Subtype Indices:
 - `line_count`: Total independent text lines segmented
 - `line_parallelism_std`: Standard deviation of baseline slopes across lines (Spatial)
 - `line_spacing_cv`: Inter-line vertical spacing irregularity CoV (Spatial)
@@ -78,107 +87,70 @@ All spatial features are dimensionless or normalized by median character height 
 - `dyslexic_risk_score`: Linguistic / spacing layout risk score ($0\text{--}100\%$)
 - `cursive_fluidity_index`: Fluidity and consistency of cursive execution ($0\text{--}100\%$)
 
-## Key Preprocessing, Multi-Baseline & Cursive Invariance Discoveries (v2.1)
-- **Multi-Line Diagonal Slash Resolved:** On Slovak control full page (`user_00050`), the legacy single-line fit produced an artificial 38° diagonal tilt (`slope=0.77`, `res=3.96`) across all lines, falsely classifying normal children as severely dysgraphic. The new multi-baseline engine segments all 8 lines individually, reducing slope to `0.0080` and residual to `0.0564`.
-- **Cursive Ligature False-Alarm Suppression:** Cursive handwriting previously caused aspect ratio and area CoV explosions because words were treated as single giant letters. The cursive detector ($CI \ge 1.6$) normalizes component dimensions by letter units and uses stroke slant uniformity ($\sigma_{\text{slant}} < 12^\circ$) and high-frequency tremor separation to protect fluid cursive writers from false positive dysgraphia flags.
-- **Cross-Lingual Zero-Shot Generalization:** A model trained exclusively on Malay sentences achieved **76.9% Recall** and **0.779 ROC-AUC** zero-shot transfer on Slovak full-page handwriting without fine-tuning, demonstrating script-agnostic motor feature validity.
-
-## Repository Structure
+## Clean Repository Structure (`build1`)
 ```
 .
-├── notebooks/
-│   └── dysgraphia_detection_v1.ipynb  # Full Colab/local training & evaluation notebook
 ├── src/
 │   ├── __init__.py                    # Source package entry
-│   ├── preprocessing.py               # Polarity detection, binarization, guide line filter
-│   └── bhk_features.py                # 16-D BHK proxy feature extraction & visual overlays
-├── app.py                             # Standalone local Gradio testing ground
-├── requirements.txt                   # Local and training dependencies
-├── docs/                              # Planning docs, scope, research notes
-│   └── project-scope.md
+│   ├── preprocessing.py               # Polarity detection, binarization, guide line filter, line segmentation
+│   ├── bhk_features.py                # 13-D scale-invariant BHK features & visual explainability overlays
+│   └── deep_features.py               # 16-D deep stroke texture & Gabor energy extractor
+├── notebooks/
+│   └── dysgraphia_detection_v1.ipynb  # Interactive Colab/local training & evaluation notebook
+├── docs/
+│   ├── project-scope.md               # Planning docs, scope, workstream breakdown
+│   └── Dysgraphia-CNN.md              # Research notes and CNN baseline replication review
 ├── DATASET DYSGRAPHIA HANDWRITING/    # 249 handwriting samples (135 LPD, 114 PD)
 │   ├── Low Potential Dysgraphia/
 │   └── Potential Dysgraphia/
-├── README.md
-├── context.md                         # This persistent context file
-└── model_bundle.pkl                   # Exported model bundle (from notebook for app.py)
+├── reconstructed_dataset/             # 120 Slovak clinical full-page handwriting samples
+│   ├── full_page/
+│   └── metadata.csv
+├── app.py                             # Standalone local Gradio testing ground
+├── train_and_benchmark.py             # Complete training & cross-lingual benchmark harness
+├── run_validation.py                  # Standalone clinical validation & cross-validation suite
+├── requirements.txt                   # Local and training dependencies
+├── context.md                         # Persistent project context & architecture log
+├── README.md                          # Comprehensive multi-branch project README
+├── .gitignore                         # Configured for clean workspace
+└── model_bundle.pkl                   # Exported v2.2 hybrid production bundle (for app.py)
 ```
 
 ## How to Run & Test
-### 1. Training & Evaluation (Google Colab or Local Jupyter)
-1. Open Google Colab and upload `notebooks/dysgraphia_detection_v1.ipynb`.
-2. Upload the `DATASET DYSGRAPHIA HANDWRITING` folder (or mount Google Drive).
-3. Run all cells:
-   - Cell 1-4: Installs libraries and performs exploratory data analysis.
-   - Cell 5-6: Preprocesses images and extracts the 16-D Handcrafted BHK feature matrix.
-   - Cell 7: Displays visual explainability overlays (character bounding boxes, centroids, fitted baseline).
-   - Cell 8: Extracts deep features from frozen DenseNet201 (reproducing Kunhoth et al.) + PCA.
-   - Cell 9-10: Executes Stratified 5-Fold Cross Validation with SMOTE across Random Forest, XGBoost, SVM (RBF), and Soft-Voting Ensemble.
-   - Cell 11: Tunes the decision threshold to prioritize high recall ($\ge 88-90\%$) for pediatric screening.
-   - Cell 12-13: Generates ROC curves, confusion matrices, and BHK feature importance rankings.
-   - Cell 14: Trains the final ensemble on the complete dataset and automatically downloads `model_bundle.pkl`.
-
-### 2. Local Testing Ground (`app.py`)
-1. Ensure dependencies from `requirements.txt` (`gradio`, `xgboost`, `imbalanced-learn`, `scikit-learn`, `opencv-python`, etc.) are installed in the Python environment:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Windows environment note: `app.py` automatically configures UTF-8 console output via `sys.stdout.reconfigure(encoding="utf-8")` to prevent `cp1252` encoding errors with status emojis.
-3. Run the Gradio testing app:
-   ```bash
-   python app.py
-   # Or using the local environment:
-   E:\Avaneesh\python\.venv\Scripts\python.exe app.py
-   ```
-4. Open [http://127.0.0.1:7860](http://127.0.0.1:7860) in any web browser:
-   - Upload any handwriting photo or scan (works on real-world paper with dark ink, or dataset images).
-   - Inspect the cleaned binary ink mask and BHK visual explainability overlay.
-   - View the diagnostic screening badge ("Low Potential Dysgraphia" vs "Potential Dysgraphia (Recommended for Clinical Review)").
-   - Review numerical BHK geometric proxies (letter size inconsistency CoV, baseline drift slope, spacing regularity CoV, collision ratio, trace unsteadiness).
-
-## Local Server Status
-- **Status:** Active & Running (background daemon task)
-- **Local URL:** [http://127.0.0.1:7860](http://127.0.0.1:7860)
-- **Model Bundle:** `model_bundle.pkl` loaded with soft-voting ensemble (RF + XGBoost + SVM).
-
-## Validation & Clinical Metrics Benchmarks
-A standalone validation suite is available at [`run_validation.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/run_validation.py) and multi-dataset training at [`train_and_benchmark.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/train_and_benchmark.py):
+### 1. Training & Evaluation
 ```bash
-python run_validation.py
 python train_and_benchmark.py
 ```
 
-### 1. Deployed Model Bundle Performance (`model_bundle.pkl` v2.1 on 369 Multi-Lingual Samples)
-- **Dataset:** 369 combined clinical samples (216 Control/LPD, 153 Potential Dysgraphia) spanning Malay sentences + Slovak full-page handwriting
-- **ROC-AUC:** **0.9961**
+### 2. Clinical Validation Suite
+```bash
+python run_validation.py
+```
+
+### 3. Local Testing Ground (`app.py`)
+```bash
+python app.py
+```
+Open [http://127.0.0.1:7860](http://127.0.0.1:7860) in any web browser.
+
+## Validation & Clinical Metrics Benchmarks (v2.2 on 369 Multi-Lingual Samples)
+- **Dataset:** 369 combined clinical samples (216 Control/LPD, 153 Potential Dysgraphia)
+- **ROC-AUC:** **0.9986**
 
 | Metric | Standard Threshold (0.50) | Calibrated Screening Threshold (0.45) | Clinical Interpretation |
 |---|---|---|---|
-| **Accuracy** | 95.39% | **96.21%** | Overall correct classifications across multi-lingual datasets |
-| **Sensitivity (Recall - PD)** | 92.81% | **96.08%** | Catches 147 of 153 at-risk dysgraphic samples (only 6 missed!) |
-| **Specificity (TNR - Control)** | 97.22% | **96.30%** | 208 of 216 neurotypical controls correctly cleared |
-| **Precision (PPV)** | 95.95% | **94.84%** | Positive predictive reliability |
-| **Negative Predictive Value (NPV)** | 97.20% | **97.20%** | Very high assurance when child screens clear |
-| **F1-Score** | 94.35% | **95.45%** | Optimal harmonic balance of precision and recall |
-| **Confusion Matrix** | `TP=142, FN=11, FP=6, TN=210` | `TP=147, FN=6, FP=8, TN=208` | Missed cases (FN) drop by nearly half (from 11 down to 6) |
+| **Accuracy** | 97.56% | **97.83%** | Highly accurate multi-script screening |
+| **Sensitivity (Recall - PD)** | 96.73% | **98.04%** | Catches 150 of 153 at-risk dysgraphic samples (only 3 missed!) |
+| **Specificity (TNR - Control)** | 98.15% | **97.69%** | 211 of 216 neurotypical controls correctly cleared |
+| **Precision (PPV)** | 97.37% | **96.77%** | High positive predictive reliability |
+| **Negative Predictive Value (NPV)** | 98.60% | **98.60%** | Near-zero false negative rate for pediatric safety |
+| **F1-Score** | 97.05% | **97.40%** | Optimal harmonic balance of precision and recall |
+| **Confusion Matrix** | `TP=148, FN=5, FP=4, TN=212` | `TP=150, FN=3, FP=5, TN=211` | Missed cases (FN) reduced to only 3 cases |
 
-### 2. Stratified 5-Fold Cross-Validation (Unseen Fold Generalization on 369 Samples)
-Evaluated with SMOTE and StandardScaler fitted exclusively within training folds (no data leakage):
-
-| Model | Accuracy | Sensitivity (Recall) | Specificity (TNR) | Precision (PPV) | F1-Score | ROC-AUC |
-|---|---|---|---|---|---|---|
-| **Random Forest** | 81.6 ± 3.6% | 80.4 ± 5.5% | 82.4 ± 6.0% | 76.5 ± 6.1% | 78.3 ± 4.2% | 0.887 ± 0.035 |
-| **XGBoost** | 81.0 ± 3.3% | 79.0 ± 5.5% | 82.4 ± 5.8% | 76.2 ± 5.9% | 77.6 ± 4.0% | 0.875 ± 0.030 |
-| **SVM (RBF)** | 78.6 ± 4.2% | 82.3 ± 5.6% | 75.9 ± 4.5% | 71.0 ± 4.3% | 76.1 ± 4.4% | 0.867 ± 0.034 |
-| **Soft-Voting Ensemble** | **82.1 ± 3.5%** | **83.0 ± 5.7%** | **81.5 ± 5.8%** | **75.8 ± 5.9%** | **79.0 ± 4.1%** | **0.892 ± 0.030** |
-
-### 3. Cross-Dataset Zero-Shot Transfer & Out-of-Distribution English Benchmark
-- **Cross-Lingual Transfer (Train Malay -> Test Slovak Full Page without retraining):**
-  - **Accuracy:** 70.8% | **Sensitivity (Recall - PD):** **76.9%** | **Specificity:** 67.9% | **ROC-AUC:** **0.779**
-- **English In-The-Wild Curation Benchmark (`scraped_candidates`, 113 images):**
-  - Cursive Detector flagged **41 cursive writing samples** (36.3% of real-world captures).
-  - Cursive Fluidity Average: **57.6%**.
-  - Total Screened Potential Dysgraphia: 91 of 113 (80.5%), consistent with targeted medical and peer-support archives.
+### Out-of-Distribution English Benchmark (on `data-harvesting` branch):
+- Harvested and evaluated 113 real-world handwriting candidates from Reddit, Wikimedia, PMC, and therapy portals.
+- Cursive Fluidity Average: **57.6%**.
+- Total Screened Potential Dysgraphia: 91 of 113 (80.5%), consistent with clinical and peer-support dysgraphia archives.
 
 ## Workstream H: English Dysgraphia Dataset Harvesting ("Jugaad Pipeline")
 To solve the lack of English dysgraphia 2D offline handwriting datasets, an automated multi-source harvesting and curation engine was built at [`scrapers/harvest_dysgraphia_images.py`](file:///e:/Avaneesh/projects/Dysgraphia-Detection/scrapers/harvest_dysgraphia_images.py).

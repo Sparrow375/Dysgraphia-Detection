@@ -396,52 +396,55 @@ def main():
         pickle.dump(bundle, f)
     print(f"✅ Successfully exported updated v2.2 hybrid production bundle to {BUNDLE_OUTPUT_PATH}!")
 
-    # 7. Benchmark on English in-the-wild Scraped Candidates
-    print("\n" + "=" * 88)
-    print("🌍 EVALUATING OUT-OF-DISTRIBUTION ON ENGLISH CANDIDATES (scraped_candidates)")
-    print("=" * 88)
-    scraped_images = sorted(glob.glob(os.path.join(SCRAPED_DIR, "images", "*.jpg")) +
-                            glob.glob(os.path.join(SCRAPED_DIR, "images", "*.png")))
-    print(f"Found {len(scraped_images)} scraped candidate images.")
-    
-    scraped_results = []
-    for p in scraped_images:
-        img = cv2.imread(p)
-        if img is None:
-            continue
-        try:
-            mask, gray = preprocess_handwriting_image(img)
-            f_bhk, _ = extract_bhk_features(mask)
-            f_deep, _ = extract_deep_stroke_features(mask, gray)
-            
-            all_feats = {}
-            all_feats.update(f_bhk)
-            all_feats.update(f_deep)
-            
-            hyb_vec = np.array([all_feats[name] for name in HYBRID_FEATURES], dtype=np.float32)
-            scaled_vec = scaler_hybrid.transform(hyb_vec.reshape(1, -1))
-            prob_pd = float(hybrid_ensemble.predict_proba(scaled_vec)[0, 1])
-            
-            scraped_results.append({
-                "candidate": os.path.basename(p),
-                "prob_pd": prob_pd,
-                "is_pd_screened": prob_pd >= 0.45,
-                "is_cursive": bool(f_bhk["is_cursive"]),
-                "cursive_fluidity": f_bhk["cursive_fluidity_index"],
-                "spatial_score": f_bhk["spatial_dysgraphia_score"],
-                "motor_score": f_bhk["motor_dysgraphia_score"],
-                "dyslexic_score": f_bhk["dyslexic_risk_score"]
-            })
-        except Exception as e:
-            continue
+    # 7. Benchmark on English in-the-wild Scraped Candidates (if available)
+    if os.path.exists(SCRAPED_DIR):
+        print("\n" + "=" * 88)
+        print("🌍 EVALUATING OUT-OF-DISTRIBUTION ON ENGLISH CANDIDATES (scraped_candidates)")
+        print("=" * 88)
+        scraped_images = sorted(glob.glob(os.path.join(SCRAPED_DIR, "images", "*.jpg")) +
+                                glob.glob(os.path.join(SCRAPED_DIR, "images", "*.png")))
+        print(f"Found {len(scraped_images)} scraped candidate images.")
+        
+        scraped_results = []
+        for p in scraped_images:
+            img = cv2.imread(p)
+            if img is None:
+                continue
+            try:
+                mask, gray = preprocess_handwriting_image(img)
+                f_bhk, _ = extract_bhk_features(mask)
+                f_deep, _ = extract_deep_stroke_features(mask, gray)
+                
+                all_feats = {}
+                all_feats.update(f_bhk)
+                all_feats.update(f_deep)
+                
+                hyb_vec = np.array([all_feats[name] for name in HYBRID_FEATURES], dtype=np.float32)
+                scaled_vec = scaler_hybrid.transform(hyb_vec.reshape(1, -1))
+                prob_pd = float(hybrid_ensemble.predict_proba(scaled_vec)[0, 1])
+                
+                scraped_results.append({
+                    "candidate": os.path.basename(p),
+                    "prob_pd": prob_pd,
+                    "is_pd_screened": prob_pd >= 0.45,
+                    "is_cursive": bool(f_bhk["is_cursive"]),
+                    "cursive_fluidity": f_bhk["cursive_fluidity_index"],
+                    "spatial_score": f_bhk["spatial_dysgraphia_score"],
+                    "motor_score": f_bhk["motor_dysgraphia_score"],
+                    "dyslexic_score": f_bhk["dyslexic_risk_score"]
+                })
+            except Exception as e:
+                continue
 
-    if scraped_results:
-        df_scr = pd.DataFrame(scraped_results)
-        print(f"• Total Evaluated Candidates: {len(df_scr)}")
-        print(f"• Mean AI Screening Risk: {df_scr['prob_pd'].mean() * 100:.1f}%")
-        print(f"• Detected Cursive Writing Samples: {df_scr['is_cursive'].sum()} of {len(df_scr)}")
-        print(f"• Mean Cursive Fluidity: {df_scr['cursive_fluidity'].mean() * 100:.1f}%")
-        print(f"• Screened Potential Dysgraphia: {(df_scr['is_pd_screened']).sum()} ({df_scr['is_pd_screened'].mean()*100:.1f}%)")
+        if scraped_results:
+            df_scr = pd.DataFrame(scraped_results)
+            print(f"• Total Evaluated Candidates: {len(df_scr)}")
+            print(f"• Mean AI Screening Risk: {df_scr['prob_pd'].mean() * 100:.1f}%")
+            print(f"• Detected Cursive Writing Samples: {df_scr['is_cursive'].sum()} of {len(df_scr)}")
+            print(f"• Mean Cursive Fluidity: {df_scr['cursive_fluidity'].mean() * 100:.1f}%")
+            print(f"• Screened Potential Dysgraphia: {(df_scr['is_pd_screened']).sum()} ({df_scr['is_pd_screened'].mean()*100:.1f}%)")
+    else:
+        print("\nℹ️ Scraped English candidates directory not found (available on 'data-harvesting' branch). Skipping OOD evaluation.")
 
     print("\n🎯 All benchmarks and training completed successfully.")
 
