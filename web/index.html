@@ -28,15 +28,19 @@
         </h2>
 
         <div id="dropzone" class="dropzone">
-          <div class="dropzone-icon">📷</div>
-          <p>Drag & drop handwriting image here, or <span>browse file</span></p>
-          <p class="dropzone-hint">Supports JPG, PNG, WEBP — or press <strong>Ctrl+V</strong> to paste from clipboard</p>
+          <div class="dropzone-plus-btn" id="dropzone-plus" title="Click to upload your handwriting photo">
+            <span class="plus-icon">+</span>
+          </div>
+          <p class="dropzone-label">Upload your handwriting photo</p>
+          <p class="dropzone-hint">Click <strong>+</strong> &nbsp;or drag &amp; drop &nbsp;&middot;&nbsp; <strong>Ctrl+V</strong> to paste</p>
+          <p class="dropzone-formats">JPG &nbsp;&middot;&nbsp; PNG &nbsp;&middot;&nbsp; WEBP &nbsp;&middot;&nbsp; BMP</p>
           <input type="file" id="file-input" accept="image/*">
         </div>
 
         <div id="preview-container" class="preview-container" style="display: none;">
           <img id="preview-img" class="preview-img" alt="Uploaded Handwriting Preview">
           <button id="clear-btn" class="clear-btn" title="Remove image">✕</button>
+          <button id="change-photo-btn" class="change-photo-btn" title="Upload a different photo">📂 Change Photo</button>
         </div>
 
         <button id="analyze-btn" class="btn-primary" disabled>
@@ -48,25 +52,30 @@
         <div class="demo-section">
           <div class="demo-title">📁 Quick Test Demos</div>
           <div id="demo-pills" class="demo-pills">
-            <button class="demo-pill" data-type="malay_pd">🔴 Malay Dysgraphic (PD)</button>
-            <button class="demo-pill" data-type="malay_lpd">🟢 Malay Typical (LPD)</button>
-            <button class="demo-pill" data-type="drotar_dys">🔴 Word 'leto' (Dysgraphic)</button>
-            <button class="demo-pill" data-type="drotar_ctrl">🟢 Word 'leto' (Control)</button>
+            <button class="demo-pill" data-type="malay_pd">📄 Malay Sample A (Photo)</button>
+            <button class="demo-pill" data-type="malay_lpd">📄 Malay Sample B (Photo)</button>
+            <button class="demo-pill" data-type="drotar_dys">📄 Word 'leto' (Sample 1)</button>
+            <button class="demo-pill" data-type="drotar_ctrl">📄 Word 'leto' (Sample 2)</button>
             <button class="demo-pill" data-type="drotar_sentence">📝 Sentence (Drotár)</button>
           </div>
         </div>
 
         <div class="mode-info-box">
           <strong>🔬 Extraction-Only Architecture:</strong>
-          This studio performs pure mathematical and biophysical feature extraction. It does not output speculative diagnostic classifications or risk labels. Every metric reflects true physical or kinematic properties of the handwriting geometry.
+          This studio performs pure mathematical and biophysical feature extraction. It does not output speculative diagnostic classifications or risk labels. Every metric reflects true physical or kinematic properties of the handwriting geometry. All kinematic outputs are ESTIMATES from recovered 2D skeleton paths (not physical speed measurements) and carry per-output confidence.
         </div>
       </section>
 
       <!-- Right Column: Results & Interactive Telemetry -->
       <section class="card results-card">
-        <h2 class="card-title">
-          <span>📊</span> Biophysical Extraction & Interactive Telemetry
-        </h2>
+        <div class="results-header-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+          <h2 class="card-title" style="margin-bottom: 0;">
+            <span>📊</span> Biophysical Extraction & Interactive Telemetry
+          </h2>
+          <button id="btn-export-json" class="btn-export-json" style="display: none; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" title="Download clean 20D feature vector with canonical schema and extraction quality flags">
+            <span>💾</span> Export Features (JSON)
+          </button>
+        </div>
 
         <!-- Initial Placeholder -->
         <div id="results-placeholder" class="results-placeholder">
@@ -77,15 +86,27 @@
 
         <!-- Populated Results Container -->
         <div id="results-container" style="display: none;">
-          <!-- Top Quantitative Stat Badges -->
+          <!-- Top Quantitative Stat Badges (8 Key Biophysical Markers) -->
           <div class="stat-badges-grid">
             <div class="stat-badge">
               <div class="stat-val" id="stat-strokes">0</div>
-              <div class="stat-lbl">Recovered Strokes</div>
+              <div class="stat-lbl">Estimated Strokes</div>
             </div>
             <div class="stat-badge">
-              <div class="stat-val" id="stat-speed">0 <span class="stat-unit">px/s</span></div>
-              <div class="stat-lbl">Mean Velocity</div>
+              <div class="stat-val" id="stat-stroke-len">0 <span class="stat-unit">px</span></div>
+              <div class="stat-lbl">Mean Stroke Length</div>
+            </div>
+            <div class="stat-badge">
+              <div class="stat-val" id="stat-ink-width">0 <span class="stat-unit">px</span></div>
+              <div class="stat-lbl">Mean Ink Width (2·EDT)</div>
+            </div>
+            <div class="stat-badge">
+              <div class="stat-val" id="stat-pressure">0.00 <span class="stat-unit">W/H_med</span></div>
+              <div class="stat-lbl">Est. Pressure Proxy</div>
+            </div>
+            <div class="stat-badge">
+              <div class="stat-val" id="stat-speed">0 <span class="stat-unit">H_med/s</span></div>
+              <div class="stat-lbl">Estimated Velocity</div>
             </div>
             <div class="stat-badge">
               <div class="stat-val" id="stat-nvi">0.0</div>
@@ -93,7 +114,7 @@
             </div>
             <div class="stat-badge">
               <div class="stat-val" id="stat-tremor">0%</div>
-              <div class="stat-lbl">4-8 Hz Tremor Power</div>
+              <div class="stat-lbl">4-8 Hz Spatial Roughness</div>
             </div>
             <div class="stat-badge">
               <div class="stat-val" id="stat-size-cov">0.0</div>
@@ -104,9 +125,11 @@
           <!-- Main Tabs Navigation -->
           <nav class="tabs-nav">
             <button class="tab-btn active" data-tab="tab-interactive">📍 Interactive Point Kinematics</button>
+            <button class="tab-btn" data-tab="tab-strokes">🖋️ Recovered Strokes &amp; Ink</button>
             <button class="tab-btn" data-tab="tab-waveforms">⚡ Togglable Waveforms</button>
             <button class="tab-btn" data-tab="tab-stages">🔬 How We Extract Features</button>
-            <button class="tab-btn" data-tab="tab-table">📋 20D Biomarker Table</button>
+            <button class="tab-btn" data-tab="tab-table">📋 22D Biomarker Table</button>
+            <button class="tab-btn" data-tab="tab-compare-gt">⚖️ Compare to Ground Truth</button>
           </nav>
 
           <!-- Tab 1: Interactive Point Kinematics on Handwriting -->
@@ -114,10 +137,17 @@
             <div class="canvas-controls-bar">
               <div class="controls-group">
                 <span class="ctrl-label">Visual Layers:</span>
-                <label class="toggle-chip"><input type="checkbox" id="toggle-heatmap" checked> <span>Velocity Heatmap</span></label>
+                <label class="toggle-chip"><input type="checkbox" id="toggle-heatmap" checked> <span>Heatmap</span></label>
                 <label class="toggle-chip"><input type="checkbox" id="toggle-boxes" checked> <span>BHK Character Boxes</span></label>
                 <label class="toggle-chip"><input type="checkbox" id="toggle-baselines" checked> <span>Baselines</span></label>
                 <label class="toggle-chip"><input type="checkbox" id="toggle-nvi" checked> <span>NVI Hesitations</span></label>
+              </div>
+              <div class="controls-group">
+                <span class="ctrl-label">Heatmap Metric:</span>
+                <div class="mode-toggle-group">
+                  <button type="button" class="mode-toggle-btn active" id="btn-mode-velocity" title="Colorize strokes by instantaneous velocity v(s)">⚡ Velocity</button>
+                  <button type="button" class="mode-toggle-btn" id="btn-mode-pressure" title="Colorize strokes by local ink width & pressure proxy P(s)">🖋️ Ink Width / Pressure</button>
+                </div>
               </div>
             </div>
 
@@ -125,23 +155,27 @@
             <div class="canvas-viewport" id="canvas-viewport">
               <canvas id="writing-canvas"></canvas>
               <div id="point-hud" class="point-hud" style="display: none;">
-                <div class="hud-title">📍 Point Kinematics</div>
-                <div class="hud-item"><span class="hud-lbl">Instant Speed:</span> <span class="hud-val hud-speed" id="hud-v">0 px/s</span></div>
-                <div class="hud-item"><span class="hud-lbl">Acceleration:</span> <span class="hud-val" id="hud-a">0 px/s²</span></div>
-                <div class="hud-item"><span class="hud-lbl">Local Curvature κ:</span> <span class="hud-val" id="hud-k">0 rad/px</span></div>
+                <div class="hud-title">📍 Point Kinematics &amp; Ink</div>
+                <div class="hud-item"><span class="hud-lbl">Instant Speed:</span> <span class="hud-val hud-speed" id="hud-v">0.0 H_med/s</span></div>
+                <div class="hud-item"><span class="hud-lbl">Acceleration:</span> <span class="hud-val" id="hud-a">0.0 H_med/s²</span></div>
+                <div class="hud-item"><span class="hud-lbl">Curvature κ:</span> <span class="hud-val" id="hud-k">0.00</span></div>
+                <div class="hud-item"><span class="hud-lbl">Local Ink Width:</span> <span class="hud-val hud-ink" id="hud-width">0.0 px</span></div>
+                <div class="hud-item"><span class="hud-lbl">Est. Pressure:</span> <span class="hud-val hud-pressure" id="hud-pressure">0.000</span></div>
                 <div class="hud-item"><span class="hud-lbl">Stroke ID:</span> <span class="hud-val" id="hud-stroke">#1</span></div>
+                <div class="hud-item"><span class="hud-lbl">Stroke Length:</span> <span class="hud-val" id="hud-stroke-len">0.0 px</span></div>
+                <div class="hud-item"><span class="hud-lbl">Arc Position:</span> <span class="hud-val" id="hud-arc-pos">0.0 px</span></div>
                 <div class="hud-item"><span class="hud-lbl">Motor Program:</span> <span class="hud-val" id="hud-status">Smooth</span></div>
               </div>
             </div>
 
             <!-- Heatmap Color Legend -->
             <div class="heatmap-legend">
-              <span class="legend-lbl">Speed:</span>
-              <div class="legend-bar"></div>
-              <div class="legend-scales">
-                <span>Slow / Tight Corner (&lt;20 px/s)</span>
-                <span>Cruising Velocity (~50 px/s)</span>
-                <span>Rapid Ballistic (&gt;80 px/s)</span>
+              <span class="legend-lbl" id="legend-metric-label">Instantaneous Velocity v(s):</span>
+              <div class="legend-bar" id="legend-bar"></div>
+              <div class="legend-scales" id="legend-scales">
+                <span>Slow / Tight Corner (&lt;0.5 H_med/s)</span>
+                <span>Cruising Velocity (~1.5 H_med/s)</span>
+                <span>Rapid Ballistic (&gt;3.0 H_med/s)</span>
               </div>
             </div>
 
@@ -149,17 +183,75 @@
             <div id="telemetry-bar" class="telemetry-bar">
               <div class="telemetry-icon">💡</div>
               <div class="telemetry-text" id="telemetry-text">
-                Hover or point your cursor anywhere on the handwriting above to inspect instantaneous velocity, acceleration, and curvature at that exact point in real time.
+                Hover or point your cursor anywhere on the handwriting above to inspect instantaneous velocity, acceleration, ink width, and pressure at that exact point in real time.
               </div>
             </div>
           </div>
 
-          <!-- Tab 2: Togglable Kinematic Waveforms -->
+          <!-- Tab 2: Recovered Strokes & Physical Ink Breakdown -->
+          <div id="tab-strokes" class="tab-pane">
+            <div class="strokes-panel-header">
+              <div class="strokes-overview-grid">
+                <div class="stroke-kpi-card">
+                  <div class="stroke-kpi-val" id="kpi-total-strokes">0</div>
+                  <div class="stroke-kpi-lbl">Recovered Strokes</div>
+                  <div class="stroke-kpi-sub" id="kpi-sub-strokes">Topological paths</div>
+                </div>
+                <div class="stroke-kpi-card">
+                  <div class="stroke-kpi-val" id="kpi-total-arc">0 <span class="kpi-unit">px</span></div>
+                  <div class="stroke-kpi-lbl">Total Trajectory Length</div>
+                  <div class="stroke-kpi-sub" id="kpi-sub-arc">0.0 H_med</div>
+                </div>
+                <div class="stroke-kpi-card">
+                  <div class="stroke-kpi-val" id="kpi-mean-len">0 <span class="kpi-unit">px</span></div>
+                  <div class="stroke-kpi-lbl">Mean Stroke Length</div>
+                  <div class="stroke-kpi-sub" id="kpi-sub-len">0.0 H_med / stroke</div>
+                </div>
+                <div class="stroke-kpi-card">
+                  <div class="stroke-kpi-val" id="kpi-mean-width">0 <span class="kpi-unit">px</span></div>
+                  <div class="stroke-kpi-lbl">Mean Ink Width</div>
+                  <div class="stroke-kpi-sub" id="kpi-sub-width">2 · EDT to background</div>
+                </div>
+                <div class="stroke-kpi-card">
+                  <div class="stroke-kpi-val" id="kpi-mean-press">0.000</div>
+                  <div class="stroke-kpi-lbl">Est. Pressure Proxy</div>
+                  <div class="stroke-kpi-sub" id="kpi-sub-press">Width / H_med downforce</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Per-Stroke Interactive Table -->
+            <div class="table-container" style="margin-top: 16px;">
+              <table id="strokes-table">
+                <thead>
+                  <tr>
+                    <th>Stroke #</th>
+                    <th>Points</th>
+                    <th>Arc Length (px)</th>
+                    <th>Normalized (H_med)</th>
+                    <th>Mean Ink Width (px)</th>
+                    <th>Est. Pressure (W/H_med)</th>
+                    <th>Mean Speed (H_med/s)</th>
+                    <th>Peak Speed (H_med/s)</th>
+                    <th>Direction (°)</th>
+                    <th>Confidence</th>
+                    <th>Inspect</th>
+                  </tr>
+                </thead>
+                <tbody id="strokes-table-body">
+                  <!-- Dynamically populated rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab 3: Togglable Kinematic Waveforms -->
           <div id="tab-waveforms" class="tab-pane">
             <div class="waveforms-header">
               <div class="ctrl-label">Toggle Active Kinematic Waves:</div>
               <div class="wave-toggles">
                 <label class="wave-chip chip-velocity"><input type="checkbox" id="toggle-wave-v" checked> <span>Velocity v(t)</span></label>
+                <label class="wave-chip chip-pressure"><input type="checkbox" id="toggle-wave-p" checked> <span>Pressure P(t)</span></label>
                 <label class="wave-chip chip-accel"><input type="checkbox" id="toggle-wave-a" checked> <span>Acceleration a(t)</span></label>
                 <label class="wave-chip chip-jerk"><input type="checkbox" id="toggle-wave-j" checked> <span>Jerk j(t)</span></label>
                 <label class="wave-chip chip-curv"><input type="checkbox" id="toggle-wave-k"> <span>Curvature κ(t)</span></label>
@@ -320,7 +412,9 @@
                   <div class="stage-tags">
                     <span class="stage-tag">kin_nvi_per_stroke</span>
                     <span class="stage-tag">kin_dimensionless_jerk</span>
-                    <span class="stage-tag">kin_tremor_index_4_8hz</span>
+                    <span class="stage-tag">kin_spatial_roughness_4_8hz</span>
+                    <span class="stage-tag">kin_ink_width_ratio_mean</span>
+                    <span class="stage-tag">kin_ink_width_ratio_std</span>
                     <span class="stage-tag">kin_mean_velocity</span>
                     <span class="stage-tag">kin_velocity_skewness</span>
                   </div>
@@ -329,7 +423,7 @@
             </div>
           </div>
 
-          <!-- Tab 4: 20D Biomarker Measurement Table -->
+          <!-- Tab 4: 22D Biomarker Measurement Table -->
           <div id="tab-table" class="tab-pane">
             <div class="table-container">
               <table id="features-table">
@@ -337,7 +431,8 @@
                   <tr>
                     <th>Domain</th>
                     <th>Clinical Biomarker</th>
-                    <th>Measured Value</th>
+                    <th>Value (Estimated / Spatial)</th>
+                    <th>Confidence</th>
                     <th>Mathematical Formula &amp; Basis</th>
                     <th>Biophysical / Clinical Meaning</th>
                   </tr>
@@ -346,6 +441,74 @@
                   <!-- Dynamically populated rows -->
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          <!-- Tab 5: Compare to Ground Truth Panel -->
+          <div id="tab-compare-gt" class="tab-pane">
+            <div class="gt-compare-header card" style="margin-bottom: 18px; padding: 18px 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                <div>
+                  <h4 style="margin: 0 0 4px 0; font-size: 16px; color: var(--text-primary); font-weight: 700;">Hardware Ground Truth Alignment</h4>
+                  <p style="margin: 0; font-size: 13px; color: var(--text-secondary);">
+                    Feature-by-feature mathematical comparison against stylus digitizer telemetry. Automated timestamp filtering eliminates microsecond USB burst packet artifacts.
+                  </p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                  <label for="gt-csv-select" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">GT Telemetry CSV:</label>
+                  <select id="gt-csv-select" style="padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); font-family: var(--font-mono); font-size: 12px;">
+                    <option value="kinematics_1790656668.csv">kinematics_1790656668.csv (Sample 001)</option>
+                    <option value="kinematics_1790570171.csv">kinematics_1790570171.csv</option>
+                    <option value="kinematics_1790570341.csv">kinematics_1790570341.csv</option>
+                  </select>
+                  <button type="button" id="btn-run-gt-compare" class="btn-primary" style="margin: 0; padding: 7px 16px; width: auto; font-size: 13px;">⚡ Run GT Audit</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Summary Badges -->
+            <div class="stat-badges-grid" id="gt-summary-cards" style="margin-bottom: 18px;">
+              <div class="stat-badge">
+                <div class="stat-val" id="gt-stat-cleaning" style="color: var(--accent-emerald);">35,750</div>
+                <div class="stat-lbl">Burst Packets Dropped (dt &lt; 1ms)</div>
+              </div>
+              <div class="stat-badge">
+                <div class="stat-val" id="gt-stat-spike-fix" style="color: var(--accent-cyan); font-size: 17px;">2.88M → 3,487 px/s</div>
+                <div class="stat-lbl">Velocity Spike Resolution</div>
+              </div>
+              <div class="stat-badge">
+                <div class="stat-val" id="gt-stat-hmed" style="color: var(--accent-purple);">20.00 px</div>
+                <div class="stat-lbl">GT H_med Scale Alignment</div>
+              </div>
+              <div class="stat-badge">
+                <div class="stat-val" id="gt-stat-comparable" style="color: var(--accent-blue);">11 / 22</div>
+                <div class="stat-lbl">Directly Comparable Features</div>
+              </div>
+            </div>
+
+            <!-- Comparison Table Container -->
+            <div class="table-container card" style="padding: 0; overflow-x: auto; margin-bottom: 16px;">
+              <table class="biomarker-table" id="gt-comparison-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
+                    <th style="padding: 10px 14px;">Feature Name</th>
+                    <th style="padding: 10px 14px;">Category</th>
+                    <th style="padding: 10px 14px;">Physical Units</th>
+                    <th style="padding: 10px 14px; text-align: right;">Ground Truth</th>
+                    <th style="padding: 10px 14px; text-align: right;">Pipeline Predicted</th>
+                    <th style="padding: 10px 14px; text-align: right;">Difference (%)</th>
+                    <th style="padding: 10px 14px;">Comparability Status &amp; Scientific Caveat</th>
+                  </tr>
+                </thead>
+                <tbody id="gt-comparison-tbody">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mode-info-box">
+              <strong>⚖️ Scientific Integrity Standard (Per-Feature Only, No Score / No Diagnostic Verdict):</strong>
+              Evaluates individual feature fidelity. Spatial BHK morphology metrics and optical ink-width proxies lack temporal trajectory telemetry counterparts in hardware digitizer recordings and are explicitly categorized as non-comparable to avoid unit/definition confusion.
             </div>
           </div>
         </div>
