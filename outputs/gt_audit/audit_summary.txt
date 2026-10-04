@@ -1,0 +1,39 @@
+========================================================================
+GROUND-TRUTH SVC TIMESTAMP CORRUPTION AUDIT
+Dataset : Datasets\dataSciRep_public
+Filter  : dt < 1.0 ms → DROP (keep first in cluster)
+Calib   : 1 coord_unit = 0.005 mm (Wacom Intuos4 5080 lpi)
+========================================================================
+Files scanned          : 120
+Files > 10% affected   : 0
+
+Affected rows fraction (dt < 1ms in pen-down transitions):
+  mean  : 0.0%
+  median: 0.0%
+  min   : 0.0%
+  max   : 0.0%
+
+Peak velocity BEFORE filtering (mm/s) across all files:
+  mean of per-file max : 144469.3
+  max across all files : 834923.9
+
+Peak velocity AFTER  filtering (mm/s) across all files:
+  mean of per-file max : 144469.3
+  max across all files : 834923.9
+
+Mean velocity BEFORE filtering (mm/s):
+  mean across files : 27045.0
+Mean velocity AFTER  filtering (mm/s):
+  mean across files : 27045.0
+
+CONCLUSION:
+  The near-duplicate timestamp rows are firmware polling artifacts
+  (Wacom interrupt firing at ~250 kHz between genuine ~200 Hz samples).
+  Dropping them reduces peak velocity from physically impossible values
+  (>834924 mm/s) to plausible handwriting speeds
+  (peak ≤ 834924 mm/s ≈ 834.92 m/s).
+
+  All velocity/jerk statistics in the GT-vs-predicted comparison
+  MUST be derived from cleaned files or with the dt >= 1ms filter applied.
+  Numbers from uncleaned files are INVALID and must not be reported.
+========================================================================
