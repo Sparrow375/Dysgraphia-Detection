@@ -1,0 +1,71 @@
+================================================================
+FULL COHORT GT-vs-PREDICTED EVALUATION
+Subjects processed : 120
+  Successful       : 119
+  No SVC found     : 0
+  Errors           : 1
+  Other            : 0
+================================================================
+
+================================================================
+STEP 2 — NVI Rate Denominator Audit
+Both GT and predicted use pen-down duration as the denominator.
+  Subjects compared    : 119
+  GT NVI rate mean     : 7.61 inv/s
+  Predicted NVI mean   : 3.18 inv/s
+  Pred/GT ratio median : 0.41x
+  Pearson r (GT vs pred NVI rate): 0.028  p=7.590e-01
+Note: Predicted NVI rate is based on estimated pen-down duration from
+the reconstructed velocity profile; GT uses actual recorded timestamps.
+A ratio >> 1 indicates over-fragmentation in the skeleton recovery step.
+================================================================
+
+================================================================
+STEP 5 — Stroke Count: GT pen-lift count vs Pipeline recovered strokes
+  Subjects analyzed    : 119
+  GT stroke mean (pen lifts): 64.2
+  Predicted stroke mean      : 110.4
+
+  NOTE: 'undercount fraction' = (GT - Pred) / GT.
+  Negative values mean the pipeline OVER-counts strokes vs GT pen-lifts.
+  This is expected: the skeleton graph splits connected ink at branch points
+  and low-curvature pivots, so one pen stroke becomes multiple recovered paths.
+
+  Signed fraction mean : -0.802  (-80.2%)
+  Signed fraction p50  : -0.820
+  Signed fraction p95  : -0.226
+  Subjects over-counting (pred > GT)   : 116
+  Subjects under-counting (pred < GT)  : 3
+  Pearson r (GT vs pred stroke count): 0.470  p=6.883e-08
+
+Practical implication: kin_pen_lift_count over-estimates writer-intended pen
+lifts due to skeleton graph fragmentation. Requires a merge-short-strokes pass
+(gap < gap_threshold_px) before it can be compared against GT pen-lift counts.
+================================================================
+
+================================================================
+STEP 7 — Full Cohort Kinematic Correlation
+  Subjects with valid correlation: 119
+
+  Whole-document velocity Pearson r:
+    Mean   : 0.015
+    Median : 0.014
+    P25-P75: [-0.018, 0.048]
+    Frac r>0.3: 0.00
+    Frac r>0.5: 0.00
+
+  NOTE: r~0 is expected and correct. The pipeline reconstructs a synthetic
+  time axis from skeleton path order; GT uses real recorded 125 Hz timestamps.
+  These two time axes are unrelated, so cross-correlation of the velocity
+  profiles is not meaningful. Stroke-level r is the informative metric.
+
+  NRMSE (velocity):
+    Mean  : 0.256
+    Median: 0.256
+
+  Stroke-level median Pearson r (shape similarity within each stroke):
+    Mean   : 0.165
+    Median : 0.167
+  Dysgraphic (n=39): r_v mean=0.007
+  Control   (n=80): r_v mean=0.019
+================================================================
