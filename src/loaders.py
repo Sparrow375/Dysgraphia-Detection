@@ -2,7 +2,20 @@
 Data loaders for online handwriting / tablet kinematic datasets.
 Standardizes data from dataSciRep_public (.svc) and DiaGraMo (.json)
 into a unified SampleData representation.
+
+Timestamp deduplication (STEP 1 fix):
+  Wacom tablet firmware fires polling interrupts at ~250 kHz between genuine
+  ~200 Hz motion samples, producing consecutive rows with dt < 1 ms and
+  real displacement.  Computing velocity from these rows yields physically
+  impossible values (>2,000 mm/s).  load_svc() and load_diagramo_json() now
+  silently drop pen-down rows where consecutive dt < MIN_DT_S (1 ms default)
+  and record a 'dt_artifact_rows_dropped' count in sample metadata.
 """
+
+# Minimum legitimate inter-sample interval for pen-down rows.
+# Rows with dt < MIN_DT_S between consecutive pen-down samples are treated as
+# firmware polling artifacts and dropped before any kinematic computation.
+MIN_DT_S: float = 1e-3  # 1 ms
 
 import os
 import json
@@ -96,12 +109,47 @@ def _compute_kinematic_meta(points: np.ndarray) -> Dict[str, float]:
     }
 
 
-def load_svc(filepath: str) -> SampleData:
+def _dedup_timestamps(points: np.ndarray) -> tuple:
+    """
+    Removes pen-down rows where consecutive dt < MIN_DT_S (firmware polling artifacts).
+
+    Rules:
+      - Air rows (pen_status == 0) are always kept — they mark pen-lift boundaries.
+      - Only pen-down → pen-down transitions with dt < MIN_DT_S are dropped.
+      - The FIRST sample in each near-duplicate cluster is kept (real position);
+        subsequent duplicates within the cluster are dropped.
+      - No coordinates are modified; this is strictly a row-removal operation.
+
+    Returns (cleaned_points, n_dropped).
+    """
+    if len(points) < 2:
+        return points, 0
+
+    keep = np.ones(len(points), dtype=bool)
+    t   = points[:, 2]
+    pen = points[:, 3]
+
+    for i in range(1, len(points)):
+        dt = t[i] - t[i - 1]
+        both_down = (pen[i - 1] > 0.5) and (pen[i] > 0.5)
+        if both_down and dt < MIN_DT_S:
+            keep[i] = False
+
+    n_dropped = int(np.sum(~keep))
+    return points[keep], n_dropped
+
+
+def load_svc(filepath: str, dedup_timestamps: bool = True) -> SampleData:
     """
     Loads an .svc file from dataSciRep_public.
     Format:
       Line 1: N (number of points)
       Lines 2..N+1: x y timestamp pen_down azimuth tilt pressure
+
+    dedup_timestamps (default True):
+      Drops consecutive pen-down rows with dt < MIN_DT_S (1 ms).
+      These are firmware polling artifacts that cause physically-impossible
+      velocity values when computing dx/dt.  See module docstring.
     """
     filename = os.path.basename(filepath)
     sample_id = os.path.splitext(filename)[0]
@@ -109,7 +157,7 @@ def load_svc(filepath: str) -> SampleData:
     with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
         first_line = f.readline().strip()
         expected_n = int(first_line) if first_line.isdigit() else None
-        
+
         raw_rows = []
         for line in f:
             line_str = line.strip()
@@ -124,19 +172,25 @@ def load_svc(filepath: str) -> SampleData:
         raise ValueError(f"Empty or invalid SVC file: {filepath}")
 
     # Standardize columns: [x, y, t, pen_status, azimuth, tilt, pressure]
-    # Timestamp in SVC is typically in milliseconds
+    # Timestamp in SVC is typically in milliseconds → convert to seconds
     t_raw = raw_arr[:, 2]
     t_sec = (t_raw - t_raw[0]) / 1000.0
 
     points = np.column_stack([
         raw_arr[:, 0],      # x
         raw_arr[:, 1],      # y
-        t_sec,              # t (seconds)
-        raw_arr[:, 3],      # pen_down (1 = down, 0 = up)
+        t_sec,              # t (seconds, zero-based)
+        raw_arr[:, 3],      # pen_down (1 = on surface, 0 = in air)
         raw_arr[:, 4],      # azimuth
         raw_arr[:, 5],      # tilt
-        raw_arr[:, 6]       # pressure
+        raw_arr[:, 6],      # pressure
     ])
+
+    # ── Timestamp deduplication (Step 1 fix) ──────────────────────────────
+    n_dropped = 0
+    if dedup_timestamps:
+        points, n_dropped = _dedup_timestamps(points)
+    # ──────────────────────────────────────────────────────────────────────
 
     strokes = _extract_strokes(points)
     meta_stats = _compute_kinematic_meta(points)
@@ -147,7 +201,13 @@ def load_svc(filepath: str) -> SampleData:
         task_name="handwriting_hw",
         points=points,
         strokes=strokes,
-        metadata={"filepath": filepath, "expected_n": expected_n, "loaded_n": len(points)},
+        metadata={
+            "filepath": filepath,
+            "expected_n": expected_n,
+            "loaded_n": len(points),
+            "dt_artifact_rows_dropped": n_dropped,
+            "min_dt_s_threshold": MIN_DT_S,
+        },
         sampling_rate_hz=meta_stats["sampling_rate_hz"],
         total_duration_sec=meta_stats["total_duration_sec"],
         in_air_ratio=meta_stats["in_air_ratio"],
