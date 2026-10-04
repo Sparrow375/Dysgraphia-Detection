@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import List, Dict, Any, Tuple
 import numpy as np
 from scipy.ndimage import label, find_objects
+from src.branch_a.line_removal import detect_and_remove_ruled_lines
 
 
 @dataclass
@@ -39,13 +40,20 @@ def segment_handwriting(
     binary_img: np.ndarray,
     min_area: int = 15,
     min_height: int = 6,
-    line_overlap_thresh: float = 0.3
+    line_overlap_thresh: float = 0.3,
+    remove_ruled_lines: bool = True
 ) -> List[TextLine]:
     """
     Performs connected component segmentation and clusters components into ordered text lines.
     Within each text line, components are sorted from left to right.
+    Automatically removes notebook ruled lines and grid lines before component segmentation.
     """
-    labeled, num_features = label(binary_img)
+    if remove_ruled_lines:
+        clean_img, _ = detect_and_remove_ruled_lines(binary_img)
+    else:
+        clean_img = binary_img
+
+    labeled, num_features = label(clean_img)
     if num_features == 0:
         return []
 
