@@ -415,13 +415,13 @@ def format_biomarkers_20d(results: Dict[str, Any]) -> List[Dict[str, Any]]:
         },
         {
             "domain": "Biophysical Kinematics (ESTIMATED)",
-            "feature_id": "kin_tremor_index_4_8hz",
-            "name": "4–8 Hz Tremor Power Ratio (ESTIMATED)",
-            "val": round(kin.get("tremor_index_4_8hz", 0.0) * 100, 1),
+            "feature_id": "kin_spatial_roughness_4_8hz",
+            "name": "4–8 Hz Spatial Roughness (ESTIMATED)",
+            "val": round(kin.get("spatial_roughness_4_8hz", kin.get("tremor_index_4_8hz", 0.0)) * 100, 1),
             "unit": "% (EST)",
-            "confidence": pfc.get("kin_tremor_index_4_8hz", 0.0),
+            "confidence": pfc.get("kin_spatial_roughness_4_8hz", pfc.get("kin_tremor_index_4_8hz", 0.0)),
             "formula": "PSD(4-8 Hz) / PSD(0.5-20 Hz) via Welch",
-            "meaning": "Proportion of motor power consumed by involuntary 4–8 Hz physiological micro-tremor."
+            "meaning": "Proportion of motor power consumed by involuntary 4–8 Hz spatial roughness oscillations."
         },
         {
             "domain": "Biophysical Kinematics (ESTIMATED)",
@@ -534,6 +534,8 @@ class StudioHandler(BaseHTTPRequestHandler):
             self._serve_file(os.path.join(WEB_DIR, "app.js"), "application/javascript")
         elif path == "/api/demo":
             self._handle_demo(parsed.query)
+        elif path == "/api/gt_files":
+            self._handle_gt_files()
         else:
             self.send_error(404, "Not Found")
 
@@ -541,6 +543,8 @@ class StudioHandler(BaseHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path == "/api/analyze":
             self._handle_analyze()
+        elif parsed.path == "/api/compare_gt":
+            self._handle_compare_gt()
         else:
             self.send_error(404, "Not Found")
 
@@ -726,6 +730,140 @@ class StudioHandler(BaseHTTPRequestHandler):
 
             self._send_json(response_payload, 200)
 
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self._send_json({"error": str(e)}, 500)
+
+    def _handle_gt_files(self):
+        try:
+            csv_files = glob.glob(os.path.join(BASE_DIR, "kinematics_*.csv"))
+            filenames = [os.path.basename(f) for f in sorted(csv_files)]
+            self._send_json({"files": filenames}, 200)
+        except Exception as e:
+            self._send_json({"error": str(e)}, 500)
+
+    def _handle_compare_gt(self):
+        try:
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length)
+            req = json.loads(body.decode("utf-8")) if body else {}
+
+            csv_name = req.get("csv_name", "kinematics_1790656668.csv")
+            csv_path = os.path.join(BASE_DIR, csv_name)
+            if not os.path.exists(csv_path):
+                candidates = glob.glob(os.path.join(BASE_DIR, "**", csv_name), recursive=True)
+                if candidates:
+                    csv_path = candidates[0]
+                else:
+                    self._send_json({"error": f"CSV {csv_name} not found"}, 404)
+                    return
+
+            features_dict = req.get("features", None)
+            from scripts.compare_to_gt import clean_gt_trajectory, compute_gt_h_med, extract_gt_kinematic_features
+            import pandas as pd
+
+            df_raw = pd.read_csv(csv_path)
+            raw_max_vel = float(df_raw["velocity"].max()) if "velocity" in df_raw.columns else 0.0
+            raw_points = len(df_raw)
+
+            df_clean = clean_gt_trajectory(df_raw, min_dt=0.001)
+            clean_max_vel = float(df_clean["velocity"].max()) if not df_clean.empty else 0.0
+            clean_points = len(df_clean)
+
+            gt_h_med = compute_gt_h_med(df_clean)
+            gt_kin = extract_gt_kinematic_features(df_clean, gt_h_med)
+
+            if not features_dict:
+                json_path = os.path.join(BASE_DIR, "dysgraphia_features_sample_001.json")
+                if os.path.exists(json_path):
+                    with open(json_path, "r", encoding="utf-8") as f:
+                        jdata = json.load(f)
+                        features_dict = jdata.get("feature_dict", {})
+                else:
+                    features_dict = {}
+
+            schema_spec = [
+                ("bhk_size_covariance", "BHK Static Spatial", "dimensionless (CV)", "no_gt_spatial"),
+                ("bhk_height_ratio_consistency", "BHK Static Spatial", "dimensionless (IQR/med)", "no_gt_spatial"),
+                ("bhk_baseline_drift", "BHK Static Spatial", "1/H_med", "no_gt_spatial"),
+                ("bhk_spacing_entropy", "BHK Static Spatial", "dimensionless (nats)", "no_gt_spatial"),
+                ("bhk_stroke_width_variance", "BHK Static Spatial", "dimensionless (CV)", "no_gt_spatial"),
+                ("bhk_telescoping_overlap", "BHK Static Spatial", "ratio [0,1]", "no_gt_spatial"),
+                ("bhk_acute_turns", "BHK Static Spatial", "turns/H_med", "no_gt_spatial"),
+                ("bhk_left_margin_drift", "BHK Static Spatial", "1/H_med", "no_gt_spatial"),
+                ("bhk_line_collisions", "BHK Static Spatial", "ratio [0,1]", "no_gt_spatial"),
+                ("kin_mean_velocity", "Neuromotor Kinematics", "H_med/s", "comparable"),
+                ("kin_peak_velocity", "Neuromotor Kinematics", "H_med/s", "comparable"),
+                ("kin_velocity_skewness", "Neuromotor Kinematics", "dimensionless", "comparable"),
+                ("kin_nvi_rate", "Neuromotor Kinematics", "inversions/s", "comparable"),
+                ("kin_nvi_per_stroke", "Neuromotor Kinematics", "inversions/stroke", "comparable"),
+                ("kin_nvi_per_h_med", "Neuromotor Kinematics", "1/H_med", "comparable"),
+                ("kin_jerk_metric", "Neuromotor Kinematics", "H_med^2/s^5", "comparable"),
+                ("kin_dimensionless_jerk", "Neuromotor Kinematics", "dimensionless", "comparable"),
+                ("kin_spatial_roughness_4_8hz", "Neuromotor Kinematics", "ratio [0,1]", "comparable"),
+                ("kin_pen_lift_count", "BHK/Kinematics", "count", "comparable"),
+                ("kin_mean_stroke_length", "Neuromotor Kinematics", "H_med units", "comparable"),
+                ("kin_ink_width_ratio_mean", "Biophysical Pressure", "W/H_med", "no_gt_pressure"),
+                ("kin_ink_width_ratio_std", "Biophysical Pressure", "W/H_med", "no_gt_pressure"),
+            ]
+
+            results = []
+            comparable_count = 0
+            for feat_name, category, unit, comp_status in schema_spec:
+                p_val = features_dict.get(feat_name, None)
+                if p_val is None and feat_name == "kin_spatial_roughness_4_8hz":
+                    p_val = features_dict.get("kin_tremor_index_4_8hz", None)
+
+                if comp_status == "comparable":
+                    comparable_count += 1
+                    g_val = gt_kin.get(feat_name, None)
+                    if g_val is not None and p_val is not None:
+                        diff = p_val - g_val
+                        pct_err = (abs(diff) / abs(g_val) * 100.0) if g_val != 0 else None
+                        status_desc = f"Directly comparable in {unit}"
+                    else:
+                        pct_err = None
+                        status_desc = "Comparable (missing value)"
+                elif comp_status == "no_gt_spatial":
+                    g_val = None
+                    pct_err = None
+                    status_desc = "No GT in trajectory CSV (2D spatial layout morphology, not temporal trajectory telemetry)."
+                elif comp_status == "no_gt_pressure":
+                    g_val = None
+                    pct_err = None
+                    status_desc = "No direct GT equivalent (optical stroke width proxy; tablet records hardware stylus force levels [0-1] with r ~ 0.002)."
+                else:
+                    g_val = None
+                    pct_err = None
+                    status_desc = "Not comparable"
+
+                results.append({
+                    "feature": feat_name,
+                    "category": category,
+                    "units": unit,
+                    "comparable": (comp_status == "comparable"),
+                    "gt_value": g_val,
+                    "predicted_value": p_val,
+                    "error_pct": pct_err,
+                    "status_description": status_desc
+                })
+
+            resp = {
+                "metadata": {
+                    "csv_name": csv_name,
+                    "raw_points": raw_points,
+                    "clean_points": clean_points,
+                    "dropped_points": raw_points - clean_points,
+                    "raw_max_velocity_px_s": raw_max_vel,
+                    "clean_max_velocity_px_s": clean_max_vel,
+                    "gt_h_med_px": gt_h_med,
+                    "comparable_count": comparable_count,
+                    "total_features": len(schema_spec)
+                },
+                "features": results
+            }
+            self._send_json(resp, 200)
         except Exception as e:
             import traceback
             traceback.print_exc()
