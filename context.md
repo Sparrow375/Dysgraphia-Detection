@@ -11,18 +11,18 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - `features/`: Motor, spatial, and geometric feature extraction from image contours/skeletons.
   - `kinematics/`: Pseudo-kinematic and temporal reconstruction from static image strokes.
   - `models/`: Classifiers and ensemble strategies.
-  - `docs/`: Project scope, Workstream A implementation plans, and DVC sync guides.
-  - `data/`: Local dataset directory managed strictly via **DVC (Data Version Control)**. **Never committed to Git**.
+  - `docs/`: Project scope, Workstream A implementation plans, Git LFS guide.
+  - `data/`: Local dataset directory tracked via **Git LFS (Large File Storage)**.
 
-## Data Version Control (DVC) Setup
-- **DVC Pointer**: `data.dvc` tracks cryptographic MD5 hashes of the dataset in `data/`.
-- **Default Storage Remote (`local-storage`)**: `F:\Avaneesh\download\VV data-20261006T155534Z-1-001\VV data\dvc_storage`.
-  - Holds 649 content-addressed files (1.34 GB) covering the School A (Future Gen) mapped cohort.
-  - Enables instant local synchronizations without network overhead.
-- **Cloud Remote (`gcs-storage`)**: Configurable for Google Cloud Storage (`gs://<bucket-name>/dataset`) for team and cloud training synchronization.
+## Cloud Data Architecture: Git LFS
+- **Tracking Mechanism**: `data/**` is tracked via Git LFS in `.gitattributes`.
+- **Cloud Remote**: GitHub Large File Storage (`https://github.com/Sparrow375/Dysgraphia-Detection.git/info/lfs`).
+- **Files Tracked & Pushed**: 647 files (1.34 GB) covering the School A (Future Gen) mapped cohort (stylus renders, kinematics CSVs, handwritten paper scans, master tables).
 - **Branch Synchronization**:
-  - Code changes remain on Git branch `baseline-v1`.
-  - Switching Git branches switches `data.dvc`. Running `dvc checkout` or `dvc pull` updates `data/` to the matching dataset version automatically.
+  - Code and dataset pointers stay synchronized on Git branch `baseline-v1`.
+  - Git commits contain lightweight SHA-256 pointer objects (~130 bytes each).
+  - When cloning or switching branches, `git lfs pull` automatically fetches and populates the heavy binaries matching that branch.
+- **Local Fallback**: Local source data remains preserved in `VV data` (`F:\Avaneesh\download\VV data-20261006T155534Z-1-001\VV data`).
 
 ## School Cohorts & Workstreams
 - **School A (Future Gen)**: Training, feature engineering, and nested cross-validation (95 students, 91 matched with stylus + paper).

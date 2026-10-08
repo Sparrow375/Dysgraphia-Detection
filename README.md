@@ -55,17 +55,17 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### Dataset Synchronization (DVC)
-Large multimodal datasets (scanned handwriting, stylus trajectories, rendered strokes) are tracked via **DVC (Data Version Control)** and never checked directly into Git.
+### Dataset Synchronization (Git LFS)
+Large multimodal datasets (scanned handwriting, stylus trajectories, rendered strokes) are tracked directly in the cloud using **Git LFS (Large File Storage)**.
 
 ```bash
-# Pull dataset for the current branch (baseline-v1)
-dvc pull
+# Ensure Git LFS is initialized
+git lfs install
 
-# Or pull from Google Cloud Storage remote
-dvc pull -r gcs-storage
+# Pull dataset files for the current branch (baseline-v1)
+git lfs pull
 ```
-See [`docs/data-versioning-dvc.md`](./docs/data-versioning-dvc.md) for full instructions on local and Google Cloud Storage remotes.
+See [`docs/git-lfs-guide.md`](./docs/git-lfs-guide.md) for full workflow and collaborator instructions.
 
 ## A note on data
 
