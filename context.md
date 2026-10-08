@@ -71,3 +71,13 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
 - **Validation**:
   - `tests/test_phase0.py` passed 4/4 test cases confirming schema integrity, zero student leakage across all outer & inner folds, and complete partition of School A.
 - **Next Phase**: Phase 1 Preprocessing and Segmentation (`pipeline/preprocess.py`, `pipeline/rules.py`, `pipeline/segment.py`, `pipeline/skeleton.py`).
+
+## Phase 1: Preprocessing & Segmentation Blueprint (Finalized 2026-10-08)
+- **Target Unit**: 6 Task Sentences per student (Hindi Copy, English Copy, Hindi Dictation, English Dictation, Hindi Free Writing, English Free Writing).
+- **Page Normalization**: Auto-portrait rotation, quadrilateral contour detection + perspective warp to fixed 2000px width (fallback to 2% margin trim crop).
+- **Illumination & Binarization**: Large-kernel background illumination division + Sauvola thresholding ($W=31, k=0.2$). Maintains both normalized grayscale and binary ink mask layers.
+- **Ruled-Line Pipeline**: Morphological horizontal opening + RANSAC linear fitting ($y = ax + b$). Deskew page by median slope, subtract rule pixels, and repair crossing strokes via localized vertical closing ($3 \times 1$). Store ruling parameters ($r$ spacing, rule coordinates) in metadata.
+- **Script & Sentence Grouping**: Shirorekha ratio detector ($\ge 0.7 \implies$ Devanagari) + sequential state machine matching the 6-prompt protocol. Word-count mismatches flagged in QA flags.
+- **Skeleton & Graph**: Pruned skeleton graphs via `skimage` + `skan` (spur pruning $<0.15h$) tracking endpoints, junctions, and paths.
+- **Output Hierarchy**: `data/processed/<school>/<student_id>/` with cropped sentence PNGs, sentence JSON schemas, and `overlay_debug.png`.
+- **Quality Gate**: 30-sheet visual overlay review notebook (`qa/phase1_overlay_review.ipynb`) verifying $\ge 90\%$ word-count match on copy/dictation.
