@@ -80,4 +80,17 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
 - **Script & Sentence Grouping**: Shirorekha ratio detector ($\ge 0.7 \implies$ Devanagari) + sequential state machine matching the 6-prompt protocol. Word-count mismatches flagged in QA flags.
 - **Skeleton & Graph**: Pruned skeleton graphs via `skimage` + `skan` (spur pruning $<0.15h$) tracking endpoints, junctions, and paths.
 - **Output Hierarchy**: `data/processed/<school>/<student_id>/` with cropped sentence PNGs, sentence JSON schemas, and `overlay_debug.png`.
-- **Quality Gate**: 30-sheet visual overlay review notebook (`qa/phase1_overlay_review.ipynb`) verifying $\ge 90\%$ word-count match on copy/dictation.
+- **Quality Gate**: 30-sheet visual overlay review notebook (`qa/phase1_overlay_review.ipynb` / `qa/review_gallery.html`) verifying word-count match and segmentation bounds.
+
+## Phase 1 Implementation Complete (2026-10-08)
+- **Modules Built**:
+  - `pipeline/preprocess.py`: Auto-portrait rotation, quad detection + 2000px perspective warp (2% margin fallback), illumination flattening, Sauvola binarization ($W=31, k=0.2$).
+  - `pipeline/rules.py`: Horizontal opening, peak detection, RANSAC line fitting, page deskewing, rule removal + vertical closing stroke repair, $r$ spacing extraction.
+  - `pipeline/segment.py`: Ink mass centroid band assignment, word-level shirorekha ratio script detector ($\ge 0.7 \implies$ Devanagari), Devanagari horizontal closing vs. English GMM gap word clustering, baseline & x-height calculation, 6-prompt sequential sentence state machine.
+  - `pipeline/skeleton.py`: Skeletonization (`skimage`), spur pruning ($<0.15h$), graph topology extraction (`skan`).
+  - `pipeline/process_dataset.py`: End-to-end dataset orchestrator generating normalized page images, sentence crops, JSON schemas, and color debug overlays under `data/processed/<school>/<student_id>/`.
+- **Validation**:
+  - `tests/test_phase1.py` passed 5/5 test cases (page norm shape/contrast, rule detection/deskew, segmentation, skeleton graphs, output directory schema integrity).
+- **Quality Gate**:
+  - `qa/generate_overlay_review.py` executed across grades; generated interactive visual inspection gallery `qa/review_gallery.html`.
+- **Next Phase**: Phase 2 Feature Library (baseline wobble, rule offset, slant tensor, curvature & jerk proxy, gaps, sizes, shirorekha features).

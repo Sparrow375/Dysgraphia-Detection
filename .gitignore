@@ -1,4 +1,4 @@
-﻿# Python environment & cache
+# Python environment & cache
 .venv/
 __pycache__/
 *.py[cod]
@@ -43,3 +43,5 @@ ehthumbs.db
 .dvc/cache/
 
 # Local datasets (always tracked via DVC pointer files *.dvc)
+data/processed/
+qa/*.html
