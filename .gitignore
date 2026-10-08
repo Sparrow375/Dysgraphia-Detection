@@ -43,4 +43,3 @@ ehthumbs.db
 .dvc/cache/
 
 # Local datasets (always tracked via DVC pointer files *.dvc)
-data/
