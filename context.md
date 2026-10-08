@@ -50,4 +50,24 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
 - **Normalization**: Pooled A+B (grade × language × task medians/MAD).
 - **Code style**: Python modules in `pipeline/`, config YAML in `configs/`. Jupyter only for QA overlays.
 - **Execution order**: Grade 3 labeling → repo restructure → Phase 0 (manifest + folds) → Phase 1 preprocessing + modeling scaffold in parallel.
-- **Immediate blocker**: Grade 3 labeler run (manual, ~15 min).
+- **Immediate blocker**: None (Grade 3 labeling complete).
+
+## Phase 0: Data Foundation & Folds (Completed 2026-10-08)
+- **Label Resolution**: Grade 3 manually labeled and integrated via `future_gen_handwritten_labels.csv`. Cohort across G3–G7 comprises 115 unique students (24 positives, 91 negatives).
+- **Raw Data Tracking (DVC)**:
+  - `data/school_a/raw/`: 118 handwritten images across G3–G7 (DVC-tracked via `data/school_a/raw.dvc`).
+  - `data/school_b/raw/`: 100 handwritten images across G3–G8 (DVC-tracked via `data/school_b/raw.dvc`).
+  - DVC remote synchronized (123 files cached to `dvc_storage`).
+  - Git attributes (`.gitattributes`) updated to ensure manifests, CSVs, JSONs, and `.dvc` files are tracked as native text in Git.
+- **Manifest Pipeline (`pipeline/manifest.py`)**:
+  - Generates `data/manifest.csv` (215 rows: 115 School A, 100 School B held-out).
+  - All 215 image paths verified to exist on disk.
+  - School B is frozen and held out without labels (`label = NaN`).
+- **Cross-Validation Folds Pipeline (`pipeline/folds.py`)**:
+  - Generates nested CV on School A:
+    - Outer: Stratified Group 5-fold × 5 repeats (23 test students per fold, 4–5 positives each).
+    - Inner: Stratified Group 3-fold for hyperparameter tuning.
+  - Output files: `data/folds/nested_folds.json` and `data/folds/student_folds_lookup.csv`.
+- **Validation**:
+  - `tests/test_phase0.py` passed 4/4 test cases confirming schema integrity, zero student leakage across all outer & inner folds, and complete partition of School A.
+- **Next Phase**: Phase 1 Preprocessing and Segmentation (`pipeline/preprocess.py`, `pipeline/rules.py`, `pipeline/segment.py`, `pipeline/skeleton.py`).

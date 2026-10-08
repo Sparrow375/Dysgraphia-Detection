@@ -1,1 +1,8 @@
 data/** filter=lfs diff=lfs merge=lfs -text
+*.dvc text !filter !diff !merge
+data/**/*.dvc text !filter !diff !merge
+data/*.csv text !filter !diff !merge
+data/**/*.csv text !filter !diff !merge
+data/**/*.json text !filter !diff !merge
+data/**/*.yaml text !filter !diff !merge
+data/**/*.yml text !filter !diff !merge

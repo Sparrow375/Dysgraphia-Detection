@@ -1,0 +1,59 @@
+# Workstream A Configuration
+
+random_seed: 42
+
+paths:
+  school_a_raw_dir: "data/school_a/raw"
+  school_b_raw_dir: "data/school_b/raw"
+  school_a_labels_csv: "future_gen_handwritten_labels.csv"
+  master_mapping_csv: "data/school_a/master_mapping.csv"
+  manifest_csv: "data/manifest.csv"
+  folds_dir: "data/folds"
+  configs_dir: "configs"
+
+labels:
+  school_a_positives:
+    3: [12, 13, 15, 19]
+    4: [9, 11, 14, 17, 22, 23]
+    5: [5, 7]
+    6: [14, 16, 18, 22, 24, 25, 26, 27, 28]
+    7: [6, 12, 15]
+
+cross_validation:
+  outer_n_splits: 5
+  outer_n_repeats: 5
+  inner_n_splits: 3
+  group_col: "student_id"
+  stratify_col: "label"
+
+preprocessing:
+  page_norm:
+    target_width: 2000
+    sauvola_window: 31
+    sauvola_k: 0.2
+  rules:
+    min_spacing: 15
+    ransac_residual_threshold: 3.0
+  words:
+    shirorekha_threshold: 0.7
+    gap_fallback_ratio: 0.5
+  skeleton:
+    spur_prune_threshold_ratio: 0.15
+
+normalization:
+  strategy: "pooled"  # grade x language x task medians/MAD pooled across A and B
+  min_cell_size: 15
+  clip_range: [-5.0, 5.0]
+
+prompts:
+  expected_sequence:
+    - task: "copy_hindi"
+      script: "devanagari"
+    - task: "copy_english"
+      script: "latin"
+    - task: "dictated_hindi"
+      script: "devanagari"
+    - task: "dictated_english"
+      script: "latin"
+    - task: "own_writing"
+      script: "auto"

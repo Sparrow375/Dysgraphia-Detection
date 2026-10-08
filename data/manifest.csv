@@ -1,0 +1,216 @@
+student_id,school,school_name,grade,section,roll_number,label,label_source,match_status,image_filename,relative_image_path,is_held_out
+G3_A_Roll01,school_a,Future Gen,3,A,1,0.0,paper-only,nan,IMG_20261006_101258.jpg,data/school_a/raw/Grade 3/IMG_20261006_101258.jpg,False
+G3_A_Roll02,school_a,Future Gen,3,A,2,0.0,paper-only,nan,IMG_20261006_101307.jpg,data/school_a/raw/Grade 3/IMG_20261006_101307.jpg,False
+G3_A_Roll03,school_a,Future Gen,3,A,3,0.0,paper-only,nan,IMG_20261006_101411.jpg,data/school_a/raw/Grade 3/IMG_20261006_101411.jpg,False
+G3_A_Roll05,school_a,Future Gen,3,A,5,0.0,paper-only,nan,IMG_20261006_101440.jpg,data/school_a/raw/Grade 3/IMG_20261006_101440.jpg,False
+G3_A_Roll06,school_a,Future Gen,3,A,6,0.0,paper-only,nan,IMG_20261006_101453.jpg,data/school_a/raw/Grade 3/IMG_20261006_101453.jpg,False
+G3_A_Roll07,school_a,Future Gen,3,A,7,0.0,paper-only,nan,IMG_20261006_101503.jpg,data/school_a/raw/Grade 3/IMG_20261006_101503.jpg,False
+G3_A_Roll08,school_a,Future Gen,3,A,8,0.0,paper-only,nan,IMG_20261006_101513.jpg,data/school_a/raw/Grade 3/IMG_20261006_101513.jpg,False
+G3_A_Roll09,school_a,Future Gen,3,A,9,0.0,paper-only,nan,IMG_20261006_101526.jpg,data/school_a/raw/Grade 3/IMG_20261006_101526.jpg,False
+G3_A_Roll10,school_a,Future Gen,3,A,10,0.0,paper-only,nan,IMG_20261006_101549.jpg,data/school_a/raw/Grade 3/IMG_20261006_101549.jpg,False
+G3_A_Roll12,school_a,Future Gen,3,A,12,1.0,paper-only,nan,IMG_20261006_101623.jpg,data/school_a/raw/Grade 3/IMG_20261006_101623.jpg,False
+G3_A_Roll14,school_a,Future Gen,3,A,14,0.0,paper-only,nan,IMG_20261006_101637.jpg,data/school_a/raw/Grade 3/IMG_20261006_101637.jpg,False
+G3_A_Roll13,school_a,Future Gen,3,A,13,1.0,paper-only,nan,IMG_20261006_101650.jpg,data/school_a/raw/Grade 3/IMG_20261006_101650.jpg,False
+G3_A_Roll15,school_a,Future Gen,3,A,15,1.0,paper-only,nan,IMG_20261006_101705.jpg,data/school_a/raw/Grade 3/IMG_20261006_101705.jpg,False
+G3_A_Roll16,school_a,Future Gen,3,A,16,0.0,paper-only,nan,IMG_20261006_101723.jpg,data/school_a/raw/Grade 3/IMG_20261006_101723.jpg,False
+G3_A_Roll17,school_a,Future Gen,3,A,17,0.0,paper-only,nan,IMG_20261006_101745.jpg,data/school_a/raw/Grade 3/IMG_20261006_101745.jpg,False
+G3_A_Roll19,school_a,Future Gen,3,A,19,1.0,paper-only,nan,IMG_20261006_101759.jpg,data/school_a/raw/Grade 3/IMG_20261006_101759.jpg,False
+G3_A_Roll20,school_a,Future Gen,3,A,20,0.0,paper-only,nan,IMG_20261006_101813.jpg,data/school_a/raw/Grade 3/IMG_20261006_101813.jpg,False
+G3_A_Roll21,school_a,Future Gen,3,A,21,0.0,paper-only,nan,IMG_20261006_101826.jpg,data/school_a/raw/Grade 3/IMG_20261006_101826.jpg,False
+G3_A_Roll22,school_a,Future Gen,3,A,22,0.0,paper-only,nan,IMG_20261006_101839.jpg,data/school_a/raw/Grade 3/IMG_20261006_101839.jpg,False
+G3_A_Roll23,school_a,Future Gen,3,A,23,0.0,paper-only,nan,IMG_20261006_101850.jpg,data/school_a/raw/Grade 3/IMG_20261006_101850.jpg,False
+G3_A_Roll04,school_a,Future Gen,3,A,4,0.0,paper-only,nan,IMG_20261006_101952.jpg,data/school_a/raw/Grade 3/IMG_20261006_101952.jpg,False
+G4_A_Roll01,school_a,Future Gen,4,A,1,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_1.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_1.jpeg,False
+G4_A_Roll11,school_a,Future Gen,4,A,11,1.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_10.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_10.jpeg,False
+G4_A_Roll12,school_a,Future Gen,4,A,12,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_11.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_11.jpeg,False
+G4_A_Roll13,school_a,Future Gen,4,A,13,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_12.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_12.jpeg,False
+G4_A_Roll14,school_a,Future Gen,4,A,14,1.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_13.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_13.jpeg,False
+G4_A_Roll15,school_a,Future Gen,4,A,15,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_14.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_14.jpeg,False
+G4_A_Roll16,school_a,Future Gen,4,A,16,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_15.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_15.jpeg,False
+G4_A_Roll17,school_a,Future Gen,4,A,17,1.0,paper-only,IMAGE_ONLY,DocScanner 06-Oct-2026 10-11 AM_16.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_16.jpeg,False
+G4_A_Roll18,school_a,Future Gen,4,A,18,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_17.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_17.jpeg,False
+G4_A_Roll19,school_a,Future Gen,4,A,19,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_18.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_18.jpeg,False
+G4_A_Roll20,school_a,Future Gen,4,A,20,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_19.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_19.jpeg,False
+G4_A_Roll02,school_a,Future Gen,4,A,2,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_2.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_2.jpeg,False
+G4_A_Roll22,school_a,Future Gen,4,A,22,1.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_20.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_20.jpeg,False
+G4_A_Roll23,school_a,Future Gen,4,A,23,1.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_21.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_21.jpeg,False
+G4_A_Roll24,school_a,Future Gen,4,A,24,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_22.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_22.jpeg,False
+G4_A_Roll25,school_a,Future Gen,4,A,25,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_23.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_23.jpeg,False
+G4_A_Roll26,school_a,Future Gen,4,A,26,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_24.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_24.jpeg,False
+G4_A_Roll03,school_a,Future Gen,4,A,3,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_3.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_3.jpeg,False
+G4_A_Roll04,school_a,Future Gen,4,A,4,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_4.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_4.jpeg,False
+G4_A_Roll05,school_a,Future Gen,4,A,5,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_5.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_5.jpeg,False
+G4_A_Roll06,school_a,Future Gen,4,A,6,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_6.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_6.jpeg,False
+G4_A_Roll07,school_a,Future Gen,4,A,7,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_7.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_7.jpeg,False
+G4_A_Roll08,school_a,Future Gen,4,A,8,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_8.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_8.jpeg,False
+G4_A_Roll09,school_a,Future Gen,4,A,9,1.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_9.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_9.jpeg,False
+G5_A_Roll01,school_a,Future Gen,5,A,1,0.0,paper+stylus,MATCHED,IMG_20261006_101440.jpg,data/school_a/raw/grade 5/IMG_20261006_101440.jpg,False
+G5_A_Roll02,school_a,Future Gen,5,A,2,0.0,paper+stylus,MATCHED,IMG_20261006_101521.jpg,data/school_a/raw/grade 5/IMG_20261006_101521.jpg,False
+G5_A_Roll03,school_a,Future Gen,5,A,3,0.0,paper+stylus,MATCHED,IMG_20261006_101548.jpg,data/school_a/raw/grade 5/IMG_20261006_101548.jpg,False
+G5_A_Roll04,school_a,Future Gen,5,A,4,0.0,paper+stylus,MATCHED,IMG_20261006_101631.jpg,data/school_a/raw/grade 5/IMG_20261006_101631.jpg,False
+G5_A_Roll05,school_a,Future Gen,5,A,5,1.0,paper+stylus,MATCHED,IMG_20261006_101647.jpg,data/school_a/raw/grade 5/IMG_20261006_101647.jpg,False
+G5_A_Roll06,school_a,Future Gen,5,A,6,0.0,paper+stylus,MATCHED,IMG_20261006_101700.jpg,data/school_a/raw/grade 5/IMG_20261006_101700.jpg,False
+G5_A_Roll07,school_a,Future Gen,5,A,7,1.0,paper+stylus,MATCHED,IMG_20261006_101721.jpg,data/school_a/raw/grade 5/IMG_20261006_101721.jpg,False
+G5_A_Roll08,school_a,Future Gen,5,A,8,0.0,paper+stylus,MATCHED,IMG_20261006_101734.jpg,data/school_a/raw/grade 5/IMG_20261006_101734.jpg,False
+G5_A_Roll09,school_a,Future Gen,5,A,9,0.0,paper+stylus,MATCHED,IMG_20261006_101758.jpg,data/school_a/raw/grade 5/IMG_20261006_101758.jpg,False
+G5_A_Roll10,school_a,Future Gen,5,A,10,0.0,paper+stylus,MATCHED,IMG_20261006_101814.jpg,data/school_a/raw/grade 5/IMG_20261006_101814.jpg,False
+G5_A_Roll11,school_a,Future Gen,5,A,11,0.0,paper+stylus,MATCHED,IMG_20261006_101827.jpg,data/school_a/raw/grade 5/IMG_20261006_101827.jpg,False
+G5_A_Roll12,school_a,Future Gen,5,A,12,0.0,paper+stylus,MATCHED,IMG_20261006_101841.jpg,data/school_a/raw/grade 5/IMG_20261006_101841.jpg,False
+G5_A_Roll13,school_a,Future Gen,5,A,13,0.0,paper+stylus,MATCHED,IMG_20261006_101900.jpg,data/school_a/raw/grade 5/IMG_20261006_101900.jpg,False
+G5_A_Roll14,school_a,Future Gen,5,A,14,0.0,paper+stylus,MATCHED,IMG_20261006_101918.jpg,data/school_a/raw/grade 5/IMG_20261006_101918.jpg,False
+G5_A_Roll15,school_a,Future Gen,5,A,15,0.0,paper+stylus,MATCHED,IMG_20261006_101933.jpg,data/school_a/raw/grade 5/IMG_20261006_101933.jpg,False
+G5_A_Roll16,school_a,Future Gen,5,A,16,0.0,paper+stylus,MATCHED,IMG_20261006_102015.jpg,data/school_a/raw/grade 5/IMG_20261006_102015.jpg,False
+G6_A_Roll01,school_a,Future Gen,6,A,1,0.0,paper+stylus,MATCHED,20261006_100541.jpg,data/school_a/raw/6th grade/20261006_100541.jpg,False
+G6_A_Roll02,school_a,Future Gen,6,A,2,0.0,paper+stylus,MATCHED,20261006_100654.jpg,data/school_a/raw/6th grade/20261006_100654.jpg,False
+G6_A_Roll03,school_a,Future Gen,6,A,3,0.0,paper+stylus,MATCHED,20261006_100718.jpg,data/school_a/raw/6th grade/20261006_100718.jpg,False
+G6_A_Roll04,school_a,Future Gen,6,A,4,0.0,paper+stylus,MATCHED,20261006_100754.jpg,data/school_a/raw/6th grade/20261006_100754.jpg,False
+G6_A_Roll05,school_a,Future Gen,6,A,5,0.0,paper+stylus,MATCHED,20261006_101157.jpg,data/school_a/raw/6th grade/20261006_101157.jpg,False
+G6_A_Roll07,school_a,Future Gen,6,A,7,0.0,paper+stylus,MATCHED,20261006_101224.jpg,data/school_a/raw/6th grade/20261006_101224.jpg,False
+G6_A_Roll08,school_a,Future Gen,6,A,8,0.0,paper+stylus,MATCHED,20261006_101244.jpg,data/school_a/raw/6th grade/20261006_101244.jpg,False
+G6_A_Roll09,school_a,Future Gen,6,A,9,0.0,paper+stylus,MATCHED,20261006_101308.jpg,data/school_a/raw/6th grade/20261006_101308.jpg,False
+G6_A_Roll10,school_a,Future Gen,6,A,10,0.0,paper+stylus,MATCHED,20261006_101338.jpg,data/school_a/raw/6th grade/20261006_101338.jpg,False
+G6_A_Roll11,school_a,Future Gen,6,A,11,0.0,paper+stylus,MATCHED,20261006_101356.jpg,data/school_a/raw/6th grade/20261006_101356.jpg,False
+G6_A_Roll12,school_a,Future Gen,6,A,12,0.0,paper+stylus,MATCHED,20261006_101416.jpg,data/school_a/raw/6th grade/20261006_101416.jpg,False
+G6_A_Roll13,school_a,Future Gen,6,A,13,0.0,paper+stylus,MATCHED,20261006_101427.jpg,data/school_a/raw/6th grade/20261006_101427.jpg,False
+G6_A_Roll14,school_a,Future Gen,6,A,14,1.0,paper+stylus,MATCHED,20261006_101450.jpg,data/school_a/raw/6th grade/20261006_101450.jpg,False
+G6_A_Roll15,school_a,Future Gen,6,A,15,0.0,paper+stylus,MATCHED,20261006_101518.jpg,data/school_a/raw/6th grade/20261006_101518.jpg,False
+G6_A_Roll16,school_a,Future Gen,6,A,16,1.0,paper+stylus,MATCHED,20261006_101529.jpg,data/school_a/raw/6th grade/20261006_101529.jpg,False
+G6_A_Roll17,school_a,Future Gen,6,A,17,0.0,paper+stylus,MATCHED,20261006_101556.jpg,data/school_a/raw/6th grade/20261006_101556.jpg,False
+G6_A_Roll18,school_a,Future Gen,6,A,18,1.0,paper+stylus,MATCHED,20261006_101612.jpg,data/school_a/raw/6th grade/20261006_101612.jpg,False
+G6_A_Roll19,school_a,Future Gen,6,A,19,0.0,paper+stylus,MATCHED,20261006_101650.jpg,data/school_a/raw/6th grade/20261006_101650.jpg,False
+G6_A_Roll20,school_a,Future Gen,6,A,20,0.0,paper+stylus,MATCHED,20261006_101715.jpg,data/school_a/raw/6th grade/20261006_101715.jpg,False
+G6_A_Roll21,school_a,Future Gen,6,A,21,0.0,paper+stylus,MATCHED,20261006_101728.jpg,data/school_a/raw/6th grade/20261006_101728.jpg,False
+G6_A_Roll22,school_a,Future Gen,6,A,22,1.0,paper+stylus,MATCHED,20261006_101741.jpg,data/school_a/raw/6th grade/20261006_101741.jpg,False
+G6_A_Roll23,school_a,Future Gen,6,A,23,0.0,paper+stylus,MATCHED,20261006_101748.jpg,data/school_a/raw/6th grade/20261006_101748.jpg,False
+G6_A_Roll24,school_a,Future Gen,6,A,24,1.0,paper+stylus,MATCHED,20261006_101800.jpg,data/school_a/raw/6th grade/20261006_101800.jpg,False
+G6_A_Roll25,school_a,Future Gen,6,A,25,1.0,paper-only,IMAGE_ONLY,20261006_101811.jpg,data/school_a/raw/6th grade/20261006_101811.jpg,False
+G6_A_Roll26,school_a,Future Gen,6,A,26,1.0,paper+stylus,MATCHED,20261006_101819.jpg,data/school_a/raw/6th grade/20261006_101819.jpg,False
+G6_A_Roll27,school_a,Future Gen,6,A,27,1.0,paper+stylus,MATCHED,20261006_101834.jpg,data/school_a/raw/6th grade/20261006_101834.jpg,False
+G6_A_Roll28,school_a,Future Gen,6,A,28,1.0,paper+stylus,MATCHED,20261006_101903.jpg,data/school_a/raw/6th grade/20261006_101903.jpg,False
+G6_A_Roll29,school_a,Future Gen,6,A,29,0.0,paper+stylus,MATCHED,20261006_101929.jpg,data/school_a/raw/6th grade/20261006_101929.jpg,False
+G6_A_Roll30,school_a,Future Gen,6,A,30,0.0,paper+stylus,MATCHED,20261006_101942.jpg,data/school_a/raw/6th grade/20261006_101942.jpg,False
+G7_A_Roll01,school_a,Future Gen,7,A,1,0.0,paper+stylus,MATCHED,IMG_20261006_100404.jpg,data/school_a/raw/Grade 7/IMG_20261006_100404.jpg,False
+G7_A_Roll02,school_a,Future Gen,7,A,2,0.0,paper-only,IMAGE_ONLY,IMG_20261006_100451.jpg,data/school_a/raw/Grade 7/IMG_20261006_100451.jpg,False
+G7_A_Roll03,school_a,Future Gen,7,A,3,0.0,paper+stylus,MATCHED,IMG_20261006_100527.jpg,data/school_a/raw/Grade 7/IMG_20261006_100527.jpg,False
+G7_A_Roll04,school_a,Future Gen,7,A,4,0.0,paper+stylus,MATCHED,IMG_20261006_100536.jpg,data/school_a/raw/Grade 7/IMG_20261006_100536.jpg,False
+G7_A_Roll05,school_a,Future Gen,7,A,5,0.0,paper+stylus,MATCHED,IMG_20261006_100545.jpg,data/school_a/raw/Grade 7/IMG_20261006_100545.jpg,False
+G7_A_Roll06,school_a,Future Gen,7,A,6,1.0,paper+stylus,MATCHED,IMG_20261006_100554.jpg,data/school_a/raw/Grade 7/IMG_20261006_100554.jpg,False
+G7_A_Roll07,school_a,Future Gen,7,A,7,0.0,paper+stylus,MATCHED,IMG_20261006_100609.jpg,data/school_a/raw/Grade 7/IMG_20261006_100609.jpg,False
+G7_A_Roll08,school_a,Future Gen,7,A,8,0.0,paper+stylus,MATCHED,IMG_20261006_100623.jpg,data/school_a/raw/Grade 7/IMG_20261006_100623.jpg,False
+G7_A_Roll09,school_a,Future Gen,7,A,9,0.0,paper+stylus,MATCHED,IMG_20261006_100636.jpg,data/school_a/raw/Grade 7/IMG_20261006_100636.jpg,False
+G7_A_Roll10,school_a,Future Gen,7,A,10,0.0,paper+stylus,MATCHED,IMG_20261006_100717.jpg,data/school_a/raw/Grade 7/IMG_20261006_100717.jpg,False
+G7_A_Roll11,school_a,Future Gen,7,A,11,0.0,paper+stylus,MATCHED,IMG_20261006_100726.jpg,data/school_a/raw/Grade 7/IMG_20261006_100726.jpg,False
+G7_A_Roll12,school_a,Future Gen,7,A,12,1.0,paper+stylus,MATCHED,IMG_20261006_100739.jpg,data/school_a/raw/Grade 7/IMG_20261006_100739.jpg,False
+G7_A_Roll13,school_a,Future Gen,7,A,13,0.0,paper+stylus,MATCHED,IMG_20261006_100811.jpg,data/school_a/raw/Grade 7/IMG_20261006_100811.jpg,False
+G7_A_Roll14,school_a,Future Gen,7,A,14,0.0,paper+stylus,MATCHED,IMG_20261006_100836.jpg,data/school_a/raw/Grade 7/IMG_20261006_100836.jpg,False
+G7_A_Roll15,school_a,Future Gen,7,A,15,1.0,paper+stylus,MATCHED,IMG_20261006_100850.jpg,data/school_a/raw/Grade 7/IMG_20261006_100850.jpg,False
+G7_A_Roll16,school_a,Future Gen,7,A,16,0.0,paper+stylus,MATCHED,IMG_20261006_100904.jpg,data/school_a/raw/Grade 7/IMG_20261006_100904.jpg,False
+G7_A_Roll17,school_a,Future Gen,7,A,17,0.0,paper+stylus,MATCHED,IMG_20261006_100919.jpg,data/school_a/raw/Grade 7/IMG_20261006_100919.jpg,False
+G7_A_Roll18,school_a,Future Gen,7,A,18,0.0,paper+stylus,MATCHED,IMG_20261006_100930.jpg,data/school_a/raw/Grade 7/IMG_20261006_100930.jpg,False
+G7_A_Roll19,school_a,Future Gen,7,A,19,0.0,paper+stylus,MATCHED,IMG_20261006_100941.jpg,data/school_a/raw/Grade 7/IMG_20261006_100941.jpg,False
+G7_A_Roll20,school_a,Future Gen,7,A,20,0.0,paper+stylus,MATCHED,IMG_20261006_100952.jpg,data/school_a/raw/Grade 7/IMG_20261006_100952.jpg,False
+G7_A_Roll21,school_a,Future Gen,7,A,21,0.0,paper+stylus,MATCHED,IMG_20261006_101002.jpg,data/school_a/raw/Grade 7/IMG_20261006_101002.jpg,False
+G7_A_Roll22,school_a,Future Gen,7,A,22,0.0,paper+stylus,MATCHED,IMG_20261006_101011.jpg,data/school_a/raw/Grade 7/IMG_20261006_101011.jpg,False
+G7_A_Roll23,school_a,Future Gen,7,A,23,0.0,paper+stylus,MATCHED,IMG_20261006_101020.jpg,data/school_a/raw/Grade 7/IMG_20261006_101020.jpg,False
+G7_A_Roll24,school_a,Future Gen,7,A,24,0.0,paper+stylus,MATCHED,IMG_20261006_101031.jpg,data/school_a/raw/Grade 7/IMG_20261006_101031.jpg,False
+G7_A_Roll25,school_a,Future Gen,7,A,25,0.0,paper+stylus,MATCHED,IMG_20261006_101040.jpg,data/school_a/raw/Grade 7/IMG_20261006_101040.jpg,False
+SCHB_G3_IMG_20261007_101611,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101611.jpg,data/school_b/raw/Grade 3/IMG_20261007_101611.jpg,True
+SCHB_G3_IMG_20261007_101621,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101621.jpg,data/school_b/raw/Grade 3/IMG_20261007_101621.jpg,True
+SCHB_G3_IMG_20261007_101635,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101635.jpg,data/school_b/raw/Grade 3/IMG_20261007_101635.jpg,True
+SCHB_G3_IMG_20261007_101645,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101645.jpg,data/school_b/raw/Grade 3/IMG_20261007_101645.jpg,True
+SCHB_G3_IMG_20261007_101651,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101651.jpg,data/school_b/raw/Grade 3/IMG_20261007_101651.jpg,True
+SCHB_G3_IMG_20261007_101659,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101659.jpg,data/school_b/raw/Grade 3/IMG_20261007_101659.jpg,True
+SCHB_G3_IMG_20261007_101705,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101705.jpg,data/school_b/raw/Grade 3/IMG_20261007_101705.jpg,True
+SCHB_G3_IMG_20261007_101710,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101710.jpg,data/school_b/raw/Grade 3/IMG_20261007_101710.jpg,True
+SCHB_G3_IMG_20261007_101721,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101721.jpg,data/school_b/raw/Grade 3/IMG_20261007_101721.jpg,True
+SCHB_G3_IMG_20261007_101728,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101728.jpg,data/school_b/raw/Grade 3/IMG_20261007_101728.jpg,True
+SCHB_G3_IMG_20261007_101737,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101737.jpg,data/school_b/raw/Grade 3/IMG_20261007_101737.jpg,True
+SCHB_G3_IMG_20261007_101746,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101746.jpg,data/school_b/raw/Grade 3/IMG_20261007_101746.jpg,True
+SCHB_G3_IMG_20261007_101757,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101757.jpg,data/school_b/raw/Grade 3/IMG_20261007_101757.jpg,True
+SCHB_G3_IMG_20261007_101826,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101826.jpg,data/school_b/raw/Grade 3/IMG_20261007_101826.jpg,True
+SCHB_G3_IMG_20261007_101850,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101850.jpg,data/school_b/raw/Grade 3/IMG_20261007_101850.jpg,True
+SCHB_G3_IMG_20261007_101857,school_b,Kanyashala,3,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101857.jpg,data/school_b/raw/Grade 3/IMG_20261007_101857.jpg,True
+SCHB_G4_IMG_20261007_100013,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100013.jpg,data/school_b/raw/Grade 4/IMG_20261007_100013.jpg,True
+SCHB_G4_IMG_20261007_100035,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100035.jpg,data/school_b/raw/Grade 4/IMG_20261007_100035.jpg,True
+SCHB_G4_IMG_20261007_100048,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100048.jpg,data/school_b/raw/Grade 4/IMG_20261007_100048.jpg,True
+SCHB_G4_IMG_20261007_100107,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100107.jpg,data/school_b/raw/Grade 4/IMG_20261007_100107.jpg,True
+SCHB_G4_IMG_20261007_100135,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100135.jpg,data/school_b/raw/Grade 4/IMG_20261007_100135.jpg,True
+SCHB_G4_IMG_20261007_100148,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100148.jpg,data/school_b/raw/Grade 4/IMG_20261007_100148.jpg,True
+SCHB_G4_IMG_20261007_100214,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100214.jpg,data/school_b/raw/Grade 4/IMG_20261007_100214.jpg,True
+SCHB_G4_IMG_20261007_100229,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100229.jpg,data/school_b/raw/Grade 4/IMG_20261007_100229.jpg,True
+SCHB_G4_IMG_20261007_100303,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100303.jpg,data/school_b/raw/Grade 4/IMG_20261007_100303.jpg,True
+SCHB_G4_IMG_20261007_100314,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100314.jpg,data/school_b/raw/Grade 4/IMG_20261007_100314.jpg,True
+SCHB_G4_IMG_20261007_100325,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100325.jpg,data/school_b/raw/Grade 4/IMG_20261007_100325.jpg,True
+SCHB_G4_IMG_20261007_100335,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100335.jpg,data/school_b/raw/Grade 4/IMG_20261007_100335.jpg,True
+SCHB_G4_IMG_20261007_100350,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100350.jpg,data/school_b/raw/Grade 4/IMG_20261007_100350.jpg,True
+SCHB_G4_IMG_20261007_100402,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100402.jpg,data/school_b/raw/Grade 4/IMG_20261007_100402.jpg,True
+SCHB_G4_IMG_20261007_100411,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100411.jpg,data/school_b/raw/Grade 4/IMG_20261007_100411.jpg,True
+SCHB_G4_IMG_20261007_100422,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100422.jpg,data/school_b/raw/Grade 4/IMG_20261007_100422.jpg,True
+SCHB_G4_IMG_20261007_100433,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100433.jpg,data/school_b/raw/Grade 4/IMG_20261007_100433.jpg,True
+SCHB_G4_IMG_20261007_100446,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100446.jpg,data/school_b/raw/Grade 4/IMG_20261007_100446.jpg,True
+SCHB_G4_IMG_20261007_100502,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100502.jpg,data/school_b/raw/Grade 4/IMG_20261007_100502.jpg,True
+SCHB_G4_IMG_20261007_100514,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100514.jpg,data/school_b/raw/Grade 4/IMG_20261007_100514.jpg,True
+SCHB_G4_IMG_20261007_100526,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100526.jpg,data/school_b/raw/Grade 4/IMG_20261007_100526.jpg,True
+SCHB_G4_IMG_20261007_100552,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100552.jpg,data/school_b/raw/Grade 4/IMG_20261007_100552.jpg,True
+SCHB_G4_IMG_20261007_100602,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100602.jpg,data/school_b/raw/Grade 4/IMG_20261007_100602.jpg,True
+SCHB_G4_IMG_20261007_100613,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100613.jpg,data/school_b/raw/Grade 4/IMG_20261007_100613.jpg,True
+SCHB_G4_IMG_20261007_100621,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100621.jpg,data/school_b/raw/Grade 4/IMG_20261007_100621.jpg,True
+SCHB_G4_IMG_20261007_100632,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100632.jpg,data/school_b/raw/Grade 4/IMG_20261007_100632.jpg,True
+SCHB_G4_IMG_20261007_100650,school_b,Kanyashala,4,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100650.jpg,data/school_b/raw/Grade 4/IMG_20261007_100650.jpg,True
+SCHB_G5_IMG_20261007_100918,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100918.jpg,data/school_b/raw/Grade 5/IMG_20261007_100918.jpg,True
+SCHB_G5_IMG_20261007_100926,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100926.jpg,data/school_b/raw/Grade 5/IMG_20261007_100926.jpg,True
+SCHB_G5_IMG_20261007_100934,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100934.jpg,data/school_b/raw/Grade 5/IMG_20261007_100934.jpg,True
+SCHB_G5_IMG_20261007_100940,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100940.jpg,data/school_b/raw/Grade 5/IMG_20261007_100940.jpg,True
+SCHB_G5_IMG_20261007_100947,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100947.jpg,data/school_b/raw/Grade 5/IMG_20261007_100947.jpg,True
+SCHB_G5_IMG_20261007_100954,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_100954.jpg,data/school_b/raw/Grade 5/IMG_20261007_100954.jpg,True
+SCHB_G5_IMG_20261007_101001,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101001.jpg,data/school_b/raw/Grade 5/IMG_20261007_101001.jpg,True
+SCHB_G5_IMG_20261007_101010,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101010.jpg,data/school_b/raw/Grade 5/IMG_20261007_101010.jpg,True
+SCHB_G5_IMG_20261007_101020,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101020.jpg,data/school_b/raw/Grade 5/IMG_20261007_101020.jpg,True
+SCHB_G5_IMG_20261007_101031,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101031.jpg,data/school_b/raw/Grade 5/IMG_20261007_101031.jpg,True
+SCHB_G5_IMG_20261007_101047,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101047.jpg,data/school_b/raw/Grade 5/IMG_20261007_101047.jpg,True
+SCHB_G5_IMG_20261007_101126,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101126.jpg,data/school_b/raw/Grade 5/IMG_20261007_101126.jpg,True
+SCHB_G5_IMG_20261007_101145,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101145.jpg,data/school_b/raw/Grade 5/IMG_20261007_101145.jpg,True
+SCHB_G5_IMG_20261007_101152,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101152.jpg,data/school_b/raw/Grade 5/IMG_20261007_101152.jpg,True
+SCHB_G5_IMG_20261007_101207,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101207.jpg,data/school_b/raw/Grade 5/IMG_20261007_101207.jpg,True
+SCHB_G5_IMG_20261007_101218,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101218.jpg,data/school_b/raw/Grade 5/IMG_20261007_101218.jpg,True
+SCHB_G5_IMG_20261007_101229,school_b,Kanyashala,5,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_101229.jpg,data/school_b/raw/Grade 5/IMG_20261007_101229.jpg,True
+SCHB_G6_IMG_20261007_102027,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102027.jpg,data/school_b/raw/Grade 6/IMG_20261007_102027.jpg,True
+SCHB_G6_IMG_20261007_102039,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102039.jpg,data/school_b/raw/Grade 6/IMG_20261007_102039.jpg,True
+SCHB_G6_IMG_20261007_102049,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102049.jpg,data/school_b/raw/Grade 6/IMG_20261007_102049.jpg,True
+SCHB_G6_IMG_20261007_102112,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102112.jpg,data/school_b/raw/Grade 6/IMG_20261007_102112.jpg,True
+SCHB_G6_IMG_20261007_102126,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102126.jpg,data/school_b/raw/Grade 6/IMG_20261007_102126.jpg,True
+SCHB_G6_IMG_20261007_102134,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102134.jpg,data/school_b/raw/Grade 6/IMG_20261007_102134.jpg,True
+SCHB_G6_IMG_20261007_102141,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102141.jpg,data/school_b/raw/Grade 6/IMG_20261007_102141.jpg,True
+SCHB_G6_IMG_20261007_102151,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102151.jpg,data/school_b/raw/Grade 6/IMG_20261007_102151.jpg,True
+SCHB_G6_IMG_20261007_102203,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102203.jpg,data/school_b/raw/Grade 6/IMG_20261007_102203.jpg,True
+SCHB_G6_IMG_20261007_102218,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102218.jpg,data/school_b/raw/Grade 6/IMG_20261007_102218.jpg,True
+SCHB_G6_IMG_20261007_102228,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102228.jpg,data/school_b/raw/Grade 6/IMG_20261007_102228.jpg,True
+SCHB_G6_IMG_20261007_102238,school_b,Kanyashala,6,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_102238.jpg,data/school_b/raw/Grade 6/IMG_20261007_102238.jpg,True
+SCHB_G7_IMG_20261007_105302,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105302.jpg,data/school_b/raw/Grade 7/IMG_20261007_105302.jpg,True
+SCHB_G7_IMG_20261007_105315,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105315.jpg,data/school_b/raw/Grade 7/IMG_20261007_105315.jpg,True
+SCHB_G7_IMG_20261007_105327,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105327.jpg,data/school_b/raw/Grade 7/IMG_20261007_105327.jpg,True
+SCHB_G7_IMG_20261007_105344,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105344.jpg,data/school_b/raw/Grade 7/IMG_20261007_105344.jpg,True
+SCHB_G7_IMG_20261007_105355,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105355.jpg,data/school_b/raw/Grade 7/IMG_20261007_105355.jpg,True
+SCHB_G7_IMG_20261007_105407,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105407.jpg,data/school_b/raw/Grade 7/IMG_20261007_105407.jpg,True
+SCHB_G7_IMG_20261007_105422,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105422.jpg,data/school_b/raw/Grade 7/IMG_20261007_105422.jpg,True
+SCHB_G7_IMG_20261007_105436,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105436.jpg,data/school_b/raw/Grade 7/IMG_20261007_105436.jpg,True
+SCHB_G7_IMG_20261007_105451,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105451.jpg,data/school_b/raw/Grade 7/IMG_20261007_105451.jpg,True
+SCHB_G7_IMG_20261007_105502,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105502.jpg,data/school_b/raw/Grade 7/IMG_20261007_105502.jpg,True
+SCHB_G7_IMG_20261007_105512,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105512.jpg,data/school_b/raw/Grade 7/IMG_20261007_105512.jpg,True
+SCHB_G7_IMG_20261007_105529,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105529.jpg,data/school_b/raw/Grade 7/IMG_20261007_105529.jpg,True
+SCHB_G7_IMG_20261007_105547,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105547.jpg,data/school_b/raw/Grade 7/IMG_20261007_105547.jpg,True
+SCHB_G7_IMG_20261007_105613,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105613.jpg,data/school_b/raw/Grade 7/IMG_20261007_105613.jpg,True
+SCHB_G7_IMG_20261007_105625,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105625.jpg,data/school_b/raw/Grade 7/IMG_20261007_105625.jpg,True
+SCHB_G7_IMG_20261007_105637,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105637.jpg,data/school_b/raw/Grade 7/IMG_20261007_105637.jpg,True
+SCHB_G7_IMG_20261007_105649,school_b,Kanyashala,7,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105649.jpg,data/school_b/raw/Grade 7/IMG_20261007_105649.jpg,True
+SCHB_G8_IMG_20261007_104642,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_104642.jpg,data/school_b/raw/Grade 8/IMG_20261007_104642.jpg,True
+SCHB_G8_IMG_20261007_104901,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_104901.jpg,data/school_b/raw/Grade 8/IMG_20261007_104901.jpg,True
+SCHB_G8_IMG_20261007_104911,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_104911.jpg,data/school_b/raw/Grade 8/IMG_20261007_104911.jpg,True
+SCHB_G8_IMG_20261007_104920,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_104920.jpg,data/school_b/raw/Grade 8/IMG_20261007_104920.jpg,True
+SCHB_G8_IMG_20261007_104933,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_104933.jpg,data/school_b/raw/Grade 8/IMG_20261007_104933.jpg,True
+SCHB_G8_IMG_20261007_104955,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_104955.jpg,data/school_b/raw/Grade 8/IMG_20261007_104955.jpg,True
+SCHB_G8_IMG_20261007_105009,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105009.jpg,data/school_b/raw/Grade 8/IMG_20261007_105009.jpg,True
+SCHB_G8_IMG_20261007_105028,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105028.jpg,data/school_b/raw/Grade 8/IMG_20261007_105028.jpg,True
+SCHB_G8_IMG_20261007_105048,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105048.jpg,data/school_b/raw/Grade 8/IMG_20261007_105048.jpg,True
+SCHB_G8_IMG_20261007_105106,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105106.jpg,data/school_b/raw/Grade 8/IMG_20261007_105106.jpg,True
+SCHB_G8_IMG_20261007_105120,school_b,Kanyashala,8,unassigned,-1,,held_out_external_test,HELD_OUT,IMG_20261007_105120.jpg,data/school_b/raw/Grade 8/IMG_20261007_105120.jpg,True
