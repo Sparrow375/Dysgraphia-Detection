@@ -1,0 +1,6 @@
+[core]
+    remote = local-storage
+[cache]
+    type = "reflink,hardlink,copy"
+['remote "local-storage"']
+    url = F:\Avaneesh\download\VV data-20261006T155534Z-1-001\VV data\dvc_storage

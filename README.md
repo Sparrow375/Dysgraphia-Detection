@@ -45,11 +45,31 @@ Full detail on each in the project scope doc.
 
 ## Getting started
 
-_Setup instructions to be added as the pipeline takes shape._
+### Environment Setup
+```powershell
+# Create & activate Python virtual environment
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+
+# Install requirements (includes DVC and cloud storage plugins)
+pip install -r requirements.txt
+```
+
+### Dataset Synchronization (DVC)
+Large multimodal datasets (scanned handwriting, stylus trajectories, rendered strokes) are tracked via **DVC (Data Version Control)** and never checked directly into Git.
+
+```bash
+# Pull dataset for the current branch (baseline-v1)
+dvc pull
+
+# Or pull from Google Cloud Storage remote
+dvc pull -r gcs-storage
+```
+See [`docs/data-versioning-dvc.md`](./docs/data-versioning-dvc.md) for full instructions on local and Google Cloud Storage remotes.
 
 ## A note on data
 
-Any handwriting samples we collect from children are treated as sensitive. No raw data goes into this repo — see `docs/project-scope.md` §5 for how we're handling consent, labeling, and framing.
+Any handwriting samples we collect from children are treated as sensitive. No raw data goes into this repo — see `docs/project-scope.md` §5 for how we're handling consent, labeling, and framing. Datasets are versioned using DVC pointers (`data.dvc`) tied to Git branches.
 
 ## Team
 
