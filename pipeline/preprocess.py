@@ -17,17 +17,71 @@ import numpy as np
 
 
 def auto_orient_portrait(image_bgr: np.ndarray) -> Tuple[np.ndarray, bool]:
-    """Ensure image is in portrait orientation (height >= width).
+    """Ensure image is in portrait orientation and right-side up.
+
+    Evaluates candidate rotations (0°, 90° CW, 180°, 270° CW) using:
+    1. Vertical red margin line position (must be on the LEFT of the page).
+    2. Handwriting ink & header density (concentrated in TOP 40% vs bottom 40%).
 
     Returns:
         oriented_image, was_rotated
     """
     h, w = image_bgr.shape[:2]
     if w > h:
-        # Rotate 90 degrees clockwise to make portrait
-        rotated = cv2.rotate(image_bgr, cv2.ROTATE_90_CLOCKWISE)
-        return rotated, True
-    return image_bgr, False
+        candidates = [
+            ("90_cw", cv2.rotate(image_bgr, cv2.ROTATE_90_CLOCKWISE), True),
+            ("270_cw", cv2.rotate(image_bgr, cv2.ROTATE_90_COUNTERCLOCKWISE), True),
+        ]
+    else:
+        candidates = [
+            ("0_deg", image_bgr, False),
+            ("180_deg", cv2.rotate(image_bgr, cv2.ROTATE_180), True),
+        ]
+
+    best_cand = candidates[0]
+    best_score = -1e9
+
+    for name, rot, is_rot in candidates:
+        rh, rw = rot.shape[:2]
+        # 1. Red margin line detection
+        hsv = cv2.cvtColor(rot, cv2.COLOR_BGR2HSV)
+        mask1 = cv2.inRange(hsv, np.array([0, 35, 35]), np.array([15, 255, 255]))
+        mask2 = cv2.inRange(hsv, np.array([160, 35, 35]), np.array([180, 255, 255]))
+        red = mask1 | mask2
+
+        # Vertical projection of red ink in left 25% vs right 25%
+        v_left = float(red[:, : int(rw * 0.25)].sum(axis=0).max()) if rw > 0 else 0.0
+        v_right = float(red[:, int(rw * 0.75) :].sum(axis=0).max()) if rw > 0 else 0.0
+
+        # 2. Handwriting ink distribution (middle column, top 40% vs bottom 40%)
+        gray_small = cv2.cvtColor(rot, cv2.COLOR_BGR2GRAY)
+        scale_s = 600.0 / max(rh, rw)
+        small_g = cv2.resize(gray_small, (int(rw * scale_s), int(rh * scale_s)), interpolation=cv2.INTER_AREA)
+        adapt_s = cv2.adaptiveThreshold(
+            small_g, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 12
+        )
+        sh, sw = adapt_s.shape
+        mid_strip = adapt_s[:, int(sw * 0.20) : int(sw * 0.85)]
+        top_ink = float(mid_strip[: int(sh * 0.40), :].sum())
+        bot_ink = float(mid_strip[int(sh * 0.60) :, :].sum())
+
+        score = 0.0
+        if v_left > 0 or v_right > 0:
+            if v_left >= v_right:
+                score += 15.0 * (v_left / max(v_right, 1.0))
+            else:
+                score -= 15.0 * (v_right / max(v_left, 1.0))
+
+        if top_ink >= bot_ink:
+            score += 5.0 * (top_ink / max(bot_ink, 1.0))
+        else:
+            score -= 5.0 * (bot_ink / max(top_ink, 1.0))
+
+        if score > best_score:
+            best_score = score
+            best_cand = (name, rot, is_rot)
+
+    return best_cand[1], best_cand[2]
 
 
 def order_quad_points(pts: np.ndarray) -> np.ndarray:
@@ -91,6 +145,8 @@ def warp_page(
 ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Perspective warp quadrilateral to target_width, or apply margin crop fallback.
 
+    Uses high-fidelity interpolation (INTER_CUBIC / INTER_LANCZOS4) to preserve ink stroke crispness.
+
     Returns:
         warped_image (BGR), ordered_quad_corners
     """
@@ -121,29 +177,33 @@ def warp_page(
         )
 
         matrix = cv2.getPerspectiveTransform(quad_corners, dst)
-        warped = cv2.warpPerspective(image_bgr, matrix, (target_width, target_height), flags=cv2.INTER_LINEAR)
+        warped = cv2.warpPerspective(image_bgr, matrix, (target_width, target_height), flags=cv2.INTER_CUBIC)
         return warped, quad_corners
 
-    # Fallback: Trim 2% border and resize to target_width
+    # Fallback: Trim 2% border and resize with high-fidelity interpolation
     m_x = int(orig_w * fallback_margin_pct)
     m_y = int(orig_h * fallback_margin_pct)
     cropped = image_bgr[m_y : orig_h - m_y, m_x : orig_w - m_x]
 
     crop_h, crop_w = cropped.shape[:2]
     target_height = int(crop_h * (target_width / crop_w))
-    warped = cv2.resize(cropped, (target_width, target_height), interpolation=cv2.INTER_LINEAR)
+    interp = cv2.INTER_LANCZOS4 if target_width >= crop_w else cv2.INTER_AREA
+    warped = cv2.resize(cropped, (target_width, target_height), interpolation=interp)
 
     return warped, None
 
 
-def binarize_image(grayscale: np.ndarray) -> np.ndarray:
+def binarize_image(grayscale: np.ndarray, block_size: int = 51, c: int = 15) -> np.ndarray:
     """Binarize grayscale image to extract ink mask (1 = ink, 0 = paper).
 
-    Uses Gaussian blur + Otsu thresholding, avoiding paper texture artifacts.
+    Uses local adaptive Gaussian thresholding, robust to phone camera lighting
+    gradients and ambient paper shadows without generating false ink.
     """
-    blurred = cv2.GaussianBlur(grayscale, (5, 5), 0)
-    _, otsu_inv = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-    binary_ink = (otsu_inv > 0).astype(np.uint8)
+    blurred = cv2.GaussianBlur(grayscale, (3, 3), 0)
+    adapt = cv2.adaptiveThreshold(
+        blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, block_size, c
+    )
+    binary_ink = (adapt > 0).astype(np.uint8)
     return binary_ink
 
 

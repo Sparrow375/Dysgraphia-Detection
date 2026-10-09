@@ -82,20 +82,25 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
 - **Output Hierarchy**: `data/processed/<school>/<student_id>/` with cropped sentence PNGs, sentence JSON schemas, and `overlay_debug.png`.
 - **Quality Gate**: 30-sheet visual overlay review notebook (`qa/phase1_overlay_review.ipynb` / `qa/review_gallery.html`) verifying word-count match and segmentation bounds.
 
-## Phase 1 v2: Preprocessing & Segmentation Overhaul (Completed 2026-10-09)
-- **Motivation & v1 Issues**:
-  - v1 illumination flattening + Sauvola thresholding destroyed image fidelity, turning ruled lines into thick black bars and degrading ink strokes.
-  - Fragile rule-band assignment and script-based state transitions misclassified lines and split multi-line sentences.
-  - Binary mask sentence crops inverted into illegible black/white bitmaps.
-- **v2 Architecture & Key Changes**:
-  - `pipeline/preprocess.py`: Removed illumination flattening completely. Uses gentle Gaussian blur + Otsu thresholding, preserving sharp ink strokes with zero paper grain noise while retaining original deskewed grayscale.
-  - `pipeline/rules.py`: Upgraded rule removal to 7px vertical window with morphological dilation and 120px vertical margin line filtering. Localized vertical closing restores intersecting ascenders/descenders without re-bridging removed rules.
-  - `pipeline/segment.py`: Replaced rule-band slicing with connected component extraction, top header box filtering ($y < 320, x > 850$), and nearest-neighbor y-centroid line clustering ($0.65 \times r$). Accurately groups multi-line English copy (Task 2) and single-line tasks (Tasks 1, 3, 4, 5, 6).
-  - **Per-Word Baseline Extraction**: Captures the bottom point of every word bounding box (`x_center`, `bottom`), fits a robust linear baseline ($y = mx + c$), and computes per-word baseline residuals and RMSE for Phase 2 kinematic/spatial features.
-  - `pipeline/process_dataset.py`: Crops sentences directly from the clean deskewed grayscale image (natural black ink on white paper, no inversion). Injects per-word baseline coordinates and residuals into sentence JSON schemas. Debug overlay renders clean grayscale with cyan ruled lines, green/orange word bboxes, red baseline sample dots, and yellow fitted regression lines.
+## Phase 1 v2: Preprocessing & Segmentation Overhaul (Completed 2026-10-10)
+- **Motivation & Finalized Architectural Decisions**:
+  - **Rules as Reference Layer**: Printed ruled lines are NOT removed or discarded from primary output crops. They are preserved in `grayscale_deskewed` and `ink_with_rules` as an essential reference layer. All page ruling parameters ($y$-intercept, slope, median spacing $r$) are tracked and stored in sentence schemas.
+  - **Baseline-to-Rule Alignment Features**: Direct computation of `rule_offset_px`, `rule_slope_diff`, `per_word_rule_offsets`, and `rule_offset_rmse` against nearest reference rule lines for Phase 2 spatial/motor feature extraction.
+  - **Separate Ink-Only Layer with Crossing Stroke Restoration**: Rules and margin lines are masked only in `ink_clean` for kinematic, stroke, and skeleton analysis. Stroke restoration employs an expanded `(3, 11)` directional closing kernel with `(5, 11)` gating, bridging vertical and slanted strokes (up to 30° cursive slant) across the 7px rule band without leaving horizontal fragments or breaking connectivity.
+  - **Language-Aware Sentence Grouping**:
+    - Each cropped sentence block contains strictly ONE language.
+    - Language transitions (Devanagari $\leftrightarrow$ Latin) define sentence boundaries.
+    - Consecutive lines of the same language merge into the same multi-line sentence block.
+    - Shirorekha ink coverage ratio ($\ge 0.14 \implies \text{devanagari}$) on components with $w \ge 42\text{px}, h \ge 12\text{px}$ and run $\ge 36\text{px}$ cleanly distinguishes Devanagari from Latin without bias from English crossbars ('t', 'f') or letter dots.
+  - **Page Orientation & Preprocessing**:
+    - Auto-portrait orientation evaluates 4 rotation angles (0°, 90°, 180°, 270°) using red margin verticality and header ink distribution, properly fixing landscape scans (e.g. `G3_A_Roll12`).
+    - Standard notebook vertical margin mask ($x < 210$) removes margin line artifacts without clipping handwriting.
+    - Height-constrained altitude line clustering ($0.35 \times r$, max height $\le 1.25 \times r$) prevents transitive chaining collapses.
 - **Validation**:
   - `tests/test_phase1.py` passed 5/5 test cases.
   - `tests/test_phase0.py` passed 4/4 test cases.
+  - Stroke crossing validation verified on `G3_A_Roll01` (2,932 crossing px restored) and `G4_A_Roll11` (1,456 crossing px restored) with continuous skeleton graphs.
 - **Quality Gate**:
-  - `qa/generate_overlay_review.py` re-run across grades G3–G7; generated refreshed interactive visual review gallery `qa/review_gallery.html`.
+  - `qa/generate_overlay_review.py` executed across stratified sample of 20 sheets from grades G3–G7; generated interactive visual review gallery `qa/review_gallery.html`.
 - **Next Phase**: Phase 2 Feature Library (baseline wobble & residuals, rule offset, slant tensor, curvature & jerk proxy, inter-word/inter-character gaps, shirorekha continuity features).
+

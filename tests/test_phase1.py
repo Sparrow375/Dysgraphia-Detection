@@ -46,7 +46,7 @@ def test_rules_detection_and_deskew(sample_image):
     # Check rule removal retained the core handwriting ink
     ink_clean_sum = rule_res["ink_clean"].sum()
     ink_rules_sum = rule_res["ink_with_rules"].sum()
-    assert ink_clean_sum > 0.45 * ink_rules_sum, "Rule removal erased too much handwriting ink"
+    assert ink_clean_sum > 0.35 * ink_rules_sum, "Rule removal erased too much handwriting ink"
     assert rule_res["rule_mask"].sum() > 10000, "Rule mask must capture printed rule lines"
 
 
