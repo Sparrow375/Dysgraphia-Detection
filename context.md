@@ -1489,3 +1489,10 @@ Tested across user's exact uploaded test images (`user_test_images/test_0.png` t
   - [`tree.md`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/tree.md): End-to-end architectural flow diagrams.
   - [`grade-wise-sheets.md`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/grade-wise-sheets.md): School test prompt syllabus for Grades 3 through 7.
 
+### C. Release Execution & Verification
+- **Target Branch:** `origin/build1`
+- **Commit SHA:** `6e9606e43`
+- **Commit Message:** `"feat: universal ruling suppression, physical ink box alignment, and production HTR pipeline"`
+- **Verification:** 100% clean working tree, zero datasets tracked, zero model binaries uploaded.
+
+
