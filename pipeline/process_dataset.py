@@ -153,11 +153,10 @@ def process_single_student(
         median_spacing_r=rule_res["median_spacing_r"],
     )
 
-    # Step 4: Sentence Block Assembly (language-aware grouping & reference rule alignment)
+    # Step 4: Sentence Block Assembly (6-prompt sequence)
     sentences = group_lines_into_sentence_blocks(
         lines=lines,
         page_shape=rule_res["grayscale_deskewed"].shape,
-        reference_rules=rule_res["ruled_lines"],
     )
 
     # Step 5: Process each sentence crop & skeleton graph
@@ -168,20 +167,20 @@ def process_single_student(
         script = s["script"]
         bx, by, bw, bh = s["crop_bbox"]
 
-        # Sentence crops: saved from clean original deskewed grayscale (natural appearance with rules intact)
+        # Sentence crops: saved from clean original deskewed grayscale (natural appearance)
         grayscale_crop = rule_res["grayscale_deskewed"][by : by + bh, bx : bx + bw]
         crop_png_name = f"{task_id}.png"
         crop_png_path = student_out_dir / crop_png_name
         cv2.imwrite(str(crop_png_path), grayscale_crop)
 
-        # Clean ink binary crop for skeleton graph extraction (separate ink-only layer)
+        # Clean ink binary crop for skeleton graph extraction
         clean_ink_crop = rule_res["ink_clean"][by : by + bh, bx : bx + bw]
 
         # Skeletonization & Graph Extraction
         avg_h = float(np.mean([l["x_height_h"] for l in s["lines"]])) if s["lines"] else 40.0
         skel_res = process_sentence_skeleton(clean_ink_crop, x_height_h=avg_h, spur_ratio=0.15)
 
-        # Construct Sentence JSON schema with per-word baseline & rule alignment features
+        # Construct Sentence JSON schema with per-word baseline mappings
         sentence_schema = {
             "student_id": student_id,
             "school": school,
@@ -193,11 +192,6 @@ def process_single_student(
             "crop_bbox": [bx, by, bw, bh],
             "median_rule_spacing_r": rule_res["median_spacing_r"],
             "median_slope": rule_res["median_slope"],
-            "nearest_rule_y": s.get("nearest_rule_y", float(by)),
-            "rule_offset_px": s.get("rule_offset_px", 0.0),
-            "rule_slope_diff": s.get("rule_slope_diff", 0.0),
-            "rule_offset_rmse": s.get("rule_offset_rmse", 0.0),
-            "per_word_rule_offsets": s.get("per_word_rule_offsets", []),
             "sentence_baseline_slope": s.get("sentence_baseline_slope", 0.0),
             "sentence_baseline_intercept": s.get("sentence_baseline_intercept", float(by + bh)),
             "sentence_baseline_rmse": s.get("sentence_baseline_rmse", 0.0),

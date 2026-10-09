@@ -34,50 +34,56 @@ TASK_TEMPLATE = [
 ]
 
 
-def classify_line_script(line_ink: np.ndarray, threshold: float = 0.14) -> Tuple[str, float]:
-    """Classify line script as 'devanagari' or 'latin' based on shirorekha coverage ratio.
+def classify_line_script(line_ink: np.ndarray, threshold: float = 0.50) -> Tuple[str, float]:
+    """Classify line script as 'devanagari' or 'latin' based on word-level shirorekha ratio.
 
-    In Devanagari handwriting, characters hang from a continuous headline (shirorekha),
-    so words contain horizontal runs of >= 36px in the upper 35% of components, covering
-    >= 14% of the total line ink. In Latin handwriting, characters sit on the baseline
-    and words are split into separate letters without long continuous headlines.
+    Returns:
+        script ('devanagari' or 'latin'), shirorekha_score (float)
     """
     h, w = line_ink.shape[:2]
-    tot_ink = int(line_ink.sum())
-    if tot_ink < 100 or h < 8:
+    if line_ink.sum() < 200:
         return "latin", 0.0
 
     num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(line_ink)
-    shiro_ink = 0
+    comp_ratios = []
 
     for i in range(1, num_labels):
         comp_w = stats[i, cv2.CC_STAT_WIDTH]
         comp_h = stats[i, cv2.CC_STAT_HEIGHT]
-        carea = stats[i, cv2.CC_STAT_AREA]
+        area = stats[i, cv2.CC_STAT_AREA]
 
-        if comp_w >= 42 and comp_h >= 12 and (comp_w / max(comp_h, 1)) < 20.0:
-            c_x = stats[i, cv2.CC_STAT_LEFT]
-            c_y = stats[i, cv2.CC_STAT_TOP]
-            comp_crop = line_ink[c_y : c_y + comp_h, c_x : c_x + comp_w]
+        # Filter thin rule remnants and small noise
+        if (comp_w / max(comp_h, 1)) > 8.0 or area < 60 or comp_h < 14 or comp_w < 18:
+            continue
 
-            top_slice = comp_crop[: max(2, int(comp_h * 0.35)), :]
-            top_proj = (top_slice.sum(axis=0) > 0).astype(int)
+        c_x = stats[i, cv2.CC_STAT_LEFT]
+        c_y = stats[i, cv2.CC_STAT_TOP]
+        comp_crop = line_ink[c_y : c_y + comp_h, c_x : c_x + comp_w]
 
-            if top_proj.sum() > 0:
-                padded = np.pad(top_proj, (1, 1), "constant")
-                diffs = np.diff(padded)
-                starts = np.where(diffs == 1)[0]
-                ends = np.where(diffs == -1)[0]
-                max_run = (ends - starts).max() if len(starts) > 0 else 0
-                if max_run >= 36:
-                    shiro_ink += carea
+        # Top 35% where the shirorekha headline is located
+        top_slice = comp_crop[: max(2, int(comp_h * 0.35)), :]
+        top_proj = (top_slice.sum(axis=0) > 0).astype(int)
 
-    ratio = shiro_ink / max(tot_ink, 1.0)
-    is_dev = ratio >= threshold
-    script = "devanagari" if is_dev else "latin"
-    confidence = float(ratio if is_dev else (1.0 - ratio))
+        if top_proj.sum() == 0:
+            comp_ratios.append(0.0)
+            continue
 
-    return script, confidence
+        padded = np.pad(top_proj, (1, 1), "constant")
+        diffs = np.diff(padded)
+        starts = np.where(diffs == 1)[0]
+        ends = np.where(diffs == -1)[0]
+        max_run = (ends - starts).max() if len(starts) > 0 else 0
+
+        comp_ratios.append(max_run / comp_w)
+
+    if not comp_ratios:
+        return "latin", 0.0
+
+    median_ratio = float(np.median(comp_ratios))
+    if median_ratio >= threshold:
+        return "devanagari", median_ratio
+
+    return "latin", median_ratio
 
 
 def estimate_line_baseline_and_xheight(
@@ -254,8 +260,8 @@ def extract_lines_and_segment(
 ) -> List[Dict[str, Any]]:
     """Segment physical text lines and extract words, components, and baseline models.
 
-    Uses connected component clustering with altitude proximity and a secondary line-merge
-    pass to group words on the same line even across large horizontal gaps.
+    Uses connected component clustering by y-centroid to assemble physical lines,
+    filtering header tables and page boundaries.
 
     Returns:
         List of line dicts ordered vertically from top to bottom.
@@ -265,7 +271,7 @@ def extract_lines_and_segment(
     # Mask out outer page margins and top header table region
     clean_mask = ink_clean.copy()
     clean_mask[:320, :] = 0        # Skip header box at page top
-    clean_mask[:, :210] = 0        # Skip left vertical margin line and punch holes
+    clean_mask[:, :170] = 0        # Skip left margin border
     clean_mask[:, 1950:] = 0       # Skip right margin edge
 
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(clean_mask)
@@ -279,8 +285,8 @@ def extract_lines_and_segment(
         cy = stats[i, cv2.CC_STAT_TOP]
         ccx, ccy = centroids[i]
 
-        # Ignore tiny specks while preserving wide cursive and underlined strokes
-        if carea >= 25 and ch >= 8 and (cw / max(ch, 1)) < 25.0:
+        # Ignore noise and rule remnants
+        if carea >= 25 and ch >= 8 and (cw / max(ch, 1)) < 8.0:
             comps.append(
                 {
                     "x": cx,
@@ -299,46 +305,22 @@ def extract_lines_and_segment(
 
     # Sort components top to bottom
     comps.sort(key=lambda c: c["cy"])
-    lines_raw: List[List[Dict[str, Any]]] = []
-    y_thresh = median_spacing_r * 0.35
+    lines_raw = []
+    y_thresh = median_spacing_r * 0.65
 
     for c in comps:
-        best_line = None
-        best_dist = 1e9
+        assigned = False
         for line in lines_raw:
             line_cy = np.mean([it["cy"] for it in line])
-            dist = abs(c["cy"] - line_cy)
-            if dist < y_thresh and dist < best_dist:
-                best_dist = dist
-                best_line = line
-        if best_line is not None:
-            best_line.append(c)
-        else:
+            if abs(c["cy"] - line_cy) < y_thresh:
+                line.append(c)
+                assigned = True
+                break
+        if not assigned:
             lines_raw.append([c])
 
-    # Secondary merge pass: merge raw line clusters that share the exact same altitude
-    # Handles words at the same altitude separated by large horizontal gaps (e.g. 'my baber' and rest of sentence)
-    # Constrained by maximum combined vertical span (<= 1.25 * r) so adjacent stacked lines never chain together
-    merged = True
-    while merged:
-        merged = False
-        for i in range(len(lines_raw)):
-            for j in range(i + 1, len(lines_raw)):
-                cy_i = np.mean([it["cy"] for it in lines_raw[i]])
-                cy_j = np.mean([it["cy"] for it in lines_raw[j]])
-                if abs(cy_i - cy_j) < 0.28 * median_spacing_r:
-                    comb_y_min = min(min(it["y"] for it in lines_raw[i]), min(it["y"] for it in lines_raw[j]))
-                    comb_y_max = max(max(it["bottom"] for it in lines_raw[i]), max(it["bottom"] for it in lines_raw[j]))
-                    if (comb_y_max - comb_y_min) <= 1.25 * median_spacing_r:
-                        lines_raw[i].extend(lines_raw[j])
-                        lines_raw.pop(j)
-                        merged = True
-                        break
-            if merged:
-                break
-
-    # Keep lines with at least 2 components and > 500 px of ink (filters empty ruled-line noise)
-    valid_lines_raw = [l for l in lines_raw if len(l) >= 2 and sum(it["area"] for it in l) > 500]
+    # Keep lines with at least 2 components and > 450 px of ink
+    valid_lines_raw = [l for l in lines_raw if len(l) >= 2 and sum(it["area"] for it in l) > 450]
     valid_lines_raw.sort(key=lambda line: np.mean([it["cy"] for it in line]))
 
     lines_out: List[Dict[str, Any]] = []
@@ -349,16 +331,8 @@ def extract_lines_and_segment(
         x_min = max(0, min(it["x"] for it in line_comps) - 15)
         x_max = min(w_page, max(it["x"] + it["w"] for it in line_comps) + 15)
 
-        # Construct isolated line crop containing only line_comps to avoid bleeding from adjacent lines
-        line_crop = np.zeros((y_max - y_min, x_max - x_min), dtype=np.uint8)
-        for it in line_comps:
-            cx, cy, cw, ch = it["x"], it["y"], it["w"], it["h"]
-            comp_pixels = ink_clean[cy : cy + ch, cx : cx + cw]
-            line_crop[cy - y_min : cy - y_min + ch, cx - x_min : cx - x_min + cw] |= comp_pixels
-
+        line_crop = ink_clean[y_min:y_max, x_min:x_max]
         ink_pixels = int(line_crop.sum())
-        if ink_pixels < 350:
-            continue
 
         script, score = classify_line_script(line_crop)
         base_rel, x_height = estimate_line_baseline_and_xheight(line_crop, script)
@@ -427,47 +401,48 @@ def extract_lines_and_segment(
 def group_lines_into_sentence_blocks(
     lines: List[Dict[str, Any]],
     page_shape: Tuple[int, int],
-    reference_rules: Optional[List[Dict[str, Any]]] = None,
 ) -> List[Dict[str, Any]]:
-    """Assemble physical lines into single-language sentence blocks.
+    """Assemble physical lines into the 6 canonical task sentences.
 
-    Language-Aware Grouping Rules:
-    1. Each cropped sentence block contains strictly ONE language.
-    2. Language changes (Hindi <-> English) mark sentence boundaries.
-    3. Consecutive lines of the same language merge into the same multi-line sentence.
-    4. Sentences are mapped to the canonical 6-task protocol.
-    5. Baseline regression and rule-offset metrics are computed against the reference ruled lines layer.
+    Follows the 6-task protocol:
+    - Task 1: sentence_01_copy_hindi (1 line)
+    - Task 2: sentence_02_copy_english (1-3 lines)
+    - Task 3: sentence_03_dictated_hindi (1 line)
+    - Task 4: sentence_04_dictated_english (1 line)
+    - Task 5: sentence_05_own_hindi (1 line)
+    - Task 6: sentence_06_own_english (1 line)
     """
     if not lines:
         return []
 
     h_page, w_page = page_shape[:2]
+    N = len(lines)
+    task_to_lines: Dict[int, List[Dict[str, Any]]] = {}
 
-    # 1. Group consecutive lines with the same script into single-language sentence blocks
-    line_groups: List[List[Dict[str, Any]]] = []
-    for l in lines:
-        if not line_groups:
-            line_groups.append([l])
-        else:
-            prev_script = line_groups[-1][-1]["script"]
-            if l["script"] == prev_script:
-                # Same language -> continuation of upper sentence
-                line_groups[-1].append(l)
-            else:
-                # Language transition -> start new sentence block
-                line_groups.append([l])
+    if N >= 6:
+        task_to_lines[0] = [lines[0]]
+        # Task 2 absorbs multi-line English copy between line 0 and the final 4 single-line tasks
+        task_to_lines[1] = lines[1 : N - 4]
+        task_to_lines[2] = [lines[N - 4]]
+        task_to_lines[3] = [lines[N - 3]]
+        task_to_lines[4] = [lines[N - 2]]
+        task_to_lines[5] = [lines[N - 1]]
+    else:
+        for idx, l in enumerate(lines):
+            task_to_lines[idx] = [l]
 
     sentence_blocks: List[Dict[str, Any]] = []
 
-    for g_idx, assigned_lines in enumerate(line_groups):
-        if g_idx < len(TASK_TEMPLATE):
-            template = TASK_TEMPLATE[g_idx]
-        else:
-            template = {
-                "task_id": f"sentence_{g_idx + 1:02d}_extra",
-                "task_name": f"extra_task_{g_idx + 1}",
-                "expected_script": assigned_lines[0]["script"],
-            }
+    for t_idx, template in enumerate(TASK_TEMPLATE):
+        if t_idx not in task_to_lines:
+            continue
+
+        assigned_lines = task_to_lines[t_idx]
+        if not assigned_lines:
+            continue
+
+        y_min = max(0, min(l["y_top"] for l in assigned_lines) - 10)
+        y_max = min(h_page, max(l["y_bot"] for l in assigned_lines) + 10)
 
         all_words = []
         for l in assigned_lines:
@@ -476,13 +451,9 @@ def group_lines_into_sentence_blocks(
         if all_words:
             x_min = max(0, min(w["bbox"][0] for w in all_words) - 15)
             x_max = min(w_page, max(w["bbox"][0] + w["bbox"][2] for w in all_words) + 15)
-            y_min = max(0, min(w["bbox"][1] for w in all_words) - 15)
-            y_max = min(h_page, max(w["bbox"][1] + w["bbox"][3] for w in all_words) + 15)
         else:
             x_min = max(0, min(l["bbox"][0] for l in assigned_lines) - 15)
             x_max = min(w_page, max(l["bbox"][0] + l["bbox"][2] for l in assigned_lines) + 15)
-            y_min = max(0, min(l["y_top"] for l in assigned_lines) - 15)
-            y_max = min(h_page, max(l["y_bot"] for l in assigned_lines) + 15)
 
         crop_bbox = [int(x_min), int(y_min), int(x_max - x_min), int(y_max - y_min)]
 
@@ -508,36 +479,11 @@ def group_lines_into_sentence_blocks(
             s_residuals = [0.0] * len(all_word_cxs)
             s_rmse = 0.0
 
-        # Compute baseline-to-rule offset against reference ruled lines
-        rule_offset_px = 0.0
-        nearest_rule_y = float(y_min)
-        rule_slope_diff = float(s_slope)
-        per_word_rule_offsets: List[float] = []
-
-        if reference_rules:
-            mid_x = (x_min + x_max) / 2.0
-            base_mid_y = s_slope * mid_x + s_intercept
-            rule_dists = [
-                abs((r.get("slope", 0.0) * mid_x + r.get("intercept", r["y_center"])) - base_mid_y)
-                for r in reference_rules
-            ]
-            best_r_idx = int(np.argmin(rule_dists))
-            nearest_rule = reference_rules[best_r_idx]
-            nearest_rule_y = float(nearest_rule.get("slope", 0.0) * mid_x + nearest_rule.get("intercept", nearest_rule["y_center"]))
-            rule_offset_px = float(base_mid_y - nearest_rule_y)
-            rule_slope_diff = float(s_slope - nearest_rule.get("slope", 0.0))
-
-            for cx, bot in zip(all_word_cxs, all_word_bottoms):
-                r_y = nearest_rule.get("slope", 0.0) * cx + nearest_rule.get("intercept", nearest_rule["y_center"])
-                per_word_rule_offsets.append(float(bot - r_y))
-
-        rule_offset_rmse = float(np.std(per_word_rule_offsets)) if per_word_rule_offsets else 0.0
-
         sentence_blocks.append(
             {
                 "task_id": template["task_id"],
                 "task_name": template["task_name"],
-                "script": assigned_lines[0]["script"],
+                "script": template["expected_script"],
                 "crop_bbox": crop_bbox,
                 "lines": assigned_lines,
                 "word_count": len(all_words),
@@ -546,11 +492,6 @@ def group_lines_into_sentence_blocks(
                 "sentence_baseline_rmse": s_rmse,
                 "word_baseline_points": list(zip(all_word_cxs, all_word_bottoms)),
                 "word_baseline_residuals": s_residuals,
-                "nearest_rule_y": nearest_rule_y,
-                "rule_offset_px": rule_offset_px,
-                "rule_slope_diff": rule_slope_diff,
-                "per_word_rule_offsets": per_word_rule_offsets,
-                "rule_offset_rmse": rule_offset_rmse,
             }
         )
 
