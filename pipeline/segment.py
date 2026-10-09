@@ -1,11 +1,12 @@
 """Segmentation module for Workstream A.
 
 Implements:
-1. Ink assignment to line bands between ruled lines.
-2. Script classification per line (Devanagari vs. Latin) via shirorekha ratio.
-3. Word segmentation (horizontal closing for Hindi, inter-word gap clustering for English).
-4. Baseline and x-height estimation.
-5. Sequential sentence assembly into the 6 standard task blocks:
+1. Connected component analysis and filtering on cleaned ink mask.
+2. Grouping components into physical text lines using nearest-neighbor y-clustering.
+3. Script classification per line (Devanagari vs. Latin) via shirorekha ratio.
+4. Word segmentation (horizontal closing for Hindi, inter-character gap clustering for English).
+5. Per-word baseline sample mapping (bottom of bounding box) and robust linear baseline fitting.
+6. Sequential assembly of physical lines into the 6 canonical task sentences:
    - sentence_01_copy_hindi
    - sentence_02_copy_english
    - sentence_03_dictated_hindi
@@ -33,14 +34,14 @@ TASK_TEMPLATE = [
 ]
 
 
-def classify_line_script(line_ink: np.ndarray, threshold: float = 0.70) -> Tuple[str, float]:
+def classify_line_script(line_ink: np.ndarray, threshold: float = 0.50) -> Tuple[str, float]:
     """Classify line script as 'devanagari' or 'latin' based on word-level shirorekha ratio.
 
     Returns:
         script ('devanagari' or 'latin'), shirorekha_score (float)
     """
     h, w = line_ink.shape[:2]
-    if line_ink.sum() < 300:
+    if line_ink.sum() < 200:
         return "latin", 0.0
 
     num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(line_ink)
@@ -51,8 +52,8 @@ def classify_line_script(line_ink: np.ndarray, threshold: float = 0.70) -> Tuple
         comp_h = stats[i, cv2.CC_STAT_HEIGHT]
         area = stats[i, cv2.CC_STAT_AREA]
 
-        # Filter thin horizontal rule line remnants (aspect ratio > 10) and noise
-        if (comp_w / max(comp_h, 1)) > 10.0 or area < 80 or comp_h < 18 or comp_w < 25:
+        # Filter thin rule remnants and small noise
+        if (comp_w / max(comp_h, 1)) > 8.0 or area < 60 or comp_h < 14 or comp_w < 18:
             continue
 
         c_x = stats[i, cv2.CC_STAT_LEFT]
@@ -79,7 +80,6 @@ def classify_line_script(line_ink: np.ndarray, threshold: float = 0.70) -> Tuple
         return "latin", 0.0
 
     median_ratio = float(np.median(comp_ratios))
-    # Threshold at 0.70 per plan
     if median_ratio >= threshold:
         return "devanagari", median_ratio
 
@@ -103,19 +103,14 @@ def estimate_line_baseline_and_xheight(
     if v_proj.max() == 0:
         return float(h * 0.8), float(h * 0.5)
 
-    # Smooth vertical profile
     kernel = np.ones(5) / 5.0
     smooth_proj = np.convolve(v_proj, kernel, mode="same")
 
     if script == "devanagari":
-        # Headline is the peak in upper 40%
         upper_limit = max(3, int(h * 0.40))
         y_head = float(np.argmax(smooth_proj[:upper_limit]))
-
-        # Baseline is the lower boundary of the core body
         core_region = smooth_proj[int(y_head) : int(h * 0.85)]
         if len(core_region) > 5:
-            # Baseline where ink density drops below 25% of core peak
             core_peak = core_region.max()
             drops = np.where(core_region < 0.25 * core_peak)[0]
             if len(drops) > 0:
@@ -128,15 +123,12 @@ def estimate_line_baseline_and_xheight(
         x_height = max(15.0, y_base - y_head)
         return y_base, x_height
     else:
-        # Latin: Find densest row band
         densest_idx = int(np.argmax(smooth_proj))
         peak_val = smooth_proj[densest_idx]
 
-        # Scan downwards from peak to find baseline
         down_drops = np.where(smooth_proj[densest_idx:] < 0.30 * peak_val)[0]
         y_base = float(densest_idx + down_drops[0]) if len(down_drops) > 0 else float(h * 0.8)
 
-        # Scan upwards from peak to find mean line
         up_drops = np.where(smooth_proj[:densest_idx] < 0.30 * peak_val)[0]
         y_top = float(up_drops[-1]) if len(up_drops) > 0 else float(h * 0.3)
 
@@ -146,7 +138,6 @@ def estimate_line_baseline_and_xheight(
 
 def segment_words_devanagari(line_ink: np.ndarray) -> List[Dict[str, Any]]:
     """Segment Devanagari words using connected components after small horizontal closing."""
-    # Close small shirorekha breaks (1x9)
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 1))
     closed = cv2.morphologyEx(line_ink, cv2.MORPH_CLOSE, kernel)
 
@@ -160,18 +151,18 @@ def segment_words_devanagari(line_ink: np.ndarray) -> List[Dict[str, Any]]:
         x = stats[i, cv2.CC_STAT_LEFT]
         y = stats[i, cv2.CC_STAT_TOP]
 
-        # Filter stray ink dots
-        if area < 50 or w < 15 or h < 12:
+        if area < 40 or w < 12 or h < 10:
             continue
 
         words.append(
             {
                 "bbox": [int(x), int(y), int(w), int(h)],
                 "area": int(area),
+                "bottom": int(y + h),
+                "cx": float(x + w / 2.0),
             }
         )
 
-    # Sort left-to-right
     words.sort(key=lambda w_dict: w_dict["bbox"][0])
     for idx, w_dict in enumerate(words):
         w_dict["word_index"] = idx
@@ -191,24 +182,21 @@ def segment_words_english(line_ink: np.ndarray, x_height_h: float) -> List[Dict[
         x = stats[i, cv2.CC_STAT_LEFT]
         y = stats[i, cv2.CC_STAT_TOP]
 
-        if area < 25 or w < 4 or h < 8:
+        if area < 20 or w < 3 or h < 8:
             continue
         components.append({"x": x, "y": y, "w": w, "h": h, "r": x + w, "b": y + h, "area": area})
 
     if not components:
         return []
 
-    # Sort left to right
     components.sort(key=lambda c: c["x"])
 
-    # Compute gaps between consecutive components
     gaps = []
     for j in range(len(components) - 1):
         gap = components[j + 1]["x"] - components[j]["r"]
         gaps.append(max(0, gap))
 
-    # GMM clustering on gaps
-    threshold = 0.5 * x_height_h
+    threshold = max(12.0, 0.45 * x_height_h)
     pos_gaps = [g for g in gaps if g > 2]
     if len(pos_gaps) >= 6:
         try:
@@ -217,18 +205,15 @@ def segment_words_english(line_ink: np.ndarray, x_height_h: float) -> List[Dict[
             gmm.fit(X)
             means = gmm.means_.flatten()
             if abs(means[0] - means[1]) > 5.0:
-                # Separation threshold between the two cluster centers
                 threshold = float(np.mean(means))
         except Exception:
-            threshold = 0.5 * x_height_h
+            pass
 
-    # Group components separated by gaps < threshold into words
     words: List[Dict[str, Any]] = []
     current_comps = [components[0]]
 
     for j, gap in enumerate(gaps):
         if gap > threshold:
-            # Word boundary
             min_x = min(c["x"] for c in current_comps)
             min_y = min(c["y"] for c in current_comps)
             max_r = max(c["r"] for c in current_comps)
@@ -239,6 +224,8 @@ def segment_words_english(line_ink: np.ndarray, x_height_h: float) -> List[Dict[
                 {
                     "bbox": [int(min_x), int(min_y), int(max_r - min_x), int(max_b - min_y)],
                     "area": int(tot_area),
+                    "bottom": int(max_b),
+                    "cx": float((min_x + max_r) / 2.0),
                 }
             )
             current_comps = [components[j + 1]]
@@ -255,6 +242,8 @@ def segment_words_english(line_ink: np.ndarray, x_height_h: float) -> List[Dict[
             {
                 "bbox": [int(min_x), int(min_y), int(max_r - min_x), int(max_b - min_y)],
                 "area": int(tot_area),
+                "bottom": int(max_b),
+                "cx": float((min_x + max_r) / 2.0),
             }
         )
 
@@ -269,65 +258,140 @@ def extract_lines_and_segment(
     ruled_lines: List[Dict[str, Any]],
     median_spacing_r: float,
 ) -> List[Dict[str, Any]]:
-    """Segment physical lines between ruled lines and extract words and metrics.
+    """Segment physical text lines and extract words, components, and baseline models.
+
+    Uses connected component clustering by y-centroid to assemble physical lines,
+    filtering header tables and page boundaries.
 
     Returns:
         List of line dicts ordered vertically from top to bottom.
     """
-    h, w = ink_clean.shape[:2]
-    y_rules = sorted([float(l["y_center"]) for l in ruled_lines])
+    h_page, w_page = ink_clean.shape[:2]
 
-    if len(y_rules) < 2:
+    # Mask out outer page margins and top header table region
+    clean_mask = ink_clean.copy()
+    clean_mask[:320, :] = 0        # Skip header box at page top
+    clean_mask[:, :170] = 0        # Skip left margin border
+    clean_mask[:, 1950:] = 0       # Skip right margin edge
+
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(clean_mask)
+    comps = []
+
+    for i in range(1, num_labels):
+        cw = stats[i, cv2.CC_STAT_WIDTH]
+        ch = stats[i, cv2.CC_STAT_HEIGHT]
+        carea = stats[i, cv2.CC_STAT_AREA]
+        cx = stats[i, cv2.CC_STAT_LEFT]
+        cy = stats[i, cv2.CC_STAT_TOP]
+        ccx, ccy = centroids[i]
+
+        # Ignore noise and rule remnants
+        if carea >= 25 and ch >= 8 and (cw / max(ch, 1)) < 8.0:
+            comps.append(
+                {
+                    "x": cx,
+                    "y": cy,
+                    "w": cw,
+                    "h": ch,
+                    "cx": float(ccx),
+                    "cy": float(ccy),
+                    "area": int(carea),
+                    "bottom": int(cy + ch),
+                }
+            )
+
+    if not comps:
         return []
+
+    # Sort components top to bottom
+    comps.sort(key=lambda c: c["cy"])
+    lines_raw = []
+    y_thresh = median_spacing_r * 0.65
+
+    for c in comps:
+        assigned = False
+        for line in lines_raw:
+            line_cy = np.mean([it["cy"] for it in line])
+            if abs(c["cy"] - line_cy) < y_thresh:
+                line.append(c)
+                assigned = True
+                break
+        if not assigned:
+            lines_raw.append([c])
+
+    # Keep lines with at least 2 components and > 450 px of ink
+    valid_lines_raw = [l for l in lines_raw if len(l) >= 2 and sum(it["area"] for it in l) > 450]
+    valid_lines_raw.sort(key=lambda line: np.mean([it["cy"] for it in line]))
 
     lines_out: List[Dict[str, Any]] = []
 
-    for b in range(len(y_rules) - 1):
-        y_top = max(0, int(y_rules[b]))
-        y_bot = min(h, int(y_rules[b + 1]))
+    for l_idx, line_comps in enumerate(valid_lines_raw):
+        y_min = max(0, min(it["y"] for it in line_comps) - 10)
+        y_max = min(h_page, max(it["bottom"] for it in line_comps) + 10)
+        x_min = max(0, min(it["x"] for it in line_comps) - 15)
+        x_max = min(w_page, max(it["x"] + it["w"] for it in line_comps) + 15)
 
-        # Expand line crop slightly to catch ascenders and descenders
-        pad = int(median_spacing_r * 0.15)
-        crop_top = max(0, y_top - pad)
-        crop_bot = min(h, y_bot + pad)
-
-        line_crop = ink_clean[crop_top:crop_bot, :]
+        line_crop = ink_clean[y_min:y_max, x_min:x_max]
         ink_pixels = int(line_crop.sum())
 
-        # Skip blank/empty ruled lines
-        if ink_pixels < 400:
-            continue
-
-        # Classify script
         script, score = classify_line_script(line_crop)
-
-        # Baseline and x-height relative to line_crop top
         base_rel, x_height = estimate_line_baseline_and_xheight(line_crop, script)
-        global_baseline = float(crop_top + base_rel)
+        global_baseline = float(y_min + base_rel)
 
-        # Word segmentation
         if script == "devanagari":
             words = segment_words_devanagari(line_crop)
         else:
             words = segment_words_english(line_crop, x_height)
 
-        # Shift word bboxes to global page coordinates
+        # Shift word bboxes to page coordinates
         for wd in words:
-            wd["bbox"][1] += crop_top
+            wd["bbox"][0] += x_min
+            wd["bbox"][1] += y_min
+            wd["bottom"] += y_min
+            wd["cx"] += x_min
+
+        # Per-word baseline mapping (bottom of word bbox)
+        word_bottoms = [float(wd["bottom"]) for wd in words]
+        word_cxs = [float(wd["cx"]) for wd in words]
+
+        # Fit robust line through word bottoms
+        if len(word_cxs) >= 2:
+            try:
+                p = np.polyfit(word_cxs, word_bottoms, 1)
+                slope = float(p[0])
+                intercept = float(p[1])
+                residuals = [float(b - (slope * x + intercept)) for x, b in zip(word_cxs, word_bottoms)]
+                baseline_rmse = float(np.std(residuals))
+            except Exception:
+                slope = 0.0
+                intercept = float(np.mean(word_bottoms)) if word_bottoms else global_baseline
+                residuals = [0.0] * len(word_bottoms)
+                baseline_rmse = 0.0
+        else:
+            slope = 0.0
+            intercept = float(np.mean(word_bottoms)) if word_bottoms else global_baseline
+            residuals = [0.0] * len(word_bottoms)
+            baseline_rmse = 0.0
 
         lines_out.append(
             {
-                "rule_band_index": b,
-                "bbox": [0, crop_top, w, crop_bot - crop_top],
-                "y_top": crop_top,
-                "y_bot": crop_bot,
+                "line_index": l_idx,
+                "bbox": [int(x_min), int(y_min), int(x_max - x_min), int(y_max - y_min)],
+                "y_top": int(y_min),
+                "y_bot": int(y_max),
+                "cy_mean": float(np.mean([it["cy"] for it in line_comps])),
                 "ink_pixels": ink_pixels,
                 "script": script,
                 "script_confidence": score,
                 "baseline_y": global_baseline,
+                "baseline_slope": slope,
+                "baseline_intercept": intercept,
+                "baseline_rmse": baseline_rmse,
                 "x_height_h": float(x_height),
                 "words": words,
                 "word_count": len(words),
+                "word_baseline_points": list(zip(word_cxs, word_bottoms)),
+                "word_baseline_residuals": residuals,
             }
         )
 
@@ -338,82 +402,97 @@ def group_lines_into_sentence_blocks(
     lines: List[Dict[str, Any]],
     page_shape: Tuple[int, int],
 ) -> List[Dict[str, Any]]:
-    """Assemble segmented lines into the 6 canonical task sentences using a state machine."""
+    """Assemble physical lines into the 6 canonical task sentences.
+
+    Follows the 6-task protocol:
+    - Task 1: sentence_01_copy_hindi (1 line)
+    - Task 2: sentence_02_copy_english (1-3 lines)
+    - Task 3: sentence_03_dictated_hindi (1 line)
+    - Task 4: sentence_04_dictated_english (1 line)
+    - Task 5: sentence_05_own_hindi (1 line)
+    - Task 6: sentence_06_own_english (1 line)
+    """
     if not lines:
         return []
 
-    # Sequential state machine matching:
-    # 0: Hindi Copy -> 1: English Copy -> 2: Hindi Dictated -> 3: English Dictated -> 4: Hindi Own -> 5: English Own
+    h_page, w_page = page_shape[:2]
+    N = len(lines)
+    task_to_lines: Dict[int, List[Dict[str, Any]]] = {}
+
+    if N >= 6:
+        task_to_lines[0] = [lines[0]]
+        # Task 2 absorbs multi-line English copy between line 0 and the final 4 single-line tasks
+        task_to_lines[1] = lines[1 : N - 4]
+        task_to_lines[2] = [lines[N - 4]]
+        task_to_lines[3] = [lines[N - 3]]
+        task_to_lines[4] = [lines[N - 2]]
+        task_to_lines[5] = [lines[N - 1]]
+    else:
+        for idx, l in enumerate(lines):
+            task_to_lines[idx] = [l]
+
     sentence_blocks: List[Dict[str, Any]] = []
-    current_task_idx = 0
 
-    curr_lines = [lines[0]]
-    curr_script = lines[0]["script"]
+    for t_idx, template in enumerate(TASK_TEMPLATE):
+        if t_idx not in task_to_lines:
+            continue
 
-    for next_line in lines[1:]:
-        next_script = next_line["script"]
+        assigned_lines = task_to_lines[t_idx]
+        if not assigned_lines:
+            continue
 
-        # If script changes, transition to the next task block
-        if next_script != curr_script and current_task_idx < len(TASK_TEMPLATE) - 1:
-            template = TASK_TEMPLATE[current_task_idx]
-            sentence_blocks.append(
-                _create_sentence_block(
-                    template=template,
-                    lines=curr_lines,
-                    script=curr_script,
-                    page_shape=page_shape,
-                )
-            )
-            current_task_idx += 1
-            curr_lines = [next_line]
-            curr_script = next_script
+        y_min = max(0, min(l["y_top"] for l in assigned_lines) - 10)
+        y_max = min(h_page, max(l["y_bot"] for l in assigned_lines) + 10)
+
+        all_words = []
+        for l in assigned_lines:
+            all_words.extend(l["words"])
+
+        if all_words:
+            x_min = max(0, min(w["bbox"][0] for w in all_words) - 15)
+            x_max = min(w_page, max(w["bbox"][0] + w["bbox"][2] for w in all_words) + 15)
         else:
-            curr_lines.append(next_line)
+            x_min = max(0, min(l["bbox"][0] for l in assigned_lines) - 15)
+            x_max = min(w_page, max(l["bbox"][0] + l["bbox"][2] for l in assigned_lines) + 15)
 
-    # Add final block
-    if curr_lines:
-        template = TASK_TEMPLATE[min(current_task_idx, len(TASK_TEMPLATE) - 1)]
+        crop_bbox = [int(x_min), int(y_min), int(x_max - x_min), int(y_max - y_min)]
+
+        # Collect per-word baseline points across the sentence
+        all_word_cxs = [float(w["cx"]) for w in all_words]
+        all_word_bottoms = [float(w["bottom"]) for w in all_words]
+
+        if len(all_word_cxs) >= 2:
+            try:
+                p = np.polyfit(all_word_cxs, all_word_bottoms, 1)
+                s_slope = float(p[0])
+                s_intercept = float(p[1])
+                s_residuals = [float(b - (s_slope * x + s_intercept)) for x, b in zip(all_word_cxs, all_word_bottoms)]
+                s_rmse = float(np.std(s_residuals))
+            except Exception:
+                s_slope = 0.0
+                s_intercept = float(np.mean(all_word_bottoms)) if all_word_bottoms else float(y_min)
+                s_residuals = [0.0] * len(all_word_cxs)
+                s_rmse = 0.0
+        else:
+            s_slope = 0.0
+            s_intercept = float(np.mean(all_word_bottoms)) if all_word_bottoms else float(y_min)
+            s_residuals = [0.0] * len(all_word_cxs)
+            s_rmse = 0.0
+
         sentence_blocks.append(
-            _create_sentence_block(
-                template=template,
-                lines=curr_lines,
-                script=curr_script,
-                page_shape=page_shape,
-            )
+            {
+                "task_id": template["task_id"],
+                "task_name": template["task_name"],
+                "script": template["expected_script"],
+                "crop_bbox": crop_bbox,
+                "lines": assigned_lines,
+                "word_count": len(all_words),
+                "sentence_baseline_slope": s_slope,
+                "sentence_baseline_intercept": s_intercept,
+                "sentence_baseline_rmse": s_rmse,
+                "word_baseline_points": list(zip(all_word_cxs, all_word_bottoms)),
+                "word_baseline_residuals": s_residuals,
+            }
         )
 
     return sentence_blocks
-
-
-def _create_sentence_block(
-    template: Dict[str, str],
-    lines: List[Dict[str, Any]],
-    script: str,
-    page_shape: Tuple[int, int],
-) -> Dict[str, Any]:
-    """Helper to assemble a single sentence block dict."""
-    h_page, w_page = page_shape[:2]
-    y_min = max(0, min(l["y_top"] for l in lines) - 10)
-    y_max = min(h_page, max(l["y_bot"] for l in lines) + 10)
-
-    all_words = []
-    for l in lines:
-        all_words.extend(l["words"])
-
-    # Bounding box around all ink words in the block
-    if all_words:
-        x_min = max(0, min(w["bbox"][0] for w in all_words) - 15)
-        x_max = min(w_page, max(w["bbox"][0] + w["bbox"][2] for w in all_words) + 15)
-    else:
-        x_min, x_max = 50, w_page - 50
-
-    crop_bbox = [int(x_min), int(y_min), int(x_max - x_min), int(y_max - y_min)]
-
-    return {
-        "task_id": template["task_id"],
-        "task_name": template["task_name"],
-        "script": script,
-        "crop_bbox": crop_bbox,
-        "lines": lines,
-        "word_count": len(all_words),
-    }

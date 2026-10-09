@@ -47,6 +47,7 @@ def run_qa_review(
     output_dir: str = "data/processed",
     gallery_html_path: str = "qa/review_gallery.html",
     samples_per_grade: int = 6,
+    force: bool = True,
 ) -> dict:
     """Select stratified sample across grades, process if needed, and build review gallery."""
     df = pd.read_csv(manifest_path)
@@ -82,7 +83,7 @@ def run_qa_review(
         roll = int(row["roll_number"])
 
         student_dir = Path(output_dir) / school / student_id
-        if not (student_dir / "overlay_debug.png").exists():
+        if force or not (student_dir / "overlay_debug.png").exists():
             try:
                 process_single_student(row, output_base_dir=output_dir)
             except Exception as e:
@@ -195,6 +196,8 @@ def run_qa_review(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate QA review gallery for Phase 1")
     parser.add_argument("--samples", type=int, default=6, help="Samples per grade")
+    parser.add_argument("--no-force", dest="force", action="store_false", help="Don't reprocess existing")
+    parser.set_defaults(force=True)
     args = parser.parse_args()
 
-    run_qa_review(samples_per_grade=args.samples)
+    run_qa_review(samples_per_grade=args.samples, force=args.force)

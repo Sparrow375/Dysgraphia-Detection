@@ -5,7 +5,8 @@ Implements:
 2. RANSAC linear fitting (y = ax + b) for each line to capture tilt and intercept.
 3. Deskewing of grayscale and binary ink images by the median rule slope.
 4. Rule removal and crossing stroke restoration using vertical morphological closing.
-5. Extraction of median spacing r and rule parameters for alignment features.
+5. Vertical notebook margin line removal.
+6. Extraction of median spacing r and rule parameters for alignment features.
 """
 
 from __future__ import annotations
@@ -21,7 +22,7 @@ from sklearn.linear_model import RANSACRegressor
 def detect_ruled_lines(
     binary_ink: np.ndarray,
     min_spacing: int = 40,
-    horizontal_kernel_width: int = 61,
+    horizontal_kernel_width: int = 51,
 ) -> Tuple[List[Dict[str, Any]], float, float]:
     """Detect ruled lines using horizontal opening and RANSAC linear fitting.
 
@@ -41,7 +42,7 @@ def detect_ruled_lines(
     if max_p == 0:
         return [], 0.0, 80.0
 
-    peaks, _ = find_peaks(proj, height=0.20 * max_p, distance=min_spacing)
+    peaks, _ = find_peaks(proj, height=0.15 * max_p, distance=min_spacing)
     if len(peaks) == 0:
         return [], 0.0, 80.0
 
@@ -57,7 +58,6 @@ def detect_ruled_lines(
 
         y_coords, x_coords = np.where(sub_strip > 0)
         if len(x_coords) < 100:
-            # Fallback to horizontal line at y=p
             ruled_lines.append({"slope": 0.0, "intercept": float(p), "y_center": float(p)})
             slopes.append(0.0)
             continue
@@ -71,7 +71,6 @@ def detect_ruled_lines(
             ransac.fit(X, Y)
             slope = float(ransac.estimator_.coef_[0])
             intercept = float(ransac.estimator_.intercept_)
-            # Reject extreme slopes that cannot be ruled notebook lines (|slope| > 0.15)
             if abs(slope) > 0.15:
                 slope = 0.0
                 intercept = float(p)
@@ -117,9 +116,9 @@ def remove_rules_and_restore_strokes(
     binary_ink: np.ndarray,
     ruled_lines: List[Dict[str, Any]],
     median_spacing_r: float,
-    rule_thickness: int = 3,
+    rule_thickness: int = 7,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """Remove ruled-line pixels and restore intersecting descender/ascender strokes.
+    """Remove ruled-line and vertical margin pixels and restore intersecting strokes.
 
     Returns:
         ink_clean: binary ink mask with rules removed and crossed strokes repaired
@@ -141,20 +140,34 @@ def remove_rules_and_restore_strokes(
             rule_mask[y_cur, x_all] = 1
 
     # Only remove rule pixels where horizontal opening confirmed long rule line ink
-    kernel_horiz = cv2.getStructuringElement(cv2.MORPH_RECT, (41, 1))
+    kernel_horiz = cv2.getStructuringElement(cv2.MORPH_RECT, (51, 1))
     confirmed_rules = cv2.morphologyEx(binary_ink, cv2.MORPH_OPEN, kernel_horiz) & rule_mask
 
-    # Step 1: Subtract rule pixels
+    # Dilate confirmed rules vertically by 1px to cover edge anti-aliasing
+    kernel_dilate = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 3))
+    confirmed_rules = cv2.dilate(confirmed_rules, kernel_dilate) & rule_mask
+
+    # Subtract horizontal rule pixels
     ink_no_rules = np.where(confirmed_rules == 1, 0, binary_ink).astype(np.uint8)
 
-    # Step 2: Stroke restoration
-    # Localized vertical closing (5x1) limited strictly to the confirmed rule band
-    kernel_vert = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 5))
-    vert_closed = cv2.morphologyEx(ink_no_rules, cv2.MORPH_CLOSE, kernel_vert)
+    # Detect and remove long vertical margin lines (>= 120px tall)
+    kernel_vert_line = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 120))
+    v_lines = cv2.morphologyEx(binary_ink, cv2.MORPH_OPEN, kernel_vert_line)
+    v_lines_dilated = cv2.dilate(v_lines, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 1)))
+    ink_no_lines = np.where(v_lines_dilated == 1, 0, ink_no_rules).astype(np.uint8)
 
-    # Restore pixels only where strokes crossed the rule band
+    # Stroke restoration: vertical closing strictly across the subtracted rule band
+    kernel_vert = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 7))
+    vert_closed = cv2.morphologyEx(ink_no_lines, cv2.MORPH_CLOSE, kernel_vert)
     restored_strokes = (vert_closed == 1) & (confirmed_rules == 1)
-    ink_clean = np.where(restored_strokes, 1, ink_no_rules).astype(np.uint8)
+
+    # Only restore if it connects to genuine vertical stroke pixels
+    kernel_vert_stroke = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 5))
+    is_vert = cv2.morphologyEx(ink_no_lines, cv2.MORPH_OPEN, kernel_vert_stroke)
+    is_vert_dilated = cv2.dilate(is_vert, cv2.getStructuringElement(cv2.MORPH_RECT, (3, 7)))
+    restored_strokes = restored_strokes & (is_vert_dilated == 1)
+
+    ink_clean = np.where(restored_strokes == 1, 1, ink_no_lines).astype(np.uint8)
 
     return ink_clean, confirmed_rules
 
@@ -184,9 +197,9 @@ def process_ruled_lines(
     # Re-detect lines on deskewed image so slopes become 0
     lines_deskewed, _, r = detect_ruled_lines(ink_deskewed, min_spacing=min_spacing)
 
-    # Remove rules and restore crossed strokes
+    # Remove rules and restore crossed strokes with full 7px coverage
     ink_clean, rule_mask = remove_rules_and_restore_strokes(
-        ink_deskewed, lines_deskewed, median_spacing_r=r, rule_thickness=3
+        ink_deskewed, lines_deskewed, median_spacing_r=r, rule_thickness=7
     )
 
     return {

@@ -82,15 +82,20 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
 - **Output Hierarchy**: `data/processed/<school>/<student_id>/` with cropped sentence PNGs, sentence JSON schemas, and `overlay_debug.png`.
 - **Quality Gate**: 30-sheet visual overlay review notebook (`qa/phase1_overlay_review.ipynb` / `qa/review_gallery.html`) verifying word-count match and segmentation bounds.
 
-## Phase 1 Implementation Complete (2026-10-08)
-- **Modules Built**:
-  - `pipeline/preprocess.py`: Auto-portrait rotation, quad detection + 2000px perspective warp (2% margin fallback), illumination flattening, Sauvola binarization ($W=31, k=0.2$).
-  - `pipeline/rules.py`: Horizontal opening, peak detection, RANSAC line fitting, page deskewing, rule removal + vertical closing stroke repair, $r$ spacing extraction.
-  - `pipeline/segment.py`: Ink mass centroid band assignment, word-level shirorekha ratio script detector ($\ge 0.7 \implies$ Devanagari), Devanagari horizontal closing vs. English GMM gap word clustering, baseline & x-height calculation, 6-prompt sequential sentence state machine.
-  - `pipeline/skeleton.py`: Skeletonization (`skimage`), spur pruning ($<0.15h$), graph topology extraction (`skan`).
-  - `pipeline/process_dataset.py`: End-to-end dataset orchestrator generating normalized page images, sentence crops, JSON schemas, and color debug overlays under `data/processed/<school>/<student_id>/`.
+## Phase 1 v2: Preprocessing & Segmentation Overhaul (Completed 2026-10-09)
+- **Motivation & v1 Issues**:
+  - v1 illumination flattening + Sauvola thresholding destroyed image fidelity, turning ruled lines into thick black bars and degrading ink strokes.
+  - Fragile rule-band assignment and script-based state transitions misclassified lines and split multi-line sentences.
+  - Binary mask sentence crops inverted into illegible black/white bitmaps.
+- **v2 Architecture & Key Changes**:
+  - `pipeline/preprocess.py`: Removed illumination flattening completely. Uses gentle Gaussian blur + Otsu thresholding, preserving sharp ink strokes with zero paper grain noise while retaining original deskewed grayscale.
+  - `pipeline/rules.py`: Upgraded rule removal to 7px vertical window with morphological dilation and 120px vertical margin line filtering. Localized vertical closing restores intersecting ascenders/descenders without re-bridging removed rules.
+  - `pipeline/segment.py`: Replaced rule-band slicing with connected component extraction, top header box filtering ($y < 320, x > 850$), and nearest-neighbor y-centroid line clustering ($0.65 \times r$). Accurately groups multi-line English copy (Task 2) and single-line tasks (Tasks 1, 3, 4, 5, 6).
+  - **Per-Word Baseline Extraction**: Captures the bottom point of every word bounding box (`x_center`, `bottom`), fits a robust linear baseline ($y = mx + c$), and computes per-word baseline residuals and RMSE for Phase 2 kinematic/spatial features.
+  - `pipeline/process_dataset.py`: Crops sentences directly from the clean deskewed grayscale image (natural black ink on white paper, no inversion). Injects per-word baseline coordinates and residuals into sentence JSON schemas. Debug overlay renders clean grayscale with cyan ruled lines, green/orange word bboxes, red baseline sample dots, and yellow fitted regression lines.
 - **Validation**:
-  - `tests/test_phase1.py` passed 5/5 test cases (page norm shape/contrast, rule detection/deskew, segmentation, skeleton graphs, output directory schema integrity).
+  - `tests/test_phase1.py` passed 5/5 test cases.
+  - `tests/test_phase0.py` passed 4/4 test cases.
 - **Quality Gate**:
-  - `qa/generate_overlay_review.py` executed across grades; generated interactive visual inspection gallery `qa/review_gallery.html`.
-- **Next Phase**: Phase 2 Feature Library (baseline wobble, rule offset, slant tensor, curvature & jerk proxy, gaps, sizes, shirorekha features).
+  - `qa/generate_overlay_review.py` re-run across grades G3–G7; generated refreshed interactive visual review gallery `qa/review_gallery.html`.
+- **Next Phase**: Phase 2 Feature Library (baseline wobble & residuals, rule offset, slant tensor, curvature & jerk proxy, inter-word/inter-character gaps, shirorekha continuity features).

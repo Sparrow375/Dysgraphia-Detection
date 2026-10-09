@@ -42,6 +42,17 @@ def load_config(config_path: str = "configs/config.yaml") -> Dict[str, Any]:
         return yaml.safe_load(f)
 
 
+def _json_serialize_default(obj: Any) -> Any:
+    """Helper to convert numpy scalars and arrays to native Python types for JSON."""
+    if isinstance(obj, (np.integer, np.int32, np.int64)):
+        return int(obj)
+    if isinstance(obj, (np.floating, np.float32, np.float64)):
+        return float(obj)
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    return str(obj)
+
+
 def draw_debug_overlay(
     grayscale_deskewed: np.ndarray,
     ruled_lines: List[Dict[str, Any]],
@@ -57,10 +68,10 @@ def draw_debug_overlay(
         if 0 <= y_c < h:
             cv2.line(overlay, (0, y_c), (w - 1, y_c), (255, 255, 0), 1)
 
-    # 2. Draw sentences and words
+    # 2. Draw sentences, words, and fitted baselines
     colors = {
-        "devanagari": (0, 200, 0),    # Green
-        "latin": (0, 165, 255),        # Orange
+        "devanagari": (0, 200, 0),     # Green
+        "latin": (0, 165, 255),         # Orange
     }
 
     for s_idx, s in enumerate(sentences):
@@ -79,12 +90,25 @@ def draw_debug_overlay(
             cv2.LINE_AA,
         )
 
-        # Draw individual words
+        # Draw individual words & baseline points
         for line in s["lines"]:
             c_color = colors.get(line["script"], (0, 255, 255))
             for wd in line["words"]:
                 wx, wy, ww, wh = wd["bbox"]
                 cv2.rectangle(overlay, (wx, wy), (wx + ww, wy + wh), c_color, 1)
+
+                # Baseline sample point at bottom of word (red dot)
+                cx = int(wd.get("cx", wx + ww / 2.0))
+                bot = int(wd.get("bottom", wy + wh))
+                cv2.circle(overlay, (cx, bot), 3, (0, 0, 255), -1)
+
+            # Draw line fitted baseline in yellow
+            m = line.get("baseline_slope", 0.0)
+            c = line.get("baseline_intercept", line.get("baseline_y", by + bh))
+            x1, x2 = line["bbox"][0], line["bbox"][0] + line["bbox"][2]
+            y1 = int(round(m * x1 + c))
+            y2 = int(round(m * x2 + c))
+            cv2.line(overlay, (x1, y1), (x2, y2), (0, 255, 255), 2)
 
     return overlay
 
@@ -106,15 +130,13 @@ def process_single_student(
     if image_bgr is None:
         raise FileNotFoundError(f"Could not load image: {img_rel_path}")
 
-    # Step 1: Page Normalization & Sauvola Binarization
+    # Step 1: Page Normalization & Otsu Binarization (no destructive illumination flattening)
     prep = preprocess_page(
         image_bgr=image_bgr,
         target_width=2000,
-        sauvola_window=31,
-        sauvola_k=0.2,
     )
 
-    # Step 2: Ruled-Line Detection, Deskewing, and Rule Removal
+    # Step 2: Ruled-Line Detection, Deskewing, and Clean Rule Removal
     rule_res = process_ruled_lines(
         binary_ink=prep["binary_ink"],
         grayscale_norm=prep["grayscale_norm"],
@@ -145,20 +167,20 @@ def process_single_student(
         script = s["script"]
         bx, by, bw, bh = s["crop_bbox"]
 
-        # Sentence crops
-        # Inverted clean ink crop: 0 = ink, 255 = paper (standard image representation)
-        clean_ink_crop = rule_res["ink_clean"][by : by + bh, bx : bx + bw]
-        crop_display = np.where(clean_ink_crop == 1, 0, 255).astype(np.uint8)
-
+        # Sentence crops: saved from clean original deskewed grayscale (natural appearance)
+        grayscale_crop = rule_res["grayscale_deskewed"][by : by + bh, bx : bx + bw]
         crop_png_name = f"{task_id}.png"
         crop_png_path = student_out_dir / crop_png_name
-        cv2.imwrite(str(crop_png_path), crop_display)
+        cv2.imwrite(str(crop_png_path), grayscale_crop)
+
+        # Clean ink binary crop for skeleton graph extraction
+        clean_ink_crop = rule_res["ink_clean"][by : by + bh, bx : bx + bw]
 
         # Skeletonization & Graph Extraction
         avg_h = float(np.mean([l["x_height_h"] for l in s["lines"]])) if s["lines"] else 40.0
         skel_res = process_sentence_skeleton(clean_ink_crop, x_height_h=avg_h, spur_ratio=0.15)
 
-        # Construct Sentence JSON schema
+        # Construct Sentence JSON schema with per-word baseline mappings
         sentence_schema = {
             "student_id": student_id,
             "school": school,
@@ -170,14 +192,24 @@ def process_single_student(
             "crop_bbox": [bx, by, bw, bh],
             "median_rule_spacing_r": rule_res["median_spacing_r"],
             "median_slope": rule_res["median_slope"],
+            "sentence_baseline_slope": s.get("sentence_baseline_slope", 0.0),
+            "sentence_baseline_intercept": s.get("sentence_baseline_intercept", float(by + bh)),
+            "sentence_baseline_rmse": s.get("sentence_baseline_rmse", 0.0),
+            "word_baseline_points": s.get("word_baseline_points", []),
+            "word_baseline_residuals": s.get("word_baseline_residuals", []),
             "physical_lines": [
                 {
                     "line_index": l_idx,
                     "bbox": l["bbox"],
                     "baseline_y": l["baseline_y"],
+                    "baseline_slope": l.get("baseline_slope", 0.0),
+                    "baseline_intercept": l.get("baseline_intercept", l["baseline_y"]),
+                    "baseline_rmse": l.get("baseline_rmse", 0.0),
                     "x_height_h": l["x_height_h"],
                     "script": l["script"],
                     "words": l["words"],
+                    "word_baseline_points": l.get("word_baseline_points", []),
+                    "word_baseline_residuals": l.get("word_baseline_residuals", []),
                 }
                 for l_idx, l in enumerate(s["lines"])
             ],
@@ -198,7 +230,7 @@ def process_single_student(
 
         json_path = student_out_dir / f"{task_id}.json"
         with open(json_path, "w", encoding="utf-8") as f:
-            json.dump(sentence_schema, f, indent=2)
+            json.dump(sentence_schema, f, indent=2, default=_json_serialize_default)
 
         sentence_metadata_list.append(sentence_schema)
 
@@ -223,50 +255,49 @@ def process_dataset(
     config_path: str = "configs/config.yaml",
 ) -> pd.DataFrame:
     """Batch process students from manifest.csv."""
-    cfg = load_config(config_path) if os.path.exists(config_path) else None
-    df = pd.read_csv(manifest_path)
+    manifest = pd.read_csv(manifest_path)
 
     if school_filter:
-        df = df[df["school"] == school_filter].copy()
+        df = manifest[manifest["school"] == school_filter].copy()
+    else:
+        df = manifest.copy()
 
     if limit is not None:
         df = df.head(limit)
 
-    print(f"Starting Phase 1 processing for {len(df)} sheets (School filter: {school_filter})...")
+    config = load_config(config_path) if os.path.exists(config_path) else None
 
     results = []
+    print(f"Starting Phase 1 processing for {len(df)} sheets...")
+
     for _, row in tqdm(df.iterrows(), total=len(df), desc="Processing sheets"):
         try:
-            res = process_single_student(row, output_base_dir=output_dir, config=cfg)
-            res["status"] = "SUCCESS"
+            res = process_single_student(row, output_base_dir=output_dir, config=config)
             results.append(res)
         except Exception as e:
-            results.append(
-                {
-                    "student_id": row["student_id"],
-                    "school": row["school"],
-                    "status": "FAILED",
-                    "error": str(e),
-                }
-            )
+            print(f"Error processing {row['student_id']}: {e}")
+            results.append({
+                "student_id": row["student_id"],
+                "school": row["school"],
+                "error": str(e),
+            })
 
-    res_df = pd.DataFrame(results)
-    success_count = (res_df["status"] == "SUCCESS").sum()
-    print(f"\nProcessing Complete: {success_count}/{len(df)} sheets processed successfully.")
-    return res_df
+    results_df = pd.DataFrame(results)
+    print(f"Completed processing {len(results)} sheets.")
+    return results_df
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process dataset for Workstream A Phase 1")
-    parser.add_argument("--manifest", default="data/manifest.csv")
-    parser.add_argument("--output", default="data/processed")
-    parser.add_argument("--school", default="school_a")
-    parser.add_argument("--limit", type=int, default=None)
+    parser = argparse.ArgumentParser(description="Workstream A Phase 1 Dataset Processor")
+    parser.add_argument("--manifest", default="data/manifest.csv", help="Path to manifest.csv")
+    parser.add_argument("--output-dir", default="data/processed", help="Path to output base directory")
+    parser.add_argument("--school", default="school_a", help="Filter by school (default: school_a)")
+    parser.add_argument("--limit", type=int, default=None, help="Limit number of sheets to process")
     args = parser.parse_args()
 
     process_dataset(
         manifest_path=args.manifest,
-        output_dir=args.output,
+        output_dir=args.output_dir,
         school_filter=args.school,
         limit=args.limit,
     )

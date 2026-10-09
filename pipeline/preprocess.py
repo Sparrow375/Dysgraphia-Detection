@@ -3,8 +3,8 @@
 Implements:
 1. Auto-orientation to portrait.
 2. Quadrilateral contour detection and perspective warping to fixed 2000px width (with margin fallback).
-3. Background illumination flattening (division by large-kernel background estimate).
-4. Sauvola binarization (W=31, k=0.2) producing dual grayscale and binary ink layers.
+3. Clean grayscale extraction without distortion or illumination flattening.
+4. Clean Otsu binarization on slightly blurred grayscale to produce a solid binary ink mask.
 """
 
 from __future__ import annotations
@@ -14,7 +14,6 @@ from typing import Optional, Tuple
 
 import cv2
 import numpy as np
-from skimage.filters import threshold_sauvola
 
 
 def auto_orient_portrait(image_bgr: np.ndarray) -> Tuple[np.ndarray, bool]:
@@ -137,52 +136,29 @@ def warp_page(
     return warped, None
 
 
-def flatten_illumination(grayscale: np.ndarray, kernel_size: int = 51) -> np.ndarray:
-    """Flatten uneven lighting and shadows by dividing by large-kernel background estimate."""
-    # Ensure kernel size is odd
-    if kernel_size % 2 == 0:
-        kernel_size += 1
+def binarize_image(grayscale: np.ndarray) -> np.ndarray:
+    """Binarize grayscale image to extract ink mask (1 = ink, 0 = paper).
 
-    # Large morphological closing estimates background paper illumination
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
-    background = cv2.morphologyEx(grayscale, cv2.MORPH_CLOSE, kernel)
-
-    # Avoid zero division
-    bg_float = np.maximum(background.astype(np.float32), 1.0)
-    gray_float = grayscale.astype(np.float32)
-
-    # Normalized division scaled to [0, 255]
-    flattened = np.clip((gray_float / bg_float) * 255.0, 0, 255).astype(np.uint8)
-    return flattened
-
-
-def binarize_sauvola(
-    grayscale_norm: np.ndarray,
-    window_size: int = 31,
-    k: float = 0.2,
-    r: float = 128.0,
-) -> np.ndarray:
-    """Sauvola adaptive thresholding. Returns binary ink mask (1 = ink, 0 = paper)."""
-    if window_size % 2 == 0:
-        window_size += 1
-
-    thresh = threshold_sauvola(grayscale_norm, window_size=window_size, k=k, r=r)
-    # Ink pixels are darker than local threshold
-    binary_ink = (grayscale_norm < thresh).astype(np.uint8)
+    Uses Gaussian blur + Otsu thresholding, avoiding paper texture artifacts.
+    """
+    blurred = cv2.GaussianBlur(grayscale, (5, 5), 0)
+    _, otsu_inv = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    binary_ink = (otsu_inv > 0).astype(np.uint8)
     return binary_ink
 
 
 def preprocess_page(
     image_bgr: np.ndarray,
     target_width: int = 2000,
-    sauvola_window: int = 31,
-    sauvola_k: float = 0.2,
+    **kwargs,
 ) -> dict:
     """Complete page preprocessing pipeline.
 
     Returns dict with:
-        - grayscale_norm: normalized grayscale image (H, W) uint8
+        - grayscale: original clean grayscale image (H, W) uint8
+        - grayscale_norm: alias for grayscale
         - binary_ink: binary ink mask (H, W) uint8 (1=ink, 0=bg)
+        - warped_bgr: warped BGR image (H, W, 3) uint8
         - quad_corners: list of 4 ordered corners or None
         - was_rotated: bool
     """
@@ -191,11 +167,11 @@ def preprocess_page(
     warped, quad_pts = warp_page(oriented, quad_corners, target_width=target_width)
 
     gray = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
-    gray_norm = flatten_illumination(gray, kernel_size=51)
-    binary_ink = binarize_sauvola(gray_norm, window_size=sauvola_window, k=sauvola_k)
+    binary_ink = binarize_image(gray)
 
     return {
-        "grayscale_norm": gray_norm,
+        "grayscale": gray,
+        "grayscale_norm": gray,
         "binary_ink": binary_ink,
         "warped_bgr": warped,
         "quad_corners": quad_pts.tolist() if quad_pts is not None else None,
