@@ -29,7 +29,7 @@ try:
 except ImportError:
     HAS_TORCH = False
 
-from src.ocr.utils import CharHypothesis, WordHypothesis
+from src.ocr.utils import CharHypothesis, WordHypothesis, ConfidenceTier
 
 
 # ---------------------------------------------------------------------------
@@ -93,10 +93,32 @@ if HAS_TORCH:
             return self.act(x + self.net(x))
 
 
+    class SpatialAttentionModule(nn.Module):
+        """
+        Spatial Attention Mechanism (SAM) for handwriting recognition.
+        Captures dynamic ink paths along undulating baselines and irregular strokes.
+        Uses channel-wise pooling (AvgPool + MaxPool) followed by a 7x7 convolution and sigmoid.
+        Features a ReZero / identity gate (alpha) initialized to 0.0, ensuring exact
+        lossless backward compatibility when loading standard pre-trained CNN weights.
+        """
+        def __init__(self, kernel_size: int = 7):
+            super().__init__()
+            padding = (kernel_size - 1) // 2
+            self.conv = nn.Conv2d(2, 1, kernel_size=kernel_size, padding=padding, bias=False)
+            self.sigmoid = nn.Sigmoid()
+            self.alpha = nn.Parameter(torch.zeros(1))
+
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            avg_out = torch.mean(x, dim=1, keepdim=True)
+            max_out, _ = torch.max(x, dim=1, keepdim=True)
+            scale = self.sigmoid(self.conv(torch.cat([avg_out, max_out], dim=1)))
+            return x + self.alpha * (x * scale)
+
+
     class CRNNModel(nn.Module):
         """
         Convolutional Recurrent Neural Network for handwriting recognition.
-        Deep Residual CNN + 3-layer BiLSTM + CTC projection head (matching trained weights).
+        Deep Residual CNN + Spatial Attention (SAM) + 3-layer BiLSTM + CTC projection head.
 
         Input shape:  (B, 1, 64, W) — single-channel, height-normalized
         Output shape: (T, B, |alphabet|+1) — CTC logits per timestep
@@ -109,10 +131,12 @@ if HAS_TORCH:
             lstm_hidden: int = 512,
             lstm_layers: int = 3,
             dropout: float = 0.2,
+            use_spatial_attention: bool = True,
         ):
             super().__init__()
             self.n_classes = n_classes
             self.input_height = input_height
+            self.use_spatial_attention = use_spatial_attention
 
             # Deep CNN backbone with Residual blocks
             self.cnn = nn.Sequential(
@@ -128,6 +152,9 @@ if HAS_TORCH:
                 ConvBNReLU(512, 512, pool=(2, 1)),         # → (B, 512, 4, W/4)
                 ConvBNReLU(512, 512, k=2, p=0),            # → (B, 512, 3, W/4-1)
             )
+
+            # Spatial Attention Mechanism (SAM) for tracking irregular dysgraphic strokes
+            self.sam = SpatialAttentionModule() if use_spatial_attention else nn.Identity()
 
             # Adaptive pooling to squeeze height to 1
             self.adaptive_pool = nn.AdaptiveAvgPool2d((1, None))  # → (B, 512, 1, T)
@@ -153,6 +180,7 @@ if HAS_TORCH:
                 (T, B, n_classes) log-probabilities for CTC decoding.
             """
             f = self.cnn(x)
+            f = self.sam(f)
             f = self.adaptive_pool(f)
             f = f.squeeze(2)
             f = f.permute(2, 0, 1)
@@ -544,6 +572,7 @@ def logits_to_word_hypotheses(
             text=text_clean,
             visual_score=float(log_prob),
             confidence=conf,
+            confidence_tier=ConfidenceTier.from_confidence(conf),
             bbox=word_bbox,
             char_hypotheses=char_hyps if i == 0 else [],
         )

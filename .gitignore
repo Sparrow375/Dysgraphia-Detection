@@ -40,9 +40,19 @@ cache_*.csv
 
 # Large Datasets & Model Checkpoints
 data/
+data2/
 models/
 *.pth
 *.pt
 *.safetensors
 *.bin
+
+# Handwriting Datasets & Testing Images (Do not push to GitHub)
+Kanyashala Handwritten/
+schoolData/
+mapped_output/
+results/
+user_test_images/
+spen_note_collector/
+
 

@@ -39,12 +39,14 @@ class WordRegion:
         bbox_in_image: Tuple[int, int, int, int],
         word_index: int = 0,
         components: Optional[List[Dict]] = None,
+        is_bullet: bool = False,
     ):
         self.image = image
         self.bbox_in_line = bbox_in_line
         self.bbox_in_image = bbox_in_image
         self.word_index = word_index
         self.components = components or []
+        self.is_bullet = is_bullet
 
     @property
     def width(self) -> int:
@@ -102,10 +104,9 @@ def segment_lines(
     min_components_per_line: int = 2,
 ) -> List[LineRegion]:
     """
-    Segment a full-page binary handwriting image into individual text lines.
-
-    Reuses the proven multi-baseline segmentation from bhk_features.py:
-    vertical projection + centroid clustering + per-line baseline fitting.
+    Segment a full-page binary handwriting image into individual text lines
+    using horizontal morphological ribbons and projection valley tracking.
+    Completely prevents multi-line collision caused by cursive descenders.
 
     Args:
         binary_mask: Full-page binary image (ink=255, bg=0).
@@ -114,36 +115,37 @@ def segment_lines(
     Returns:
         List of LineRegion objects sorted top-to-bottom.
     """
+    from scipy.ndimage import gaussian_filter1d
+    from scipy.signal import find_peaks
+
     h_img, w_img = binary_mask.shape
 
-    # Find connected components and their stats
+    # 1. Connected components analysis to determine character scale
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
         binary_mask, connectivity=8
     )
 
-    # Establish median character height for line clustering threshold
     cand_h = []
     letters = []
     for i in range(1, num_labels):
-        a = stats[i, cv2.CC_STAT_AREA]
-        ch = stats[i, cv2.CC_STAT_HEIGHT]
-        cw = stats[i, cv2.CC_STAT_WIDTH]
-        if a >= 15 and ch >= 5 and cw >= 2 and cw < 0.85 * w_img and ch < 0.85 * h_img:
+        a = int(stats[i, cv2.CC_STAT_AREA])
+        ch = int(stats[i, cv2.CC_STAT_HEIGHT])
+        cw = int(stats[i, cv2.CC_STAT_WIDTH])
+        if a >= 25 and ch >= 8 and cw >= 2 and cw < 0.85 * w_img and ch < 0.70 * h_img:
             cand_h.append(ch)
             letters.append({
-                'x': stats[i, cv2.CC_STAT_LEFT],
-                'y': stats[i, cv2.CC_STAT_TOP],
+                'x': int(stats[i, cv2.CC_STAT_LEFT]),
+                'y': int(stats[i, cv2.CC_STAT_TOP]),
                 'w': cw,
                 'h': ch,
                 'area': a,
-                'cx': centroids[i][0],
-                'cy': centroids[i][1],
-                'bottom': stats[i, cv2.CC_STAT_TOP] + ch,
+                'cx': float(centroids[i][0]),
+                'cy': float(centroids[i][1]),
+                'bottom': int(stats[i, cv2.CC_STAT_TOP] + ch),
                 'label_idx': i,
             })
 
     if len(cand_h) < 3:
-        # Not enough components — return entire image as one line
         region = LineRegion(
             image=binary_mask.copy(),
             bbox_in_image=(0, 0, w_img, h_img),
@@ -151,109 +153,104 @@ def segment_lines(
         )
         return [region]
 
-    median_h = max(5.0, float(np.median(cand_h)))
+    median_h = max(10.0, float(np.median(cand_h)))
 
-    # Cluster components into lines by vertical centroid proximity
-    letters_sorted = sorted(letters, key=lambda l: l['cy'])
-    line_clusters: List[List[Dict]] = []
+    # 2. Horizontal Morphological Ribbon Tracking
+    # Dilate horizontally to connect letters across each line while preserving inter-line valleys
+    k_w = int(max(35, 1.6 * median_h))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (k_w, 1))
+    dilated = cv2.morphologyEx(binary_mask, cv2.MORPH_CLOSE, kernel)
 
-    thresh = 1.9 * median_h
-    for l in letters_sorted:
-        best_ci = -1
-        best_dist = 9999.0
-        for ci, cluster in enumerate(line_clusters):
-            c_cy = float(np.mean([item['cy'] for item in cluster]))
-            dist = abs(l['cy'] - c_cy)
-            if dist < thresh and dist < best_dist:
-                best_dist = dist
-                best_ci = ci
-        if best_ci != -1:
-            line_clusters[best_ci].append(l)
+    proj_y = np.sum(dilated > 0, axis=1)
+    smooth_y = gaussian_filter1d(proj_y.astype(float), sigma=max(4.0, 0.25 * median_h))
+
+    min_dist = int(max(35, 2.4 * median_h))
+    peaks, _ = find_peaks(smooth_y, distance=min_dist, prominence=smooth_y.max() * 0.05)
+
+    if len(peaks) == 0:
+        peaks = [int(h_img / 2)]
+
+    # Compute valley cut points between adjacent peaks
+    valleys = [0]
+    for k in range(len(peaks) - 1):
+        p1, p2 = peaks[k], peaks[k + 1]
+        v = p1 + int(np.argmin(smooth_y[p1:p2]))
+        valleys.append(v)
+    valleys.append(h_img)
+
+    # 3. Form LineRegion for each detected ribbon
+    line_regions: List[LineRegion] = []
+    for idx in range(len(peaks)):
+        y1 = max(0, valleys[idx] - 2)
+        y2 = min(h_img, valleys[idx + 1] + 2)
+
+        # Filter letters whose vertical centroid falls into this line band
+        line_letters = [
+            l for l in letters
+            if y1 <= l['cy'] < y2
+        ]
+
+        strip = binary_mask[y1:y2, :]
+        if cv2.countNonZero(strip) < 180 or len(line_letters) < 2:
+            continue
+
+        if line_letters:
+            min_x = max(0, min(l['x'] for l in line_letters) - int(0.2 * median_h))
+            max_x = min(w_img, max(l['x'] + l['w'] for l in line_letters) + int(0.2 * median_h))
+            min_y = max(y1, min(l['y'] for l in line_letters) - int(0.2 * median_h))
+            max_y = min(y2, max(l['bottom'] for l in line_letters) + int(0.2 * median_h))
         else:
-            line_clusters.append([l])
-
-    # Filter and sort
-    valid_clusters = [
-        sorted(cluster, key=lambda it: it['cx'])
-        for cluster in line_clusters
-        if len(cluster) >= min_components_per_line
-    ]
-
-    # Merge line clusters that share significant vertical overlap
-    merged = True
-    while merged and len(valid_clusters) > 1:
-        merged = False
-        for i in range(len(valid_clusters)):
-            for j in range(i + 1, len(valid_clusters)):
-                c1, c2 = valid_clusters[i], valid_clusters[j]
-                y1_min, y1_max = min(c['y'] for c in c1), max(c['bottom'] for c in c1)
-                y2_min, y2_max = min(c['y'] for c in c2), max(c['bottom'] for c in c2)
-                overlap = min(y1_max, y2_max) - max(y1_min, y2_min)
-                h_min = min(y1_max - y1_min, y2_max - y2_min)
-                if overlap > 0.45 * h_min:
-                    valid_clusters[i] = sorted(c1 + c2, key=lambda it: it['cx'])
-                    valid_clusters.pop(j)
-                    merged = True
-                    break
-            if merged:
-                break
-
-    valid_clusters.sort(key=lambda cluster: np.mean([it['cy'] for it in cluster]))
-
-    if not valid_clusters:
-        valid_clusters = [sorted(letters, key=lambda it: it['cx'])]
-
-    # Build LineRegion objects
-    line_regions = []
-    for idx, cluster in enumerate(valid_clusters):
-        # Compute bounding box of the entire line
-        min_x = min(c['x'] for c in cluster)
-        min_y = min(c['y'] for c in cluster)
-        max_x = max(c['x'] + c['w'] for c in cluster)
-        max_y = max(c['bottom'] for c in cluster)
-
-        # Add vertical padding (half median char height)
-        pad_y = int(median_h * 0.3)
-        min_y = max(0, min_y - pad_y)
-        max_y = min(h_img, max_y + pad_y)
-        # Small horizontal padding
-        pad_x = int(median_h * 0.2)
-        min_x = max(0, min_x - pad_x)
-        max_x = min(w_img, max_x + pad_x)
+            coords = cv2.findNonZero(strip)
+            if coords is None:
+                continue
+            bx, by, bw, bh = cv2.boundingRect(coords)
+            min_x = max(0, bx - int(0.2 * median_h))
+            max_x = min(w_img, bx + bw + int(0.2 * median_h))
+            min_y = max(y1, y1 + by - int(0.2 * median_h))
+            max_y = min(y2, y1 + by + bh + int(0.2 * median_h))
 
         line_w = max_x - min_x
         line_h = max_y - min_y
+        if line_w < 10 or line_h < 8:
+            continue
 
         line_img = binary_mask[min_y:max_y, min_x:max_x].copy()
 
-        # Fit baseline for this line
-        xs = np.array([c['cx'] - min_x for c in cluster], dtype=float)
-        bottoms = np.array([c['bottom'] - min_y for c in cluster], dtype=float)
+        # Fit baseline slope
         slope = 0.0
-        intercept = float(np.mean(bottoms))
-        if len(xs) >= 3 and (np.max(xs) - np.min(xs)) > 10:
-            try:
-                p = np.polyfit(xs, bottoms, 1)
-                slope = float(p[0])
-                intercept = float(p[1])
-            except Exception:
-                pass
+        intercept = float(line_h / 2)
+        if line_letters and len(line_letters) >= 3:
+            xs = np.array([l['cx'] - min_x for l in line_letters], dtype=float)
+            bottoms = np.array([l['bottom'] - min_y for l in line_letters], dtype=float)
+            if (np.max(xs) - np.min(xs)) > 10:
+                try:
+                    p = np.polyfit(xs, bottoms, 1)
+                    slope = float(p[0])
+                    intercept = float(p[1])
+                except Exception:
+                    pass
 
         region = LineRegion(
             image=line_img,
             bbox_in_image=(min_x, min_y, line_w, line_h),
-            line_index=idx,
+            line_index=len(line_regions),
             baseline_slope=slope,
             baseline_intercept=intercept,
         )
 
-        # Store component info for word segmentation
         region._components = [
-            {**c, 'x_in_line': c['x'] - min_x, 'y_in_line': c['y'] - min_y}
-            for c in cluster
+            {**l, 'x_in_line': l['x'] - min_x, 'y_in_line': l['y'] - min_y}
+            for l in line_letters
         ]
-
         line_regions.append(region)
+
+    if not line_regions:
+        region = LineRegion(
+            image=binary_mask.copy(),
+            bbox_in_image=(0, 0, w_img, h_img),
+            line_index=0,
+        )
+        return [region]
 
     return line_regions
 
@@ -267,125 +264,187 @@ def segment_words(
     gap_multiplier: float = 1.5,
 ) -> List[WordRegion]:
     """
-    Segment a line image into individual word regions.
-
-    Uses a hybrid approach:
-    1. Primary: Vertical projection profile to find inter-word gaps
-    2. Fallback: Connected-component horizontal distance clustering
+    Segment a text line image into individual word regions using ink mask
+    column density projection, whitespace valley detection, and border artifact stripping.
+    Prevents cursive run-together multi-word blocks.
 
     Args:
         line_region: A LineRegion with its binary image and component info.
-        gap_multiplier: Gaps larger than gap_multiplier × median_gap are word breaks.
+        gap_multiplier: Unused compatibility parameter.
 
     Returns:
         List of WordRegion objects sorted left-to-right.
     """
+    from scipy.ndimage import gaussian_filter1d
+
     line_img = line_region.image
-    line_h, line_w = line_img.shape
     lx, ly, lw, lh = line_region.bbox_in_image
+    line_h, line_w = line_img.shape
 
-    # Get components within this line
-    components = getattr(line_region, '_components', None)
-    if components is None or len(components) < 2:
-        # Single-component line or no component info — return entire line as one word
-        word = WordRegion(
+    if line_h < 5 or line_w < 5 or cv2.countNonZero(line_img) < 10:
+        return [WordRegion(
             image=line_img.copy(),
             bbox_in_line=(0, 0, line_w, line_h),
             bbox_in_image=(lx, ly, lw, lh),
             word_index=0,
-        )
-        return [word]
+        )]
 
-    # Sort components left-to-right
-    sorted_comps = sorted(components, key=lambda c: c['x_in_line'])
+    # 1. Clean edge slivers (thin 1-6px lines touching border from ruling or cut descenders)
+    num_l, labels_l, stats_l, _ = cv2.connectedComponentsWithStats(line_img, connectivity=8)
+    clean_line = np.zeros_like(line_img)
+    for i in range(1, num_l):
+        y = int(stats_l[i, cv2.CC_STAT_TOP])
+        h = int(stats_l[i, cv2.CC_STAT_HEIGHT])
+        w = int(stats_l[i, cv2.CC_STAT_WIDTH])
+        a = int(stats_l[i, cv2.CC_STAT_AREA])
+        if (y <= 2 or y + h >= line_h - 2) and h <= 6 and w > 15:
+            continue
+        if a < 8:
+            continue
+        clean_line[labels_l == i] = 255
 
-    # Compute inter-component gaps
-    gaps = []
-    for i in range(len(sorted_comps) - 1):
-        right_edge = sorted_comps[i]['x_in_line'] + sorted_comps[i]['w']
-        left_edge = sorted_comps[i + 1]['x_in_line']
-        gap = max(0, left_edge - right_edge)
-        gaps.append(gap)
-
-    if not gaps:
-        word = WordRegion(
+    # 2. Column ink projection profile
+    col_ink = np.sum(clean_line > 0, axis=0)
+    nonzero_cols = np.where(col_ink > 0)[0]
+    if len(nonzero_cols) == 0:
+        return [WordRegion(
             image=line_img.copy(),
             bbox_in_line=(0, 0, line_w, line_h),
             bbox_in_image=(lx, ly, lw, lh),
             word_index=0,
-        )
-        return [word]
+        )]
 
-    # Determine word-break threshold:
-    # Determine word-break threshold scaled directly by character height
-    med_comp_h = float(np.median([c['h'] for c in sorted_comps]))
-    word_break_threshold = max(12.0, 0.40 * med_comp_h)
+    x_min, x_max = int(nonzero_cols[0]), int(nonzero_cols[-1])
 
-    # Initial grouping based on gap threshold
-    word_groups: List[List[Dict]] = [[sorted_comps[0]]]
-    for i, gap in enumerate(gaps):
-        curr_comp = sorted_comps[i + 1]
-        if gap >= word_break_threshold:
-            word_groups.append([curr_comp])
+    # 3. Dynamic Whitespace Valley Gap (adaptive: max(8, 0.10 * line_h))
+    min_gap = max(8, int(0.10 * line_h))
+
+    zero_runs: List[Tuple[int, int]] = []
+    in_zero = False
+    start_z = 0
+    for x in range(x_min, x_max + 1):
+        if col_ink[x] <= 1:
+            if not in_zero:
+                in_zero = True
+                start_z = x
         else:
-            word_groups[-1].append(curr_comp)
+            if in_zero:
+                in_zero = False
+                if (x - start_z) >= min_gap:
+                    zero_runs.append((start_z, x))
+    if in_zero and (x_max + 1 - start_z) >= min_gap:
+        zero_runs.append((start_z, x_max + 1))
 
-    # Secondary refinement: split oversized groups (aspect ratio > 3.8)
-    refined_groups: List[List[Dict]] = []
-    for group in word_groups:
-        gw = max(c['x_in_line'] + c['w'] for c in group) - min(c['x_in_line'] for c in group)
-        gh = max(c['y_in_line'] + c['h'] for c in group) - min(c['y_in_line'] for c in group)
-        if len(group) > 2 and gw / max(gh, 1) > 3.8:
-            # Check internal gaps within oversized group
-            sub_groups = [[group[0]]]
-            for k in range(len(group) - 1):
-                c_prev, c_next = group[k], group[k + 1]
-                int_gap = c_next['x_in_line'] - (c_prev['x_in_line'] + c_prev['w'])
-                if int_gap >= 0.28 * med_comp_h:
-                    sub_groups.append([c_next])
-                else:
-                    sub_groups[-1].append(c_next)
-            refined_groups.extend(sub_groups)
-        else:
-            refined_groups.append(group)
+    # Slice words between whitespace valleys
+    raw_word_spans: List[Tuple[int, int]] = []
+    curr_s = x_min
+    for zs, ze in zero_runs:
+        if zs > curr_s:
+            raw_word_spans.append((curr_s, zs))
+        curr_s = ze
+    if curr_s <= x_max:
+        raw_word_spans.append((curr_s, x_max + 1))
 
-    # Build WordRegion objects, skipping isolated microscopic noise/specks
-    word_regions = []
-    for wi, group in enumerate(refined_groups):
-        gw = max(c['x_in_line'] + c['w'] for c in group) - min(c['x_in_line'] for c in group)
-        gh = max(c['y_in_line'] + c['h'] for c in group) - min(c['y_in_line'] for c in group)
-        
-        # Skip isolated tiny punctuation dots or ink specks
-        if len(group) == 1 and gh < 0.28 * med_comp_h and gw < 0.35 * med_comp_h:
+    # 4. Secondary splitting for run-together cursive words (AR > 3.0)
+    # In continuous cursive, pen may not fully lift, but ink drops to a single thin ligature stroke
+    refined_spans: List[Tuple[int, int]] = []
+    for ws, we in raw_word_spans:
+        span_w = we - ws
+        if span_w < 8:
             continue
 
-        # Compute bounding box of this word within the line
-        wx = min(c['x_in_line'] for c in group)
-        wy = min(c['y_in_line'] for c in group)
-        wx2 = max(c['x_in_line'] + c['w'] for c in group)
-        wy2 = max(c['y_in_line'] + c['h'] for c in group)
+        ar = span_w / max(line_h, 1)
+        if ar > 3.0 and span_w > 2.0 * line_h:
+            # Look for internal local minima in smoothed column profile
+            sub_profile = col_ink[ws:we].astype(float)
+            sub_smooth = gaussian_filter1d(sub_profile, sigma=3.0)
 
-        # Small padding
-        pad = 2
-        wx = max(0, wx - pad)
-        wy = max(0, wy - pad)
-        wx2 = min(line_w, wx2 + pad)
-        wy2 = min(line_h, wy2 + pad)
+            med_ink = np.median(sub_profile[sub_profile > 0]) if np.any(sub_profile > 0) else 5.0
+            split_candidates = []
+            for ix in range(int(0.20 * span_w), int(0.80 * span_w)):
+                if sub_smooth[ix] <= max(2.0, 0.40 * med_ink):
+                    if sub_smooth[ix] <= sub_smooth[ix - 1] and sub_smooth[ix] <= sub_smooth[ix + 1]:
+                        split_candidates.append(ws + ix)
+
+            valid_splits = []
+            for sc in split_candidates:
+                if not valid_splits or (sc - valid_splits[-1]) >= int(0.9 * line_h):
+                    valid_splits.append(sc)
+
+            if valid_splits:
+                last_split = ws
+                for sp in valid_splits:
+                    if (sp - last_split) >= 10:
+                        refined_spans.append((last_split, sp))
+                        last_split = sp
+                if (we - last_split) >= 10:
+                    refined_spans.append((last_split, we))
+            else:
+                refined_spans.append((ws, we))
+        else:
+            refined_spans.append((ws, we))
+
+    # 5. Build WordRegion objects with tight ink crop and dynamic padding
+    word_regions: List[WordRegion] = []
+    for wi, (ws, we) in enumerate(refined_spans):
+        w_crop = clean_line[:, ws:we]
+        coords = cv2.findNonZero(w_crop)
+        if coords is None:
+            continue
+        cx, cy, cw, ch = cv2.boundingRect(coords)
+        if cw < 6 or ch < 6:
+            continue
+
+        # Filter out edge border artifacts touching crop edge with small height
+        if (cy <= 2 and ch <= 20) or (cy + ch >= line_h - 2 and ch <= 12):
+            if cw < 60 and cv2.countNonZero(w_crop) < 100:
+                continue
+
+        pad_x = int(max(4, 0.08 * line_h))
+        pad_y = int(max(4, 0.08 * line_h))
+
+        wx = max(0, ws + cx - pad_x)
+        wy = max(0, cy - pad_y)
+        wx2 = min(line_w, ws + cx + cw + pad_x)
+        wy2 = min(line_h, cy + ch + pad_y)
 
         ww = wx2 - wx
         wh = wy2 - wy
 
-        word_img = line_img[wy:wy2, wx:wx2].copy()
+        final_word_img = clean_line[wy:wy2, wx:wx2].copy()
 
         word_regions.append(WordRegion(
-            image=word_img,
+            image=final_word_img,
             bbox_in_line=(wx, wy, ww, wh),
             bbox_in_image=(lx + wx, ly + wy, ww, wh),
             word_index=len(word_regions),
-            components=group,
         ))
 
-    return word_regions
+    # 6. Punctuation Binding: merge tiny trailing specks into preceding word
+    merged_regions: List[WordRegion] = []
+    for wr in word_regions:
+        bx, by, bw, bh = wr.bbox_in_image
+        if bw <= 16 and bh <= 16 and merged_regions:
+            p_wr = merged_regions[-1]
+            px, py, pw, ph = p_wr.bbox_in_image
+            nx = min(px, bx)
+            ny = min(py, by)
+            nw = max(px + pw, bx + bw) - nx
+            nh = max(py + ph, by + bh) - ny
+            p_wr.bbox_in_image = (nx, ny, nw, nh)
+            p_wr.bbox_in_line = (nx - lx, ny - ly, nw, nh)
+        else:
+            merged_regions.append(wr)
+
+    if not merged_regions:
+        merged_regions.append(WordRegion(
+            image=line_img.copy(),
+            bbox_in_line=(0, 0, line_w, line_h),
+            bbox_in_image=(lx, ly, lw, lh),
+            word_index=0,
+        ))
+
+    return merged_regions
 
 
 # ---------------------------------------------------------------------------

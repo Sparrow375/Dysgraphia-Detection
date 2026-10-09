@@ -98,9 +98,29 @@ class ResBlock(nn.Module):
         return self.act(x + self.net(x))
 
 
+class SpatialAttentionModule(nn.Module):
+    """
+    Spatial Attention Mechanism (SAM) for handwriting recognition.
+    Learns dynamic spatial weights along undulating baselines and irregular strokes.
+    Zero-initialized residual gate (alpha=0.0) ensures exact backward-compatibility.
+    """
+    def __init__(self, kernel_size: int = 7):
+        super().__init__()
+        padding = (kernel_size - 1) // 2
+        self.conv = nn.Conv2d(2, 1, kernel_size=kernel_size, padding=padding, bias=False)
+        self.sigmoid = nn.Sigmoid()
+        self.alpha = nn.Parameter(torch.zeros(1))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        avg_out = torch.mean(x, dim=1, keepdim=True)
+        max_out, _ = torch.max(x, dim=1, keepdim=True)
+        scale = self.sigmoid(self.conv(torch.cat([avg_out, max_out], dim=1)))
+        return x + self.alpha * (x * scale)
+
+
 class CRNN(nn.Module):
     """
-    Deep CRNN: CNN backbone (with residual blocks) + BiLSTM + CTC head.
+    Deep CRNN: Residual CNN backbone + Spatial Attention (SAM) + 3-layer BiLSTM + CTC head.
 
     Input:  (B, 1, 64, W)
     Output: (T, B, num_classes) log-softmax
@@ -112,8 +132,10 @@ class CRNN(nn.Module):
         lstm_hidden: int = 512,
         lstm_layers: int = 3,
         dropout: float = 0.2,
+        use_spatial_attention: bool = True,
     ):
         super().__init__()
+        self.use_spatial_attention = use_spatial_attention
 
         # CNN backbone — produces (B, 512, 1, T)
         self.cnn = nn.Sequential(
@@ -129,6 +151,7 @@ class CRNN(nn.Module):
             ConvBNReLU(512, 512, pool=(2, 1)),         # → (B, 512, 4, W/4)
             ConvBNReLU(512, 512, k=2, p=0),            # → (B, 512, 3, W/4-1)
         )
+        self.sam = SpatialAttentionModule() if use_spatial_attention else nn.Identity()
         self.adaptive_pool = nn.AdaptiveAvgPool2d((1, None))  # → (B, 512, 1, T)
 
         # BiLSTM
@@ -144,21 +167,20 @@ class CRNN(nn.Module):
         self.fc = nn.Linear(lstm_hidden * 2, num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # CNN
-        f = self.cnn(x)                   # (B, 512, h', T)
-        f = self.adaptive_pool(f)         # (B, 512, 1, T)
-        f = f.squeeze(2)                  # (B, 512, T)
-        f = f.permute(2, 0, 1)           # (T, B, 512)
+        f = self.cnn(x)
+        f = self.sam(f)
+        f = self.adaptive_pool(f)
+        f = f.squeeze(2)
+        f = f.permute(2, 0, 1)
 
-        # BiLSTM
-        out, _ = self.rnn(f)             # (T, B, 2*hidden)
+        out, _ = self.rnn(f)
         out = self.dropout(out)
-        out = self.fc(out)               # (T, B, num_classes)
+        out = self.fc(out)
         return F.log_softmax(out, dim=2)
 
 
 # ---------------------------------------------------------------------------
-# Dataset loader (reads manifest CSV)
+# Dataset loader (reads IAM + optional NIST manifest CSVs)
 # ---------------------------------------------------------------------------
 
 def normalize_word_image(img: np.ndarray, target_height: int = 64, max_width: int = 640) -> np.ndarray:
@@ -175,37 +197,57 @@ def normalize_word_image(img: np.ndarray, target_height: int = 64, max_width: in
 
 
 class IAMWordDataset(Dataset):
-    """Word-level IAM dataset loaded from manifest CSV."""
+    """Word-level dataset loading from IAM and optional NIST manifest CSVs."""
 
     def __init__(
         self,
         manifest_path: str,
+        nist_manifest: Optional[str] = None,
         alphabet: str = DEFAULT_ALPHABET,
         target_height: int = 64,
         augment: bool = False,
         max_label_len: int = 32,
     ):
-        self.root = Path(manifest_path).parent
         self.alphabet = alphabet
         self.target_height = target_height
         self.augment = augment
         self.max_label_len = max_label_len
         self.char2idx: Dict[str, int] = {c: i + 1 for i, c in enumerate(alphabet)}
+        self.samples: List[Tuple[Path, str]] = []
 
-        self.samples: List[Tuple[str, str]] = []
-        with open(manifest_path, encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                text = row["text"].strip()
-                if not text or len(text) > max_label_len:
-                    continue
-                # Filter to only chars in alphabet
-                filtered = "".join(c for c in text if c in self.char2idx)
-                if not filtered:
-                    continue
-                self.samples.append((row["filepath"], filtered))
+        # 1. Load IAM samples
+        iam_path = Path(manifest_path)
+        if iam_path.exists():
+            iam_root = iam_path.parent
+            with open(iam_path, encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    text = row.get("text", "").strip()
+                    if not text or len(text) > max_label_len:
+                        continue
+                    filtered = "".join(c for c in text if c in self.char2idx)
+                    if not filtered:
+                        continue
+                    self.samples.append((iam_root / row["filepath"], filtered))
+            logger.info(f"  Loaded {len(self.samples):,} IAM samples from {manifest_path}")
 
-        logger.info(f"  Loaded {len(self.samples):,} samples from {manifest_path}")
+        # 2. Load optional NIST samples
+        if nist_manifest and Path(nist_manifest).exists():
+            n_before = len(self.samples)
+            with open(nist_manifest, encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    text = row.get("label", row.get("text", "")).strip()
+                    img_p = row.get("image_path", row.get("filepath", "")).strip()
+                    if not text or not img_p or len(text) > max_label_len:
+                        continue
+                    filtered = "".join(c for c in text if c in self.char2idx)
+                    if not filtered:
+                        continue
+                    self.samples.append((Path(img_p), filtered))
+            logger.info(f"  Loaded {len(self.samples) - n_before:,} NIST samples from {nist_manifest}")
+
+        logger.info(f"  Total combined samples: {len(self.samples):,}")
 
     def __len__(self) -> int:
         return len(self.samples)
@@ -214,8 +256,7 @@ class IAMWordDataset(Dataset):
         return [self.char2idx[c] for c in text if c in self.char2idx]
 
     def __getitem__(self, idx: int):
-        fname, label = self.samples[idx]
-        img_path = self.root / fname
+        img_path, label = self.samples[idx]
 
         img = cv2.imread(str(img_path), cv2.IMREAD_GRAYSCALE)
         if img is None:
@@ -339,13 +380,19 @@ def train_epoch(
     scaler: GradScaler,
     scheduler,
     device: str,
+    epoch: int = 1,
+    total_epochs: int = 1,
+    status_file: Optional[Path] = None,
+    log_interval: int = 25,
     grad_clip: float = 5.0,
 ) -> float:
     model.train()
     total_loss = 0.0
     n_batches = 0
+    t_start = time.time()
+    total_batches = len(loader)
 
-    for images, flat_targets, _widths, target_lengths, _ in tqdm(loader, desc="  Train", leave=False):
+    for images, flat_targets, _widths, target_lengths, _ in tqdm(loader, desc=f"  Train E{epoch}/{total_epochs}", leave=False):
         images = images.to(device, non_blocking=True)
         flat_targets = flat_targets.to(device, non_blocking=True)
         target_lengths = target_lengths.to(device, non_blocking=True)
@@ -374,6 +421,44 @@ def train_epoch(
         total_loss += loss.item()
         n_batches += 1
 
+        # Live progress output every log_interval batches
+        if n_batches % log_interval == 0 or n_batches == total_batches:
+            avg_loss = total_loss / max(n_batches, 1)
+            elapsed = time.time() - t_start
+            time_per_batch = elapsed / max(n_batches, 1)
+            batches_left = total_batches - n_batches
+            eta_sec = int(batches_left * time_per_batch)
+            eta_m, eta_s = divmod(eta_sec, 60)
+            pct = 100.0 * n_batches / total_batches
+            cur_lr = optimizer.param_groups[0]["lr"]
+            msg = (
+                f"[Epoch {epoch}/{total_epochs}] Batch {n_batches:04d}/{total_batches} ({pct:5.1f}%) | "
+                f"Loss: {loss.item():.4f} (Avg: {avg_loss:.4f}) | "
+                f"LR: {cur_lr:.2e} | Speed: {1.0/max(time_per_batch, 0.001):.1f} b/s | ETA: {eta_m:02d}m{eta_s:02d}s"
+            )
+            logger.info(msg)
+            if status_file:
+                try:
+                    import json
+                    status = {
+                        "epoch": epoch,
+                        "total_epochs": total_epochs,
+                        "batch": n_batches,
+                        "total_batches": total_batches,
+                        "pct": round(pct, 1),
+                        "batch_loss": round(loss.item(), 4),
+                        "avg_loss": round(avg_loss, 4),
+                        "lr": f"{cur_lr:.2e}",
+                        "speed_batches_per_sec": round(1.0 / max(time_per_batch, 0.001), 1),
+                        "eta_seconds": eta_sec,
+                        "eta_str": f"{eta_m:02d}m{eta_s:02d}s",
+                        "updated_at": time.strftime("%H:%M:%S"),
+                    }
+                    with open(status_file, "w") as f:
+                        json.dump(status, f, indent=2)
+                except Exception:
+                    pass
+
     return total_loss / max(n_batches, 1)
 
 
@@ -383,16 +468,18 @@ def evaluate(
     loader: DataLoader,
     device: str,
     alphabet: str,
-    max_batches: int = 200,
+    max_batches: int = 0,
 ) -> Dict[str, float]:
     model.eval()
     total_cer = 0.0
     total_wer = 0.0
-    total_words = 0
     n = 0
+    t0 = time.time()
+    total_eval_batches = len(loader) if max_batches <= 0 else min(len(loader), max_batches)
+    logger.info(f"Starting validation across {total_eval_batches} batches ({len(loader.dataset):,} total words)...")
 
     for batch_idx, (images, _, _, _, texts) in enumerate(tqdm(loader, desc="  Val", leave=False)):
-        if batch_idx >= max_batches:
+        if 0 < max_batches <= batch_idx:
             break
 
         images = images.to(device, non_blocking=True)
@@ -407,9 +494,15 @@ def evaluate(
             total_wer += wer
             n += 1
 
-    total_words = n
+        if (batch_idx + 1) % 100 == 0 or (batch_idx + 1) == total_eval_batches:
+            cur_cer = total_cer / max(n, 1)
+            cur_wer = total_wer / max(n, 1)
+            logger.info(f"  [Val {batch_idx+1:03d}/{total_eval_batches}] Evaluated {n:,} words | Running CER: {cur_cer:.4f} | WER: {cur_wer:.4f}")
+
     cer = total_cer / max(n, 1)
     wer = total_wer / max(n, 1)
+    elapsed = time.time() - t0
+    logger.info(f"Validation complete ({elapsed:.1f}s, {n:,} words): CER={cer:.4f}, WER={wer:.4f}")
     return {"CER": cer, "WER": wer, "n": n}
 
 
@@ -433,6 +526,16 @@ def main():
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--resume", type=str, default=None,
                         help="Path to checkpoint .pth to resume from")
+    parser.add_argument("--nist_manifest", type=str, default="data/nist_words/manifest.csv",
+                        help="Path to NIST words manifest.csv (optional augmentation)")
+    parser.add_argument("--nist_val_manifest", type=str, default="data/nist_words_val/manifest.csv",
+                        help="Path to NIST validation manifest.csv (optional val augmentation)")
+    parser.add_argument("--val_batches", type=int, default=0,
+                        help="Max validation batches to evaluate (0 = all batches)")
+    parser.add_argument("--log_interval", type=int, default=25,
+                        help="Batches between live progress printouts")
+    parser.add_argument("--fine_tune", action="store_true",
+                        help="Fine-tune mode: reset optimizer/scheduler and start fresh epochs")
     parser.add_argument("--device", type=str, default=None,
                         help="'cuda' or 'cpu' (auto-detect if not set)")
     args = parser.parse_args()
@@ -456,8 +559,20 @@ def main():
             "Run: python src/ocr/training/download_iam_dataset.py --out_dir data/iam_words"
         )
 
-    train_ds = IAMWordDataset(str(train_manifest), augment=True, target_height=args.target_height)
-    val_ds   = IAMWordDataset(str(val_manifest),   augment=False, target_height=args.target_height)
+    nist_p = args.nist_manifest if (args.nist_manifest and os.path.exists(args.nist_manifest)) else None
+    train_ds = IAMWordDataset(
+        str(train_manifest),
+        nist_manifest=nist_p,
+        augment=True,
+        target_height=args.target_height
+    )
+    nist_val_p = args.nist_val_manifest if (args.nist_val_manifest and os.path.exists(args.nist_val_manifest)) else None
+    val_ds = IAMWordDataset(
+        str(val_manifest),
+        nist_manifest=nist_val_p,
+        augment=False,
+        target_height=args.target_height
+    )
 
     train_loader = DataLoader(
         train_ds, batch_size=args.batch_size, shuffle=True,
@@ -480,7 +595,7 @@ def main():
     ).to(device)
 
     n_params = sum(p.numel() for p in model.parameters()) / 1e6
-    logger.info(f"Model parameters: {n_params:.2f}M")
+    logger.info(f"Model parameters: {n_params:.2f}M (with Spatial Attention)")
 
     # ---- Optimizer + Scheduler + Loss ----
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
@@ -496,38 +611,47 @@ def main():
         anneal_strategy="cos",
     )
 
-    # ---- Resume from checkpoint ----
+    # ---- Resume / Fine-tune from checkpoint ----
     start_epoch = 0
     best_cer = float("inf")
     if args.resume and Path(args.resume).exists():
         ckpt = torch.load(args.resume, map_location=device)
-        model.load_state_dict(ckpt["model"])
-        optimizer.load_state_dict(ckpt["optimizer"])
-        start_epoch = ckpt.get("epoch", 0) + 1
+        model.load_state_dict(ckpt["model"], strict=False)
         best_cer = ckpt.get("best_cer", float("inf"))
-        if "scheduler" in ckpt:
-            scheduler.load_state_dict(ckpt["scheduler"])
-        elif start_epoch > 0:
-            target_steps = start_epoch * len(train_loader)
-            logger.info(f"Advancing scheduler across {target_steps} previous steps...")
-            for _ in range(target_steps):
-                scheduler.step()
-        if "scaler" in ckpt:
-            scaler.load_state_dict(ckpt["scaler"])
-        logger.info(f"Resumed from epoch {start_epoch + 1} (best CER so far: {best_cer:.4f})")
+
+        if not args.fine_tune:
+            optimizer.load_state_dict(ckpt["optimizer"])
+            start_epoch = ckpt.get("epoch", 0) + 1
+            if "scheduler" in ckpt:
+                scheduler.load_state_dict(ckpt["scheduler"])
+            elif start_epoch > 0:
+                target_steps = start_epoch * len(train_loader)
+                logger.info(f"Advancing scheduler across {target_steps} previous steps...")
+                for _ in range(target_steps):
+                    scheduler.step()
+            if "scaler" in ckpt:
+                scaler.load_state_dict(ckpt["scaler"])
+            logger.info(f"Resumed training from epoch {start_epoch + 1} (best CER so far: {best_cer:.4f})")
+        else:
+            best_cer = float("inf")
+            logger.info(f"Fine-tuning mode: Loaded pre-trained weights from {args.resume} (lossless with SAM). Starting fresh optimizer schedule.")
 
     # ---- Training loop ----
     logger.info(f"\nStarting training: {args.epochs} epochs, batch={args.batch_size}, lr={args.lr}")
-    logger.info(f"Train: {len(train_ds):,} samples | Val: {len(val_ds):,} samples\n")
+    logger.info(f"Train: {len(train_ds):,} samples | Val: {len(val_ds):,} samples (combined IAM + NIST)\n")
 
     for epoch in range(start_epoch, args.epochs):
         t0 = time.time()
 
         # Train (scheduler is stepped per batch inside train_epoch)
-        train_loss = train_epoch(model, train_loader, criterion, optimizer, scaler, scheduler, device)
+        train_loss = train_epoch(
+            model, train_loader, criterion, optimizer, scaler, scheduler, device,
+            epoch=epoch+1, total_epochs=args.epochs, status_file=out_dir / "train_status.json",
+            log_interval=args.log_interval,
+        )
 
         # Evaluate every epoch
-        metrics = evaluate(model, val_loader, device, DEFAULT_ALPHABET)
+        metrics = evaluate(model, val_loader, device, DEFAULT_ALPHABET, max_batches=args.val_batches)
         cer = metrics["CER"]
         wer = metrics["WER"]
 
@@ -559,6 +683,8 @@ def main():
         if cer < best_cer:
             best_cer = cer
             torch.save(ckpt, out_dir / "checkpoint_best.pth")
+            if args.fine_tune:
+                torch.save(ckpt, out_dir / "checkpoint_finetune_best.pth")
             logger.info(f"  ★ New best CER: {best_cer:.4f} → saved checkpoint_best.pth")
 
         # Always save latest

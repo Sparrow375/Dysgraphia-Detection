@@ -43,7 +43,9 @@ _CURRENT_IMAGE_BGR: Optional[np.ndarray] = None
 
 def get_pipeline(beam_width: int = 15, stroke_weight: float = 0.15) -> ContextAwareOCRPipeline:
     global _PIPELINE
-    ckpt_path = "models/crnn_iam/checkpoint_best.pth"
+    ckpt_path = "models/transformer_ocr/checkpoint_best.pth"
+    if not os.path.exists(ckpt_path):
+        ckpt_path = "models/crnn_iam/checkpoint_best.pth"
     if not os.path.exists(ckpt_path):
         ckpt_path = None
 
@@ -53,6 +55,7 @@ def get_pipeline(beam_width: int = 15, stroke_weight: float = 0.15) -> ContextAw
             use_neural_lm=False,
             beam_width=beam_width,
             stroke_weight=stroke_weight,
+            backend="transformer",
         )
     else:
         _PIPELINE.word_recognizer.beam_width = beam_width
@@ -61,11 +64,15 @@ def get_pipeline(beam_width: int = 15, stroke_weight: float = 0.15) -> ContextAw
     return _PIPELINE
 
 
-def process_image(image_input, beam_width: int, stroke_weight: float):
+def process_image(image_input, prompt_text: str = "", beam_width: int = 15, stroke_weight: float = 0.15):
     """
-    Main transcription callback.
+    Main transcription callback with optional prompt-guided forced alignment.
     """
     global _CURRENT_TRANSCRIPTION, _CURRENT_IMAGE_BGR
+
+    placeholder_badge = "<div style='color:#64748b; padding:10px;'><em>Enter a target copy sentence on the left to activate diagnostic reversal and omission analysis.</em></div>"
+    placeholder_summary = "*(Optional) Enter the target prompt sentence the student was copying to enable clinical letter-reversal ($b \\leftrightarrow d$, $p \\leftrightarrow q$) detection.*"
+    placeholder_grid = ""
 
     if image_input is None:
         return (
@@ -77,7 +84,10 @@ def process_image(image_input, beam_width: int, stroke_weight: float):
             pd.DataFrame(),
             pd.DataFrame(),
             pd.DataFrame(),
-            ""
+            "",
+            placeholder_badge,
+            placeholder_summary,
+            placeholder_grid,
         )
 
     # Convert RGB input to BGR
@@ -89,7 +99,7 @@ def process_image(image_input, beam_width: int, stroke_weight: float):
     _CURRENT_IMAGE_BGR = bgr
 
     pipeline = get_pipeline(beam_width=int(beam_width), stroke_weight=float(stroke_weight))
-    transcription = pipeline.transcribe(bgr)
+    transcription, copy_task_diag = pipeline.transcribe_with_prompt(bgr, prompt_text=prompt_text)
     _CURRENT_TRANSCRIPTION = transcription
 
     # 1. HTML Transcription Badges
@@ -167,6 +177,16 @@ def process_image(image_input, beam_width: int, stroke_weight: float):
         ]
     df_metrics = pd.DataFrame(metrics_rows)
 
+    # 5. Diagnostic Copy-Task Outputs
+    if copy_task_diag is not None:
+        diag_badge_html = copy_task_diag.diagnostic_badge_html
+        diag_summary_md = copy_task_diag.diagnostic_summary
+        diag_grid_html = copy_task_diag.alignment_grid_html
+    else:
+        diag_badge_html = placeholder_badge
+        diag_summary_md = placeholder_summary
+        diag_grid_html = placeholder_grid
+
     # Select first word by default for inspector
     initial_choice = word_choices[0] if word_choices else None
     crop_img, df_chars, df_alts, df_strokes, word_info_text = inspect_selected_word(initial_choice)
@@ -180,7 +200,10 @@ def process_image(image_input, beam_width: int, stroke_weight: float):
         df_alts,
         df_strokes,
         df_metrics,
-        word_info_text
+        word_info_text,
+        diag_badge_html,
+        diag_summary_md,
+        diag_grid_html,
     )
 
 
@@ -341,6 +364,16 @@ with gr.Blocks(title="Context-Aware OCR — Word & Character Inspector") as demo
                 sources=["upload", "clipboard"]
             )
 
+            prompt_input = gr.Textbox(
+                label="🎯 Target Copy Sentence (Optional — Diagnostic Mode)",
+                placeholder="e.g. The quick brown fox jumps over the lazy dog",
+                lines=2,
+            )
+            with gr.Row():
+                btn_p1 = gr.Button("📋 Pangram", size="sm")
+                btn_p2 = gr.Button("📋 BHK Prompt", size="sm")
+                btn_p_clear = gr.Button("✕ Clear", size="sm")
+
             with gr.Accordion("⚙️ Decoding Engine Settings", open=False):
                 beam_width_slider = gr.Slider(
                     minimum=5, maximum=40, value=15, step=1,
@@ -366,6 +399,15 @@ with gr.Blocks(title="Context-Aware OCR — Word & Character Inspector") as demo
             )
 
             with gr.Tabs():
+                with gr.TabItem("🎯 Copy-Task Diagnostic (Reversals)"):
+                    diag_badges_html = gr.HTML(
+                        value="<div style='color:#64748b; padding:10px;'><em>Enter a target copy sentence on the left to activate letter reversal, omission, and fidelity tracking.</em></div>",
+                        label="Clinical Diagnostic Badges"
+                    )
+                    diag_summary_md = gr.Markdown(value="*(Optional) Enter the target prompt sentence the student was copying to enable clinical letter-reversal ($b \\leftrightarrow d$, $p \\leftrightarrow q$) detection.*")
+                    gr.Markdown("#### 🔍 Character-by-Character Alignment & Error Heatmap")
+                    diag_grid_html = gr.HTML(value="")
+
                 with gr.TabItem("🗺️ Word Confidence Overlay"):
                     overlay_image = gr.Image(
                         label="Overlay (Green=High Conf, Yellow=Medium, Red=Low/Distorted)",
@@ -428,10 +470,15 @@ with gr.Blocks(title="Context-Aware OCR — Word & Character Inspector") as demo
                         label="Beam Search Candidates"
                     )
 
+    # Preset button handlers
+    btn_p1.click(lambda: "The quick brown fox jumps over the lazy dog", outputs=prompt_input)
+    btn_p2.click(lambda: "A quick movement of the enemy will jeopardize six gunboats", outputs=prompt_input)
+    btn_p_clear.click(lambda: "", outputs=prompt_input)
+
     # Event Handlers
     transcribe_btn.click(
         fn=process_image,
-        inputs=[img_input, beam_width_slider, stroke_weight_slider],
+        inputs=[img_input, prompt_input, beam_width_slider, stroke_weight_slider],
         outputs=[
             full_transcription_html,
             overlay_image,
@@ -441,13 +488,16 @@ with gr.Blocks(title="Context-Aware OCR — Word & Character Inspector") as demo
             alts_table,
             strokes_table,
             metrics_table,
-            word_info_markdown
+            word_info_markdown,
+            diag_badges_html,
+            diag_summary_md,
+            diag_grid_html,
         ]
     )
 
     img_input.change(
         fn=process_image,
-        inputs=[img_input, beam_width_slider, stroke_weight_slider],
+        inputs=[img_input, prompt_input, beam_width_slider, stroke_weight_slider],
         outputs=[
             full_transcription_html,
             overlay_image,
@@ -457,7 +507,10 @@ with gr.Blocks(title="Context-Aware OCR — Word & Character Inspector") as demo
             alts_table,
             strokes_table,
             metrics_table,
-            word_info_markdown
+            word_info_markdown,
+            diag_badges_html,
+            diag_summary_md,
+            diag_grid_html,
         ]
     )
 
