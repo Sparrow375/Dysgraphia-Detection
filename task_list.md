@@ -22,5 +22,10 @@
   - Navigation bar with grade filters, status indicators, and keyboard navigation (`[` / `]` or arrow keys)
 - [x] 3. Test backend endpoints with automated unit / API test (all passed)
 - [x] 4. Launch web app server and test in browser using `browser_subagent` (live on `http://127.0.0.1:8090/`)
-- [ ] 5. Update `context.md` with interactive review tool architecture
-- [ ] 6. Git commit and push to `origin/baseline-v1`
+- [x] 5. Add interactive refinements based on user testing:
+  - Instant task deletion via Delete/Backspace hotkeys and UI button without modal blockers
+  - Automatic background auto-saving on handle release, bbox coordinate input, and student navigation
+  - Handle resize anti-flicker fix (removed CSS hover scale and added 30px touch hitboxes)
+  - Dedicated "+ Add Task" button flow creating distinct protocol tasks (`sentence_01`..`06` or custom) without overwriting selection
+- [x] 6. Update `context.md` with interactive review tool architecture and auto-save / add-task mechanisms
+- [x] 7. Git commit and push to `origin/baseline-v1`

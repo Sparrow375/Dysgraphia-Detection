@@ -26,7 +26,41 @@
         statusFilter: 'all',
 
         hasUnsavedChanges: false,
+        isAddingNewTask: false,
     };
+
+    const standardTasks = [
+        { id: 'sentence_01_copy_hindi', name: 'copy_hindi', script: 'devanagari' },
+        { id: 'sentence_02_copy_english', name: 'copy_english', script: 'latin' },
+        { id: 'sentence_03_dictated_hindi', name: 'dictated_hindi', script: 'devanagari' },
+        { id: 'sentence_04_dictated_english', name: 'dictated_english', script: 'latin' },
+        { id: 'sentence_05_own_hindi', name: 'own_hindi', script: 'devanagari' },
+        { id: 'sentence_06_own_english', name: 'own_english', script: 'latin' },
+    ];
+
+    function getNextAvailableTaskInfo() {
+        const sentences = state.currentStudentData?.sentences || [];
+        const existingIds = new Set(sentences.map(s => s.task_id));
+        const existingNames = new Set(sentences.map(s => s.task_name));
+
+        // Find first unused standard task in sequence (tasks 1 through 6)
+        for (const st of standardTasks) {
+            if (!existingIds.has(st.id) && !existingNames.has(st.name)) {
+                return { ...st };
+            }
+        }
+
+        // If standard 1..6 already exist, assign next custom sequence number
+        const nextNum = sentences.length + 1;
+        const numStr = String(nextNum).padStart(2, '0');
+        const lastTask = sentences.slice(-1)[0];
+        const nextScript = lastTask ? (lastTask.script === 'devanagari' ? 'latin' : 'devanagari') : 'devanagari';
+        return {
+            id: `sentence_${numStr}_custom`,
+            name: `custom_task_${numStr}`,
+            script: nextScript,
+        };
+    }
 
     let autoSaveTimeout = null;
 
@@ -130,7 +164,7 @@
 
         // Tools
         el.toolSelect.addEventListener('click', () => setTool('select'));
-        el.toolDraw.addEventListener('click', () => setTool('draw'));
+        el.toolDraw.addEventListener('click', toggleDrawTool);
 
         // Zoom & Pan
         el.btnZoomIn.addEventListener('click', () => zoomAtCenter(1.25));
@@ -154,7 +188,7 @@
         el.editTaskName.addEventListener('change', onTaskNameChange);
         el.btnSaveRecrop.addEventListener('click', () => saveAndRecropActiveTask(false));
         el.btnDeleteTask.addEventListener('click', deleteActiveTask);
-        el.btnAddSentence.addEventListener('click', () => setTool('draw'));
+        el.btnAddSentence.addEventListener('click', startAddNewTask);
 
         // Global Keyboard Shortcuts
         window.addEventListener('keydown', onKeyDown);
@@ -380,6 +414,7 @@
 
         const sentences = state.currentStudentData.sentences || [];
         el.taskCountBadge.textContent = sentences.length;
+        if (el.metaTasksCount) el.metaTasksCount.textContent = sentences.length;
 
         sentences.forEach((s, idx) => {
             const card = document.createElement('div');
@@ -397,7 +432,7 @@
                     </span>
                 </div>
                 <div class="task-crop-container">
-                    <img src="${s.crop_url}" class="task-crop-img" alt="${s.task_name}"/>
+                    ${s.crop_url ? `<img src="${s.crop_url}" class="task-crop-img" alt="${s.task_name}"/>` : `<div style="padding: 12px; color: var(--text-muted, #94a3b8); font-size: 12px; text-align: center;">Saving & cropping...</div>`}
                 </div>
             `;
 
@@ -410,6 +445,7 @@
     }
 
     function selectTask(index) {
+        state.isAddingNewTask = false;
         state.selectedTaskIndex = index;
         renderSvgBoxes();
         renderTaskCards();
@@ -418,7 +454,7 @@
 
     function updateEditorUI() {
         if (state.selectedTaskIndex < 0 || !state.currentStudentData || !state.currentStudentData.sentences[state.selectedTaskIndex]) {
-            el.editorStatus.textContent = 'Select a box on canvas';
+            el.editorStatus.textContent = state.isAddingNewTask ? 'Drawing new task box...' : 'Select a box on canvas';
             el.btnSaveRecrop.disabled = true;
             el.btnDeleteTask.disabled = true;
             el.boxX.value = '';
@@ -799,6 +835,8 @@
 
             if (w > 30 && h > 20) {
                 finalizeDrawnBox(x, y, w, h);
+            } else {
+                state.isAddingNewTask = false;
             }
             setTool('select');
         }
@@ -807,32 +845,37 @@
     function finalizeDrawnBox(x, y, w, h) {
         if (!state.currentStudentData) return;
 
-        // If a task is currently selected, update its bbox
-        if (state.selectedTaskIndex >= 0) {
-            const task = state.currentStudentData.sentences[state.selectedTaskIndex];
-            task.crop_bbox = [x, y, w, h];
-            el.boxX.value = x;
-            el.boxY.value = y;
-            el.boxW.value = w;
-            el.boxH.value = h;
-            renderSvgBoxes();
-            triggerAutoSave(150);
-        } else {
-            // Create new sentence task
-            const nextIdx = state.currentStudentData.sentences.length + 1;
+        // If adding a new task OR no task is currently selected
+        if (state.isAddingNewTask || state.selectedTaskIndex < 0) {
+            state.isAddingNewTask = false;
+            const taskInfo = getNextAvailableTaskInfo();
             const newTask = {
-                task_id: `sentence_${String(nextIdx).padStart(2, '0')}_custom`,
-                task_name: `sentence_${String(nextIdx).padStart(2, '0')}`,
-                script: state.selectedScript,
+                task_id: taskInfo.id,
+                task_name: taskInfo.name,
+                script: taskInfo.script,
                 crop_bbox: [x, y, w, h],
                 word_count: 0,
                 crop_url: '',
                 is_manually_adjusted: true,
             };
             state.currentStudentData.sentences.push(newTask);
-            selectTask(state.currentStudentData.sentences.length - 1);
-            triggerAutoSave(150);
+            const newIndex = state.currentStudentData.sentences.length - 1;
+            selectTask(newIndex);
+            showToast(`Added new task: ${taskInfo.id}`, 'success');
+            triggerAutoSave(100);
+            return;
         }
+
+        // Otherwise (only if explicitly redrawing an existing selected task)
+        const task = state.currentStudentData.sentences[state.selectedTaskIndex];
+        task.crop_bbox = [x, y, w, h];
+        task.is_manually_adjusted = true;
+        el.boxX.value = x;
+        el.boxY.value = y;
+        el.boxW.value = w;
+        el.boxH.value = h;
+        renderSvgBoxes();
+        triggerAutoSave(150);
     }
 
     function startPanning(e) {
@@ -910,6 +953,7 @@
     function setTool(tool) {
         state.currentTool = tool;
         if (tool === 'select') {
+            state.isAddingNewTask = false;
             el.toolSelect.classList.add('active');
             el.toolDraw.classList.remove('active');
             el.viewport.classList.remove('drawing');
@@ -918,7 +962,32 @@
             el.toolSelect.classList.remove('active');
             el.toolDraw.classList.add('active');
             el.viewport.classList.add('drawing');
-            el.canvasStatus.textContent = 'Draw mode: Click and drag on image to crop';
+            el.canvasStatus.textContent = 'Draw mode: Click and drag on image to define task box';
+        }
+    }
+
+    async function startAddNewTask() {
+        if (!state.currentStudentData) return;
+        if (state.hasUnsavedChanges && state.selectedTaskIndex >= 0) {
+            if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+            await saveAndRecropActiveTask(true);
+        }
+        state.isAddingNewTask = true;
+        state.selectedTaskIndex = -1;
+        renderSvgBoxes();
+        renderTaskCards();
+        updateEditorUI();
+        setTool('draw');
+        el.canvasStatus.textContent = 'Draw mode: Click & drag on sheet to define new task box';
+        showToast('Click and drag on the sheet to define the new task box', 'info');
+    }
+
+    async function toggleDrawTool() {
+        if (state.currentTool === 'draw') {
+            state.isAddingNewTask = false;
+            setTool('select');
+        } else {
+            await startAddNewTask();
         }
     }
 
@@ -973,7 +1042,7 @@
             toggleVerification();
         } else if (e.key === 'd' || e.key === 'D') {
             e.preventDefault();
-            setTool(state.currentTool === 'draw' ? 'select' : 'draw');
+            toggleDrawTool();
         } else if (e.key === 'f' || e.key === 'F') {
             e.preventDefault();
             fitToScreen();
@@ -982,6 +1051,7 @@
             resetZoom();
         } else if (e.key === 'Escape') {
             e.preventDefault();
+            state.isAddingNewTask = false;
             state.selectedTaskIndex = -1;
             setTool('select');
             renderSvgBoxes();

@@ -141,10 +141,11 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - "Draw Box" mode: Click and drag anywhere on the page to define a new bounding box.
   - Right-hand Inspector Panel: Student metadata, Task Editor with live coordinate inputs and script toggles, "Save & Re-Crop" button, and task cards list displaying full-resolution crops.
   - Navigation: Grade filter pills (All, G3, G4, G5, G6, G7), status dropdown (Needs Review, Verified, At-Risk), Previous/Next buttons, and keyboard shortcuts (`[` / `]`, `V`, `D`, `F`, `0`, `S`).
-- **Validation**:
-  - `tests/test_qa_app.py` passed verifying all API endpoints.
-  - `tests/test_phase1.py` and `tests/test_phase0.py` passed 9/9 test cases.
-  - Browser subagent verified live UI on `http://127.0.0.1:8090/`.
+- **Interactive Editor Refinements (2026-10-10)**:
+  - **Non-blocking Instant Deletion**: Removed modal confirmation popups on task deletion; bound <kbd>Delete</kbd> and <kbd>Backspace</kbd> keys for immediate removal from local state and background API file cleanup.
+  - **Dynamic Background Auto-Saving**: Every bbox adjustment (mouse drag release, input changes, script toggle, task assignment) automatically schedules and flushes an auto-save to `/api/student/{id}/update_sentence`. Added `beforeNavigate()` hook ensuring unsaved changes are saved before navigating between students.
+  - **Resize Handle Stability**: Removed CSS hover scale transforms on SVG resize handles that caused jitter between move and resize modes; added 30px transparent touch target hitboxes and dynamic screen-space handle sizing.
+  - **Dedicated "+ Add Task" Flow**: "+ Add Task" safely saves any pending changes on the active box, clears selection, and enters draw mode with `state.isAddingNewTask = true`. When the box is drawn, it automatically assigns the next protocol task (`sentence_01_copy_hindi` through `sentence_06_own_english`, or custom sequential tasks) without replacing the previously selected task.
 
 - **Next Phase**: Phase 2 Feature Library (baseline wobble & residuals, rule offset, slant tensor, curvature & jerk proxy, inter-word/inter-character gaps, shirorekha continuity features).
 
