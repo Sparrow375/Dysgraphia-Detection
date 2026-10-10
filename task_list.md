@@ -29,3 +29,4 @@
   - Dedicated "+ Add Task" button flow creating distinct protocol tasks (`sentence_01`..`06` or custom) without overwriting selection
 - [x] 6. Update `context.md` with interactive review tool architecture and auto-save / add-task mechanisms
 - [x] 7. Git commit and push to `origin/baseline-v1`
+- [x] 8. Full Cohort Audit & Verification: Inspected all 115 School A students on disk; confirmed 641/641 crops valid, 430 manual edits saved, 0 missing files, 0 corrupt JSONs, and 0 out-of-bound bboxes.

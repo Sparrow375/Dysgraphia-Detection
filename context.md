@@ -146,6 +146,12 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - **Dynamic Background Auto-Saving**: Every bbox adjustment (mouse drag release, input changes, script toggle, task assignment) automatically schedules and flushes an auto-save to `/api/student/{id}/update_sentence`. Added `beforeNavigate()` hook ensuring unsaved changes are saved before navigating between students.
   - **Resize Handle Stability**: Removed CSS hover scale transforms on SVG resize handles that caused jitter between move and resize modes; added 30px transparent touch target hitboxes and dynamic screen-space handle sizing.
   - **Dedicated "+ Add Task" Flow**: "+ Add Task" safely saves any pending changes on the active box, clears selection, and enters draw mode with `state.isAddingNewTask = true`. When the box is drawn, it automatically assigns the next protocol task (`sentence_01_copy_hindi` through `sentence_06_own_english`, or custom sequential tasks) without replacing the previously selected task.
+- **Manual Verification & Cohort Audit Results (2026-10-10)**:
+  - 115 / 115 School A students reviewed and verified.
+  - 641 total sentence tasks saved on disk (430 manually adjusted/customized, 211 confirmed auto-extracted).
+  - 0 missing crop images, 0 corrupt JSON schemas, 0 bounding boxes out of bounds, 0 zero-word crops.
+  - 4,526 total words segmented across 322 Devanagari and 319 Latin sentences.
+  - Grade 3: strictly 4 tasks across all 21 students; Grades 4–7: 87 students have all 6 tasks, 7 students have 5 tasks matching original physical sheets.
 
 - **Next Phase**: Phase 2 Feature Library (baseline wobble & residuals, rule offset, slant tensor, curvature & jerk proxy, inter-word/inter-character gaps, shirorekha continuity features).
 
