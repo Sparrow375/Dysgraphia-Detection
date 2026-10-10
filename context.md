@@ -153,5 +153,53 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - 4,526 total words segmented across 322 Devanagari and 319 Latin sentences.
   - Grade 3: strictly 4 tasks across all 21 students; Grades 4–7: 87 students have all 6 tasks, 7 students have 5 tasks matching original physical sheets.
 
-- **Next Phase**: Phase 2 Feature Library (baseline wobble & residuals, rule offset, slant tensor, curvature & jerk proxy, inter-word/inter-character gaps, shirorekha continuity features).
+- **Next Phase**: Phase 2 Feature Library (Completed 2026-10-10).
+
+## Phase 2: Feature Library & Validation (Completed 2026-10-10)
+- **Architecture Overview**:
+  - Modular mathematical feature extraction library operating under the strict contract $f(\text{sentence\_json}) \to \text{value} \mid \text{NaN}$ (returning NaN if fewer than 3 words or insufficient lines are available).
+  - Normalization parameters: $h$ (x-height / core band height) and $r$ (ruled-line spacing).
+  - Package layout:
+    - `features/baseline.py`: Robust line-level baseline fitting (RANSAC), residual computation $e_i$, and normalized RMSE (`baseline_rmse_norm = sqrt(mean(e_i^2)) / h`, `baseline_slope_mean`, `baseline_slope_std`).
+    - `features/rule_offset.py`: Rule alignment offsets $o_i = (y_i - y_{\text{rule}}(x_i)) / r$, floating mean and vertical adherence standard deviation (`rule_offset_mean`, `rule_offset_std`).
+    - `features/slant.py`: Orientation tensor on skeleton stroke tangents within $\pm 45^\circ$ of vertical, using doubled-angle circular statistics (`slant_mean_deg`, `slant_circular_std_deg`).
+    - `features/curvature.py`: Savitzky-Golay path smoothing, uniform arclength resampling ($0.05h$), dimensionless jerk proxy ($|d\kappa/ds| \cdot h^2$), short-wavelength tangent variance fraction ($f > 2/h$, $\lambda < 0.5h$), curvature sign changes per $h$ with deadband, and median tortuosity ($\text{path length} / \text{chord}$). Shirorekha headline is automatically masked out for Devanagari script.
+    - `features/gaps.py`: Inter-word spacing $g_k / h$ for consecutive words in the same line (`gap_mean`, `gap_cv`, `gap_fraction_below_0_3h`, `gap_fraction_above_2h`).
+    - `features/size.py`: Word-height CV (`word_height_cv`), $h/r$ ratio (`h_over_r`), word width per expected character for copy/dictation (`word_width_per_char`), intra-word component height CV (`component_height_cv`), ascender/descender ratio for English (`ascender_descender_ratio`), and matra ratio for Hindi (`matra_ratio`).
+    - `features/hindi.py`: Devanagari-specific shirorekha continuity features (`shirorekha_rms_deviation_norm`, `shirorekha_breaks_per_word`, `shirorekha_tilt_var`). Returns NaN for Latin sentences.
+    - `features/fragmentation.py`: Graph density per unit width (`components_per_unit_width`, `junctions_per_unit_width`, `endpoints_per_unit_width`), task completion ratio (`words_written_ratio`), and lines used (`lines_used`).
+    - `features/extractor.py`: Unified extractor `extract_sentence_features` and batch cohort extractor `extract_dataset_features` outputting `data/features/features_raw.csv` and `data/features/features_meta.json`.
+    - `features/validation.py`: Statistical validation suite generating `data/features/validation_report.json` and `data/features/validation_report.md`.
+
+- **Cohort Extraction Results**:
+  - 641 / 641 verified sentences extracted across all 115 School A students.
+  - 29 distinct quantitative features computed per sentence row.
+  - Zero missing values across 20 general spatial/kinematic features; script-specific features cleanly masked to NaN on opposite language sentences.
+
+- **Phase 2 Validation Suite Findings**:
+  - **Synthetic Perturbation Tests (`tests/test_features_synthetic.py`)**: All 4 monotonic response tests passed with Spearman $\rho \ge 0.8$:
+    - Spacing jitter vs `gap_cv`: $\rho = 1.0000$ ($p < 10^{-10}$)
+    - Size jitter vs `word_height_cv`: $\rho = 1.0000$ ($p < 10^{-10}$)
+    - Baseline wobble vs `baseline_rmse_norm`: $\rho = 1.0000$ ($p < 10^{-10}$)
+    - Tremor noise vs `jerk_proxy`: $\rho = 0.9286$ ($p < 0.005$)
+  - **Invariance Tests (`tests/test_features_invariance.py`)**:
+    - Scale invariance ($0.7\times$ rescale): `h_over_r` (0.0% diff), `word_height_cv` (1.1% diff), `tortuosity_median` (0.7% diff), `baseline_rmse_norm` (5.9% diff).
+    - Rotation invariance ($\pm 3^\circ$): slant shifts predictably from $-2.80^\circ$ to $-2.46^\circ$ and $-4.09^\circ$, while circular std remains invariant.
+  - **Redundancy Analysis**:
+    - Zero feature pairs exceeded $|\rho| \ge 0.90$. All 29 features capture non-redundant, complementary handwriting dimensions.
+  - **Developmental Sanity Checks (Grade Trends)**:
+    - Intra-word letter height variation (`component_height_cv`) decreases significantly with grade ($\rho = -0.1865, p = 9.9 \times 10^{-6}$).
+    - Matra proportion variability (`matra_ratio`) stabilizes significantly with grade ($\rho = -0.1767, p = 3.28 \times 10^{-3}$).
+    - Stroke inflection flips (`kappa_sign_changes_per_h`) decrease significantly with grade ($\rho = -0.1005, p = 0.011$).
+  - **Univariate AUROCs (School A Sanity Check)**:
+    - `components_per_unit_width`: AUROC = **0.707** (dysgraphic handwriting exhibits marked stroke fragmentation).
+    - `endpoints_per_unit_width`: AUROC = **0.665**.
+    - `junctions_per_unit_width`: AUROC = **0.644**.
+    - `gap_fraction_above_2h`: AUROC = **0.636**.
+    - `rule_offset_std`: AUROC = **0.612**.
+    - `matra_ratio`: AUROC = **0.608**.
+    - `kappa_sign_changes_per_h`: AUROC = **0.605**.
+
+- **Next Phase**: Phase 3 Dataset Assembly (robust z-scores per grade × language × task with pooled median/MAD, Hindi and English tables, inner fold imputation).
+
 

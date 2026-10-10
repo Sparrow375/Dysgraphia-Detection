@@ -6,3 +6,4 @@ data/**/*.csv text !filter !diff !merge
 data/**/*.json text !filter !diff !merge
 data/**/*.yaml text !filter !diff !merge
 data/**/*.yml text !filter !diff !merge
+data/**/*.md text !filter !diff !merge
