@@ -31,14 +31,18 @@
   - [x] 1.2 Implement candidate models and parameter search grids (`models/candidates.py`).
   - [x] 1.3 Write automated unit tests for CV leakage prevention, weight calculation, calibration, and metrics (`tests/test_phase4.py`).
   - [x] 1.4 Execute full benchmark across Hindi, English, and Combined tables, saving structured results (`models/experiments.py`).
-- [ ] Stage 2: Visual Baseline, Ablations & Misclassification Analysis:
-  - [ ] 2.1 Implement Frozen DINOv2 / CNN visual encoder baseline (`models/visual_baseline.py`).
-  - [ ] 2.2 Implement feature family drop-one ablation suite (`models/ablations.py`).
-  - [ ] 2.3 Compute permutation feature importances and fold stability.
-  - [ ] 2.4 Generate qualitative misclassification gallery (`reports/misclassified_gallery.html`).
-- [ ] Stage 3: Handoff, Documentation & Git:
-  - [ ] 3.1 Update `context.md` with modeling results, performance tables, and clinical takeaways.
-  - [ ] 3.2 Git commit and push to `origin/baseline-v1`.
+  - [x] 1.5 Deep Diagnostic Analysis on model underperformance (`phase4_diagnostic_analysis.md`).
+- [x] Stage 2: Student-Level Cross-Task Feature Engineering & Stability Selection (Approved Pivot):
+  - [x] 2.1 Implement `models/student_features.py` — student-level aggregator (within-student statistics, cross-task consistency, Hindi vs English divergence, task difficulty gradient, max fragmentation).
+  - [x] 2.2 Generate and validate `data/datasets/dataset_student_level.csv` (115 students × engineered student features).
+  - [x] 2.3 Implement `models/feature_selection.py` — Stability selection via randomized/subsampled Lasso to extract top robust feature subset.
+  - [x] 2.4 Implement student-level nested CV benchmark runner (`models/student_experiments.py`) evaluating shallow RF, GBM, and regularized Linear models.
+  - [x] 2.5 Run student-level nested CV benchmark, comparing directly against sentence-level baseline across all metrics (AUROC, AUPRC, Sens@90%Spec, Sens@80%Spec, Brier).
+  - [x] 2.6 Implement feature family ablation and stability importance analysis (`models/ablations.py`).
+  - [x] 2.7 Generate qualitative misclassification gallery (`reports/misclassified_gallery.html`).
+- [x] Stage 3: Handoff, Documentation & Git:
+  - [x] 3.1 Update `context.md` with new student-level architecture, benchmark comparisons, and clinical findings.
+  - [x] 3.2 Git commit and push to `origin/baseline-v1`.
 
 ---
 

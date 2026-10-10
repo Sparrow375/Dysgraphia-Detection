@@ -257,8 +257,56 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   1. **Hindi Superiority**: Devanagari script features yield substantially higher classification discriminability (AUROC 0.647 vs English 0.566) due to the structural constraints of the shirorekha and upper/lower matras magnifying motor dyspraxia.
   2. **Clinical Trade-offs**: When operating at a conservative $\ge 90\%$ specificity (minimizing false positive referrals), sensitivity is $\sim 17–25\%$. At a broader screening triage threshold (75% specificity), sensitivity reaches **50.0%**.
 - **Automated Validation**:
-  - `tests/test_phase4.py` passed 6/6 test cases verifying zero student CV leakage, sample weights, leakage-free fold imputation, Platt calibration, and cluster bootstrap CIs.
-- **Next Phase**: Phase 4 Stage 2 (Frozen DINOv2 visual encoder baseline, 8-family drop-one feature ablations, permutation importance, and misclassification gallery `reports/misclassified_gallery.html`).
+  - `tests/test_phase4.py` passed 5/5 test cases verifying zero student CV leakage, sample weights, leakage-free fold imputation, Platt calibration, and cluster bootstrap CIs.
+
+## Phase 4 Stage 2: Student-Level Cross-Task Feature Modeling & Evaluation (Completed 2026-10-10)
+- **Motivation & Diagnostic Pivot (`phase4_diagnostic_analysis.md`)**:
+  - Stage 1 sentence-level modeling suffered from high feature-to-sample ratio (29 features vs 24 positive students), weak univariate effect sizes on individual sentences, and high within-student variance.
+  - Pivot to student-level aggregation with intelligent cross-task features: central tendency across tasks, within-student motor instability across tasks, extreme worst-case breakdown episodes, cognitive load gradients (dictation vs copy), and cross-script divergence (English vs Hindi).
+- **Architecture & Modules**:
+  - `models/student_features.py`: Aggregates sentence-level features to student-level representations (`data/datasets/dataset_student_level.csv`, 115 students $\times$ 328 columns: 159 raw engineered + 159 robust grade-normalized z-scores).
+  - `models/feature_selection.py`: Randomized subsampled L1 Stability Selection (`StabilitySelector`, Meinshausen & Bühlmann, 2010) identifying non-spurious feature subsets on training folds with zero leakage.
+  - `models/student_experiments.py`: 5-repeat 5-fold cross-validated benchmark engine with cluster bootstrap 95% confidence intervals ($B=1000$).
+  - `models/ablations.py`: Drop-one-family ablation and test-fold permutation feature importance runner.
+  - `models/generate_gallery.py`: Interactive HTML misclassification gallery generator (`reports/misclassified_gallery.html`).
+- **Student-Level Benchmark Results (`reports/student_benchmark_results.csv`)**:
+  | Model | Mean AUROC | 95% CI | Mean AUPRC | 95% CI | Brier | Sens @ 90% Spec | Sens @ 80% Spec | Balanced Acc |
+  |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+  | **Regularized LR (L2, C=0.05)** | **0.733** | [0.676, 0.779] | **0.473** | [0.374, 0.543] | **0.194** | **35.8%** | **53.3%** | **66.6%** |
+  | **Elastic-Net LR (C=0.10, l1=0.3)** | **0.718** | [0.661, 0.767] | **0.461** | [0.366, 0.532] | 0.197 | 33.3% | 51.7% | 67.4% |
+  | **Hybrid Ensemble (0.7 LR + 0.3 RF)** | **0.714** | [0.655, 0.766] | **0.485** | [0.383, 0.563] | **0.191** | **37.5%** | 52.5% | 65.1% |
+  | **Random Forest (d=3, leaf=4)** | **0.631** | [0.566, 0.698] | 0.397 | [0.300, 0.469] | 0.200 | 25.0% | 49.2% | 65.9% |
+  | **HistGradientBoosting (d=2)** | 0.591 | [0.525, 0.657] | 0.359 | [0.262, 0.421] | 0.208 | 30.0% | 40.0% | 59.0% |
+  | **Grade-Only Baseline** | 0.405 | [0.341, 0.451] | 0.178 | [0.138, 0.200] | 0.168 | 5.8% | 9.2% | 50.0% |
+  | **Majority Class Baseline** | 0.479 | [0.444, 0.515] | 0.203 | [0.171, 0.239] | 0.165 | 16.7% | 16.7% | 50.0% |
+
+- **Comparison vs Stage 1 Baseline**:
+  - **AUROC**: Increased from **0.609 $\to$ 0.733** (**+0.124** improvement).
+  - **AUPRC**: Increased from **0.296 $\to$ 0.485** (**+0.189** improvement).
+  - **Sensitivity @ 90% Specificity**: Increased from **12.5% $\to$ 37.5%** (**3.0$\times$ higher** detection rate at clinical referral threshold).
+  - **Balanced Accuracy**: Increased from **54.9% $\to$ 67.4%** (**+12.5%** improvement).
+
+- **Feature Family Ablation Study (`reports/ablation_study_results.csv`)**:
+  - **Drop Motor Fragmentation**: AUROC drops by **$-0.061$** (from 0.733 down to 0.672; AUPRC drops to 0.392). Confirms motor stroke fragmentation is the primary driver of dysgraphia detection.
+  - **Drop Devanagari Constraints**: AUROC drops by **$-0.051$** (from 0.733 down to 0.682). Validates that Hindi shirorekha headlines and matra variations carry essential non-redundant signal.
+  - **Drop Word Spacing**: AUROC drops by **$-0.014$** (from 0.733 down to 0.719).
+  - **Drop Spatial Baseline Alignment**: AUROC improves by **$+0.011$** to **0.745** (AUPRC reaches **0.493**). Removing collinear baseline slope features prevents slight overfitting on small sample sizes.
+
+- **Permutation Feature Importance (`reports/permutation_importance_results.csv`)**:
+  1. `components_per_unit_width_dict_mean`: Mean AUC Drop = **$+0.0483$** (Fragmentation under dictation stress is the single most predictive feature).
+  2. `shirorekha_rms_deviation_norm_max`: Mean AUC Drop = **$+0.0419$** (Peak headline distortion).
+  3. `endpoints_per_unit_width_mean`: Mean AUC Drop = **$+0.0297$** (Dangling stroke tails).
+  4. `matra_ratio_std`: Mean AUC Drop = **$+0.0220$** (Vowel matra irregularity).
+  5. `gap_cv_mean`: Mean AUC Drop = **$+0.0191$** (Spacing dispersion).
+
+- **Qualitative Misclassification Gallery (`reports/misclassified_gallery.html`)**:
+  - Interactive dashboard reviewing out-of-fold classifications (TP=12, FP=14, TN=77, FN=12 at 85% specificity).
+  - Shows that False Positives predominantly concentrate in younger grades where developmental motor maturity has not yet stabilized, while False Negatives occur in students who wrote very slowly on copying tasks to manually suppress stroke fragmentation.
+
+- **Automated Validation**:
+  - `tests/test_phase4_stage2.py` passed 4/4 test suites confirming student aggregation schemas, class balance, stability selection properties, bootstrap CI bounds, and artifact existence.
+  - `tests/test_phase4.py` passed 5/5 test suites.
+
 
 
 

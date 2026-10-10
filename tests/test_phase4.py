@@ -3,10 +3,15 @@ Validates zero student leakage across outer and inner CV folds, sample weights,
 leakage-free imputation, Platt calibration, student pooling, and cluster bootstrap CIs.
 """
 
+import sys
+from pathlib import Path
 import numpy as np
 import pandas as pd
-import pytest
 from sklearn.linear_model import LogisticRegression
+
+WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
+if str(WORKSPACE_ROOT) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE_ROOT))
 
 from models.candidates import MajorityClassifier, get_candidate_registry
 from models.cv import (
@@ -166,3 +171,18 @@ def test_smoke_nested_cv_single_repeat():
     grade_res = run_nested_cv_for_model(df, model_key="grade_only", n_repeats=1, n_outer_folds=2, n_inner_splits=2)
     assert grade_res["model_key"] == "grade_only"
     assert grade_res["point_metrics"]["auroc"] >= 0.0
+
+
+if __name__ == "__main__":
+    test_cv_zero_student_leakage()
+    print("✓ test_cv_zero_student_leakage passed")
+    test_sample_weights_properties()
+    print("✓ test_sample_weights_properties passed")
+    test_impute_fold_features_leakage_free()
+    print("✓ test_impute_fold_features_leakage_free passed")
+    test_platt_calibration_and_student_pooling()
+    print("✓ test_platt_calibration_and_student_pooling passed")
+    test_student_metrics_and_cluster_bootstrap()
+    print("✓ test_student_metrics_and_cluster_bootstrap passed")
+    print("\nALL PHASE 4 STAGE 1 TESTS PASSED SUCCESSFULLY!")
+

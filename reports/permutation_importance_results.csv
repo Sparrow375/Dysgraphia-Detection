@@ -1,0 +1,12 @@
+feature,mean_auc_drop,std_auc_drop
+components_per_unit_width_dict_mean,0.0483,0.051
+shirorekha_rms_deviation_norm_max,0.0419,0.0536
+endpoints_per_unit_width_mean,0.0297,0.028
+matra_ratio_std,0.022,0.0604
+gap_cv_mean,0.0191,0.0706
+gap_fraction_above_2h_mean,0.0081,0.0202
+components_per_unit_width_max,0.0013,0.0277
+junctions_per_unit_width_mean,0.0011,0.0149
+baseline_rmse_norm_eng_minus_hindi,-0.0066,0.0376
+baseline_slope_std_mean,-0.0134,0.0286
+components_per_unit_width_eng_minus_hindi,-0.016,0.0365

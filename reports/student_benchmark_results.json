@@ -1,0 +1,93 @@
+[
+  {
+    "model_name": "Majority Class Baseline",
+    "mean_auroc": 0.479,
+    "std_auroc": 0.0,
+    "auroc_ci_95": "[0.444, 0.515]",
+    "mean_auprc": 0.203,
+    "auprc_ci_95": "[0.171, 0.239]",
+    "mean_brier": 0.165,
+    "brier_ci_95": "[0.146, 0.186]",
+    "sensitivity_at_90_spec": 16.7,
+    "sensitivity_at_80_spec": 16.7,
+    "balanced_accuracy": 50.0
+  },
+  {
+    "model_name": "Grade-Only Logistic",
+    "mean_auroc": 0.405,
+    "std_auroc": 0.051,
+    "auroc_ci_95": "[0.341, 0.451]",
+    "mean_auprc": 0.178,
+    "auprc_ci_95": "[0.138, 0.200]",
+    "mean_brier": 0.168,
+    "brier_ci_95": "[0.149, 0.189]",
+    "sensitivity_at_90_spec": 5.8,
+    "sensitivity_at_80_spec": 9.2,
+    "balanced_accuracy": 50.0
+  },
+  {
+    "model_name": "Elastic-Net Logistic Regression",
+    "mean_auroc": 0.718,
+    "std_auroc": 0.031,
+    "auroc_ci_95": "[0.661, 0.767]",
+    "mean_auprc": 0.461,
+    "auprc_ci_95": "[0.366, 0.532]",
+    "mean_brier": 0.197,
+    "brier_ci_95": "[0.184, 0.212]",
+    "sensitivity_at_90_spec": 33.3,
+    "sensitivity_at_80_spec": 51.7,
+    "balanced_accuracy": 67.4
+  },
+  {
+    "model_name": "Regularized Logistic Regression (L2)",
+    "mean_auroc": 0.733,
+    "std_auroc": 0.026,
+    "auroc_ci_95": "[0.676, 0.779]",
+    "mean_auprc": 0.473,
+    "auprc_ci_95": "[0.374, 0.543]",
+    "mean_brier": 0.194,
+    "brier_ci_95": "[0.181, 0.208]",
+    "sensitivity_at_90_spec": 35.8,
+    "sensitivity_at_80_spec": 53.3,
+    "balanced_accuracy": 66.6
+  },
+  {
+    "model_name": "Random Forest (d=3, leaf=4)",
+    "mean_auroc": 0.631,
+    "std_auroc": 0.012,
+    "auroc_ci_95": "[0.566, 0.698]",
+    "mean_auprc": 0.397,
+    "auprc_ci_95": "[0.300, 0.469]",
+    "mean_brier": 0.2,
+    "brier_ci_95": "[0.186, 0.215]",
+    "sensitivity_at_90_spec": 25.0,
+    "sensitivity_at_80_spec": 49.2,
+    "balanced_accuracy": 65.9
+  },
+  {
+    "model_name": "HistGradientBoosting (d=2, lr=0.05)",
+    "mean_auroc": 0.591,
+    "std_auroc": 0.024,
+    "auroc_ci_95": "[0.525, 0.657]",
+    "mean_auprc": 0.359,
+    "auprc_ci_95": "[0.262, 0.421]",
+    "mean_brier": 0.208,
+    "brier_ci_95": "[0.186, 0.229]",
+    "sensitivity_at_90_spec": 30.0,
+    "sensitivity_at_80_spec": 40.0,
+    "balanced_accuracy": 59.0
+  },
+  {
+    "model_name": "Hybrid Ensemble (0.7 LR + 0.3 RF)",
+    "mean_auroc": 0.714,
+    "std_auroc": 0.018,
+    "auroc_ci_95": "[0.655, 0.766]",
+    "mean_auprc": 0.485,
+    "auprc_ci_95": "[0.383, 0.563]",
+    "mean_brier": 0.191,
+    "brier_ci_95": "[0.178, 0.205]",
+    "sensitivity_at_90_spec": 37.5,
+    "sensitivity_at_80_spec": 52.5,
+    "balanced_accuracy": 65.1
+  }
+]
