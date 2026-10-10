@@ -323,10 +323,13 @@
             text.textContent = `${s.task_name} (${script}, ${s.word_count || 0}w)`;
             g.appendChild(text);
 
-            // If selected, render 8 resize handles
+            // If selected, render 8 resize handles with generous hitbox
             if (isSelected) {
-                const handleSize = Math.max(10, Math.min(18, 14 / state.zoom));
+                // Keep handles a constant 14-16 screen pixels regardless of zoom level
+                const handleSize = Math.max(12, 14 / state.zoom);
                 const half = handleSize / 2;
+                const hitboxSize = Math.max(26, 30 / state.zoom);
+                const hitHalf = hitboxSize / 2;
 
                 const handles = [
                     { id: 'nw', cx: x, cy: y, cursor: 'nwse-resize' },
@@ -340,6 +343,19 @@
                 ];
 
                 handles.forEach(hd => {
+                    // Transparent generous hitbox
+                    const hitRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    hitRect.setAttribute('x', hd.cx - hitHalf);
+                    hitRect.setAttribute('y', hd.cy - hitHalf);
+                    hitRect.setAttribute('width', hitboxSize);
+                    hitRect.setAttribute('height', hitboxSize);
+                    hitRect.setAttribute('class', 'resize-handle-hitbox');
+                    hitRect.style.cursor = hd.cursor;
+                    hitRect.dataset.handle = hd.id;
+                    hitRect.dataset.index = idx;
+                    g.appendChild(hitRect);
+
+                    // Visible handle square
                     const hRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
                     hRect.setAttribute('x', hd.cx - half);
                     hRect.setAttribute('y', hd.cy - half);
@@ -650,8 +666,8 @@
             return;
         }
 
-        // Handle Resize Handle click
-        if (e.target.classList.contains('resize-handle')) {
+        // Handle Resize Handle click (visible handle or generous hitbox)
+        if (e.target.classList.contains('resize-handle') || e.target.classList.contains('resize-handle-hitbox')) {
             const handle = e.target.dataset.handle;
             const idx = parseInt(e.target.dataset.index, 10);
             selectTask(idx);
@@ -872,6 +888,9 @@
     function updateTransform() {
         el.world.style.transform = `translate(${state.pan.x}px, ${state.pan.y}px) scale(${state.zoom})`;
         el.zoomLabel.textContent = `${Math.round(state.zoom * 100)}%`;
+        if (state.selectedTaskIndex >= 0) {
+            renderSvgBoxes();
+        }
     }
 
     function clientToPageCoord(clientX, clientY) {
