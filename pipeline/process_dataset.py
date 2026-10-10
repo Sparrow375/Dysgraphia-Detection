@@ -151,6 +151,7 @@ def process_single_student(
         ink_clean=rule_res["ink_clean"],
         ruled_lines=rule_res["ruled_lines"],
         median_spacing_r=rule_res["median_spacing_r"],
+        rule_mask=rule_res["rule_mask"],
     )
 
     # Step 4: Sentence Block Assembly (6-prompt sequence)
@@ -243,8 +244,10 @@ def process_single_student(
         "school": school,
         "sentences_count": len(sentences),
         "lines_count": len(lines),
+        "median_spacing_r": rule_res["median_spacing_r"],
         "output_dir": str(student_out_dir),
     }
+
 
 
 def process_dataset(

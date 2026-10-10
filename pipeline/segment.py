@@ -257,11 +257,15 @@ def extract_lines_and_segment(
     ink_clean: np.ndarray,
     ruled_lines: List[Dict[str, Any]],
     median_spacing_r: float,
+    rule_mask: Optional[np.ndarray] = None,
 ) -> List[Dict[str, Any]]:
     """Segment physical text lines and extract words, components, and baseline models.
 
     Uses connected component clustering by y-centroid to assemble physical lines,
-    filtering header tables and page boundaries.
+    filtering header tables, page boundaries, and ruled-line fragments.
+
+    When rule_mask is provided (binary mask of ruled line positions), components
+    whose pixels overlap >60% with rule pixels are discarded as ruled-line remnants.
 
     Returns:
         List of line dicts ordered vertically from top to bottom.
@@ -271,7 +275,7 @@ def extract_lines_and_segment(
     # Mask out outer page margins and top header table region
     clean_mask = ink_clean.copy()
     clean_mask[:320, :] = 0        # Skip header box at page top
-    clean_mask[:, :170] = 0        # Skip left margin border
+    clean_mask[:, :225] = 0        # Skip left vertical notebook margin line
     clean_mask[:, 1950:] = 0       # Skip right margin edge
 
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(clean_mask)
@@ -285,23 +289,35 @@ def extract_lines_and_segment(
         cy = stats[i, cv2.CC_STAT_TOP]
         ccx, ccy = centroids[i]
 
-        # Ignore noise and rule remnants
-        if carea >= 25 and ch >= 8 and (cw / max(ch, 1)) < 8.0:
-            comps.append(
-                {
-                    "x": cx,
-                    "y": cy,
-                    "w": cw,
-                    "h": ch,
-                    "cx": float(ccx),
-                    "cy": float(ccy),
-                    "area": int(carea),
-                    "bottom": int(cy + ch),
-                }
-            )
+        # --- Filter 1: Noise removal ---
+        if carea < 25 or ch < 8 or cw < 6:
+            continue
+
+        # --- Filter 2: Reject giant border/margin line artifacts spanning multiple lines ---
+        if ch > 1.8 * median_spacing_r or cw > 1200:
+            continue
+
+        # --- Filter 3: Reject thin horizontal ruled-line fragments ---
+        aspect = cw / max(ch, 1)
+        if aspect > 12.0 and ch < 20:
+            continue
+
+        comps.append(
+            {
+                "x": cx,
+                "y": cy,
+                "w": cw,
+                "h": ch,
+                "cx": float(ccx),
+                "cy": float(ccy),
+                "area": int(carea),
+                "bottom": int(cy + ch),
+            }
+        )
 
     if not comps:
         return []
+
 
     # Sort components top to bottom
     comps.sort(key=lambda c: c["cy"])
@@ -332,16 +348,25 @@ def extract_lines_and_segment(
         x_max = min(w_page, max(it["x"] + it["w"] for it in line_comps) + 15)
 
         line_crop = ink_clean[y_min:y_max, x_min:x_max]
-        ink_pixels = int(line_crop.sum())
 
-        script, score = classify_line_script(line_crop)
-        base_rel, x_height = estimate_line_baseline_and_xheight(line_crop, script)
+        # If we have a rule_mask, mask out ruled-line pixels from the line crop
+        # so script classification and word segmentation operate on ink-only pixels
+        if rule_mask is not None:
+            rule_crop = rule_mask[y_min:y_max, x_min:x_max]
+            line_crop_clean = np.where(rule_crop > 0, 0, line_crop).astype(np.uint8)
+        else:
+            line_crop_clean = line_crop
+
+        ink_pixels = int(line_crop_clean.sum())
+
+        script, score = classify_line_script(line_crop_clean)
+        base_rel, x_height = estimate_line_baseline_and_xheight(line_crop_clean, script)
         global_baseline = float(y_min + base_rel)
 
         if script == "devanagari":
-            words = segment_words_devanagari(line_crop)
+            words = segment_words_devanagari(line_crop_clean)
         else:
-            words = segment_words_english(line_crop, x_height)
+            words = segment_words_english(line_crop_clean, x_height)
 
         # Shift word bboxes to page coordinates
         for wd in words:

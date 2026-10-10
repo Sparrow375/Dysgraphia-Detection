@@ -17,17 +17,31 @@ import numpy as np
 
 
 def auto_orient_portrait(image_bgr: np.ndarray) -> Tuple[np.ndarray, bool]:
-    """Ensure image is in portrait orientation (height >= width).
+    """Ensure image is in portrait orientation and right-side up.
+
+    If landscape (w > h), determines whether top of page is on the right or left
+    by counting ruled-line density (the notebook footer has dense ruled lines,
+    while the header box region has few/none). Rotates CCW or CW accordingly.
 
     Returns:
         oriented_image, was_rotated
     """
     h, w = image_bgr.shape[:2]
     if w > h:
-        # Rotate 90 degrees clockwise to make portrait
-        rotated = cv2.rotate(image_bgr, cv2.ROTATE_90_CLOCKWISE)
+        gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
+        kh = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 60))
+        edges_left = cv2.morphologyEx(cv2.Canny(gray[:, :int(w * 0.4)], 50, 150), cv2.MORPH_OPEN, kh).sum()
+        edges_right = cv2.morphologyEx(cv2.Canny(gray[:, int(w * 0.6):], 50, 150), cv2.MORPH_OPEN, kh).sum()
+
+        if edges_left > edges_right:
+            # Dense ruled lines on left => footer is left => header is right => rotate CCW
+            rotated = cv2.rotate(image_bgr, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        else:
+            # Dense ruled lines on right => footer is right => header is left => rotate CW
+            rotated = cv2.rotate(image_bgr, cv2.ROTATE_90_CLOCKWISE)
         return rotated, True
     return image_bgr, False
+
 
 
 def order_quad_points(pts: np.ndarray) -> np.ndarray:
@@ -136,6 +150,18 @@ def warp_page(
     return warped, None
 
 
+def normalize_background(grayscale: np.ndarray) -> np.ndarray:
+    """Normalize illumination gradients (shadows from phone cameras) without losing stroke sharpness.
+
+    Estimates the paper background surface via large-kernel morphological dilation
+    and median filtering, then normalizes the grayscale image to a consistent white paper baseline.
+    """
+    bg = cv2.morphologyEx(grayscale, cv2.MORPH_DILATE, cv2.getStructuringElement(cv2.MORPH_RECT, (41, 41)))
+    bg = cv2.medianBlur(bg, 21)
+    norm = np.clip((grayscale.astype(np.float32) / np.maximum(bg.astype(np.float32), 1.0)) * 255.0, 0, 255).astype(np.uint8)
+    return norm
+
+
 def binarize_image(grayscale: np.ndarray) -> np.ndarray:
     """Binarize grayscale image to extract ink mask (1 = ink, 0 = paper).
 
@@ -156,7 +182,7 @@ def preprocess_page(
 
     Returns dict with:
         - grayscale: original clean grayscale image (H, W) uint8
-        - grayscale_norm: alias for grayscale
+        - grayscale_norm: illumination-normalized grayscale image (H, W) uint8
         - binary_ink: binary ink mask (H, W) uint8 (1=ink, 0=bg)
         - warped_bgr: warped BGR image (H, W, 3) uint8
         - quad_corners: list of 4 ordered corners or None
@@ -167,13 +193,15 @@ def preprocess_page(
     warped, quad_pts = warp_page(oriented, quad_corners, target_width=target_width)
 
     gray = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
-    binary_ink = binarize_image(gray)
+    gray_norm = normalize_background(gray)
+    binary_ink = binarize_image(gray_norm)
 
     return {
-        "grayscale": gray,
-        "grayscale_norm": gray,
+        "grayscale": gray_norm,
+        "grayscale_norm": gray_norm,
         "binary_ink": binary_ink,
         "warped_bgr": warped,
         "quad_corners": quad_pts.tolist() if quad_pts is not None else None,
         "was_rotated": was_rotated,
     }
+

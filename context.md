@@ -98,4 +98,23 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - `tests/test_phase0.py` passed 4/4 test cases.
 - **Quality Gate**:
   - `qa/generate_overlay_review.py` re-run across grades G3–G7; generated refreshed interactive visual review gallery `qa/review_gallery.html`.
+
+## Phase 1 v3: Illumination Normalization, Landscape Orientation & Margin Hardening (Completed 2026-10-10)
+- **Motivation & Root Causes**:
+  - Grade 4 was scanned via mobile DocScanner (built-in illumination flattening), giving the illusion that raw grayscale without normalization was sufficient.
+  - Grades 3, 5, 6, and 7 were raw phone photos with heavy uneven lighting and shadow gradients (mean BGR ~175). Without normalization, global Otsu thresholding created massive central shadow blobs (1.8M noise pixels), misclassifying blank paper rules as ink.
+  - Inverted/landscape scans (`G3_A_Roll12`, `G7_A_Roll11`) rotated arbitrarily clockwise, leaving sheets upside-down.
+  - Indian notebook red double margin lines at `x \approx 180-220` bridged sentences into 1000px+ connected components.
+- **v3 Architecture & Improvements**:
+  - `pipeline/preprocess.py`: Added `normalize_background` using large-kernel morphological dilation (`41x41`) + median blur (`21`) + background division. This cleanly flattens lighting gradients on camera photos, reducing Otsu noise from 1.8M down to 356k clean ink pixels without degrading fine stroke boundaries.
+  - `auto_orient_portrait`: Upgraded landscape rotation by comparing horizontal edge density between page halves (`edges_left` vs `edges_right`). Because notebook ruled lines are concentrated in the lower body while the header box region has sparser edges, the orientation algorithm places the header at the top, rotating upside-down sheets 180° into proper portrait.
+  - `pipeline/segment.py`: Extended left margin cutoff to `clean_mask[:, :225] = 0` to discard the printed red double margin line. Added multi-line component rejection `ch < 1.8 * median_spacing_r` and `cw < 1200` to prevent margin fragments from bridging sentences, while relaxing aspect ratio rejection (`aspect > 12.0 and ch < 20`) to safely retain genuine wide Devanagari words with continuous shirorekha.
+  - Rule masking in segmentation: Rule mask passed into `extract_lines_and_segment` to mask out ruled line pixels during script classification and word segmentation.
+- **Validation**:
+  - `tests/test_phase1.py` passed 5/5 test cases.
+  - `tests/test_phase0.py` passed 4/4 test cases.
+  - Benchmark template `G4_A_Roll01` fully preserved (6 sentences, 8 lines).
+  - All 115 School A sheets processed successfully with 0 unhandled exceptions.
+  - Interactive QA gallery `qa/review_gallery.html` regenerated across 30 diverse sheets across G3–G7.
 - **Next Phase**: Phase 2 Feature Library (baseline wobble & residuals, rule offset, slant tensor, curvature & jerk proxy, inter-word/inter-character gaps, shirorekha continuity features).
+

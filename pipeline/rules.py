@@ -194,7 +194,7 @@ def process_ruled_lines(
     ink_deskewed = deskew_image(binary_ink, median_slope)
     gray_deskewed = deskew_image(grayscale_norm, median_slope)
 
-    # Re-detect lines on deskewed image so slopes become 0
+    # Re-detect lines on deskewed image so slopes become ~0
     lines_deskewed, _, r = detect_ruled_lines(ink_deskewed, min_spacing=min_spacing)
 
     # Remove rules and restore crossed strokes with full 7px coverage
@@ -211,3 +211,4 @@ def process_ruled_lines(
         "grayscale_deskewed": gray_deskewed,
         "rule_mask": rule_mask,
     }
+
