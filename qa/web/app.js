@@ -24,7 +24,11 @@
         showOverlayDebug: false,
         gradeFilter: 'all',
         statusFilter: 'all',
+
+        hasUnsavedChanges: false,
     };
+
+    let autoSaveTimeout = null;
 
     // DOM Elements
     const el = {
@@ -103,9 +107,10 @@
             applyFilters();
         });
 
-        // Student Dropdown & Prev/Next
-        el.studentSelect.addEventListener('change', () => {
+        // Student Dropdown & Prev/Next (with auto-save)
+        el.studentSelect.addEventListener('change', async () => {
             if (el.studentSelect.value) {
+                await beforeNavigate();
                 loadStudent(el.studentSelect.value);
             }
         });
@@ -147,7 +152,7 @@
             input.addEventListener('input', onBboxInputsChange);
         });
         el.editTaskName.addEventListener('change', onTaskNameChange);
-        el.btnSaveRecrop.addEventListener('click', saveAndRecropActiveTask);
+        el.btnSaveRecrop.addEventListener('click', () => saveAndRecropActiveTask(false));
         el.btnDeleteTask.addEventListener('click', deleteActiveTask);
         el.btnAddSentence.addEventListener('click', () => setTool('draw'));
 
@@ -215,6 +220,7 @@
 
     async function loadStudent(studentId) {
         state.currentStudentId = studentId;
+        state.hasUnsavedChanges = false;
         el.studentSelect.value = studentId;
         el.canvasStatus.textContent = `Loading ${studentId}...`;
 
@@ -413,7 +419,7 @@
 
         // Populate Form
         setDropdownByValue(el.editTaskName, task.task_name);
-        setEditorScript(task.script || 'devanagari');
+        setEditorScript(task.script || 'devanagari', false);
 
         const [x, y, w, h] = task.crop_bbox;
         el.boxX.value = Math.round(x);
@@ -436,7 +442,7 @@
         }
     }
 
-    function setEditorScript(script) {
+    function setEditorScript(script, triggerSave = true) {
         state.selectedScript = script;
         if (script === 'devanagari') {
             el.btnScriptDev.classList.add('active');
@@ -449,6 +455,9 @@
             state.currentStudentData.sentences[state.selectedTaskIndex].script = script;
             renderSvgBoxes();
             renderTaskCards();
+            if (triggerSave) {
+                triggerAutoSave(150);
+            }
         }
     }
 
@@ -461,6 +470,7 @@
 
         state.currentStudentData.sentences[state.selectedTaskIndex].crop_bbox = [x, y, w, h];
         renderSvgBoxes();
+        triggerAutoSave(400);
     }
 
     function onTaskNameChange() {
@@ -469,27 +479,39 @@
         state.currentStudentData.sentences[state.selectedTaskIndex].task_name = name;
         renderSvgBoxes();
         renderTaskCards();
+        triggerAutoSave(150);
+    }
+
+    // --- Auto-Save Scheduler ---
+    function triggerAutoSave(delayMs = 250) {
+        state.hasUnsavedChanges = true;
+        el.canvasStatus.textContent = 'Auto-saving...';
+        if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(async () => {
+            await saveAndRecropActiveTask(true);
+        }, delayMs);
     }
 
     // --- Save & Re-Crop API Call ---
-    async function saveAndRecropActiveTask() {
+    async function saveAndRecropActiveTask(silent = false) {
         if (state.selectedTaskIndex < 0 || !state.currentStudentData) return;
         const task = state.currentStudentData.sentences[state.selectedTaskIndex];
         const studentId = state.currentStudentData.student_id;
+        if (!task) return;
 
         const payload = {
             task_id: task.task_id,
-            task_name: el.editTaskName.value,
+            task_name: el.editTaskName.value || task.task_name,
             script: state.selectedScript,
             bbox: [
-                parseInt(el.boxX.value, 10),
-                parseInt(el.boxY.value, 10),
-                parseInt(el.boxW.value, 10),
-                parseInt(el.boxH.value, 10),
+                parseInt(el.boxX.value, 10) || task.crop_bbox[0],
+                parseInt(el.boxY.value, 10) || task.crop_bbox[1],
+                parseInt(el.boxW.value, 10) || task.crop_bbox[2],
+                parseInt(el.boxH.value, 10) || task.crop_bbox[3],
             ],
         };
 
-        el.canvasStatus.textContent = `Saving and re-cropping ${task.task_id}...`;
+        el.canvasStatus.textContent = `Auto-saving ${task.task_name}...`;
 
         try {
             const res = await fetch(`/api/student/${studentId}/update_sentence`, {
@@ -506,6 +528,7 @@
             task.crop_url = data.crop_url;
             task.is_manually_adjusted = true;
             state.currentStudentData.overlay_url = data.overlay_url;
+            state.hasUnsavedChanges = false;
 
             if (state.showOverlayDebug) {
                 el.pageImg.src = data.overlay_url;
@@ -513,34 +536,52 @@
 
             renderSvgBoxes();
             renderTaskCards();
-            showToast(`✓ ${task.task_name} re-cropped successfully (${data.word_count} words)`, 'success');
-            el.canvasStatus.textContent = 'Saved changes';
+            if (!silent) {
+                showToast(`✓ ${task.task_name} saved (${data.word_count} words)`, 'success');
+            }
+            el.canvasStatus.textContent = 'All changes auto-saved ✓';
         } catch (err) {
             showToast(`Save failed: ${err.message}`, 'error');
-            el.canvasStatus.textContent = 'Error saving task';
+            el.canvasStatus.textContent = 'Auto-save error';
         }
     }
 
+    // --- Immediate Delete (No popup blocking) ---
     async function deleteActiveTask() {
         if (state.selectedTaskIndex < 0 || !state.currentStudentData) return;
         const task = state.currentStudentData.sentences[state.selectedTaskIndex];
         const studentId = state.currentStudentData.student_id;
+        if (!task) return;
 
-        if (!confirm(`Delete task ${task.task_name}?`)) return;
+        const taskName = task.task_name;
+        const taskId = task.task_id;
+
+        // Cancel pending auto-save
+        if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+        state.hasUnsavedChanges = false;
+
+        // Immediate removal from local state for instant UI response
+        state.currentStudentData.sentences.splice(state.selectedTaskIndex, 1);
+        state.selectedTaskIndex = -1;
+        renderSvgBoxes();
+        renderTaskCards();
+        updateEditorUI();
+        el.canvasStatus.textContent = `Deleted ${taskName}`;
 
         try {
-            const res = await fetch(`/api/student/${studentId}/sentence/${task.task_id}`, {
+            const res = await fetch(`/api/student/${studentId}/sentence/${taskId}`, {
                 method: 'DELETE',
             });
             const data = await res.json();
             if (data.error) throw new Error(data.error);
 
-            state.currentStudentData.sentences.splice(state.selectedTaskIndex, 1);
-            state.selectedTaskIndex = -1;
-            renderSvgBoxes();
-            renderTaskCards();
-            updateEditorUI();
-            showToast(`Deleted ${task.task_name}`, 'success');
+            if (data.overlay_url) {
+                state.currentStudentData.overlay_url = data.overlay_url;
+                if (state.showOverlayDebug) {
+                    el.pageImg.src = data.overlay_url;
+                }
+            }
+            showToast(`✓ Deleted ${taskName}`, 'success');
         } catch (err) {
             showToast(`Delete failed: ${err.message}`, 'error');
         }
@@ -724,6 +765,8 @@
 
         if (state.dragState) {
             state.dragState = null;
+            // Auto-save immediately when mouse releases box/handle
+            triggerAutoSave(150);
         }
 
         if (state.drawState && state.drawState.isDrawing) {
@@ -757,7 +800,7 @@
             el.boxW.value = w;
             el.boxH.value = h;
             renderSvgBoxes();
-            showToast(`Updated bounding box for ${task.task_name}. Click 'Save & Re-Crop' to apply.`, 'info');
+            triggerAutoSave(150);
         } else {
             // Create new sentence task
             const nextIdx = state.currentStudentData.sentences.length + 1;
@@ -772,7 +815,7 @@
             };
             state.currentStudentData.sentences.push(newTask);
             selectTask(state.currentStudentData.sentences.length - 1);
-            showToast(`Created new box. Click 'Save & Re-Crop' to generate crop.`, 'info');
+            triggerAutoSave(150);
         }
     }
 
@@ -860,8 +903,16 @@
         }
     }
 
-    // --- Navigation ---
-    function navigatePrev() {
+    // --- Navigation (with auto-save before moving) ---
+    async function beforeNavigate() {
+        if (state.hasUnsavedChanges && state.selectedTaskIndex >= 0) {
+            if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+            await saveAndRecropActiveTask(true);
+        }
+    }
+
+    async function navigatePrev() {
+        await beforeNavigate();
         const curIdx = state.filteredStudents.findIndex(s => s.student_id === state.currentStudentId);
         if (curIdx > 0) {
             loadStudent(state.filteredStudents[curIdx - 1].student_id);
@@ -870,7 +921,8 @@
         }
     }
 
-    function navigateNext() {
+    async function navigateNext() {
+        await beforeNavigate();
         const curIdx = state.filteredStudents.findIndex(s => s.student_id === state.currentStudentId);
         if (curIdx >= 0 && curIdx < state.filteredStudents.length - 1) {
             loadStudent(state.filteredStudents[curIdx + 1].student_id);
@@ -881,6 +933,15 @@
 
     function onKeyDown(e) {
         if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
+
+        // Delete key deletes selected box
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            if (state.selectedTaskIndex >= 0) {
+                e.preventDefault();
+                deleteActiveTask();
+                return;
+            }
+        }
 
         if (e.key === '[' || e.key === 'ArrowLeft') {
             e.preventDefault();
@@ -909,7 +970,7 @@
             updateEditorUI();
         } else if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
             e.preventDefault();
-            saveAndRecropActiveTask();
+            saveAndRecropActiveTask(false);
         }
     }
 

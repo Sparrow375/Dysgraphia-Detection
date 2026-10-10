@@ -364,6 +364,7 @@ async def api_delete_sentence(request: web.Request) -> web.Response:
     task_id = request.match_info["task_id"]
     s_dir = PROCESSED_DIR / sid
 
+    # 1. Delete by direct path
     for p in [s_dir / f"{task_id}.json", s_dir / f"{task_id}.png"]:
         if p.exists():
             try:
@@ -371,8 +372,25 @@ async def api_delete_sentence(request: web.Request) -> web.Response:
             except OSError:
                 pass
 
+    # 2. Search inside all sentence_*.json for matching task_id or task_name
+    for jf in list(s_dir.glob("sentence_*.json")):
+        try:
+            with open(jf, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if data.get("task_id") == task_id or data.get("task_name") == task_id or jf.stem == task_id:
+                png_file = jf.with_suffix(".png")
+                jf.unlink(missing_ok=True)
+                if png_file.exists():
+                    png_file.unlink(missing_ok=True)
+        except Exception:
+            pass
+
     regenerate_student_overlay(s_dir)
-    return web.json_response({"success": True, "deleted": task_id})
+    return web.json_response({
+        "success": True,
+        "deleted": task_id,
+        "overlay_url": f"/files/processed/school_a/{sid}/overlay_debug.png?t={int(time.time())}",
+    })
 
 
 async def api_set_verification(request: web.Request) -> web.Response:
