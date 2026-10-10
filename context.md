@@ -147,7 +147,7 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - **Resize Handle Stability**: Removed CSS hover scale transforms on SVG resize handles that caused jitter between move and resize modes; added 30px transparent touch target hitboxes and dynamic screen-space handle sizing.
   - **Dedicated "+ Add Task" Flow**: "+ Add Task" safely saves any pending changes on the active box, clears selection, and enters draw mode with `state.isAddingNewTask = true`. When the box is drawn, it automatically assigns the next protocol task (`sentence_01_copy_hindi` through `sentence_06_own_english`, or custom sequential tasks) without replacing the previously selected task.
 - **Manual Verification & Cohort Audit Results (2026-10-10)**:
-  - 115 / 115 School A students reviewed and verified.
+  - 115 / 115 (100.0%) School A students reviewed, manually verified, and marked `verified: true` in `review_status.json`.
   - 641 total sentence tasks saved on disk (430 manually adjusted/customized, 211 confirmed auto-extracted).
   - 0 missing crop images, 0 corrupt JSON schemas, 0 bounding boxes out of bounds, 0 zero-word crops.
   - 4,526 total words segmented across 322 Devanagari and 319 Latin sentences.
