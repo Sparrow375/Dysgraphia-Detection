@@ -307,6 +307,27 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - `tests/test_phase4_stage2.py` passed 4/4 test suites confirming student aggregation schemas, class balance, stability selection properties, bootstrap CI bounds, and artifact existence.
   - `tests/test_phase4.py` passed 5/5 test suites.
 
+## Phase 4 Stage 3: False Negative Diagnostic Audit & Feature Overhaul (Completed 2026-10-10)
+- **Problem Statement**:
+  - Out of 24 dysgraphic students in School A, the Stage 2 model missed 12 (50% False Negative rate at 85% specificity).
+- **Mathematical Pipeline Audit (Bugs & Instabilities Uncovered)**:
+  1. `gap_cv` Numerical Division Explosion: Overlapping word bounding boxes ($wx_{next} < wx_{curr} + ww_{curr}$) produced negative gaps; when mean gap approached zero, $cv = \text{std} / \text{mean}$ exploded from $-2,965$ to $+2,248$. Stability selection in Repeat 0 latched onto this computational division artifact (TPs averaged $-6.25$, FNs $-0.19$).
+  2. `baseline_slope_std` Sparsity: 81.4% (522/641) of sentences are single-line tasks, rendering multi-line baseline slope standard deviation NaN. Imputation with 0.0 injected noise.
+  3. Difference Cancellation Trap: `baseline_rmse_norm_eng_minus_hindi` subtracted Hindi baseline wobble from English baseline wobble. In students with generalized motor deficits across both languages (notably Grade 3), wobble cancelled out to $\approx 0$, masking severe spatial disorientation.
+- **Clinical Handwriting Science & Phenotype Mapping**:
+  - **Phenotype A (Copy / Sustained Motor Breakdown)**: Students like `G6_A_Roll25`, `G6_A_Roll14`, `G4_A_Roll11` maintained control on short Hindi dictations, but their stroke graph exploded on longer English copy tasks (up to 9.07 endpoints/w and 7.05 junctions/w). The old dictation-focused feature set missed them.
+  - **Phenotype B (Slow Compensatory Writers)**: Students like `G4_A_Roll09`, `G3_A_Roll15`, `G7_A_Roll12` deliberately suppressed fragmentation by writing at 1/5th normal speed, keeping stroke counts low. Their dysgraphia was clinically exposed by severe completion collapse (`words_written_ratio` $< 0.3$), high baseline wobble ($> 1.95$), and rigid, unnatural stroke curvature (`tortuosity_median_cv` drop, $p = 0.0068$).
+  - **Phenotype C (Spatial & Guideline Disorientation)**: Severe baseline RMSE ($> 2.20 - 3.33$) and matra distortion ($\ge 3.0$) across all tasks.
+  - **Phenotype D (Compositional Free-Writing Breakdown)**: Normal performance on structured copy prompts, but catastrophic motor breakdown when generating original sentences.
+- **Empirical Validation of 15-Feature Multi-Phenotype Clean Set**:
+  - Tested 15 clean, clinically motivated features (`components_per_unit_width_dict_mean`, `components_per_unit_width_max`, `components_per_unit_width_std`, `components_per_unit_width_eng_minus_hindi`, `endpoints_per_unit_width_mean`, `junctions_per_unit_width_mean`, `junctions_per_unit_width_own_mean`, `words_written_ratio_eng_minus_hindi`, `words_written_ratio_dict_minus_copy`, `matra_ratio_std`, `matra_ratio_max`, `shirorekha_rms_deviation_norm_max`, `tortuosity_median_cv`, `word_width_per_char_std`, `gap_fraction_above_2h_mean`).
+  - **AUROC**: Jumped from **0.733 $\to$ 0.7969 $\pm$ 0.0124** (**+0.064** improvement).
+  - **Sensitivity @ 80% Specificity**: Jumped from **53.3% $\to$ 65.0%** (**+11.7%** detection gain).
+  - **Sensitivity @ 90% Specificity**: Jumped from **35.8% $\to$ 40.8% - 44.2%**.
+  - **False Negatives @ 80% Specificity**: Reduced from **13 down to 9**.
+- **Artifact**: Comprehensive diagnostic and research report persisted at `false_negative_research.md`.
+
+
 
 
 

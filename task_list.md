@@ -43,6 +43,14 @@
 - [x] Stage 3: Handoff, Documentation & Git:
   - [x] 3.1 Update `context.md` with new student-level architecture, benchmark comparisons, and clinical findings.
   - [x] 3.2 Git commit and push to `origin/baseline-v1`.
+- [/] Stage 4: False Negative Reduction & Feature Engineering Overhaul:
+  - [x] 4.1 Perform in-depth diagnostic audit of False Negatives vs True Positives across all grades.
+  - [x] 4.2 Audit existing features for numerical instability (identified `gap_cv` division artifact and `baseline_slope_std` 81% sparsity).
+  - [x] 4.3 Research clinical compensatory mechanisms (slow compensatory writing, cognitive load collapse, motor rigidity).
+  - [x] 4.4 Formulate and prototype 15-feature clean multi-phenotype clinical set (AUROC improves from 0.733 to 0.797).
+  - [ ] 4.5 Patch `features/gaps.py` to fix `gap_cv` numerical division and add word collision safeguards.
+  - [ ] 4.6 Update `models/student_features.py` and `models/student_experiments.py` with the 15-feature clinical set.
+  - [ ] 4.7 Re-execute benchmark experiments, ablations, and regenerate misclassification gallery.
 
 ---
 
