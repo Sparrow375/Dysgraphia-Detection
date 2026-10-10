@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dysgraphia QA & Segment Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top App Bar -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-badge">WS-A</div>
+                <div class="brand-text">
+                    <h1>Dysgraphia QA & Segment Editor</h1>
+                    <span class="brand-sub">Phase 1 Preprocessing & Sentence Verification</span>
+                </div>
+            </div>
+
+            <!-- Global Navigation & Filters -->
+            <div class="nav-controls">
+                <div class="filter-group">
+                    <label>Grade:</label>
+                    <div class="pill-group" id="gradePills">
+                        <button class="pill active" data-grade="all">All</button>
+                        <button class="pill" data-grade="3">G3</button>
+                        <button class="pill" data-grade="4">G4</button>
+                        <button class="pill" data-grade="5">G5</button>
+                        <button class="pill" data-grade="6">G6</button>
+                        <button class="pill" data-grade="7">G7</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Status:</label>
+                    <select id="statusFilter" class="select-input">
+                        <option value="all">All Students</option>
+                        <option value="needs_review">Needs Review</option>
+                        <option value="verified">Verified</option>
+                        <option value="positive">At-Risk (Positives)</option>
+                    </select>
+                </div>
+
+                <div class="student-selector">
+                    <button id="prevBtn" class="btn btn-icon" title="Previous Student (Hotkey: [)">&#9664;</button>
+                    <select id="studentSelect" class="select-input student-dropdown">
+                        <option value="">Loading students...</option>
+                    </select>
+                    <button id="nextBtn" class="btn btn-icon" title="Next Student (Hotkey: ])">&#9654;</button>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button id="verifyBtn" class="btn btn-verify" title="Mark this sheet as verified (Hotkey: V)">
+                    <span class="icon">&#10003;</span> Mark Verified
+                </button>
+                <button id="helpBtn" class="btn btn-secondary" title="View Keyboard Shortcuts">Shortcuts</button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Center Canvas Viewport -->
+            <section class="canvas-panel">
+                <div class="canvas-toolbar">
+                    <div class="tool-group">
+                        <button id="toolSelect" class="btn btn-tool active" title="Select & Drag Boxes (V)">
+                            <span class="icon">&#9998;</span> Select
+                        </button>
+                        <button id="toolDraw" class="btn btn-tool" title="Draw New Box (D)">
+                            <span class="icon">&#9634;</span> Draw Box
+                        </button>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="tool-group">
+                        <button id="btnZoomIn" class="btn btn-icon" title="Zoom In (+)">+</button>
+                        <span id="zoomLabel" class="zoom-text">100%</span>
+                        <button id="btnZoomOut" class="btn btn-icon" title="Zoom Out (-)">-</button>
+                        <button id="btnFitScreen" class="btn btn-tool" title="Fit to Screen (F)">Fit</button>
+                        <button id="btnResetZoom" class="btn btn-tool" title="Reset 100% (0)">1:1</button>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="tool-group">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="toggleOverlay"/>
+                            <span>Show Overlay Debug</span>
+                        </label>
+                    </div>
+
+                    <div class="canvas-status" id="canvasStatus">
+                        Ready
+                    </div>
+                </div>
+
+                <!-- Canvas Viewport with Pan and Zoom -->
+                <div class="canvas-viewport" id="viewport">
+                    <div class="canvas-world" id="world">
+                        <img id="pageImg" src="" alt="Page" class="page-background"/>
+                        <svg id="svgOverlay" class="svg-overlay"></svg>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Inspector & Tasks Pane -->
+            <aside class="inspector-panel">
+                <!-- Student Summary Card -->
+                <div class="inspector-card student-meta-card">
+                    <div class="meta-header">
+                        <h2 id="metaStudentId">---</h2>
+                        <span id="metaBadge" class="badge">---</span>
+                    </div>
+                    <div class="meta-details">
+                        <div class="meta-item"><label>Grade:</label> <span id="metaGrade">-</span></div>
+                        <div class="meta-item"><label>Roll Number:</label> <span id="metaRoll">-</span></div>
+                        <div class="meta-item"><label>Detected Tasks:</label> <span id="metaTasksCount">0</span></div>
+                        <div class="meta-item"><label>Total Words:</label> <span id="metaWordsCount">0</span></div>
+                    </div>
+                    <div class="meta-notes">
+                        <input type="text" id="studentNotes" class="text-input" placeholder="Notes for this student..."/>
+                    </div>
+                </div>
+
+                <!-- Active Task Editor -->
+                <div class="inspector-card editor-card" id="editorCard">
+                    <div class="card-header">
+                        <h3>Task Editor</h3>
+                        <span id="editorStatus" class="status-indicator">Select a box</span>
+                    </div>
+
+                    <form id="taskForm" class="task-form">
+                        <div class="form-row">
+                            <label>Task Name:</label>
+                            <select id="editTaskName" class="select-input">
+                                <option value="copy_hindi">sentence_01_copy_hindi</option>
+                                <option value="copy_english">sentence_02_copy_english</option>
+                                <option value="dictated_hindi">sentence_03_dictated_hindi</option>
+                                <option value="dictated_english">sentence_04_dictated_english</option>
+                                <option value="own_hindi">sentence_05_own_hindi</option>
+                                <option value="own_english">sentence_06_own_english</option>
+                                <option value="custom">Custom Task</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Script:</label>
+                            <div class="script-toggle">
+                                <button type="button" id="btnScriptDev" class="btn btn-toggle active">Hindi (Devanagari)</button>
+                                <button type="button" id="btnScriptLat" class="btn btn-toggle">English (Latin)</button>
+                            </div>
+                        </div>
+
+                        <div class="form-row bbox-inputs">
+                            <label>Bounding Box (X, Y, W, H):</label>
+                            <div class="input-grid">
+                                <div><small>X</small><input type="number" id="boxX" class="number-input"/></div>
+                                <div><small>Y</small><input type="number" id="boxY" class="number-input"/></div>
+                                <div><small>W</small><input type="number" id="boxW" class="number-input"/></div>
+                                <div><small>H</small><input type="number" id="boxH" class="number-input"/></div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="btnSaveRecrop" class="btn btn-primary" title="Save changes and re-crop image">
+                                &#10004; Save & Re-Crop
+                            </button>
+                            <button type="button" id="btnDeleteTask" class="btn btn-danger" title="Delete this task">
+                                &#128465; Delete
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Extracted Tasks & Crops List -->
+                <div class="task-list-section">
+                    <div class="section-header">
+                        <h3>Extracted Sentences (<span id="taskCountBadge">0</span>)</h3>
+                        <button id="btnAddSentence" class="btn btn-small btn-secondary">+ Add Task</button>
+                    </div>
+
+                    <div class="tasks-scroll" id="tasksList">
+                        <!-- Task cards injected dynamically -->
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Help Modal -->
+        <div id="helpModal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <h3>Keyboard Shortcuts</h3>
+                <table class="shortcuts-table">
+                    <tr><td><kbd>[</kbd> or <kbd>&larr;</kbd></td><td>Previous Student</td></tr>
+                    <tr><td><kbd>]</kbd> or <kbd>&rarr;</kbd></td><td>Next Student</td></tr>
+                    <tr><td><kbd>V</kbd></td><td>Toggle Verified Status</td></tr>
+                    <tr><td><kbd>D</kbd></td><td>Toggle Draw Box Tool</td></tr>
+                    <tr><td><kbd>S</kbd> or <kbd>Ctrl+S</kbd></td><td>Save & Re-Crop Selected Box</td></tr>
+                    <tr><td><kbd>F</kbd></td><td>Fit Page to Screen</td></tr>
+                    <tr><td><kbd>0</kbd></td><td>Reset 1:1 Zoom</td></tr>
+                    <tr><td><kbd>Esc</kbd></td><td>Deselect active box / Cancel Draw</td></tr>
+                </table>
+                <button id="closeHelpBtn" class="btn btn-primary full-width">Got it</button>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast" class="toast hidden"></div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

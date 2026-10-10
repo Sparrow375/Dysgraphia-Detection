@@ -47,33 +47,42 @@ def run_qa_review(
     output_dir: str = "data/processed",
     gallery_html_path: str = "qa/review_gallery.html",
     samples_per_grade: int = 6,
-    force: bool = True,
+    force: bool = False,
+    all_sheets: bool = False,
 ) -> dict:
-    """Select stratified sample across grades, process if needed, and build review gallery."""
+    """Select stratified sample across grades (or all sheets), process if needed, and build review gallery."""
+    import time
     df = pd.read_csv(manifest_path)
     df_a = df[df["school"] == "school_a"].copy()
 
-    # Sample up to samples_per_grade students per grade
-    sampled_rows = []
-    for g in sorted(df_a["grade"].unique()):
-        g_df = df_a[df_a["grade"] == g]
-        # Include positives and negatives in sample
-        pos = g_df[g_df["label"] == 1]
-        neg = g_df[g_df["label"] == 0]
+    if all_sheets or samples_per_grade <= 0:
+        review_df = df_a.sort_values(by=["grade", "roll_number"]).reset_index(drop=True)
+        print(f"Running Phase 1 QA Review on ALL {len(review_df)} sheets across grades {sorted(df_a['grade'].unique())}...")
+    else:
+        # Sample up to samples_per_grade students per grade
+        sampled_rows = []
+        for g in sorted(df_a["grade"].unique()):
+            g_df = df_a[df_a["grade"] == g]
+            pos = g_df[g_df["label"] == 1]
+            neg = g_df[g_df["label"] == 0]
 
-        n_pos = min(len(pos), max(1, samples_per_grade // 3))
-        n_neg = min(len(neg), samples_per_grade - n_pos)
+            n_pos = min(len(pos), max(1, samples_per_grade // 3))
+            n_neg = min(len(neg), samples_per_grade - n_pos)
 
-        sample = pd.concat([pos.head(n_pos), neg.head(n_neg)])
-        sampled_rows.append(sample)
+            sample = pd.concat([pos.head(n_pos), neg.head(n_neg)])
+            sampled_rows.append(sample)
 
-    review_df = pd.concat(sampled_rows).reset_index(drop=True)
-    print(f"Running Phase 1 QA Review on {len(review_df)} sheets across grades {sorted(df_a['grade'].unique())}...")
+        review_df = pd.concat(sampled_rows).reset_index(drop=True)
+        print(f"Running Phase 1 QA Review on {len(review_df)} sampled sheets across grades {sorted(df_a['grade'].unique())}...")
 
     Path("qa").mkdir(parents=True, exist_ok=True)
 
     qa_results = []
     html_cards = []
+
+    # Threshold: consider sheets updated in last 6 hours as fresh
+    current_time = time.time()
+    fresh_threshold = current_time - (6 * 3600)
 
     for _, row in tqdm(review_df.iterrows(), total=len(review_df), desc="QA Inspection"):
         student_id = str(row["student_id"])
@@ -83,22 +92,42 @@ def run_qa_review(
         roll = int(row["roll_number"])
 
         student_dir = Path(output_dir) / school / student_id
-        if force or not (student_dir / "overlay_debug.png").exists():
+        overlay_path = student_dir / "overlay_debug.png"
+
+        needs_processing = force or not overlay_path.exists()
+        if not needs_processing:
+            try:
+                mtime = os.path.getmtime(str(overlay_path))
+                if mtime < fresh_threshold:
+                    needs_processing = True
+            except OSError:
+                needs_processing = True
+
+        if needs_processing:
             try:
                 process_single_student(row, output_base_dir=output_dir)
             except Exception as e:
                 print(f"Error processing {student_id}: {e}")
+                qa_results.append({
+                    "student_id": student_id,
+                    "grade": grade,
+                    "roll_number": roll,
+                    "label": label,
+                    "status": "ERROR",
+                    "error": str(e),
+                    "tasks_count": 0,
+                    "words_count": 0,
+                    "task_sequence": "",
+                })
                 continue
 
-        overlay_path = student_dir / "overlay_debug.png"
-        page_norm_path = student_dir / "page_normalized.png"
-
-        overlay_b64 = image_to_base64_thumbnail(overlay_path, max_height=550)
+        overlay_rel_path = f"../{output_dir}/{school}/{student_id}/overlay_debug.png"
 
         # Collect sentence crops and jsons
         sentence_cards = []
         total_words = 0
         json_files = sorted(student_dir.glob("sentence_*.json"))
+        task_info_list = []
 
         for jf in json_files:
             with open(jf, "r", encoding="utf-8") as f:
@@ -107,19 +136,25 @@ def run_qa_review(
             script = s_data["script"]
             wc = s_data["qa_flags"]["word_count_detected"]
             total_words += wc
+            task_info_list.append(f"{t_name}({script[:3]})")
 
-            png_path = student_dir / s_data["crop_filename"]
-            png_b64 = image_to_base64_thumbnail(png_path, max_height=120)
+            crop_fn = s_data["crop_filename"]
+            crop_rel_path = f"../{output_dir}/{school}/{student_id}/{crop_fn}"
 
             sentence_cards.append(
                 f"""<div class="sentence-box">
                     <strong>{t_name}</strong> ({script}) — {wc} words<br>
-                    <img src="{png_b64}" class="crop-img"/>
+                    <img src="{crop_rel_path}" class="crop-img" alt="{t_name}"/>
                 </div>"""
             )
 
         badge_class = "badge-pos" if label == 1 else "badge-neg"
         badge_text = "Dysgraphia At-Risk (Positive)" if label == 1 else "Typical (Negative)"
+
+        # Check protocol compliance
+        expected_tasks = 4 if grade == 3 else 6
+        is_compliant = (len(json_files) == expected_tasks) or (grade > 3 and len(json_files) >= 4)
+        status_text = "PASS" if is_compliant else "WARN"
 
         html_cards.append(
             f"""
@@ -127,12 +162,12 @@ def run_qa_review(
                 <div class="card-header">
                     <h3>{student_id} (Grade {grade}, Roll {roll})</h3>
                     <span class="badge {badge_class}">{badge_text}</span>
-                    <span>Total Sentences: {len(json_files)} | Total Words: {total_words}</span>
+                    <span>Status: <strong>{status_text}</strong> | Total Sentences: {len(json_files)} (Expected: {expected_tasks}) | Total Words: {total_words}</span>
                 </div>
                 <div class="card-body">
                     <div class="overlay-pane">
                         <h4>Segmentation Overlay (Ruled Lines + Word BBoxes)</h4>
-                        <img src="{overlay_b64}" class="overlay-img"/>
+                        <img src="{overlay_rel_path}" class="overlay-img" alt="overlay"/>
                     </div>
                     <div class="crops-pane">
                         <h4>Extracted Sentence Crops</h4>
@@ -147,11 +182,21 @@ def run_qa_review(
             {
                 "student_id": student_id,
                 "grade": grade,
+                "roll_number": roll,
                 "label": label,
-                "sentences": len(json_files),
-                "words": total_words,
+                "status": status_text,
+                "tasks_count": len(json_files),
+                "expected_tasks": expected_tasks,
+                "words_count": total_words,
+                "task_sequence": ", ".join(task_info_list),
             }
         )
+
+    # Save detailed assessment CSV
+    results_df = pd.DataFrame(qa_results)
+    csv_report_path = "qa/school_a_assessment_report.csv"
+    results_df.to_csv(csv_report_path, index=False)
+    print(f"Detailed assessment report saved to: {csv_report_path}")
 
     # Compile full HTML
     html_content = f"""<!DOCTYPE html>
@@ -170,9 +215,11 @@ def run_qa_review(
         .badge-pos {{ background: #991b1b; color: #fecaca; }}
         .badge-neg {{ background: #065f46; color: #a7f3d0; }}
         .card-body {{ display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }}
-        .overlay-img {{ width: 100%; border-radius: 6px; border: 1px solid #475569; }}
-        .sentence-box {{ background: #0f172a; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #334155; }}
-        .crop-img {{ width: 100%; margin-top: 6px; background: white; border-radius: 4px; }}
+        .overlay-pane {{ overflow: hidden; }}
+        .overlay-img {{ width: 100%; border-radius: 6px; border: 1px solid #475569; display: block; }}
+        .crops-pane {{ display: flex; flex-direction: column; gap: 14px; }}
+        .sentence-box {{ background: #0f172a; padding: 12px 14px; border-radius: 6px; border: 1px solid #334155; }}
+        .crop-img {{ max-width: 100%; height: auto; margin-top: 8px; background: white; border-radius: 4px; border: 1px solid #475569; display: block; }}
     </style>
 </head>
 <body>
@@ -180,7 +227,8 @@ def run_qa_review(
     <div class="summary">
         <strong>Inspected Sheets:</strong> {len(qa_results)} sheets across Grades 3, 4, 5, 6, 7.<br>
         <strong>Segmentation Quality Gate:</strong> Visual inspection of line bounds, deskewing, and word separation.<br>
-        <strong>Output location:</strong> <code>data/processed/school_a/&lt;student_id&gt;/</code>
+        <strong>Output location:</strong> <code>data/processed/school_a/&lt;student_id&gt;/</code><br>
+        <strong>Detailed Audit CSV:</strong> <code>qa/school_a_assessment_report.csv</code>
     </div>
     {''.join(html_cards)}
 </body>
@@ -195,9 +243,9 @@ def run_qa_review(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate QA review gallery for Phase 1")
-    parser.add_argument("--samples", type=int, default=6, help="Samples per grade")
-    parser.add_argument("--no-force", dest="force", action="store_false", help="Don't reprocess existing")
-    parser.set_defaults(force=True)
+    parser.add_argument("--samples", type=int, default=6, help="Samples per grade (0 for all)")
+    parser.add_argument("--all", action="store_true", help="Process all sheets in school_a")
+    parser.add_argument("--force", action="store_true", help="Force re-process all sheets")
     args = parser.parse_args()
 
-    run_qa_review(samples_per_grade=args.samples, force=args.force)
+    run_qa_review(samples_per_grade=args.samples, force=args.force, all_sheets=args.all)

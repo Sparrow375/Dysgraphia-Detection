@@ -1,31 +1,26 @@
-# Task List — Phase 1 v3 Segmentation Fix
+# Task List — Phase 1 Interactive Review & Manual Adjustment Web App
 
-## Current Sprint: Fix Segmentation & Cropping Quality
+## Active Sprint: Interactive Verification & Manual Adjustment Tool
 
-### Root Cause Analysis & Resolution
-1. **Camera Photos vs DocScanner Scans**:
-   - Grade 4 was scanned via DocScanner app (flat white paper, high contrast).
-   - Grades 3, 5, 6, 7 were raw phone photos with heavy uneven lighting and shadow gradients.
-   - Solution: Added `normalize_background` in `pipeline/preprocess.py` using large-kernel morphological dilation (`41x41`) + median blur (`21`) + background division. This flattens illumination gradients cleanly without degrading fine stroke boundaries.
-2. **Inverted / Upside-Down Scans**:
-   - Landscape sheets like `G3_A_Roll12` and `G7_A_Roll11` were rotated the wrong direction.
-   - Solution: Added ruled-line density comparison between page halves in `auto_orient_portrait` to ensure the header box is always at top and ruled lines are at bottom.
-3. **Left Margin Line Artifact**:
-   - Red double margin lines at `x \approx 180-220` bridged lines into 1000px+ connected components.
-   - Solution: Extended margin crop to `clean_mask[:, :225] = 0` and added height filter `ch < 1.8 * r` and `cw < 1200`.
+### Objectives
+1. Build a local web application allowing fast visual inspection and manual bounding-box adjustment / recropping for any sheet.
+2. Provide an interactive canvas over the deskewed page with draggable/resizable bounding box handles and freehand rectangle drawing.
+3. Live backend API to re-crop the grayscale image, update JSON schemas, extract words/baselines, re-render `overlay_debug.png`, and mark sheets as verified.
+4. Seamless navigation across all 115 School A students with search, filters (grade, label, status), and keyboard shortcuts.
 
 ### Tasks
-- [x] 1. Diagnose root cause of segmentation failures (DocScanner vs camera phone lighting, inverted sheets, red double margin line)
-- [x] 2. Add illumination normalization (`normalize_background`) in `preprocess.py`
-- [x] 3. Fix auto-orientation for landscape/inverted sheets in `preprocess.py` via ruled line density check
-- [x] 4. Harden margin cutoff (`clean_mask[:, :225] = 0`) and CC filtering (`ch < 1.8 * r`, `cw < 1200`, aspect ratio > 12.0) in `segment.py`
-- [x] 5. Reinstate rule detection & rule masking while preserving natural grayscale in cropped output
-- [x] 6. Re-run pipeline on all 115 School A sheets
-- [x] 7. Regenerate visual QA review gallery (`qa/review_gallery.html`)
-- [x] 8. Update `context.md` with v3 changes
-- [x] 9. Git commit and push to `origin/baseline-v1`
-
-### Benchmark Requirements
-- `G4_A_Roll01` must remain preserved as the benchmark template
-- Clean paper backgrounds without shadow blobs or ruled-line false detections across camera photos
-- Maintain test coverage (Phase 0 and Phase 1 pytest suites)
+- [x] 1. Design and implement Python backend (`qa/app.py`) with `aiohttp`:
+  - `GET /api/students`: Full student directory with review flags
+  - `GET /api/student/{student_id}`: Page dimensions, ruling lines, sentence bounding boxes, crop paths
+  - `POST /api/student/{student_id}/update_sentence`: Live crop update, JSON sync, and overlay regeneration
+  - `POST /api/student/{student_id}/verify`: Persist verification status
+  - Static file serving for processed images and frontend assets
+- [x] 2. Build modern, responsive single-page web app (`qa/web/index.html`, `qa/web/style.css`, `qa/web/app.js`):
+  - Glassmorphic dark UI with Google Fonts (Inter/Outfit)
+  - Interactive Canvas with zoom, pan, bounding box dragging, handle resizing, and new box drawing
+  - Sentence cards panel with lossless crop previews, script toggles (Hindi / English), and task assignment
+  - Navigation bar with grade filters, status indicators, and keyboard navigation (`[` / `]` or arrow keys)
+- [x] 3. Test backend endpoints with automated unit / API test (all passed)
+- [x] 4. Launch web app server and test in browser using `browser_subagent` (live on `http://127.0.0.1:8090/`)
+- [ ] 5. Update `context.md` with interactive review tool architecture
+- [ ] 6. Git commit and push to `origin/baseline-v1`

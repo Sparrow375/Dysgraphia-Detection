@@ -116,5 +116,35 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - Benchmark template `G4_A_Roll01` fully preserved (6 sentences, 8 lines).
   - All 115 School A sheets processed successfully with 0 unhandled exceptions.
   - Interactive QA gallery `qa/review_gallery.html` regenerated across 30 diverse sheets across G3–G7.
+## Phase 1 v4: Deep Learning OCR & Dynamic Alternating Task Grouping (Completed 2026-10-10)
+- **Motivation & Root Causes**:
+  - Children's handwriting (especially dysgraphic students in Grades 3–7) breaks classical morphological shirorekha heuristics: Devanagari letters are choppy with headlines broken into segments < 45px, rule erasure cuts horizontal strokes, and English capital letters ('T', 'I', 'E') or crossed-out words mimic shirorekhas.
+  - Previous pipeline assumed a rigid 6-sentence count. Grade 3 students wrote strictly 4 tasks (`copy_hindi`, `copy_english`, `dictated_hindi`, `dictated_english`), whereas Grades 4–7 wrote up to 6 tasks.
+- **v4 Architecture & Key Improvements**:
+  - `pipeline/segment.py: classify_line_script`: Integrated EasyOCR (`easyocr`, PyTorch) with cached reader. Measures character count in Devanagari Unicode block (`\u0900`–`\u097F`) vs Latin (`a-zA-Z`), delivering unambiguous ground truth. Slices line width to first 800px for 2.5× faster CPU inference (~0.9s per line). Preserves vertical projection / shirorekha as fallback if 0 letters are detected.
+  - `group_lines_into_sentence_blocks`: Replaced rigid indices with dynamic alternating language dynamic programming (DP). Strictly enforces protocol: Task 1: Hindi → Task 2: English → Task 3: Hindi → Task 4: English (→ Task 5: Hindi → Task 6: English). Grade 3 strictly extracts 4 tasks, while Grades 4–7 extract 4–6 tasks. Eliminates language swallowing across all sheets.
+  - Grayscale preservation: `pipeline/process_dataset.py` passes `grayscale_deskewed` into line extraction and crops directly from clean grayscale (no binarization inversion or lossy compression).
+
+## Phase 1 Interactive Review & Segment Editor Web App (Completed 2026-10-10)
+- **Purpose**: Interactive local application allowing visual review and manual bounding box adjustment / recropping for any student sheet across the School A cohort.
+- **Backend (`qa/app.py`)**:
+  - Asynchronous Python web server using `aiohttp.web` on `http://127.0.0.1:8090/`.
+  - `GET /api/students`: Lists all 115 School A students with grade, roll, label, detected task count, and verification status.
+  - `GET /api/student/{student_id}`: Returns page dimensions, image URLs, bounding boxes, scripts, word counts, and crops.
+  - `POST /api/student/{student_id}/update_sentence`: Updates bounding box `[x,y,w,h]`, script (`devanagari`/`latin`), task name, recrops `page_normalized.png`, recomputes word segmentation, updates sentence JSON, and re-renders `overlay_debug.png`.
+  - `POST /api/student/{student_id}/verify`: Persists verification status and reviewer notes to `data/processed/school_a/<student_id>/review_status.json`.
+  - Static file routes serving `qa/web/` assets and `/files/processed/...` images.
+- **Frontend (`qa/web/index.html`, `qa/web/style.css`, `qa/web/app.js`)**:
+  - Dark mode glassmorphic UI with Google Fonts (Inter / Outfit).
+  - Central zoomable, pannable canvas rendering `page_normalized.png` with SVG bounding box overlays (green for Devanagari, amber for Latin, glowing sky blue for selected).
+  - 8-handle drag-to-resize and drag-to-move bounding box interactions.
+  - "Draw Box" mode: Click and drag anywhere on the page to define a new bounding box.
+  - Right-hand Inspector Panel: Student metadata, Task Editor with live coordinate inputs and script toggles, "Save & Re-Crop" button, and task cards list displaying full-resolution crops.
+  - Navigation: Grade filter pills (All, G3, G4, G5, G6, G7), status dropdown (Needs Review, Verified, At-Risk), Previous/Next buttons, and keyboard shortcuts (`[` / `]`, `V`, `D`, `F`, `0`, `S`).
+- **Validation**:
+  - `tests/test_qa_app.py` passed verifying all API endpoints.
+  - `tests/test_phase1.py` and `tests/test_phase0.py` passed 9/9 test cases.
+  - Browser subagent verified live UI on `http://127.0.0.1:8090/`.
+
 - **Next Phase**: Phase 2 Feature Library (baseline wobble & residuals, rule offset, slant tensor, curvature & jerk proxy, inter-word/inter-character gaps, shirorekha continuity features).
 

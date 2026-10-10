@@ -34,56 +34,138 @@ TASK_TEMPLATE = [
 ]
 
 
-def classify_line_script(line_ink: np.ndarray, threshold: float = 0.50) -> Tuple[str, float]:
-    """Classify line script as 'devanagari' or 'latin' based on word-level shirorekha ratio.
+_OCR_READER = None
+
+
+def get_ocr_reader():
+    """Lazily initialize and cache EasyOCR reader for Hindi and English."""
+    global _OCR_READER
+    if _OCR_READER is None:
+        try:
+            import easyocr
+            _OCR_READER = easyocr.Reader(["hi", "en"], gpu=False, verbose=False)
+        except Exception:
+            _OCR_READER = False
+    return _OCR_READER if _OCR_READER is not False else None
+
+
+def classify_line_script(
+    line_ink: np.ndarray,
+    rule_crop: Optional[np.ndarray] = None,
+    gray_crop: Optional[np.ndarray] = None,
+    threshold: float = 0.50,
+) -> Tuple[str, float]:
+    """Classify text line as 'devanagari' or 'latin' using OCR with shirorekha fallback.
+
+    Uses deep learning OCR (EasyOCR hi+en) to count recognized Devanagari vs Latin characters.
+    Falls back to headline (shirorekha) continuity if OCR returns no characters.
 
     Returns:
-        script ('devanagari' or 'latin'), shirorekha_score (float)
+        script ('devanagari' or 'latin'), confidence_logit (float)
     """
-    h, w = line_ink.shape[:2]
-    if line_ink.sum() < 200:
-        return "latin", 0.0
+    # --- Priority 1: High-Confidence OCR Script Identification ---
+    reader = get_ocr_reader()
+    if reader is not None:
+        try:
+            if gray_crop is not None and gray_crop.size > 0:
+                img_ocr = cv2.cvtColor(gray_crop, cv2.COLOR_GRAY2RGB) if len(gray_crop.shape) == 2 else gray_crop
+            else:
+                img_ocr = cv2.cvtColor((255 - line_ink * 255), cv2.COLOR_GRAY2RGB)
 
-    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(line_ink)
-    comp_ratios = []
+            # Slicing line width to first 800px delivers 2.5x faster inference while capturing first 2-3 words
+            img_slice = img_ocr[:, :min(img_ocr.shape[1], 800)]
+            results = reader.readtext(img_slice)
+            all_text = " ".join([r[1] for r in results])
+            n_dev = sum(1 for c in all_text if "\u0900" <= c <= "\u097F")
+            n_lat = sum(1 for c in all_text if c.isascii() and c.isalpha())
 
-    for i in range(1, num_labels):
-        comp_w = stats[i, cv2.CC_STAT_WIDTH]
-        comp_h = stats[i, cv2.CC_STAT_HEIGHT]
-        area = stats[i, cv2.CC_STAT_AREA]
+            if n_dev > 0 or n_lat > 0:
+                if n_dev > n_lat:
+                    conf = 4.0 + min(6.0, (n_dev - n_lat) * 0.5)
+                    return "devanagari", float(conf)
+                else:
+                    conf = -4.0 - min(6.0, (n_lat - n_dev) * 0.5)
+                    return "latin", float(conf)
+        except Exception:
+            pass
 
-        # Filter thin rule remnants and small noise
-        if (comp_w / max(comp_h, 1)) > 8.0 or area < 60 or comp_h < 14 or comp_w < 18:
+    # --- Priority 2: Morphological Shirorekha & Projection Fallback ---
+    if rule_crop is not None:
+        ink = np.where(rule_crop > 0, 0, line_ink).astype(np.uint8)
+    else:
+        ink = line_ink.copy()
+
+    h, w = ink.shape[:2]
+    if ink.sum() < 200:
+        return "latin", -3.0
+
+    # Filter thin horizontal rule remnants (aspect > 5.5 and height < 32)
+    num_cc, labels, stats, _ = cv2.connectedComponentsWithStats(ink)
+    clean = ink.copy()
+    for i in range(1, num_cc):
+        cw = stats[i, cv2.CC_STAT_WIDTH]
+        ch = stats[i, cv2.CC_STAT_HEIGHT]
+        if (cw / max(ch, 1)) > 5.5 and ch < 32:
+            clean[labels == i] = 0
+
+    # Filter out long continuous rule lines (> 160px)
+    kernel_rule = cv2.getStructuringElement(cv2.MORPH_RECT, (160, 1))
+    long_rules = cv2.morphologyEx(clean, cv2.MORPH_OPEN, kernel_rule)
+    if long_rules.sum() > 0:
+        clean = np.where(
+            cv2.dilate(long_rules, cv2.getStructuringElement(cv2.MORPH_RECT, (1, 5))) > 0,
+            0,
+            clean,
+        ).astype(np.uint8)
+
+    proj_y = clean.sum(axis=1)
+    nz = np.where(proj_y > 0)[0]
+    if len(nz) < 10:
+        return "latin", -2.0
+
+    y1, y2 = nz[0], nz[-1] + 1
+    clean_t = clean[y1:y2, :]
+    th = y2 - y1
+    p_trim = proj_y[y1:y2]
+
+    # Group into words for shirorekha continuity analysis
+    kernel_word = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 1))
+    dilated = cv2.dilate(clean_t, kernel_word)
+    num_w, labels_w, stats_w, _ = cv2.connectedComponentsWithStats(dilated)
+
+    total_w = 0
+    total_run = 0
+    strong_dev = 0
+
+    for wi in range(1, num_w):
+        ww = stats_w[wi, cv2.CC_STAT_WIDTH]
+        wh = stats_w[wi, cv2.CC_STAT_HEIGHT]
+        wx = stats_w[wi, cv2.CC_STAT_LEFT]
+        wy = stats_w[wi, cv2.CC_STAT_TOP]
+        if ww < 45 or wh < 15:
             continue
-
-        c_x = stats[i, cv2.CC_STAT_LEFT]
-        c_y = stats[i, cv2.CC_STAT_TOP]
-        comp_crop = line_ink[c_y : c_y + comp_h, c_x : c_x + comp_w]
-
-        # Top 35% where the shirorekha headline is located
-        top_slice = comp_crop[: max(2, int(comp_h * 0.35)), :]
+        crop_w = clean_t[wy : wy + wh, wx : wx + ww]
+        top_slice = crop_w[: max(2, int(wh * 0.42)), :]
         top_proj = (top_slice.sum(axis=0) > 0).astype(int)
-
-        if top_proj.sum() == 0:
-            comp_ratios.append(0.0)
-            continue
-
         padded = np.pad(top_proj, (1, 1), "constant")
         diffs = np.diff(padded)
         starts = np.where(diffs == 1)[0]
         ends = np.where(diffs == -1)[0]
-        max_run = (ends - starts).max() if len(starts) > 0 else 0
+        mr = (ends - starts).max() if len(starts) > 0 else 0
+        total_w += ww
+        total_run += mr
+        # Word has strong shirorekha if run >= 45px, covers >= 40% of word, and <= 350px
+        if 45 <= mr <= 350 and (mr / float(ww)) >= 0.40:
+            strong_dev += 1
 
-        comp_ratios.append(max_run / comp_w)
+    ratio = (total_run / float(total_w)) if total_w > 0 else 0.0
+    top_40_pct = p_trim[: max(2, int(th * 0.40))].sum() / max(p_trim.sum(), 1)
+    logit = strong_dev * 2.5 + (ratio - 0.28) * 10.0 + (top_40_pct - 0.35) * 5.0
+    prob_dev = float(1.0 / (1.0 + np.exp(-logit)))
 
-    if not comp_ratios:
-        return "latin", 0.0
+    is_dev = prob_dev >= threshold
+    return ("devanagari" if is_dev else "latin"), float(logit)
 
-    median_ratio = float(np.median(comp_ratios))
-    if median_ratio >= threshold:
-        return "devanagari", median_ratio
-
-    return "latin", median_ratio
 
 
 def estimate_line_baseline_and_xheight(
@@ -258,6 +340,7 @@ def extract_lines_and_segment(
     ruled_lines: List[Dict[str, Any]],
     median_spacing_r: float,
     rule_mask: Optional[np.ndarray] = None,
+    grayscale_deskewed: Optional[np.ndarray] = None,
 ) -> List[Dict[str, Any]]:
     """Segment physical text lines and extract words, components, and baseline models.
 
@@ -335,8 +418,8 @@ def extract_lines_and_segment(
         if not assigned:
             lines_raw.append([c])
 
-    # Keep lines with at least 2 components and > 450 px of ink
-    valid_lines_raw = [l for l in lines_raw if len(l) >= 2 and sum(it["area"] for it in l) > 450]
+    # Keep lines with at least 2 components OR substantial text area (> 800px)
+    valid_lines_raw = [l for l in lines_raw if len(l) >= 2 or sum(it["area"] for it in l) > 800]
     valid_lines_raw.sort(key=lambda line: np.mean([it["cy"] for it in line]))
 
     lines_out: List[Dict[str, Any]] = []
@@ -355,11 +438,17 @@ def extract_lines_and_segment(
             rule_crop = rule_mask[y_min:y_max, x_min:x_max]
             line_crop_clean = np.where(rule_crop > 0, 0, line_crop).astype(np.uint8)
         else:
+            rule_crop = None
             line_crop_clean = line_crop
+
+        if grayscale_deskewed is not None:
+            gray_crop = grayscale_deskewed[y_min:y_max, x_min:x_max]
+        else:
+            gray_crop = None
 
         ink_pixels = int(line_crop_clean.sum())
 
-        script, score = classify_line_script(line_crop_clean)
+        script, score = classify_line_script(line_crop, rule_crop, gray_crop=gray_crop)
         base_rel, x_height = estimate_line_baseline_and_xheight(line_crop_clean, script)
         global_baseline = float(y_min + base_rel)
 
@@ -408,6 +497,7 @@ def extract_lines_and_segment(
                 "ink_pixels": ink_pixels,
                 "script": script,
                 "script_confidence": score,
+                "p_dev": float(1.0 / (1.0 + np.exp(-score))),
                 "baseline_y": global_baseline,
                 "baseline_slope": slope,
                 "baseline_intercept": intercept,
@@ -426,45 +516,86 @@ def extract_lines_and_segment(
 def group_lines_into_sentence_blocks(
     lines: List[Dict[str, Any]],
     page_shape: Tuple[int, int],
+    grade: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
-    """Assemble physical lines into the 6 canonical task sentences.
+    """Assemble physical lines into canonical task sentences.
 
-    Follows the 6-task protocol:
-    - Task 1: sentence_01_copy_hindi (1 line)
-    - Task 2: sentence_02_copy_english (1-3 lines)
-    - Task 3: sentence_03_dictated_hindi (1 line)
-    - Task 4: sentence_04_dictated_english (1 line)
-    - Task 5: sentence_05_own_hindi (1 line)
-    - Task 6: sentence_06_own_english (1 line)
+    Enforces the fundamental task protocol:
+    1. Tasks strictly alternate in language: Hindi -> English -> Hindi -> English (-> Hindi -> English).
+    2. Grade 3 students wrote 4 sentences (Tasks 1-4).
+    3. Grades 4-7 students wrote up to 6 sentences (Tasks 1-6).
+    4. Multi-line sentences (e.g. English copy spanning 2-3 lines) are globally partitioned
+       using dynamic programming to guarantee zero language swallowing.
     """
     if not lines:
         return []
 
     h_page, w_page = page_shape[:2]
-    N = len(lines)
-    task_to_lines: Dict[int, List[Dict[str, Any]]] = {}
 
-    if N >= 6:
-        task_to_lines[0] = [lines[0]]
-        # Task 2 absorbs multi-line English copy between line 0 and the final 4 single-line tasks
-        task_to_lines[1] = lines[1 : N - 4]
-        task_to_lines[2] = [lines[N - 4]]
-        task_to_lines[3] = [lines[N - 3]]
-        task_to_lines[4] = [lines[N - 2]]
-        task_to_lines[5] = [lines[N - 1]]
+    # Filter out page footer artifacts and blank ruled-line noise
+    cutoff_y = 1250 if (grade == 3) else 2400
+    filtered = [
+        l for l in lines
+        if l["y_top"] < cutoff_y and not (l.get("word_count", 0) <= 1 and l.get("ink_pixels", 0) < 6000)
+    ]
+    if not filtered:
+        filtered = lines
+
+    K = len(filtered)
+    # Target task count: Grade 3 is strictly 4 tasks. Grades 4-7 is up to 6 tasks.
+    if grade == 3 or K < 6:
+        T = min(4, K)
     else:
-        for idx, l in enumerate(lines):
-            task_to_lines[idx] = [l]
+        T = min(6, K)
+
+    target_templates = TASK_TEMPLATE[:T]
+    target_scripts = [t["expected_script"] for t in target_templates]
+
+    # Dynamic Programming Alternating Partition
+    eps = 1e-4
+    dp = np.full((T + 1, K + 1), 1e9)
+    parent = np.zeros((T + 1, K + 1), dtype=int)
+    dp[0, 0] = 0.0
+
+    for t in range(1, T + 1):
+        is_dev = (target_scripts[t - 1] == "devanagari")
+        for i in range(t, K + 1):
+            for k in range(t - 1, i):
+                n_lines = i - k
+                reg_penalty = 0.0
+                # Task 2 (1-indexed) is English copy, which naturally spans multiple lines.
+                # Mild penalty for grouping multiple lines into single-line tasks.
+                if t != 2 and n_lines > 1:
+                    reg_penalty = 0.5 * (n_lines - 1)
+                cost = reg_penalty
+                for l_idx in range(k, i):
+                    p_dev = filtered[l_idx].get("p_dev")
+                    if p_dev is None:
+                        sc = filtered[l_idx].get("script_confidence", 0.0)
+                        p_dev = float(1.0 / (1.0 + np.exp(-sc)))
+                    p = p_dev if is_dev else (1.0 - p_dev)
+                    cost -= np.log(max(p, eps))
+
+                if dp[t - 1, k] + cost < dp[t, i]:
+                    dp[t, i] = dp[t - 1, k] + cost
+                    parent[t, i] = k
+
+    split_indices = [K]
+    cur = K
+    for t in range(T, 0, -1):
+        prev = int(parent[t, cur])
+        split_indices.append(prev)
+        cur = prev
+    split_indices.reverse()
 
     sentence_blocks: List[Dict[str, Any]] = []
 
-    for t_idx, template in enumerate(TASK_TEMPLATE):
-        if t_idx not in task_to_lines:
-            continue
-
-        assigned_lines = task_to_lines[t_idx]
+    for t in range(T):
+        s_idx, e_idx = split_indices[t], split_indices[t + 1]
+        assigned_lines = filtered[s_idx:e_idx]
         if not assigned_lines:
             continue
+        template = target_templates[t]
 
         y_min = max(0, min(l["y_top"] for l in assigned_lines) - 10)
         y_max = min(h_page, max(l["y_bot"] for l in assigned_lines) + 10)

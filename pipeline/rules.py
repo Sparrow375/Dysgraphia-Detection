@@ -176,6 +176,7 @@ def process_ruled_lines(
     binary_ink: np.ndarray,
     grayscale_norm: np.ndarray,
     min_spacing: int = 40,
+    rule_thickness: int = 11,
 ) -> Dict[str, Any]:
     """Complete rule detection, deskewing, and removal pipeline.
 
@@ -197,9 +198,9 @@ def process_ruled_lines(
     # Re-detect lines on deskewed image so slopes become ~0
     lines_deskewed, _, r = detect_ruled_lines(ink_deskewed, min_spacing=min_spacing)
 
-    # Remove rules and restore crossed strokes with full 7px coverage
+    # Remove rules and restore crossed strokes with full coverage
     ink_clean, rule_mask = remove_rules_and_restore_strokes(
-        ink_deskewed, lines_deskewed, median_spacing_r=r, rule_thickness=7
+        ink_deskewed, lines_deskewed, median_spacing_r=r, rule_thickness=rule_thickness
     )
 
     return {

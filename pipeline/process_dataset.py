@@ -140,7 +140,7 @@ def process_single_student(
     rule_res = process_ruled_lines(
         binary_ink=prep["binary_ink"],
         grayscale_norm=prep["grayscale_norm"],
-        min_spacing=35,
+        min_spacing=40,
     )
 
     # Save normalized deskewed grayscale page
@@ -152,15 +152,24 @@ def process_single_student(
         ruled_lines=rule_res["ruled_lines"],
         median_spacing_r=rule_res["median_spacing_r"],
         rule_mask=rule_res["rule_mask"],
+        grayscale_deskewed=rule_res["grayscale_deskewed"],
     )
 
-    # Step 4: Sentence Block Assembly (6-prompt sequence)
+    # Step 4: Sentence Block Assembly (alternating task protocol: 4 tasks for G3, 6 tasks for G4-G7)
+    grade = int(row["grade"]) if ("grade" in row and pd.notna(row["grade"])) else None
     sentences = group_lines_into_sentence_blocks(
         lines=lines,
         page_shape=rule_res["grayscale_deskewed"].shape,
+        grade=grade,
     )
 
     # Step 5: Process each sentence crop & skeleton graph
+    for old_f in student_out_dir.glob("sentence_*"):
+        try:
+            old_f.unlink()
+        except OSError:
+            pass
+
     sentence_metadata_list = []
     for s in sentences:
         task_id = s["task_id"]
