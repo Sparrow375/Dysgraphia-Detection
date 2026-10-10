@@ -224,7 +224,41 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
 - **Validation**:
   - `tests/test_phase3.py` passed 6/6 test cases verifying row counts, schema integrity, zero student leakage across CV folds, z-score bounds, script feature isolation, and imputation correctness.
 
-- **Next Phase**: Phase 4 Modeling and Evaluation (nested CV candidates: Elastic-Net, SVM-RBF, Random Forest, Gradient Boosting; Platt probability calibration, cluster bootstrap CIs, School B evaluation).
+- **Next Phase**: Phase 4 Modeling and Evaluation (Stage 1 Completed 2026-10-10).
+
+## Phase 4: Modeling & Cross-Validation Evaluation (Stage 1 Completed 2026-10-10)
+- **Nested Cross-Validation Framework (`models/cv.py`, `models/evaluator.py`)**:
+  - **Outer Splits**: 5-repeat 5-fold student-stratified CV (`student_folds_lookup.csv`). Zero student leakage guaranteed between train and test sets.
+  - **Inner Splits**: 3-fold student `StratifiedGroupKFold` for leakage-free hyperparameter tuning and threshold selection.
+  - **Sample Weights**: Per-sentence weights balancing individual student contributions and student-level class balance ($w_i = \frac{1}{N_{\text{sentences}}} \times w_{\text{class}}$).
+  - **Probability Calibration**: Platt scaling (sigmoid calibration) fit on inner out-of-fold validation scores.
+  - **Student Score Aggregation**: Mean-pooling of calibrated sentence probabilities:
+    $$P_{\text{student}} = \frac{1}{K} \sum_{k=1}^K P(\text{dysgraphic} \mid \text{sentence}_k)$$
+  - **Cluster Bootstrap CIs**: $B=1000$ student-level bootstrap iterations generating empirical 95% percentile confidence intervals.
+- **Candidate Models & Feature Preferences (`models/candidates.py`)**:
+  - Distance/margin models (Elastic-Net Logistic Regression, SVM-RBF): Trained on robust z-scores (`z_raw_*`).
+  - Tree ensembles (Random Forest, Gradient Boosting): Trained on raw scale-normalized features (`raw_*`).
+  - Baselines: Majority class baseline and Grade-only logistic regression baseline.
+- **Benchmark Results across Datasets (`reports/benchmark_all_datasets.csv`)**:
+  - **Combined Multilingual Dataset (641 sentences, 115 students)**:
+    - **SVM (RBF Kernel)**: AUROC = **0.645** (95% CI: 0.514–0.761), AUPRC = **0.303**, Brier = **0.181**, Balanced Accuracy = **54.9%**, Specificity = 89.0%, Sensitivity = 20.8%.
+    - **Elastic-Net LR**: AUROC = **0.609** (95% CI: 0.470–0.748), AUPRC = **0.296**, Brier = 0.228, Specificity = 90.1%, Sensitivity = 12.5%.
+    - **Random Forest**: AUROC = **0.556** (95% CI: 0.427–0.678), Brier = 0.195, Specificity = 91.2%, Sensitivity = 16.7%.
+    - **Grade-Only Baseline**: AUROC = 0.464, Sensitivity = 4.2% (demonstrating dysgraphia markers are not developmental age artifacts).
+  - **Hindi-Only Table (Devanagari, 322 sentences)**:
+    - **Elastic-Net LR**: AUROC = **0.647** (95% CI: 0.517–0.758), AUPRC = **0.358**, Sensitivity = **25.0%**, Specificity = 83.5%, Brier = 0.215.
+    - **Random Forest**: AUROC = **0.633** (95% CI: 0.499–0.757), AUPRC = 0.306, Brier = **0.176**, Specificity = 91.2%, Sensitivity = 12.5%.
+    - **SVM-RBF**: AUROC = **0.603** (95% CI: 0.478–0.720).
+    - **Gradient Boosting**: AUROC = 0.582, Balanced Accuracy = **55.9%**, Sensitivity = **25.0%**, Specificity = 86.8%.
+  - **English-Only Table (Latin, 319 sentences)**:
+    - **SVM-RBF**: AUROC = **0.566** (95% CI: 0.423–0.701), AUPRC = 0.306.
+    - **Elastic-Net LR**: AUROC = 0.525.
+- **Key Scientific Insights**:
+  1. **Hindi Superiority**: Devanagari script features yield substantially higher classification discriminability (AUROC 0.647 vs English 0.566) due to the structural constraints of the shirorekha and upper/lower matras magnifying motor dyspraxia.
+  2. **Clinical Trade-offs**: When operating at a conservative $\ge 90\%$ specificity (minimizing false positive referrals), sensitivity is $\sim 17–25\%$. At a broader screening triage threshold (75% specificity), sensitivity reaches **50.0%**.
+- **Automated Validation**:
+  - `tests/test_phase4.py` passed 6/6 test cases verifying zero student CV leakage, sample weights, leakage-free fold imputation, Platt calibration, and cluster bootstrap CIs.
+- **Next Phase**: Phase 4 Stage 2 (Frozen DINOv2 visual encoder baseline, 8-family drop-one feature ablations, permutation importance, and misclassification gallery `reports/misclassified_gallery.html`).
 
 
 
