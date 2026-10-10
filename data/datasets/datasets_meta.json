@@ -1,0 +1,45 @@
+{
+  "datasets": {
+    "dataset_hindi": {
+      "rows": 322,
+      "columns": 73,
+      "path": "data/datasets/dataset_hindi.csv",
+      "script": "devanagari"
+    },
+    "dataset_english": {
+      "rows": 319,
+      "columns": 67,
+      "path": "data/datasets/dataset_english.csv",
+      "script": "latin"
+    },
+    "dataset_combined": {
+      "rows": 641,
+      "columns": 75,
+      "path": "data/datasets/dataset_combined.csv",
+      "script": "multilingual"
+    }
+  },
+  "normalization_params": {
+    "strategy": "pooled_robust_z_scores",
+    "formula": "z = (x - median) / (1.4826 * MAD)",
+    "min_cell_size": 15,
+    "clip_range": [
+      -5.0,
+      5.0
+    ]
+  },
+  "fold_columns": [
+    "repeat_0_fold",
+    "repeat_1_fold",
+    "repeat_2_fold",
+    "repeat_3_fold",
+    "repeat_4_fold"
+  ],
+  "one_hot_columns": [
+    "task_copy",
+    "task_dictated",
+    "task_own"
+  ],
+  "num_raw_features": 29,
+  "num_z_features": 29
+}

@@ -200,6 +200,31 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
     - `matra_ratio`: AUROC = **0.608**.
     - `kappa_sign_changes_per_h`: AUROC = **0.605**.
 
-- **Next Phase**: Phase 3 Dataset Assembly (robust z-scores per grade × language × task with pooled median/MAD, Hindi and English tables, inner fold imputation).
+- **Next Phase**: Phase 3 Dataset Assembly (Completed 2026-10-10).
+
+## Phase 3: Dataset Assembly & Feature Preparation (Completed 2026-10-10)
+- **Cohort Health Audit**:
+  - Inspected all 115 School A students on disk: 115/115 present (100%), 115/115 marked verified in `review_status.json`.
+  - 641 total sentence schemas and 641 lossless crop images; 0 corrupt files, 0 missing files.
+  - Script distribution: 322 Devanagari sentences, 319 Latin sentences (4,526 segmented words total).
+- **Architecture & Datasets (`pipeline/dataset_assembly.py`)**:
+  - `data/datasets/dataset_hindi.csv`: 322 Devanagari sentences $\times$ 73 columns (filtered to exclude Latin-only features).
+  - `data/datasets/dataset_english.csv`: 319 Latin sentences $\times$ 67 columns (filtered to exclude Devanagari-only features).
+  - `data/datasets/dataset_combined.csv`: 641 multilingual sentences $\times$ 75 columns.
+  - `data/datasets/datasets_meta.json`: Dataset schemas, cell statistics, and normalization configurations.
+- **Feature Representations**:
+  - **Raw Scale-Normalized Features**: Prefixed with `raw_` (already dimensionless and normalized by character height $h$ and rule spacing $r$).
+  - **Robust Z-Score Normalization**: Prefixed with `z_raw_`, computed via:
+    $$z = \frac{x - \text{median}}{1.4826 \cdot \max(\text{MAD}, 10^{-6})}$$
+    per $(\text{grade} \times \text{script} \times \text{task\_group})$ cell with fallback to $(\text{grade} \times \text{script})$ when cell size $< 15$, clipped to $[-5.0, 5.0]$.
+  - **One-Hot Task Encoding**: `task_copy`, `task_dictated`, `task_own` (exactly one active per row).
+  - **Fold Mappings**: Outer test fold indicators `repeat_0_fold` through `repeat_4_fold` integrated for seamless evaluation in Phase 4.
+- **Leakage-Free Fold Imputation**:
+  - `impute_fold_features(train_df, test_df)` utility computes medians strictly on training folds and applies them to both train and test splits with zero test set leakage.
+- **Validation**:
+  - `tests/test_phase3.py` passed 6/6 test cases verifying row counts, schema integrity, zero student leakage across CV folds, z-score bounds, script feature isolation, and imputation correctness.
+
+- **Next Phase**: Phase 4 Modeling and Evaluation (nested CV candidates: Elastic-Net, SVM-RBF, Random Forest, Gradient Boosting; Platt probability calibration, cluster bootstrap CIs, School B evaluation).
+
 
 
