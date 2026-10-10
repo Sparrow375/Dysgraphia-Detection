@@ -1,20 +1,20 @@
 {
   "datasets": {
     "dataset_hindi": {
-      "rows": 322,
-      "columns": 73,
+      "rows": 570,
+      "columns": 72,
       "path": "data/datasets/dataset_hindi.csv",
       "script": "devanagari"
     },
     "dataset_english": {
-      "rows": 319,
-      "columns": 67,
+      "rows": 575,
+      "columns": 66,
       "path": "data/datasets/dataset_english.csv",
       "script": "latin"
     },
     "dataset_combined": {
-      "rows": 641,
-      "columns": 75,
+      "rows": 1145,
+      "columns": 74,
       "path": "data/datasets/dataset_combined.csv",
       "script": "multilingual"
     }
@@ -40,6 +40,6 @@
     "task_dictated",
     "task_own"
   ],
-  "num_raw_features": 29,
-  "num_z_features": 29
+  "num_raw_features": 28,
+  "num_z_features": 28
 }

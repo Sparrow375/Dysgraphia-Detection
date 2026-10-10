@@ -1,5 +1,5 @@
 {
-  "num_rows": 641,
+  "num_rows": 1145,
   "num_features": 29,
   "feature_names": [
     "baseline_rmse_norm",
@@ -35,7 +35,7 @@
   "feature_descriptions": {
     "baseline_rmse_norm": "RANSAC word-baseline residual RMSE normalized by x-height h",
     "baseline_slope_mean": "Mean baseline slope across lines within sentence",
-    "baseline_slope_std": "Standard deviation of baseline slopes across lines (NaN if < 2 lines)",
+    "baseline_slope_std": "Standard deviation of baseline slopes across lines (NaN if < 2 lines). EXCLUDED from model feature set (81% NaN \u2014 most sentences span a single line).",
     "rule_offset_mean": "Mean vertical offset of words from nearest ruling line, normalized by spacing r",
     "rule_offset_std": "Standard deviation of vertical rule offset (vertical adherence jitter)",
     "slant_mean_deg": "Doubled-angle circular mean slant angle of near-vertical strokes (deg)",
@@ -63,5 +63,5 @@
     "words_written_ratio": "Detected word count divided by expected prompt word count",
     "lines_used": "Number of physical handwritten lines used by sentence"
   },
-  "school_filter": "school_a"
+  "school_filter": "all"
 }

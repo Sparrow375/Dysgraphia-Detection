@@ -39,9 +39,15 @@ def test_student_feature_aggregation_schema():
 
     df_students = extract_student_features(df_combined, df_folds)
 
-    assert len(df_students) == 115, f"Expected 115 students, got {len(df_students)}"
-    assert (df_students["label"] == 1).sum() == 24, "Expected exactly 24 positive students"
-    assert (df_students["label"] == 0).sum() == 91, "Expected exactly 91 negative students"
+    df_students_a = df_students[df_students["school"] == "school_a"]
+    assert len(df_students_a) == 115, f"Expected 115 School A students, got {len(df_students_a)}"
+    assert (df_students_a["label"] == 1).sum() == 24, "Expected exactly 24 School A positive students"
+    assert (df_students_a["label"] == 0).sum() == 91, "Expected exactly 91 School A negative students"
+
+    # Multi-school totals
+    assert len(df_students) == 215, f"Expected 215 total students, got {len(df_students)}"
+    assert (df_students["label"] == 1).sum() == 36, "Expected 36 total positive students"
+    assert (df_students["label"] == 0).sum() == 179, "Expected 179 total negative students"
 
     # Verify key cross-task features exist
     expected_feats = [
@@ -60,7 +66,7 @@ def test_student_feature_aggregation_schema():
 
     # Test robust z-scoring
     df_z = compute_student_robust_z_scores(df_students)
-    assert len(df_z) == 115
+    assert len(df_z) == len(df_students)
     for ef in expected_feats:
         z_col = f"z_{ef}"
         assert z_col in df_z.columns

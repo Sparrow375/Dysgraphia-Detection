@@ -11,6 +11,7 @@ import glob
 import json
 import os
 import sys
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -111,11 +112,48 @@ def extract_sentence_features(
     return feats
 
 
+def _process_single_json(jp: str) -> Optional[Dict[str, Any]]:
+    """Worker function to parse and extract features for a single sentence JSON."""
+    try:
+        with open(jp, "r", encoding="utf-8") as f:
+            s_json = json.load(f)
+
+        sid = str(s_json.get("student_id", Path(jp).parent.name))
+        school = str(s_json.get("school", Path(jp).parent.parent.name))
+        grade = int(s_json.get("grade", 0))
+        task_id = str(s_json.get("task_id", Path(jp).stem))
+        task_name = str(s_json.get("task_name", "task"))
+        script = str(s_json.get("script", "devanagari"))
+
+        crop_path = Path(jp).parent / s_json.get("crop_filename", f"{task_id}.png")
+        img_crop = None
+        if crop_path.exists():
+            img_crop = cv2.imread(str(crop_path), cv2.IMREAD_GRAYSCALE)
+
+        feats = extract_sentence_features(s_json, image_crop=img_crop)
+
+        row_dict = {
+            "student_id": sid,
+            "school": school,
+            "grade": grade,
+            "task_id": task_id,
+            "task_name": task_name,
+            "script": script,
+            "json_path": str(Path(jp).as_posix()),
+        }
+        row_dict.update(feats)
+        return row_dict
+    except Exception as e:
+        print(f"Error extracting features from {jp}: {e}")
+        return None
+
+
 def extract_dataset_features(
     processed_dir: str = "data/processed",
     manifest_csv: str = "data/manifest.csv",
     output_dir: str = "data/features",
     school_filter: Optional[str] = "school_a",
+    workers: int = 6,
 ) -> pd.DataFrame:
     """Extract feature table across all processed sentence JSONs in the cohort.
 
@@ -137,51 +175,32 @@ def extract_dataset_features(
             label_map[sid] = lbl
 
     # Collect sentence JSON files
-    search_path = proc_base / (school_filter if school_filter else "*") / "*" / "sentence_*.json"
+    school_glob = "*" if (not school_filter or school_filter.lower() == "all") else school_filter
+    search_path = proc_base / school_glob / "*" / "sentence_*.json"
     json_paths = sorted(glob.glob(str(search_path)))
 
     print(f"Found {len(json_paths)} sentence JSON schemas to extract features from.")
 
-    rows: List[Dict[str, Any]] = []
+    if workers > 1:
+        with ProcessPoolExecutor(max_workers=workers) as executor:
+            raw_results = list(
+                tqdm(
+                    executor.map(_process_single_json, json_paths),
+                    total=len(json_paths),
+                    desc=f"Extracting features ({workers} workers)",
+                )
+            )
+        rows = [r for r in raw_results if r is not None]
+    else:
+        rows = []
+        for jp in tqdm(json_paths, desc="Extracting features"):
+            r = _process_single_json(jp)
+            if r is not None:
+                rows.append(r)
 
-    for jp in tqdm(json_paths, desc="Extracting features"):
-        try:
-            with open(jp, "r", encoding="utf-8") as f:
-                s_json = json.load(f)
-
-            sid = str(s_json.get("student_id", Path(jp).parent.name))
-            school = str(s_json.get("school", Path(jp).parent.parent.name))
-            grade = int(s_json.get("grade", 0))
-            task_id = str(s_json.get("task_id", Path(jp).stem))
-            task_name = str(s_json.get("task_name", "task"))
-            script = str(s_json.get("script", "devanagari"))
-            label = label_map.get(sid, float("nan"))
-
-            # Optional pre-load crop image for speed
-            crop_path = Path(jp).parent / s_json.get("crop_filename", f"{task_id}.png")
-            img_crop = None
-            if crop_path.exists():
-                img_crop = cv2.imread(str(crop_path), cv2.IMREAD_GRAYSCALE)
-
-            # Extract features
-            feats = extract_sentence_features(s_json, image_crop=img_crop)
-
-            # Metadata header
-            row_dict = {
-                "student_id": sid,
-                "school": school,
-                "grade": grade,
-                "task_id": task_id,
-                "task_name": task_name,
-                "script": script,
-                "label": label,
-                "json_path": str(Path(jp).as_posix()),
-            }
-            row_dict.update(feats)
-            rows.append(row_dict)
-
-        except Exception as e:
-            print(f"Error extracting features from {jp}: {e}")
+    # Inject ground truth labels
+    for r in rows:
+        r["label"] = label_map.get(r["student_id"], float("nan"))
 
     df_feats = pd.DataFrame(rows)
     raw_csv_path = out_base / "features_raw.csv"
@@ -213,6 +232,7 @@ if __name__ == "__main__":
     parser.add_argument("--manifest", default="data/manifest.csv")
     parser.add_argument("--output-dir", default="data/features")
     parser.add_argument("--school", default="school_a")
+    parser.add_argument("--workers", type=int, default=6)
     args = parser.parse_args()
 
     extract_dataset_features(
@@ -220,4 +240,5 @@ if __name__ == "__main__":
         manifest_csv=args.manifest,
         output_dir=args.output_dir,
         school_filter=args.school,
+        workers=args.workers,
     )

@@ -53,6 +53,17 @@
   - [x] 5.2 Upgrade `qa/app.py` server to support multi-school routing (`school_a` vs `school_b`), dynamic image paths, and dedicated labeling API endpoint (`/api/student/{id}/label`).
   - [x] 5.3 Enhance frontend UI (`qa/web/index.html`, `qa/web/style.css`, `qa/web/app.js`) with School filter pills, Grade 8 filter, Dysgraphia Label selector, and keyboard shortcut (`L`) for instant rapid labeling.
   - [x] 5.4 Automated API testing & server deployment on `http://127.0.0.1:8090/`.
+- [x] Stage 6: School B Ground Truth Finalization, Feature Extraction & Cross-School Tinkering:
+  - [x] 6.1 Finalize School B ground truth labels in `data/manifest.csv` and student `review_status.json` (12 Dysgraphic positives, 88 Normal controls; mark verified).
+  - [x] 6.2 Run feature extraction across all 504 verified School B sentence tasks (`features/extractor.py`) and merge into unified dataset.
+  - [x] 6.3 Assemble multi-school datasets and generate student-level features (`pipeline/dataset_assembly.py`, `models/student_features.py`).
+  - [x] 6.4 External Validation: Evaluate School A trained models on School B as an independent external test cohort.
+  - [x] 6.5 Cross-School Tinkering & Modeling:
+    - Train on School B, test on School A (reverse transfer).
+    - Pooled multi-school nested cross-validation across all 215 students (36 positives, 179 controls) with stratified grouped folds.
+    - Evaluate 15-feature clean multi-phenotype set vs full feature sets on both cross-school and pooled benchmarks.
+    - Diagnose cross-school domain shifts, invariant features, and misclassifications.
+  - [x] 6.6 Update documentation (`context.md`, `task_list.md`), verify test suite, and git commit/push.
 
 ---
 

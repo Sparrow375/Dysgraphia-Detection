@@ -98,14 +98,14 @@
       "valid_count": 554
     },
     "ascender_descender_ratio": {
-      "nan_count": 348,
-      "nan_pct": 54.29,
-      "valid_count": 293
+      "nan_count": 352,
+      "nan_pct": 54.91,
+      "valid_count": 289
     },
     "matra_ratio": {
-      "nan_count": 366,
-      "nan_pct": 57.1,
-      "valid_count": 275
+      "nan_count": 384,
+      "nan_pct": 59.91,
+      "valid_count": 257
     },
     "shirorekha_rms_deviation_norm": {
       "nan_count": 386,
@@ -128,14 +128,14 @@
       "valid_count": 641
     },
     "junctions_per_unit_width": {
-      "nan_count": 3,
-      "nan_pct": 0.47,
-      "valid_count": 638
+      "nan_count": 0,
+      "nan_pct": 0.0,
+      "valid_count": 641
     },
     "endpoints_per_unit_width": {
-      "nan_count": 2,
-      "nan_pct": 0.31,
-      "valid_count": 639
+      "nan_count": 0,
+      "nan_pct": 0.0,
+      "valid_count": 641
     },
     "words_written_ratio": {
       "nan_count": 183,
@@ -183,25 +183,25 @@
       }
     },
     "rule_offset_mean": {
-      "spearman_rho_with_grade": 0.0234,
-      "p_value": 0.5665903921355571,
+      "spearman_rho_with_grade": 0.0571,
+      "p_value": 0.16114624476741368,
       "grade_medians": {
-        "3": -0.0452,
-        "4": -0.0134,
-        "5": 0.0139,
-        "6": -0.0161,
-        "7": -0.0316
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0,
+        "6": 0.0,
+        "7": 0.0
       }
     },
     "rule_offset_std": {
-      "spearman_rho_with_grade": 0.083,
-      "p_value": 0.04158941031845846,
+      "spearman_rho_with_grade": -0.0674,
+      "p_value": 0.09839354713837435,
       "grade_medians": {
-        "3": 0.1837,
-        "4": 0.1774,
-        "5": 0.2033,
-        "6": 0.2047,
-        "7": 0.2028
+        "3": 0.2983,
+        "4": 0.2551,
+        "5": 0.2332,
+        "6": 0.2507,
+        "7": 0.2542
       }
     },
     "slant_mean_deg": {
@@ -359,25 +359,25 @@
       }
     },
     "ascender_descender_ratio": {
-      "spearman_rho_with_grade": -0.0323,
-      "p_value": 0.5817214780425682,
+      "spearman_rho_with_grade": 0.1203,
+      "p_value": 0.04093346953142764,
       "grade_medians": {
-        "3": 0.8023,
-        "4": 0.3634,
-        "5": 0.5665,
-        "6": 0.5162,
-        "7": 0.4838
+        "3": 1.7493,
+        "4": 1.711,
+        "5": 1.5502,
+        "6": 1.8873,
+        "7": 1.75
       }
     },
     "matra_ratio": {
-      "spearman_rho_with_grade": -0.1767,
-      "p_value": 0.0032812418361639873,
+      "spearman_rho_with_grade": 0.0013,
+      "p_value": 0.9833175081780114,
       "grade_medians": {
-        "3": 2.0433,
-        "4": 1.8977,
-        "5": 1.3229,
-        "6": 1.4961,
-        "7": 1.3032
+        "3": 1.9701,
+        "4": 1.7371,
+        "5": 2.0049,
+        "6": 1.966,
+        "7": 1.9141
       }
     },
     "shirorekha_rms_deviation_norm": {
@@ -425,13 +425,13 @@
       }
     },
     "junctions_per_unit_width": {
-      "spearman_rho_with_grade": 0.0246,
-      "p_value": 0.5347423336925942,
+      "spearman_rho_with_grade": 0.0232,
+      "p_value": 0.5580696548082968,
       "grade_medians": {
         "3": 1.021,
         "4": 1.3862,
         "5": 1.427,
-        "6": 1.0951,
+        "6": 1.094,
         "7": 1.3999
       }
     },
@@ -492,15 +492,15 @@
       "n_students": 95
     },
     "rule_offset_mean": {
-      "raw_auc": 0.4052,
-      "aligned_auc": 0.5948,
-      "direction": "negative",
+      "raw_auc": 0.6145,
+      "aligned_auc": 0.6145,
+      "direction": "positive",
       "n_students": 115
     },
     "rule_offset_std": {
-      "raw_auc": 0.3883,
-      "aligned_auc": 0.6117,
-      "direction": "negative",
+      "raw_auc": 0.5476,
+      "aligned_auc": 0.5476,
+      "direction": "positive",
       "n_students": 115
     },
     "slant_mean_deg": {
@@ -588,14 +588,14 @@
       "n_students": 115
     },
     "ascender_descender_ratio": {
-      "raw_auc": 0.4799,
-      "aligned_auc": 0.5201,
+      "raw_auc": 0.4876,
+      "aligned_auc": 0.5124,
       "direction": "negative",
       "n_students": 115
     },
     "matra_ratio": {
-      "raw_auc": 0.6076,
-      "aligned_auc": 0.6076,
+      "raw_auc": 0.6071,
+      "aligned_auc": 0.6071,
       "direction": "positive",
       "n_students": 115
     },
@@ -624,14 +624,14 @@
       "n_students": 115
     },
     "junctions_per_unit_width": {
-      "raw_auc": 0.6438,
-      "aligned_auc": 0.6438,
+      "raw_auc": 0.6374,
+      "aligned_auc": 0.6374,
       "direction": "positive",
       "n_students": 115
     },
     "endpoints_per_unit_width": {
-      "raw_auc": 0.6648,
-      "aligned_auc": 0.6648,
+      "raw_auc": 0.6538,
+      "aligned_auc": 0.6538,
       "direction": "positive",
       "n_students": 115
     },
