@@ -67,8 +67,8 @@ def test_school_b_manifest_integrity():
 
     assert len(df_b) == 100, f"Expected 100 School B images, got {len(df_b)}"
     assert df_b["is_held_out"].all(), "All School B images must be flagged as held-out"
-    assert (df_b["label"] == 1).sum() == 12, "Expected 12 School B dysgraphic positives"
-    assert (df_b["label"] == 0).sum() == 88, "Expected 88 School B normal controls"
+    assert (df_b["label"] == 1).sum() == 16, "Expected 16 School B dysgraphic positives"
+    assert (df_b["label"] == 0).sum() == 84, "Expected 84 School B normal controls"
 
     for _, row in df_b.iterrows():
         p = Path(row["relative_image_path"])

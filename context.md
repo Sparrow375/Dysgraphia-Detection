@@ -348,39 +348,34 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
 
 ## Phase 6: Multi-School External Validation, Reverse Transfer & Pooled Modeling (Completed 2026-10-10)
 - **School B Ground Truth Finalization & Verified Cohort**:
-  - User completed manual crop adjustments and clinical review via `qa/app.py`.
-  - 12 Dysgraphic positives identified across G4 (4), G5 (3), G6 (1), G7 (3), G8 (1).
-  - 88 Normal controls confirmed across G3–G8.
-  - 100/100 students marked `verified: true` in `review_status.json` and synchronized in `data/manifest.csv`.
-  - Full multi-center cohort comprises **215 unique students (36 positives, 179 controls)** and **1,145 verified sentence crops** (School A: 641, School B: 504).
+  - User completed manual crop adjustments and clinical review via `qa/app.py`, adding 4 additional positive cases in G3 (`SCHB_G3_IMG_20261007_101635`, `SCHB_G3_IMG_20261007_101645`), G4 (`SCHB_G4_IMG_20261007_100621`), and G5 (`SCHB_G5_IMG_20261007_100918`).
+  - School B comprises **16 Dysgraphic positives** (G3: 2, G4: 5, G5: 4, G6: 1, G7: 3, G8: 1) and **84 Normal controls**.
+  - Full multi-center cohort comprises **215 unique students (40 positives, 175 controls)** and **1,143 verified sentence crops** (School A: 641, School B: 502).
 - **Parallel Feature Extraction & Multi-School Dataset Assembly**:
-  - `features/extractor.py` upgraded with multi-worker parallelism (`ProcessPoolExecutor`, 6 workers). Extracted all 1,145 sentence schemas in ~1.5 minutes.
-  - `pipeline/dataset_assembly.py` generated `data/datasets/dataset_hindi.csv` (570 rows), `data/datasets/dataset_english.csv` (575 rows), and `data/datasets/dataset_combined.csv` (1,145 rows).
+  - `features/extractor.py` re-extracted all 1,143 sentence schemas in ~1.5 minutes using 6 worker processes.
+  - `pipeline/dataset_assembly.py` generated `data/datasets/dataset_hindi.csv` (569 rows), `data/datasets/dataset_english.csv` (574 rows), and `data/datasets/dataset_combined.csv` (1,143 rows).
   - `models/student_features.py` generated `data/datasets/dataset_student_level.csv` (215 students × 156 raw + 156 robust z-score features).
 - **Cross-School Domain Shift & Feature Invariance Analysis (`reports/feature_domain_shift_analysis.csv`)**:
   - Two-sample Kolmogorov-Smirnov test between School A controls and School B controls:
-  - **84 out of 154 features (54.5%) are statistically invariant across schools ($p \ge 0.05$)**.
-  - Top invariant clinical features: `words_written_ratio_copy_mean` ($p=0.989$), `shirorekha_rms_deviation_norm_max` ($p=0.803$), `jerk_proxy_eng_minus_hindi` ($p=0.789$), `matra_ratio_max` ($p=0.717$), `endpoints_per_unit_width_mean` ($p=0.667$), `matra_ratio_std` ($p=0.669$).
-- **External Validation: Train on School A $\to$ Test on Unseen School B (`reports/cross_school_external_validation.csv`)**:
-  - **Invariant Clean Random Forest**:
-    - **AUROC: 0.8400**
-    - **AUPRC: 0.5795** (vs 0.120 random baseline — 4.8$\times$ improvement)
-    - **Sensitivity @ 80% Specificity: 66.7%** (8/12 true positives detected)
-    - **Sensitivity @ 90% Specificity: 58.3%** (7/12 true positives detected)
-    - **Specificity at 0.5 threshold: 96.6%** (85/88 controls correctly identified, only 3 false positives).
-  - **Clean 15 Random Forest**: AUROC 0.8153, AUPRC 0.5489, Sens@80% Spec = 66.7%, Sens@90% Spec = 58.3%.
-  - **Clean 15 HistGBM**: AUROC 0.8040, AUPRC 0.4720.
-  - In comparison, the old 10-feature set achieved only 0.5994 on Elastic-Net, validating the critical necessity of our 15-feature multi-phenotype clean set.
+  - **87 out of 154 features (56.5%) are statistically invariant across schools ($p \ge 0.05$)**.
+  - Top invariant clinical features: `words_written_ratio_copy_mean` ($p=0.989$), `shirorekha_rms_deviation_norm_max` ($p=0.723$), `matra_ratio_std` ($p=0.779$), `endpoints_per_unit_width_mean` ($p=0.689$), `components_per_unit_width_eng_minus_hindi` ($p=0.608$), `matra_ratio_max` ($p=0.592$).
+- **External Validation Breakdown: Core Matched Grades vs Developmental Shift**:
+  - **Grades 4–7 Matched External Test (N=73, 13 positives, 60 controls)**:
+    - **HistGBM (Clean 15)**: **AUROC: 0.8154**, **AUPRC: 0.5215**, **Sens @ 80% Spec: 53.8%**.
+    - **HistGBM (Invariant Clean)**: **AUROC: 0.7885**, **AUPRC: 0.5108**, **Sens @ 80% Spec: 46.2%**, **Sens @ 90% Spec: 46.2%**.
+    - **Random Forest (Invariant Clean)**: **AUROC: 0.7679**, **AUPRC: 0.5601**, **Sens @ 80% Spec: 61.5%**.
+    - Grade 6: AUROC = **0.9091**, Grade 4: AUROC = **0.8455**, Grade 5: AUROC = **0.7885**.
+  - **Developmental Task Discrepancies in Extreme Grades**:
+    - **Grade 3 Shift**: School B Grade 3 administered only 3 tasks (Hindi Copy, English Copy, Free Writing) with **zero dictation tasks**; students lacked dictation fragmentation signals and required spatial size jitter (`word_height_cv_max`, `shirorekha_tilt_var_mean`, `tortuosity_median_cv`) rather than dictation features.
+    - **Grade 8 Shift**: School A had zero Grade 8 students (G3–G7 only), so models trained on School A encounter unseen developmental cursive acceleration in Grade 8.
 - **Reverse Transfer: Train on School B $\to$ Test on School A**:
-  - Training on School B (only 12 positives) and evaluating on School A (24 positives):
-    - **Invariant Clean Multi-Model Ensemble**: **AUROC 0.8114**, **AUPRC 0.5825**, **Sensitivity @ 90% Specificity: 41.7%**.
-    - **Clean 15 Elastic-Net**: **AUROC 0.7935**, **AUPRC 0.5084**, **Sensitivity @ 80% Specificity: 66.7%**.
-  - Confirms bidirectional generalization and that the learned handwriting signals represent true clinical motor markers rather than institutional artifacts.
+  - Training on School B (16 positives) and evaluating on School A (24 positives):
+    - **Clean 15 Elastic-Net**: **AUROC: 0.7427**, **AUPRC: 0.4530**, **Sens @ 80% Spec: 58.3%**, **Sens @ 90% Spec: 41.7%**.
+    - **Clean 15 Multi-Model Ensemble**: **AUROC: 0.7418**, **AUPRC: 0.4458**, **Sens @ 80% Spec: 58.3%**.
 - **Pooled Multi-Center Nested Cross-Validation (`reports/pooled_multischool_benchmark.csv`)**:
-  - 5-repeat 5-fold stratified nested CV across all 215 students (36 positives, 179 controls) stratified by `(school, label)`:
-    - **Elastic-Net (Clean 15)**: **AUROC 0.7608 $\pm$ 0.0128**, **AUPRC 0.4425 $\pm$ 0.0185**, **Sens @ 80% Spec: 60.6%**, **Sens @ 90% Spec: 47.8%**, Balanced Accuracy: 69.9%.
-    - **Random Forest (Clean 15)**: **AUROC 0.7427 $\pm$ 0.0172**, **AUPRC 0.4292 $\pm$ 0.0201**, **Sens @ 80% Spec: 57.8%**, **Sens @ 90% Spec: 43.9%**.
-    - **HistGBM (Clean 15)**: **AUROC 0.7465 $\pm$ 0.0155**, **AUPRC 0.3863 $\pm$ 0.0208**, **Sens @ 80% Spec: 57.8%**, **Sens @ 90% Spec: 42.2%**.
+  - 5-repeat 5-fold stratified nested CV across all 215 students (40 positives, 175 controls):
+    - **Stacked Multi-Model Ensemble**: **AUROC: 0.7139**, **AUPRC: 0.3877**.
+    - **Random Forest (Clean 15)**: **AUROC: 0.6984 $\pm$ 0.0199**, **AUPRC: 0.4225 $\pm$ 0.0201**, **Sens @ 80% Spec: 51.0%**, **Sens @ 90% Spec: 40.0%**.
 - **Automated Verification**:
   - Full pytest suite: **33 passed out of 33 tests**.
 

@@ -1,19 +1,19 @@
 {
   "datasets": {
     "dataset_hindi": {
-      "rows": 570,
+      "rows": 569,
       "columns": 72,
       "path": "data/datasets/dataset_hindi.csv",
       "script": "devanagari"
     },
     "dataset_english": {
-      "rows": 575,
+      "rows": 574,
       "columns": 66,
       "path": "data/datasets/dataset_english.csv",
       "script": "latin"
     },
     "dataset_combined": {
-      "rows": 1145,
+      "rows": 1143,
       "columns": 74,
       "path": "data/datasets/dataset_combined.csv",
       "script": "multilingual"

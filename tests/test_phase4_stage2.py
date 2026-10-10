@@ -46,8 +46,8 @@ def test_student_feature_aggregation_schema():
 
     # Multi-school totals
     assert len(df_students) == 215, f"Expected 215 total students, got {len(df_students)}"
-    assert (df_students["label"] == 1).sum() == 36, "Expected 36 total positive students"
-    assert (df_students["label"] == 0).sum() == 179, "Expected 179 total negative students"
+    assert (df_students["label"] == 1).sum() == 40, "Expected 40 total positive students"
+    assert (df_students["label"] == 0).sum() == 175, "Expected 175 total negative students"
 
     # Verify key cross-task features exist
     expected_feats = [

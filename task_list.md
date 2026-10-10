@@ -64,6 +64,13 @@
     - Evaluate 15-feature clean multi-phenotype set vs full feature sets on both cross-school and pooled benchmarks.
     - Diagnose cross-school domain shifts, invariant features, and misclassifications.
   - [x] 6.6 Update documentation (`context.md`, `task_list.md`), verify test suite, and git commit/push.
+- [x] Stage 7: School B Re-Extraction, Domain-Invariant Feature Optimization & Modeling:
+  - [x] 7.1 Verify updated School B crops, sentence counts, and labels (16 Dysgraphic positives, 84 Normal controls).
+  - [x] 7.2 Re-run parallel feature extraction across all sentences with updated crops and labels (`features/extractor.py`).
+  - [x] 7.3 Re-assemble datasets (`pipeline/dataset_assembly.py`) and rebuild student-level dataset (`models/student_features.py`).
+  - [x] 7.4 Domain-Invariant Feature Optimization: Re-run KS tests and evaluate domain-invariant feature sets.
+  - [x] 7.5 Execute updated benchmarks (A -> B external validation, B -> A reverse transfer, and pooled 215-student nested CV).
+  - [x] 7.6 Update unit tests, documentation (`context.md`, `task_list.md`), and git commit/push.
 
 ---
 

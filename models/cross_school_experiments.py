@@ -234,6 +234,21 @@ def run_cross_school_external_validation(df: pd.DataFrame) -> pd.DataFrame:
         })
         print(f"[A->B | {fset_name:15s} | ensemble_avg   ] AUROC: {ens_metrics['auroc']:.4f} | AUPRC: {ens_metrics['auprc']:.4f} | Sens@80: {ens_metrics['sens_at_80_spec']*100:.1f}% | Sens@90: {ens_metrics['sens_at_90_spec']*100:.1f}%")
 
+        # Matched Grades 4-7 external test
+        g47_mask = df_b["grade"].isin([4, 5, 6, 7]).values
+        y_test_g47 = y_test[g47_mask]
+        for mname, scores in pred_scores.items():
+            m_g47 = compute_metrics(y_test_g47, scores[g47_mask])
+            results.append({
+                "experiment": "Train School A -> Test School B (Grades 4-7 Matched)",
+                "feature_set": fset_name,
+                "n_features": len(fcols),
+                "model": mname,
+                **m_g47,
+            })
+            if mname in ["hist_gbm", "random_forest"]:
+                print(f"[A->B (G4-7) | {fset_name:10s} | {mname:15s}] AUROC: {m_g47['auroc']:.4f} | AUPRC: {m_g47['auprc']:.4f} | Sens@80: {m_g47['sens_at_80_spec']*100:.1f}% | Sens@90: {m_g47['sens_at_90_spec']*100:.1f}%")
+
     # Run Direction 2: Train B -> Test A (Reverse Transfer)
     print(f"\n--- REVERSE TRANSFER: Train School B -> Test School A ---")
     for fset_name, fcols in feature_sets.items():
