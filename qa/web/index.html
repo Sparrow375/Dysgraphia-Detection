@@ -24,6 +24,15 @@
             <!-- Global Navigation & Filters -->
             <div class="nav-controls">
                 <div class="filter-group">
+                    <label>School:</label>
+                    <div class="pill-group" id="schoolPills">
+                        <button class="pill active" data-school="school_b">School B</button>
+                        <button class="pill" data-school="school_a">School A</button>
+                        <button class="pill" data-school="all">All</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
                     <label>Grade:</label>
                     <div class="pill-group" id="gradePills">
                         <button class="pill active" data-grade="all">All</button>
@@ -32,6 +41,7 @@
                         <button class="pill" data-grade="5">G5</button>
                         <button class="pill" data-grade="6">G6</button>
                         <button class="pill" data-grade="7">G7</button>
+                        <button class="pill" data-grade="8">G8</button>
                     </div>
                 </div>
 
@@ -41,7 +51,9 @@
                         <option value="all">All Students</option>
                         <option value="needs_review">Needs Review</option>
                         <option value="verified">Verified</option>
+                        <option value="unlabeled">Unlabeled</option>
                         <option value="positive">At-Risk (Positives)</option>
+                        <option value="negative">Normal (Controls)</option>
                     </select>
                 </div>
 
@@ -118,10 +130,19 @@
                         <span id="metaBadge" class="badge">---</span>
                     </div>
                     <div class="meta-details">
+                        <div class="meta-item"><label>School:</label> <span id="metaSchool">-</span></div>
                         <div class="meta-item"><label>Grade:</label> <span id="metaGrade">-</span></div>
                         <div class="meta-item"><label>Roll Number:</label> <span id="metaRoll">-</span></div>
                         <div class="meta-item"><label>Detected Tasks:</label> <span id="metaTasksCount">0</span></div>
                         <div class="meta-item"><label>Total Words:</label> <span id="metaWordsCount">0</span></div>
+                    </div>
+                    <div class="meta-label-row" style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                        <label style="font-weight: 600; font-size: 13px; color: var(--text-secondary); white-space: nowrap;">Label (L):</label>
+                        <select id="metaLabelSelect" class="select-input" style="flex: 1; font-weight: 600;">
+                            <option value="unlabeled">Unlabeled / Unknown</option>
+                            <option value="0">0: Normal (Control)</option>
+                            <option value="1">1: At-Risk (Positive)</option>
+                        </select>
                     </div>
                     <div class="meta-notes">
                         <input type="text" id="studentNotes" class="text-input" placeholder="Notes for this student..."/>

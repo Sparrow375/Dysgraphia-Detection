@@ -15,12 +15,13 @@ Definition:
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
 from skimage.morphology import skeletonize
+
+from features.utils import get_x_height as _get_x_height_shared, load_or_binarize_ink as _load_or_binarize_ink_shared
 
 
 def _load_or_binarize_ink(
@@ -28,28 +29,7 @@ def _load_or_binarize_ink(
     image_crop: Optional[np.ndarray] = None,
 ) -> Optional[np.ndarray]:
     """Retrieve or compute binary ink mask for sentence crop."""
-    if image_crop is not None:
-        if len(image_crop.shape) == 3:
-            gray = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
-        else:
-            gray = image_crop
-        _, bin_ink = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-        return (bin_ink > 0).astype(np.uint8)
-
-    # Try loading from crop_filename
-    crop_fn = sentence_json.get("crop_filename")
-    sid = sentence_json.get("student_id")
-    school = sentence_json.get("school", "school_a")
-
-    if crop_fn and sid:
-        path = Path("data/processed") / school / sid / crop_fn
-        if path.exists():
-            gray = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
-            if gray is not None:
-                _, bin_ink = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-                return (bin_ink > 0).astype(np.uint8)
-
-    return None
+    return _load_or_binarize_ink_shared(sentence_json, image_crop)
 
 
 def extract_skeleton_tangents(

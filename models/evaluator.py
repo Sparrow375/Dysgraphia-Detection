@@ -51,12 +51,16 @@ def fit_platt_calibrator(
 ) -> CalibratedPredictor:
     """Fit a univariate logistic regression (Platt scaling) on validation predictions.
 
+    NOTE: Prefer fit_platt_calibrator_from_scores when inner out-of-fold scores are
+    already available. Calling this function with training data (X_train, y_train) is
+    in-sample calibration and will produce overconfident probabilities.
+
     Parameters
     ----------
     base_estimator : Any
         Fitted base estimator.
     X_val : np.ndarray
-        Validation feature matrix.
+        Held-out validation feature matrix (must NOT be the training set).
     y_val : np.ndarray
         Validation ground-truth labels.
     sample_weight_val : np.ndarray, optional
@@ -80,6 +84,46 @@ def fit_platt_calibrator(
     val_scores_2d = val_scores.reshape(-1, 1)
     calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
     calibrator.fit(val_scores_2d, y_val, sample_weight=sample_weight_val)
+
+    return CalibratedPredictor(base_estimator=base_estimator, calibrator=calibrator)
+
+
+def fit_platt_calibrator_from_scores(
+    base_estimator: Any,
+    oof_scores: np.ndarray,
+    y_val: np.ndarray,
+    sample_weight_val: Optional[np.ndarray] = None,
+) -> CalibratedPredictor:
+    """Fit Platt scaling from pre-computed out-of-fold (OOF) probability scores.
+
+    This is the correct way to calibrate after nested CV: the OOF scores are proper
+    held-out predictions (each sample was scored by a model it was never trained on),
+    so using them as calibration targets avoids in-sample overfitting.
+
+    Parameters
+    ----------
+    base_estimator : Any
+        Fitted base estimator (used for inference at test time via CalibratedPredictor).
+    oof_scores : np.ndarray
+        Pre-computed inner out-of-fold predicted probabilities for the training set.
+        Shape: (n_train_samples,). These must be probability estimates in [0, 1].
+    y_val : np.ndarray
+        Training ground-truth labels aligned with oof_scores.
+    sample_weight_val : np.ndarray, optional
+        Sample weights aligned with oof_scores.
+
+    Returns
+    -------
+    CalibratedPredictor
+        Wrapped predictor outputting calibrated probabilities.
+    """
+    eps = 1e-7
+    p1 = np.clip(oof_scores, eps, 1.0 - eps)
+    # Convert probabilities to log-odds (logit) for the univariate LR calibrator
+    oof_logits = np.log(p1 / (1.0 - p1)).reshape(-1, 1)
+
+    calibrator = LogisticRegression(solver="lbfgs", max_iter=1000)
+    calibrator.fit(oof_logits, y_val, sample_weight=sample_weight_val)
 
     return CalibratedPredictor(base_estimator=base_estimator, calibrator=calibrator)
 

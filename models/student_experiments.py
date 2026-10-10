@@ -23,7 +23,9 @@ REPORTS_DIR = WORKSPACE_ROOT / "reports"
 OUTPUT_CSV_PATH = REPORTS_DIR / "student_benchmark_results.csv"
 OUTPUT_JSON_PATH = REPORTS_DIR / "student_benchmark_results.json"
 
-# Core clinical handwriting feature set (11 features across motor continuity, spatial control, spacing, and Devanagari structure)
+# Core clinical handwriting feature set (10 features across motor continuity, spatial control, spacing, and Devanagari structure)
+# Note: baseline_slope_std_mean removed — baseline_slope_std is NaN for 81% of sentences
+# (requires >= 2 lines per sentence) and its student-level aggregate carries negligible signal.
 CORE_FEATURES = [
     "components_per_unit_width_dict_mean",
     "components_per_unit_width_max",
@@ -35,7 +37,6 @@ CORE_FEATURES = [
     "matra_ratio_std",
     "shirorekha_rms_deviation_norm_max",
     "gap_cv_mean",
-    "baseline_slope_std_mean",
 ]
 
 

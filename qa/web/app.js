@@ -22,6 +22,7 @@
         drawState: null, // { isDrawing: false, startX: 0, startY: 0, currentBox: null }
         
         showOverlayDebug: false,
+        schoolFilter: 'school_b',
         gradeFilter: 'all',
         statusFilter: 'all',
 
@@ -66,6 +67,7 @@
 
     // DOM Elements
     const el = {
+        schoolPills: document.getElementById('schoolPills'),
         gradePills: document.getElementById('gradePills'),
         statusFilter: document.getElementById('statusFilter'),
         studentSelect: document.getElementById('studentSelect'),
@@ -93,8 +95,10 @@
         
         metaStudentId: document.getElementById('metaStudentId'),
         metaBadge: document.getElementById('metaBadge'),
+        metaSchool: document.getElementById('metaSchool'),
         metaGrade: document.getElementById('metaGrade'),
         metaRoll: document.getElementById('metaRoll'),
+        metaLabelSelect: document.getElementById('metaLabelSelect'),
         metaTasksCount: document.getElementById('metaTasksCount'),
         metaWordsCount: document.getElementById('metaWordsCount'),
         studentNotes: document.getElementById('studentNotes'),
@@ -125,6 +129,18 @@
 
     // --- Event Listeners ---
     function bindEvents() {
+        // School Pills
+        if (el.schoolPills) {
+            el.schoolPills.addEventListener('click', (e) => {
+                const btn = e.target.closest('.pill');
+                if (!btn) return;
+                el.schoolPills.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                state.schoolFilter = btn.dataset.school;
+                applyFilters();
+            });
+        }
+
         // Grade Pills
         el.gradePills.addEventListener('click', (e) => {
             const btn = e.target.closest('.pill');
@@ -140,6 +156,15 @@
             state.statusFilter = el.statusFilter.value;
             applyFilters();
         });
+
+        // Label Dropdown
+        if (el.metaLabelSelect) {
+            el.metaLabelSelect.addEventListener('change', async () => {
+                const val = el.metaLabelSelect.value;
+                const labelVal = (val === '1' ? 1 : (val === '0' ? 0 : null));
+                await saveStudentLabel(labelVal);
+            });
+        }
 
         // Student Dropdown & Prev/Next (with auto-save)
         el.studentSelect.addEventListener('change', async () => {
@@ -214,6 +239,10 @@
     function applyFilters() {
         let filtered = [...state.students];
 
+        if (state.schoolFilter !== 'all') {
+            filtered = filtered.filter(s => s.school === state.schoolFilter);
+        }
+
         if (state.gradeFilter !== 'all') {
             const g = parseInt(state.gradeFilter, 10);
             filtered = filtered.filter(s => s.grade === g);
@@ -225,6 +254,10 @@
             filtered = filtered.filter(s => s.verified);
         } else if (state.statusFilter === 'positive') {
             filtered = filtered.filter(s => s.label === 1);
+        } else if (state.statusFilter === 'negative') {
+            filtered = filtered.filter(s => s.label === 0);
+        } else if (state.statusFilter === 'unlabeled') {
+            filtered = filtered.filter(s => s.label === null || s.label === undefined || isNaN(s.label));
         }
 
         state.filteredStudents = filtered;
@@ -241,9 +274,10 @@
         state.filteredStudents.forEach((s) => {
             const opt = document.createElement('option');
             opt.value = s.student_id;
-            const posBadge = s.label === 1 ? ' [At-Risk]' : '';
+            const posBadge = s.label === 1 ? ' [At-Risk]' : (s.label === 0 ? ' [Normal]' : ' [?]');
             const verBadge = s.verified ? ' [✓]' : '';
-            opt.textContent = `${s.student_id} (G${s.grade} R${s.roll_number})${posBadge}${verBadge}`;
+            const schPrefix = state.schoolFilter === 'all' ? `[${s.school === 'school_b' ? 'B' : 'A'}] ` : '';
+            opt.textContent = `${schPrefix}${s.student_id} (G${s.grade} R${s.roll_number})${posBadge}${verBadge}`;
             el.studentSelect.appendChild(opt);
         });
 
@@ -281,21 +315,31 @@
     function updateStudentMetaUI(data) {
         const studentInfo = state.students.find(s => s.student_id === data.student_id) || {};
         el.metaStudentId.textContent = data.student_id;
-        el.metaGrade.textContent = studentInfo.grade ?? '-';
-        el.metaRoll.textContent = studentInfo.roll_number ?? '-';
+        if (el.metaSchool) {
+            el.metaSchool.textContent = data.school === 'school_b' ? 'School B (Kanyashala)' : 'School A (Future Gen)';
+        }
+        el.metaGrade.textContent = studentInfo.grade ?? data.grade ?? '-';
+        el.metaRoll.textContent = (studentInfo.roll_number && studentInfo.roll_number > 0) ? studentInfo.roll_number : (data.roll_number && data.roll_number > 0 ? data.roll_number : '-');
         el.metaTasksCount.textContent = data.sentences.length;
         
         const totalWords = data.sentences.reduce((acc, s) => acc + (s.word_count || 0), 0);
         el.metaWordsCount.textContent = totalWords;
         el.studentNotes.value = data.notes || '';
 
-        // Badge
-        if (studentInfo.label === 1) {
+        // Badge & Label Selector
+        const curLabel = data.label !== undefined ? data.label : studentInfo.label;
+        if (curLabel === 1) {
             el.metaBadge.className = 'badge badge-pos';
             el.metaBadge.textContent = 'At-Risk (Positive)';
-        } else {
+            if (el.metaLabelSelect) el.metaLabelSelect.value = '1';
+        } else if (curLabel === 0) {
             el.metaBadge.className = 'badge badge-neg';
             el.metaBadge.textContent = 'Typical (Negative)';
+            if (el.metaLabelSelect) el.metaLabelSelect.value = '0';
+        } else {
+            el.metaBadge.className = 'badge badge-unlabeled';
+            el.metaBadge.textContent = 'Unlabeled (Pending)';
+            if (el.metaLabelSelect) el.metaLabelSelect.value = 'unlabeled';
         }
 
         // Verify button state
@@ -306,6 +350,37 @@
             el.verifyBtn.classList.remove('is-verified');
             el.verifyBtn.innerHTML = '<span class="icon">&#10003;</span> Mark Verified';
         }
+    }
+
+    async function saveStudentLabel(labelVal) {
+        if (!state.currentStudentId) return;
+        try {
+            const res = await fetch(`/api/student/${state.currentStudentId}/label`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ label: labelVal }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                const st = state.students.find(s => s.student_id === state.currentStudentId);
+                if (st) st.label = labelVal;
+                if (state.currentStudentData) state.currentStudentData.label = labelVal;
+                updateStudentMetaUI(state.currentStudentData || {});
+                populateStudentSelect();
+                showToast(`Label saved: ${labelVal === 1 ? 'At-Risk (Positive)' : (labelVal === 0 ? 'Normal (Control)' : 'Unlabeled')}`, 'success');
+            }
+        } catch (err) {
+            showToast('Failed to save label: ' + err.message, 'error');
+        }
+    }
+
+    async function cycleStudentLabel() {
+        const cur = state.currentStudentData?.label;
+        let next;
+        if (cur === 1) next = null;
+        else if (cur === 0) next = 1;
+        else next = 0;
+        await saveStudentLabel(next);
     }
 
     function setupPageCanvas(data) {
@@ -1049,6 +1124,9 @@
         } else if (e.key === '0') {
             e.preventDefault();
             resetZoom();
+        } else if (e.key === 'l' || e.key === 'L') {
+            e.preventDefault();
+            cycleStudentLabel();
         } else if (e.key === 'Escape') {
             e.preventDefault();
             state.isAddingNewTask = false;

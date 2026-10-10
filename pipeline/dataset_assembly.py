@@ -208,6 +208,12 @@ def assemble_datasets(
         "student_id", "school", "grade", "task_id", "task_name", "script", "label", "json_path"
     ]]
 
+    # Drop baseline_slope_std: it is NaN for 81% of sentences (requires >= 2 lines per
+    # sentence, but the vast majority span a single line). Including it adds near-zero
+    # signal while requiring imputation across almost all rows, which can shift the
+    # feature distribution toward the training-fold median and destabilize CV estimates.
+    base_feature_cols = [c for c in base_feature_cols if c != "baseline_slope_std"]
+
     # Prefix raw feature columns with raw_ for clarity
     rename_raw = {c: f"raw_{c}" for c in base_feature_cols}
     df_merged = df_merged.rename(columns=rename_raw)

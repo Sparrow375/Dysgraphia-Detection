@@ -16,6 +16,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 from sklearn.linear_model import LinearRegression, RANSACRegressor
 
+from features.utils import get_x_height as _get_x_height_shared
+
 
 def _get_lines(sentence_json: Dict[str, Any]) -> List[Dict[str, Any]]:
     """Retrieve physical line structures from sentence JSON schema."""
@@ -25,15 +27,7 @@ def _get_lines(sentence_json: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 def _get_x_height(sentence_json: Dict[str, Any], default: float = 40.0) -> float:
     """Retrieve or estimate x-height h from sentence JSON."""
-    lines = _get_lines(sentence_json)
-    h_vals = [float(l["x_height_h"]) for l in lines if l.get("x_height_h") and float(l["x_height_h"]) > 5.0]
-    if h_vals:
-        return float(np.median(h_vals))
-
-    # Fallback to crop bbox height
-    bbox = sentence_json.get("crop_bbox", [0, 0, 100, 100])
-    bh = bbox[3] if len(bbox) >= 4 else 100
-    return max(15.0, float(bh * 0.4))
+    return _get_x_height_shared(sentence_json, default=default)
 
 
 def _fit_line_ransac(x: np.ndarray, y: np.ndarray) -> Tuple[float, float, np.ndarray]:

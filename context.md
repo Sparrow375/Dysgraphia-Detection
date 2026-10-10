@@ -327,6 +327,26 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - **False Negatives @ 80% Specificity**: Reduced from **13 down to 9**.
 - **Artifact**: Comprehensive diagnostic and research report persisted at `false_negative_research.md`.
 
+## Phase 1 v5: School B Automated Ingestion, Task Segmentation & Interactive Labeling (Completed 2026-10-10)
+- **School B Ingestion & Automatic Task Detection (`pipeline/process_dataset.py --school school_b`)**:
+  - Processed all 100/100 School B sheets across Grades 3 through 8 with zero exceptions.
+  - Successfully generated:
+    - 100 normalized deskewed grayscale pages (`data/processed/school_b/<student_id>/page_normalized.png`).
+    - 522 automatically segmented and cropped sentence tasks (`sentence_*.png` and `sentence_*.json`).
+    - 100 visual QA debug overlays (`overlay_debug.png`).
+- **Interactive Review & Labeling Server Overhaul (`qa/app.py`)**:
+  - Added multi-school dynamic routing supporting `school_a` (Future Gen) and `school_b` (Kanyashala).
+  - Added dedicated labeling endpoint `POST /api/student/{student_id}/label` supporting `0` (Normal/Control), `1` (At-Risk/Positive), and `null` (Unlabeled).
+  - Automatically updates both student `review_status.json` and persistent ground truth in `data/manifest.csv`.
+- **Frontend Upgrades (`qa/web/index.html`, `qa/web/app.js`, `qa/web/style.css`)**:
+  - School filter pills: `School B` (active by default), `School A`, `All`.
+  - Grade filter pills: Extended to support `G8`.
+  - Status filter dropdown: Added `Unlabeled` and `Normal (Controls)` options.
+  - Student Summary Card: Displays School badge and interactive Dysgraphia Label selector.
+  - Keyboard Shortcut: Added <kbd>L</kbd> to rapidly cycle/set student labels during review.
+  - Live server running on `http://127.0.0.1:8090/`.
+
+
 
 
 

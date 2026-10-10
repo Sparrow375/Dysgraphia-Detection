@@ -16,16 +16,12 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 
+from features.utils import get_x_height as _get_x_height_shared
+
 
 def _get_x_height(sentence_json: Dict[str, Any], default: float = 40.0) -> float:
     """Retrieve or estimate x-height h."""
-    lines = sentence_json.get("physical_lines") or sentence_json.get("lines") or []
-    h_vals = [float(l["x_height_h"]) for l in lines if l.get("x_height_h") and float(l["x_height_h"]) > 5.0]
-    if h_vals:
-        return float(np.median(h_vals))
-    bbox = sentence_json.get("crop_bbox", [0, 0, 100, 100])
-    bh = bbox[3] if len(bbox) >= 4 else 100
-    return max(15.0, float(bh * 0.4))
+    return _get_x_height_shared(sentence_json, default=default)
 
 
 def compute_gap_features(

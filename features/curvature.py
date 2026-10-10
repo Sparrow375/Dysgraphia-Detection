@@ -14,7 +14,6 @@ Definitions:
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
@@ -24,16 +23,12 @@ from scipy.signal import savgol_filter
 from skimage.morphology import skeletonize
 from skan.csr import Skeleton
 
+from features.utils import get_x_height as _get_x_height_shared, load_or_binarize_ink as _load_or_binarize_ink_shared
+
 
 def _get_x_height(sentence_json: Dict[str, Any], default: float = 40.0) -> float:
     """Retrieve or estimate x-height h."""
-    lines = sentence_json.get("physical_lines") or sentence_json.get("lines") or []
-    h_vals = [float(l["x_height_h"]) for l in lines if l.get("x_height_h") and float(l["x_height_h"]) > 5.0]
-    if h_vals:
-        return float(np.median(h_vals))
-    bbox = sentence_json.get("crop_bbox", [0, 0, 100, 100])
-    bh = bbox[3] if len(bbox) >= 4 else 100
-    return max(15.0, float(bh * 0.4))
+    return _get_x_height_shared(sentence_json, default=default)
 
 
 def _load_or_binarize_ink(
@@ -41,27 +36,7 @@ def _load_or_binarize_ink(
     image_crop: Optional[np.ndarray] = None,
 ) -> Optional[np.ndarray]:
     """Retrieve or compute binary ink mask for sentence crop."""
-    if image_crop is not None:
-        if len(image_crop.shape) == 3:
-            gray = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
-        else:
-            gray = image_crop
-        _, bin_ink = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-        return (bin_ink > 0).astype(np.uint8)
-
-    crop_fn = sentence_json.get("crop_filename")
-    sid = sentence_json.get("student_id")
-    school = sentence_json.get("school", "school_a")
-
-    if crop_fn and sid:
-        path = Path("data/processed") / school / sid / crop_fn
-        if path.exists():
-            gray = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
-            if gray is not None:
-                _, bin_ink = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-                return (bin_ink > 0).astype(np.uint8)
-
-    return None
+    return _load_or_binarize_ink_shared(sentence_json, image_crop)
 
 
 def mask_shirorekha(ink_mask: np.ndarray, h: float) -> np.ndarray:

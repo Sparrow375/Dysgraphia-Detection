@@ -1,7 +1,8 @@
 """Interactive Review & Manual Adjustment Server for Workstream A Phase 1.
 
 Provides REST API and static file serving for the review web app.
-Supports live manual bounding-box adjustment, recropping, script toggles, and QA verification.
+Supports live manual bounding-box adjustment, recropping, script toggles,
+multi-school dataset browsing (School A and School B), and QA verification/labeling.
 """
 
 from __future__ import annotations
@@ -29,8 +30,34 @@ from pipeline.segment import segment_words_devanagari, segment_words_english
 
 WEB_DIR = REPO_ROOT / "qa" / "web"
 DATA_DIR = REPO_ROOT / "data"
-PROCESSED_DIR = DATA_DIR / "processed" / "school_a"
 MANIFEST_PATH = DATA_DIR / "manifest.csv"
+
+
+def get_student_manifest_row(student_id: str) -> Optional[pd.Series]:
+    """Look up a student in manifest.csv."""
+    if not MANIFEST_PATH.exists():
+        return None
+    df = pd.read_csv(MANIFEST_PATH)
+    match = df[df["student_id"] == student_id]
+    if match.empty:
+        return None
+    return match.iloc[0]
+
+
+def get_student_school(student_id: str) -> str:
+    """Determine school ('school_a' or 'school_b') for a given student ID."""
+    row = get_student_manifest_row(student_id)
+    if row is not None and pd.notna(row.get("school")):
+        return str(row["school"])
+    if (DATA_DIR / "processed" / "school_b" / student_id).exists():
+        return "school_b"
+    return "school_a"
+
+
+def get_student_dir(student_id: str) -> Path:
+    """Return student processed directory path."""
+    school = get_student_school(student_id)
+    return DATA_DIR / "processed" / school / student_id
 
 
 def regenerate_student_overlay(student_dir: Path) -> None:
@@ -88,21 +115,27 @@ def regenerate_student_overlay(student_dir: Path) -> None:
 
 
 async def api_get_students(request: web.Request) -> web.Response:
-    """List all School A students with metadata, sentence counts, and verification status."""
+    """List students with metadata, sentence counts, verification status, and school filtering."""
     if not MANIFEST_PATH.exists():
         return web.json_response({"error": "manifest.csv not found"}, status=404)
 
+    school_filter = request.query.get("school", "all").strip().lower()
     df = pd.read_csv(MANIFEST_PATH)
-    df_a = df[df["school"] == "school_a"].sort_values(by=["grade", "roll_number"])
+
+    if school_filter and school_filter != "all":
+        df = df[df["school"] == school_filter]
+
+    df = df.sort_values(by=["school", "grade", "roll_number", "student_id"])
 
     students = []
-    for _, row in df_a.iterrows():
+    for _, row in df.iterrows():
         sid = str(row["student_id"])
-        grade = int(row["grade"])
+        school = str(row["school"])
+        grade = int(row["grade"]) if pd.notna(row["grade"]) else -1
         roll = int(row["roll_number"]) if pd.notna(row["roll_number"]) else -1
-        label = int(row["label"]) if pd.notna(row["label"]) else 0
+        label = int(row["label"]) if pd.notna(row["label"]) else None
 
-        s_dir = PROCESSED_DIR / sid
+        s_dir = DATA_DIR / "processed" / school / sid
         json_count = len(list(s_dir.glob("sentence_*.json"))) if s_dir.exists() else 0
         has_overlay = (s_dir / "overlay_debug.png").exists() if s_dir.exists() else False
 
@@ -115,6 +148,8 @@ async def api_get_students(request: web.Request) -> web.Response:
                     st_data = json.load(f)
                     is_verified = bool(st_data.get("verified", False))
                     notes = str(st_data.get("notes", ""))
+                    if "label" in st_data and st_data["label"] is not None:
+                        label = int(st_data["label"])
             except Exception:
                 pass
 
@@ -123,6 +158,7 @@ async def api_get_students(request: web.Request) -> web.Response:
 
         students.append({
             "student_id": sid,
+            "school": school,
             "grade": grade,
             "roll_number": roll,
             "label": label,
@@ -140,12 +176,13 @@ async def api_get_students(request: web.Request) -> web.Response:
 async def api_get_student_detail(request: web.Request) -> web.Response:
     """Get full details for a student: page dimensions, sentences, crops, and status."""
     sid = request.match_info["student_id"]
-    s_dir = PROCESSED_DIR / sid
+    school = get_student_school(sid)
+    s_dir = DATA_DIR / "processed" / school / sid
 
     # If student processed folder doesn't exist or missing page_normalized, auto-process
     if not s_dir.exists() or not (s_dir / "page_normalized.png").exists():
         df = pd.read_csv(MANIFEST_PATH)
-        match = df[(df["school"] == "school_a") & (df["student_id"] == sid)]
+        match = df[df["student_id"] == sid]
         if match.empty:
             return web.json_response({"error": f"Student {sid} not found in manifest"}, status=404)
         try:
@@ -173,15 +210,18 @@ async def api_get_student_detail(request: web.Request) -> web.Response:
                 "script": s_data.get("script", "devanagari"),
                 "crop_bbox": s_data.get("crop_bbox", [0, 0, 100, 100]),
                 "word_count": s_data.get("qa_flags", {}).get("word_count_detected", 0),
-                "crop_url": f"/files/processed/school_a/{sid}/{crop_fn}?t={int(time.time())}",
+                "crop_url": f"/files/processed/{school}/{sid}/{crop_fn}?t={int(time.time())}",
                 "is_manually_adjusted": s_data.get("is_manually_adjusted", False),
             })
         except Exception:
             continue
 
+    m_row = get_student_manifest_row(sid)
+    m_label = int(m_row["label"]) if (m_row is not None and pd.notna(m_row.get("label"))) else None
+
     # Verification status
     status_path = s_dir / "review_status.json"
-    status_data = {"verified": False, "notes": ""}
+    status_data = {"verified": False, "notes": "", "label": m_label}
     if status_path.exists():
         try:
             with open(status_path, "r", encoding="utf-8") as f:
@@ -189,12 +229,18 @@ async def api_get_student_detail(request: web.Request) -> web.Response:
         except Exception:
             pass
 
+    cur_label = status_data.get("label", m_label)
+
     return web.json_response({
         "student_id": sid,
+        "school": school,
+        "grade": int(m_row["grade"]) if (m_row is not None and pd.notna(m_row.get("grade"))) else None,
+        "roll_number": int(m_row["roll_number"]) if (m_row is not None and pd.notna(m_row.get("roll_number"))) else None,
+        "label": cur_label,
         "image_width": page_w,
         "image_height": page_h,
-        "page_url": f"/files/processed/school_a/{sid}/page_normalized.png",
-        "overlay_url": f"/files/processed/school_a/{sid}/overlay_debug.png?t={int(time.time())}",
+        "page_url": f"/files/processed/{school}/{sid}/page_normalized.png",
+        "overlay_url": f"/files/processed/{school}/{sid}/overlay_debug.png?t={int(time.time())}",
         "sentences": sentences,
         "verified": bool(status_data.get("verified", False)),
         "notes": str(status_data.get("notes", "")),
@@ -204,7 +250,9 @@ async def api_get_student_detail(request: web.Request) -> web.Response:
 async def api_update_sentence(request: web.Request) -> web.Response:
     """Update or re-crop a sentence with new bounding box, script, or task name."""
     sid = request.match_info["student_id"]
-    s_dir = PROCESSED_DIR / sid
+    school = get_student_school(sid)
+    s_dir = DATA_DIR / "processed" / school / sid
+
     if not s_dir.exists():
         return web.json_response({"error": f"Student directory not found: {sid}"}, status=404)
 
@@ -251,7 +299,6 @@ async def api_update_sentence(request: web.Request) -> web.Response:
         raw_words = segment_words_english(ink_bin, x_height_h=float(h * 0.5))
 
     word_count = len(raw_words)
-    # Adjust word bboxes to page coordinates
     page_words = []
     for wd in raw_words:
         wx, wy, ww, wh = wd["bbox"]
@@ -274,7 +321,7 @@ async def api_update_sentence(request: web.Request) -> web.Response:
             pass
 
     schema["student_id"] = sid
-    schema["school"] = "school_a"
+    schema["school"] = school
     schema["task_id"] = task_id
     schema["task_name"] = task_name if task_name else schema.get("task_name", task_id)
     schema["script"] = script
@@ -307,15 +354,17 @@ async def api_update_sentence(request: web.Request) -> web.Response:
         "task_id": task_id,
         "crop_bbox": clamped_bbox,
         "word_count": word_count,
-        "crop_url": f"/files/processed/school_a/{sid}/{crop_fn}?t={int(time.time())}",
-        "overlay_url": f"/files/processed/school_a/{sid}/overlay_debug.png?t={int(time.time())}",
+        "crop_url": f"/files/processed/{school}/{sid}/{crop_fn}?t={int(time.time())}",
+        "overlay_url": f"/files/processed/{school}/{sid}/overlay_debug.png?t={int(time.time())}",
     })
 
 
 async def api_add_sentence(request: web.Request) -> web.Response:
     """Add a new task sentence for a student."""
     sid = request.match_info["student_id"]
-    s_dir = PROCESSED_DIR / sid
+    school = get_student_school(sid)
+    s_dir = DATA_DIR / "processed" / school / sid
+
     if not s_dir.exists():
         return web.json_response({"error": f"Student not found: {sid}"}, status=404)
 
@@ -328,20 +377,18 @@ async def api_add_sentence(request: web.Request) -> web.Response:
     if not task_id:
         return web.json_response({"error": "task_id required"}, status=400)
 
-    # Delegate to update_sentence logic
-    request_data = {"task_id": task_id, "task_name": task_name, "script": script, "bbox": bbox}
-    # Create fake request for update_sentence
-    dummy_req = request.clone(method="POST")
-    # Call logic directly
     x, y, w, h = bbox
     gray = cv2.imread(str(s_dir / "page_normalized.png"), cv2.IMREAD_GRAYSCALE)
+    if gray is None:
+        return web.json_response({"error": "Failed to read page_normalized.png"}, status=500)
+
     crop = gray[y : y + h, x : x + w]
     crop_fn = f"{task_id}.png"
     cv2.imwrite(str(s_dir / crop_fn), crop)
 
     schema = {
         "student_id": sid,
-        "school": "school_a",
+        "school": school,
         "task_id": task_id,
         "task_name": task_name or task_id,
         "script": script,
@@ -361,10 +408,11 @@ async def api_add_sentence(request: web.Request) -> web.Response:
 async def api_delete_sentence(request: web.Request) -> web.Response:
     """Delete a bogus or extra sentence."""
     sid = request.match_info["student_id"]
-    task_id = request.match_info["task_id"]
-    s_dir = PROCESSED_DIR / sid
+    school = get_student_school(sid)
+    s_dir = DATA_DIR / "processed" / school / sid
 
-    # 1. Delete by direct path
+    task_id = request.match_info["task_id"]
+
     for p in [s_dir / f"{task_id}.json", s_dir / f"{task_id}.png"]:
         if p.exists():
             try:
@@ -372,7 +420,6 @@ async def api_delete_sentence(request: web.Request) -> web.Response:
             except OSError:
                 pass
 
-    # 2. Search inside all sentence_*.json for matching task_id or task_name
     for jf in list(s_dir.glob("sentence_*.json")):
         try:
             with open(jf, "r", encoding="utf-8") as f:
@@ -389,31 +436,93 @@ async def api_delete_sentence(request: web.Request) -> web.Response:
     return web.json_response({
         "success": True,
         "deleted": task_id,
-        "overlay_url": f"/files/processed/school_a/{sid}/overlay_debug.png?t={int(time.time())}",
+        "overlay_url": f"/files/processed/{school}/{sid}/overlay_debug.png?t={int(time.time())}",
     })
 
 
 async def api_set_verification(request: web.Request) -> web.Response:
-    """Save verification status for a student."""
+    """Save verification status and optional label for a student."""
     sid = request.match_info["student_id"]
-    s_dir = PROCESSED_DIR / sid
+    school = get_student_school(sid)
+    s_dir = DATA_DIR / "processed" / school / sid
+
     if not s_dir.exists():
         return web.json_response({"error": f"Student not found: {sid}"}, status=404)
 
     body = await request.json()
     verified = bool(body.get("verified", True))
     notes = str(body.get("notes", "")).strip()
+    label = body.get("label")  # 0, 1, or None
 
     status_data = {
         "student_id": sid,
+        "school": school,
         "verified": verified,
         "notes": notes,
+        "label": label,
         "updated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
     with open(s_dir / "review_status.json", "w", encoding="utf-8") as f:
         json.dump(status_data, f, indent=2)
 
+    # If label is updated, also update manifest.csv so that downstream pipelines see it!
+    if MANIFEST_PATH.exists() and label is not None:
+        try:
+            m_df = pd.read_csv(MANIFEST_PATH)
+            m_mask = m_df["student_id"] == sid
+            if m_mask.any():
+                m_df.loc[m_mask, "label"] = float(label)
+                m_df.loc[m_mask, "label_source"] = "manual_review_web_app"
+                m_df.to_csv(MANIFEST_PATH, index=False)
+        except Exception as e:
+            print(f"Warning: Failed to update manifest label for {sid}: {e}")
+
     return web.json_response({"success": True, "status": status_data})
+
+
+async def api_set_label(request: web.Request) -> web.Response:
+    """Directly update dysgraphia label (0 = Control, 1 = At-Risk, null = Unlabeled)."""
+    sid = request.match_info["student_id"]
+    school = get_student_school(sid)
+    s_dir = DATA_DIR / "processed" / school / sid
+
+    if not s_dir.exists():
+        return web.json_response({"error": f"Student not found: {sid}"}, status=404)
+
+    body = await request.json()
+    raw_label = body.get("label")
+    label_val = int(raw_label) if (raw_label is not None and str(raw_label).strip() != "" and str(raw_label) != "unlabeled") else None
+
+    # Update review_status.json
+    status_path = s_dir / "review_status.json"
+    status_data = {}
+    if status_path.exists():
+        try:
+            with open(status_path, "r", encoding="utf-8") as f:
+                status_data = json.load(f)
+        except Exception:
+            pass
+    status_data["student_id"] = sid
+    status_data["school"] = school
+    status_data["label"] = label_val
+    status_data["updated_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    with open(status_path, "w", encoding="utf-8") as f:
+        json.dump(status_data, f, indent=2)
+
+    # Update manifest.csv
+    if MANIFEST_PATH.exists():
+        try:
+            m_df = pd.read_csv(MANIFEST_PATH)
+            m_mask = m_df["student_id"] == sid
+            if m_mask.any():
+                m_df.loc[m_mask, "label"] = float(label_val) if label_val is not None else np.nan
+                m_df.loc[m_mask, "label_source"] = "manual_review_web_app" if label_val is not None else "unlabeled"
+                m_df.to_csv(MANIFEST_PATH, index=False)
+        except Exception as e:
+            print(f"Warning: Failed to update manifest label: {e}")
+
+    return web.json_response({"success": True, "student_id": sid, "label": label_val})
 
 
 async def handle_index(request: web.Request) -> web.FileResponse:
@@ -430,6 +539,7 @@ def create_app() -> web.Application:
     app.router.add_post("/api/student/{student_id}/add_sentence", api_add_sentence)
     app.router.add_delete("/api/student/{student_id}/sentence/{task_id}", api_delete_sentence)
     app.router.add_post("/api/student/{student_id}/verify", api_set_verification)
+    app.router.add_post("/api/student/{student_id}/label", api_set_label)
 
     # Static file routes
     app.router.add_get("/", handle_index)

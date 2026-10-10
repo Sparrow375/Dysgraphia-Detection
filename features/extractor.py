@@ -32,7 +32,7 @@ FEATURE_DESCRIPTIONS: Dict[str, str] = {
     # Baseline
     "baseline_rmse_norm": "RANSAC word-baseline residual RMSE normalized by x-height h",
     "baseline_slope_mean": "Mean baseline slope across lines within sentence",
-    "baseline_slope_std": "Standard deviation of baseline slopes across lines (NaN if < 2 lines)",
+    "baseline_slope_std": "Standard deviation of baseline slopes across lines (NaN if < 2 lines). EXCLUDED from model feature set (81% NaN — most sentences span a single line).",
     # Rule offset
     "rule_offset_mean": "Mean vertical offset of words from nearest ruling line, normalized by spacing r",
     "rule_offset_std": "Standard deviation of vertical rule offset (vertical adherence jitter)",

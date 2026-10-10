@@ -481,6 +481,12 @@ body {
     border: 1px solid var(--accent-emerald);
 }
 
+.badge-unlabeled {
+    background: #1e293b;
+    color: #94a3b8;
+    border: 1px solid #475569;
+}
+
 .meta-details {
     display: grid;
     grid-template-columns: 1fr 1fr;

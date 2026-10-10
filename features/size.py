@@ -5,17 +5,18 @@ Definitions:
 - h_over_r: ratio of x-height h to ruled-line spacing r.
 - word_width_per_char: sum of word widths / expected prompt characters (copy/dictation; NaN for own writing).
 - component_height_cv: mean intra-word connected component height CV.
-- ascender_descender_ratio: (English) ascender + descender height relative to h.
-- matra_ratio: (Hindi) matra height (above shirorekha + below baseline) relative to core band h.
+- ascender_descender_ratio: (English) peripheral-ink ratio = (top_third + bottom_third) / middle_third ink.
+- matra_ratio: (Hindi) peripheral-ink ratio = (top_third + bottom_third) / middle_third ink.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import cv2
 import numpy as np
+
+from features.utils import get_x_height as _get_x_height_shared, load_or_binarize_ink as _load_or_binarize_ink_shared
 
 # Expected character counts from standardized study protocol
 EXPECTED_CHAR_COUNTS: Dict[str, int] = {
@@ -27,42 +28,16 @@ EXPECTED_CHAR_COUNTS: Dict[str, int] = {
 
 
 def _get_x_height(sentence_json: Dict[str, Any], default: float = 40.0) -> float:
-    """Retrieve or estimate x-height h."""
-    lines = sentence_json.get("physical_lines") or sentence_json.get("lines") or []
-    h_vals = [float(l["x_height_h"]) for l in lines if l.get("x_height_h") and float(l["x_height_h"]) > 5.0]
-    if h_vals:
-        return float(np.median(h_vals))
-    bbox = sentence_json.get("crop_bbox", [0, 0, 100, 100])
-    bh = bbox[3] if len(bbox) >= 4 else 100
-    return max(15.0, float(bh * 0.4))
+    """Retrieve or estimate x-height h (delegates to shared utils)."""
+    return _get_x_height_shared(sentence_json, default=default)
 
 
 def _load_or_binarize_ink(
     sentence_json: Dict[str, Any],
     image_crop: Optional[np.ndarray] = None,
 ) -> Optional[np.ndarray]:
-    """Retrieve or compute binary ink mask for sentence crop."""
-    if image_crop is not None:
-        if len(image_crop.shape) == 3:
-            gray = cv2.cvtColor(image_crop, cv2.COLOR_BGR2GRAY)
-        else:
-            gray = image_crop
-        _, bin_ink = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-        return (bin_ink > 0).astype(np.uint8)
-
-    crop_fn = sentence_json.get("crop_filename")
-    sid = sentence_json.get("student_id")
-    school = sentence_json.get("school", "school_a")
-
-    if crop_fn and sid:
-        path = Path("data/processed") / school / sid / crop_fn
-        if path.exists():
-            gray = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
-            if gray is not None:
-                _, bin_ink = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-                return (bin_ink > 0).astype(np.uint8)
-
-    return None
+    """Retrieve or compute binary ink mask (delegates to shared utils)."""
+    return _load_or_binarize_ink_shared(sentence_json, image_crop)
 
 
 def compute_size_features(
@@ -132,6 +107,19 @@ def compute_size_features(
         word_width_per_char = float("nan")
 
     # 4. component_height_cv, ascender_descender_ratio, matra_ratio
+    #
+    # ascender_descender_ratio / matra_ratio: pixel-zone segmentation.
+    #
+    # The old implementation used (lh - h) / h, where h falls back to
+    # bbox_height * 0.4, making the ratio ≈ 1.5 for every word (constant).
+    # Grade 3 kids write bigger → taller lh → inflated ratios unrelated to
+    # actual matra/ascender presence.
+    #
+    # Fix: split each word bbox into equal thirds (top / middle / bottom) and
+    # compute peripheral_ratio = (top_ink + bottom_ink) / middle_ink.
+    # This directly measures ink in the ascender/matra/descender zones relative
+    # to the core band, with no dependency on the h estimate.
+    # Scale: [0, inf). Higher = more ink in ascender/descender/matra zones.
     ink_mask = _load_or_binarize_ink(sentence_json, image_crop)
 
     component_cvs: List[float] = []
@@ -158,36 +146,41 @@ def compute_size_features(
             if word_patch.sum() < 5:
                 continue
 
-            # Connected components within word
-            num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(word_patch, connectivity=8)
-            # Filter background (label 0)
-            comp_h = [float(stats[i, cv2.CC_STAT_HEIGHT]) for i in range(1, num_labels) if stats[i, cv2.CC_STAT_AREA] >= 4]
-
-            if len(comp_h) >= 2:
-                c_mean = float(np.mean(comp_h))
-                c_std = float(np.std(comp_h, ddof=1))
+            # --- component_height_cv ---
+            num_labels, _labels, stats, _ = cv2.connectedComponentsWithStats(word_patch, connectivity=8)
+            comp_h_vals = [
+                float(stats[i, cv2.CC_STAT_HEIGHT])
+                for i in range(1, num_labels)
+                if stats[i, cv2.CC_STAT_AREA] >= 4
+            ]
+            if len(comp_h_vals) >= 2:
+                c_mean = float(np.mean(comp_h_vals))
+                c_std = float(np.std(comp_h_vals, ddof=1))
                 if c_mean > 0:
                     component_cvs.append(c_std / c_mean)
 
-            # Script-specific height ratios
-            if script == "latin":
-                # For Latin: ascender / descender ratio
-                # Core band is middle 50% of word; ascender extends above, descender below
-                # If word has significant height compared to h
-                if lh > h:
-                    extra_h = lh - h
-                    asc_desc_ratios.append(float(extra_h / h))
-                else:
-                    asc_desc_ratios.append(0.0)
+            # --- peripheral ink zone ratio ---
+            if lh < 9:
+                # Too short to split into meaningful thirds
+                continue
 
+            t1 = lh // 3
+            t2 = 2 * lh // 3
+
+            top_ink = float(word_patch[:t1, :].sum())
+            mid_ink = float(word_patch[t1:t2, :].sum())
+            bot_ink = float(word_patch[t2:, :].sum())
+
+            if mid_ink < 1.0:
+                # No ink in core band — unreliable
+                continue
+
+            peripheral_ratio = (top_ink + bot_ink) / mid_ink
+
+            if script == "latin":
+                asc_desc_ratios.append(peripheral_ratio)
             elif script == "devanagari":
-                # For Devanagari: matra ratio
-                # Portions extending above shirorekha or below baseline
-                if lh > h:
-                    extra_matra = lh - h
-                    matra_ratios.append(float(extra_matra / h))
-                else:
-                    matra_ratios.append(0.0)
+                matra_ratios.append(peripheral_ratio)
 
     comp_height_cv = float(np.mean(component_cvs)) if component_cvs else float("nan")
 

@@ -1,25 +1,25 @@
 student_id,school,school_name,grade,section,roll_number,label,label_source,match_status,image_filename,relative_image_path,is_held_out
-G3_A_Roll01,school_a,Future Gen,3,A,1,0.0,paper-only,nan,IMG_20261006_101258.jpg,data/school_a/raw/Grade 3/IMG_20261006_101258.jpg,False
-G3_A_Roll02,school_a,Future Gen,3,A,2,0.0,paper-only,nan,IMG_20261006_101307.jpg,data/school_a/raw/Grade 3/IMG_20261006_101307.jpg,False
-G3_A_Roll03,school_a,Future Gen,3,A,3,0.0,paper-only,nan,IMG_20261006_101411.jpg,data/school_a/raw/Grade 3/IMG_20261006_101411.jpg,False
-G3_A_Roll05,school_a,Future Gen,3,A,5,0.0,paper-only,nan,IMG_20261006_101440.jpg,data/school_a/raw/Grade 3/IMG_20261006_101440.jpg,False
-G3_A_Roll06,school_a,Future Gen,3,A,6,0.0,paper-only,nan,IMG_20261006_101453.jpg,data/school_a/raw/Grade 3/IMG_20261006_101453.jpg,False
-G3_A_Roll07,school_a,Future Gen,3,A,7,0.0,paper-only,nan,IMG_20261006_101503.jpg,data/school_a/raw/Grade 3/IMG_20261006_101503.jpg,False
-G3_A_Roll08,school_a,Future Gen,3,A,8,0.0,paper-only,nan,IMG_20261006_101513.jpg,data/school_a/raw/Grade 3/IMG_20261006_101513.jpg,False
-G3_A_Roll09,school_a,Future Gen,3,A,9,0.0,paper-only,nan,IMG_20261006_101526.jpg,data/school_a/raw/Grade 3/IMG_20261006_101526.jpg,False
-G3_A_Roll10,school_a,Future Gen,3,A,10,0.0,paper-only,nan,IMG_20261006_101549.jpg,data/school_a/raw/Grade 3/IMG_20261006_101549.jpg,False
-G3_A_Roll12,school_a,Future Gen,3,A,12,1.0,paper-only,nan,IMG_20261006_101623.jpg,data/school_a/raw/Grade 3/IMG_20261006_101623.jpg,False
-G3_A_Roll14,school_a,Future Gen,3,A,14,0.0,paper-only,nan,IMG_20261006_101637.jpg,data/school_a/raw/Grade 3/IMG_20261006_101637.jpg,False
-G3_A_Roll13,school_a,Future Gen,3,A,13,1.0,paper-only,nan,IMG_20261006_101650.jpg,data/school_a/raw/Grade 3/IMG_20261006_101650.jpg,False
-G3_A_Roll15,school_a,Future Gen,3,A,15,1.0,paper-only,nan,IMG_20261006_101705.jpg,data/school_a/raw/Grade 3/IMG_20261006_101705.jpg,False
-G3_A_Roll16,school_a,Future Gen,3,A,16,0.0,paper-only,nan,IMG_20261006_101723.jpg,data/school_a/raw/Grade 3/IMG_20261006_101723.jpg,False
-G3_A_Roll17,school_a,Future Gen,3,A,17,0.0,paper-only,nan,IMG_20261006_101745.jpg,data/school_a/raw/Grade 3/IMG_20261006_101745.jpg,False
-G3_A_Roll19,school_a,Future Gen,3,A,19,1.0,paper-only,nan,IMG_20261006_101759.jpg,data/school_a/raw/Grade 3/IMG_20261006_101759.jpg,False
-G3_A_Roll20,school_a,Future Gen,3,A,20,0.0,paper-only,nan,IMG_20261006_101813.jpg,data/school_a/raw/Grade 3/IMG_20261006_101813.jpg,False
-G3_A_Roll21,school_a,Future Gen,3,A,21,0.0,paper-only,nan,IMG_20261006_101826.jpg,data/school_a/raw/Grade 3/IMG_20261006_101826.jpg,False
-G3_A_Roll22,school_a,Future Gen,3,A,22,0.0,paper-only,nan,IMG_20261006_101839.jpg,data/school_a/raw/Grade 3/IMG_20261006_101839.jpg,False
-G3_A_Roll23,school_a,Future Gen,3,A,23,0.0,paper-only,nan,IMG_20261006_101850.jpg,data/school_a/raw/Grade 3/IMG_20261006_101850.jpg,False
-G3_A_Roll04,school_a,Future Gen,3,A,4,0.0,paper-only,nan,IMG_20261006_101952.jpg,data/school_a/raw/Grade 3/IMG_20261006_101952.jpg,False
+G3_A_Roll01,school_a,Future Gen,3,A,1,0.0,paper-only,,IMG_20261006_101258.jpg,data/school_a/raw/Grade 3/IMG_20261006_101258.jpg,False
+G3_A_Roll02,school_a,Future Gen,3,A,2,0.0,paper-only,,IMG_20261006_101307.jpg,data/school_a/raw/Grade 3/IMG_20261006_101307.jpg,False
+G3_A_Roll03,school_a,Future Gen,3,A,3,0.0,paper-only,,IMG_20261006_101411.jpg,data/school_a/raw/Grade 3/IMG_20261006_101411.jpg,False
+G3_A_Roll05,school_a,Future Gen,3,A,5,0.0,paper-only,,IMG_20261006_101440.jpg,data/school_a/raw/Grade 3/IMG_20261006_101440.jpg,False
+G3_A_Roll06,school_a,Future Gen,3,A,6,0.0,paper-only,,IMG_20261006_101453.jpg,data/school_a/raw/Grade 3/IMG_20261006_101453.jpg,False
+G3_A_Roll07,school_a,Future Gen,3,A,7,0.0,paper-only,,IMG_20261006_101503.jpg,data/school_a/raw/Grade 3/IMG_20261006_101503.jpg,False
+G3_A_Roll08,school_a,Future Gen,3,A,8,0.0,paper-only,,IMG_20261006_101513.jpg,data/school_a/raw/Grade 3/IMG_20261006_101513.jpg,False
+G3_A_Roll09,school_a,Future Gen,3,A,9,0.0,paper-only,,IMG_20261006_101526.jpg,data/school_a/raw/Grade 3/IMG_20261006_101526.jpg,False
+G3_A_Roll10,school_a,Future Gen,3,A,10,0.0,paper-only,,IMG_20261006_101549.jpg,data/school_a/raw/Grade 3/IMG_20261006_101549.jpg,False
+G3_A_Roll12,school_a,Future Gen,3,A,12,1.0,paper-only,,IMG_20261006_101623.jpg,data/school_a/raw/Grade 3/IMG_20261006_101623.jpg,False
+G3_A_Roll14,school_a,Future Gen,3,A,14,0.0,paper-only,,IMG_20261006_101637.jpg,data/school_a/raw/Grade 3/IMG_20261006_101637.jpg,False
+G3_A_Roll13,school_a,Future Gen,3,A,13,1.0,paper-only,,IMG_20261006_101650.jpg,data/school_a/raw/Grade 3/IMG_20261006_101650.jpg,False
+G3_A_Roll15,school_a,Future Gen,3,A,15,1.0,paper-only,,IMG_20261006_101705.jpg,data/school_a/raw/Grade 3/IMG_20261006_101705.jpg,False
+G3_A_Roll16,school_a,Future Gen,3,A,16,0.0,paper-only,,IMG_20261006_101723.jpg,data/school_a/raw/Grade 3/IMG_20261006_101723.jpg,False
+G3_A_Roll17,school_a,Future Gen,3,A,17,0.0,paper-only,,IMG_20261006_101745.jpg,data/school_a/raw/Grade 3/IMG_20261006_101745.jpg,False
+G3_A_Roll19,school_a,Future Gen,3,A,19,1.0,paper-only,,IMG_20261006_101759.jpg,data/school_a/raw/Grade 3/IMG_20261006_101759.jpg,False
+G3_A_Roll20,school_a,Future Gen,3,A,20,0.0,paper-only,,IMG_20261006_101813.jpg,data/school_a/raw/Grade 3/IMG_20261006_101813.jpg,False
+G3_A_Roll21,school_a,Future Gen,3,A,21,0.0,paper-only,,IMG_20261006_101826.jpg,data/school_a/raw/Grade 3/IMG_20261006_101826.jpg,False
+G3_A_Roll22,school_a,Future Gen,3,A,22,0.0,paper-only,,IMG_20261006_101839.jpg,data/school_a/raw/Grade 3/IMG_20261006_101839.jpg,False
+G3_A_Roll23,school_a,Future Gen,3,A,23,0.0,paper-only,,IMG_20261006_101850.jpg,data/school_a/raw/Grade 3/IMG_20261006_101850.jpg,False
+G3_A_Roll04,school_a,Future Gen,3,A,4,0.0,paper-only,,IMG_20261006_101952.jpg,data/school_a/raw/Grade 3/IMG_20261006_101952.jpg,False
 G4_A_Roll01,school_a,Future Gen,4,A,1,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_1.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_1.jpeg,False
 G4_A_Roll11,school_a,Future Gen,4,A,11,1.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_10.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_10.jpeg,False
 G4_A_Roll12,school_a,Future Gen,4,A,12,0.0,paper+stylus,MATCHED,DocScanner 06-Oct-2026 10-11 AM_11.jpeg,data/school_a/raw/grade 4/future_gen_4/DocScanner 06-Oct-2026 10-11 AM_11.jpeg,False

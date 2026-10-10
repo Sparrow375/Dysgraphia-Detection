@@ -40,7 +40,7 @@ FEATURE_FAMILIES: Dict[str, List[str]] = {
     ],
     "Spatial Baseline Alignment": [
         "baseline_rmse_norm_eng_minus_hindi",
-        "baseline_slope_std_mean",
+        # baseline_slope_std_mean removed — 81% NaN at sentence level, negligible student-level signal
     ],
     "Word Spacing & Sizing": [
         "gap_fraction_above_2h_mean",

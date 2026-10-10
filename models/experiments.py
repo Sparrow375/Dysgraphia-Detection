@@ -27,7 +27,7 @@ from models.evaluator import (
     cluster_bootstrap_ci,
     compute_student_metrics,
     find_operational_threshold,
-    fit_platt_calibrator,
+    fit_platt_calibrator_from_scores,
 )
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
@@ -168,10 +168,14 @@ def run_nested_cv_for_model(
             except TypeError:
                 final_estimator.fit(X_train, y_train)
 
-            # Platt calibration fit on inner out-of-fold validation scores
-            calibrated_predictor = fit_platt_calibrator(
+            # Platt calibration fit on inner out-of-fold scores (NOT on training data).
+            # best_oof_scores are proper held-out predictions — each training sample was
+            # scored by a model that never saw it — so they give an unbiased calibration
+            # target. Calibrating on X_train/y_train directly is in-sample and causes
+            # probability collapse that damages rank ordering on the outer test fold.
+            calibrated_predictor = fit_platt_calibrator_from_scores(
                 base_estimator=final_estimator,
-                X_val=X_train,
+                oof_scores=best_oof_scores,
                 y_val=y_train,
                 sample_weight_val=w_train,
             )
