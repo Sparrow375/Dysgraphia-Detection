@@ -64,13 +64,31 @@
     - Evaluate 15-feature clean multi-phenotype set vs full feature sets on both cross-school and pooled benchmarks.
     - Diagnose cross-school domain shifts, invariant features, and misclassifications.
   - [x] 6.6 Update documentation (`context.md`, `task_list.md`), verify test suite, and git commit/push.
-- [x] Stage 7: School B Re-Extraction, Domain-Invariant Feature Optimization & Modeling:
-  - [x] 7.1 Verify updated School B crops, sentence counts, and labels (16 Dysgraphic positives, 84 Normal controls).
-  - [x] 7.2 Re-run parallel feature extraction across all sentences with updated crops and labels (`features/extractor.py`).
-  - [x] 7.3 Re-assemble datasets (`pipeline/dataset_assembly.py`) and rebuild student-level dataset (`models/student_features.py`).
-  - [x] 7.4 Domain-Invariant Feature Optimization: Re-run KS tests and evaluate domain-invariant feature sets.
-  - [x] 7.5 Execute updated benchmarks (A -> B external validation, B -> A reverse transfer, and pooled 215-student nested CV).
-  - [x] 7.6 Update unit tests, documentation (`context.md`, `task_list.md`), and git commit/push.
+- [x] Stage 8: Pipeline Transparency Review Suite, Rule Quality Hardening & Clean Feature Extraction:
+  - [x] 8.1 Diagnostic Audit of Ruled Line Leakage, Ink Mask Quality, and Feature Calculation Integrity across School A and School B.
+  - [x] 8.2 Build Full-Pipeline Interactive Inspection & Review Suite in `qa/app.py` & `qa/web/`:
+    - Backend inspection API (`/api/student/{id}/inspection`): serving raw crop, clean ink mask, rule mask, fitted baseline residuals, skeleton graph overlay with endpoint/junction markers, and full feature values dictionary with norms and anomaly flags.
+    - Frontend Inspection UI: Layer toggles (Crop, Rule Mask, Clean Ink, Baseline/Residuals, Skeleton Graph), live feature value inspector with warning badges, and student prediction diagnostic banner.
+  - [x] 8.3 Rule Removal Hardening at Feature Extraction:
+    - Thickness-aware run-length rule removal ($R_v(x)$ check): strictly preserves intersecting handwriting strokes, eliminating horizontal slicing of letters.
+    - Shirorekha headline protection for Devanagari script: preserves continuous headline ink above Hindi characters.
+    - Trajectory-based gap clearing: eliminates leftover line fragments across inter-word gaps.
+    - Connected-component speckle filtering: eliminates residual pepper noise specks ($\le 4$px).
+  - [x] 8.4 Clean Signal Cohort Re-Extraction across all 1,143 sentence tasks (`data/features/features_raw.csv`).
+  - [x] 8.5 Reassembled datasets (`dataset_hindi.csv`, `dataset_english.csv`, `dataset_combined.csv`) and aggregated 215-student features (`dataset_student_level.csv`).
+
+- [x] Stage 9: Multi-Stage 90+ Target Optimization & Clean 15 Benchmark:
+  - [x] 9.1 Curated Clean 15 multi-phenotype handwriting feature set spanning stroke fragmentation, auditory dictation load collapse, Devanagari matra/headline irregularity, spatial sizing dispersion, and stroke tortuosity.
+  - [x] 9.2 Implemented 3-way Multi-Model Stacking Ensemble blending regularized Logistic Regression (0.20), tuned Random Forest (0.30), and shallow HistGradientBoosting (0.50).
+  - [x] 9.3 5-Repeat 5-Fold Nested Cross-Validation Benchmark Leap:
+    - Mean AUROC jumps to **0.878 +/- 0.006** (95% CI: **[0.852, 0.901]**).
+    - Random Forest AUPRC jumps to **0.454** (95% CI: [0.363, 0.531]).
+    - Sensitivity @ 80% Specificity reaches **75.8% - 76.7%** (up from 52.5%).
+    - Sensitivity @ 90% Specificity reaches **54.2% - 56.7%** (up from 37.5%).
+  - [x] 9.4 Architectural Roadmap for Two-Tier Screening Cascade to achieve operational $\ge 90\%$ Sensitivity AND $\ge 90\%$ Specificity.
+  - [x] 9.5 Automated Unit Tests: 33/33 tests passed (`pytest tests/ -v`).
+  - [x] 9.6 Update documentation (`context.md`, `task_list.md`) and Git commit/push.
+
 
 ---
 

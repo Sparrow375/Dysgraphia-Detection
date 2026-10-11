@@ -23,21 +23,27 @@ REPORTS_DIR = WORKSPACE_ROOT / "reports"
 OUTPUT_CSV_PATH = REPORTS_DIR / "student_benchmark_results.csv"
 OUTPUT_JSON_PATH = REPORTS_DIR / "student_benchmark_results.json"
 
-# Core clinical handwriting feature set (10 features across motor continuity, spatial control, spacing, and Devanagari structure)
-# Note: baseline_slope_std_mean removed — baseline_slope_std is NaN for 81% of sentences
-# (requires >= 2 lines per sentence) and its student-level aggregate carries negligible signal.
+# Clean 15 multi-phenotype handwriting feature set
+# Spans motor fragmentation, auditory dictation load collapse, Devanagari headline/matra
+# constraints, compensatory spatial variability, and stroke tortuosity.
 CORE_FEATURES = [
     "components_per_unit_width_dict_mean",
     "components_per_unit_width_max",
+    "components_per_unit_width_std",
     "components_per_unit_width_eng_minus_hindi",
     "endpoints_per_unit_width_mean",
     "junctions_per_unit_width_mean",
-    "gap_fraction_above_2h_mean",
-    "baseline_rmse_norm_eng_minus_hindi",
+    "junctions_per_unit_width_own_mean",
+    "words_written_ratio_eng_minus_hindi",
+    "words_written_ratio_dict_minus_copy",
     "matra_ratio_std",
+    "matra_ratio_max",
     "shirorekha_rms_deviation_norm_max",
-    "gap_cv_mean",
+    "tortuosity_median_cv",
+    "word_width_per_char_std",
+    "gap_fraction_above_2h_mean",
 ]
+
 
 
 def compute_bootstrap_ci(
@@ -171,19 +177,23 @@ def run_student_level_benchmark(
                 random_state=42,
             ),
         },
-        "HistGradientBoosting (d=2, lr=0.05)": {
+        "HistGradientBoosting (d=2, lr=0.03)": {
             "type": "standard",
             "features": "raw",
             "builder": lambda: HistGradientBoostingClassifier(
                 max_depth=2,
                 min_samples_leaf=6,
-                learning_rate=0.05,
+                learning_rate=0.03,
                 class_weight="balanced",
                 random_state=42,
             ),
         },
         "Hybrid Ensemble (0.7 LR + 0.3 RF)": {
             "type": "ensemble",
+            "features": "hybrid",
+        },
+        "Multi-Model Stacking Ensemble (0.5 GBM + 0.3 RF + 0.2 LR)": {
+            "type": "stacking_ensemble",
             "features": "hybrid",
         },
     }
@@ -256,6 +266,31 @@ def run_student_level_benchmark(
                     p_rf = rf.predict_proba(X_te_r)[:, 1]
 
                     y_scores_rep[test_mask] = 0.70 * p_lr + 0.30 * p_rf
+
+                elif m_info["type"] == "stacking_ensemble":
+                    # Fit LR on z
+                    med_z = tr_df[z_features].median().fillna(0.0)
+                    X_tr_z = tr_df[z_features].fillna(med_z).values
+                    X_te_z = te_df[z_features].fillna(med_z).values
+                    lr = LogisticRegression(C=0.05, class_weight="balanced", max_iter=1000, random_state=42)
+                    lr.fit(X_tr_z, y_tr)
+                    p_lr = lr.predict_proba(X_te_z)[:, 1]
+
+                    # Fit RF on raw
+                    med_r = tr_df[raw_features].median().fillna(0.0)
+                    X_tr_r = tr_df[raw_features].fillna(med_r).values
+                    X_te_r = te_df[raw_features].fillna(med_r).values
+                    rf = RandomForestClassifier(n_estimators=150, max_depth=4, min_samples_leaf=2, class_weight="balanced", random_state=42)
+                    rf.fit(X_tr_r, y_tr)
+                    p_rf = rf.predict_proba(X_te_r)[:, 1]
+
+                    # Fit HistGBM on raw
+                    gbm = HistGradientBoostingClassifier(max_depth=2, min_samples_leaf=6, learning_rate=0.03, class_weight="balanced", random_state=42)
+                    gbm.fit(X_tr_r, y_tr)
+                    p_gbm = gbm.predict_proba(X_te_r)[:, 1]
+
+                    y_scores_rep[test_mask] = 0.50 * p_gbm + 0.30 * p_rf + 0.20 * p_lr
+
 
             pooled_y_true.extend(y_true_rep)
             pooled_y_scores.extend(y_scores_rep)

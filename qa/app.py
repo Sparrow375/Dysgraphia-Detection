@@ -331,6 +331,18 @@ async def api_update_sentence(request: web.Request) -> web.Response:
     schema["qa_flags"] = schema.get("qa_flags", {})
     schema["qa_flags"]["word_count_detected"] = word_count
     schema["qa_flags"]["manually_verified"] = True
+
+    # Compute skeleton graph for updated crop
+    skel_res = process_sentence_skeleton(ink_bin, x_height_h=float(h * 0.45), spur_ratio=0.15)
+    schema["skeleton_graph"] = {
+        "num_nodes": skel_res["graph"]["num_nodes"],
+        "num_edges": skel_res["graph"]["num_edges"],
+        "junction_count": skel_res["graph"]["junction_count"],
+        "endpoint_count": skel_res["graph"]["endpoint_count"],
+        "total_path_length": skel_res["graph"]["total_path_length"],
+        "mean_branch_length": skel_res["graph"]["mean_branch_length"],
+    }
+
     schema["lines"] = [
         {
             "line_index": 0,
@@ -525,6 +537,30 @@ async def api_set_label(request: web.Request) -> web.Response:
     return web.json_response({"success": True, "student_id": sid, "label": label_val})
 
 
+async def api_get_inspection(request: web.Request) -> web.Response:
+    """Get full deep-pipeline inspection bundle for a student."""
+    sid = request.match_info["student_id"]
+    school = get_student_school(sid)
+    s_dir = DATA_DIR / "processed" / school / sid
+
+    if not s_dir.exists() or not (s_dir / "page_normalized.png").exists():
+        return web.json_response({"error": f"Student data not found for {sid}"}, status=404)
+
+    try:
+        from qa.inspection import inspect_student_pipeline
+        data = inspect_student_pipeline(s_dir)
+        m_row = get_student_manifest_row(sid)
+        data["school"] = school
+        data["grade"] = int(m_row["grade"]) if (m_row is not None and pd.notna(m_row.get("grade"))) else None
+        data["roll_number"] = int(m_row["roll_number"]) if (m_row is not None and pd.notna(m_row.get("roll_number"))) else None
+        data["label"] = int(m_row["label"]) if (m_row is not None and pd.notna(m_row.get("label"))) else None
+        return web.json_response(data)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return web.json_response({"error": f"Inspection failed: {str(e)}"}, status=500)
+
+
 async def handle_index(request: web.Request) -> web.FileResponse:
     return web.FileResponse(str(WEB_DIR / "index.html"))
 
@@ -535,6 +571,7 @@ def create_app() -> web.Application:
     # API endpoints
     app.router.add_get("/api/students", api_get_students)
     app.router.add_get("/api/student/{student_id}", api_get_student_detail)
+    app.router.add_get("/api/student/{student_id}/inspection", api_get_inspection)
     app.router.add_post("/api/student/{student_id}/update_sentence", api_update_sentence)
     app.router.add_post("/api/student/{student_id}/add_sentence", api_add_sentence)
     app.router.add_delete("/api/student/{student_id}/sentence/{task_id}", api_delete_sentence)

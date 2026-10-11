@@ -143,8 +143,18 @@ def compute_curvature_features(
     total_analyzed_length = 0.0
     spectral_short_var_weights: List[Tuple[float, float]] = []  # (fraction, length)
 
-    for i in range(min(n_paths, 300)):
-        coords = skan_obj.path_coordinates(i)  # (N, 2): [y, x]
+    path_lens = np.array(skan_obj.path_lengths())
+    valid_mask = path_lens >= (3.0 * step_ds)
+    candidate_indices = np.where(valid_mask)[0]
+    if len(candidate_indices) == 0:
+        return nan_dict
+
+    # Process longest candidate paths first up to 100 paths
+    if len(candidate_indices) > 100:
+        candidate_indices = candidate_indices[np.argsort(-path_lens[candidate_indices])[:100]]
+
+    for i in candidate_indices:
+        coords = skan_obj.path_coordinates(int(i))  # (N, 2): [y, x]
         if len(coords) < 4:
             continue
 

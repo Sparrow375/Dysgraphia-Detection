@@ -66,8 +66,18 @@ def compute_fragmentation_features(
     junctions = float(skel_info.get("junction_count", 0))
     endpoints = float(skel_info.get("endpoint_count", 0))
 
-    # Connected components
+    # Connected components & Skeleton graph
     ink_mask = _load_or_binarize_ink(sentence_json, image_crop)
+
+    # Dynamic skeleton graph calculation if not precomputed in JSON schema
+    if (junctions == 0 and endpoints == 0) and (ink_mask is not None and ink_mask.sum() > 20):
+        from skimage.morphology import skeletonize
+        skel = skeletonize(ink_mask > 0).astype(np.uint8)
+        kernel = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]], dtype=np.uint8)
+        neighbors = cv2.filter2D(skel, -1, kernel)
+        endpoints = float(np.sum((skel == 1) & (neighbors == 1)))
+        junctions = float(np.sum((skel == 1) & (neighbors >= 3)))
+
     if ink_mask is not None and ink_mask.sum() > 10:
         num_labels, _, stats, _ = cv2.connectedComponentsWithStats(ink_mask, connectivity=8)
         # Filter background and tiny noise specks (< 4px)

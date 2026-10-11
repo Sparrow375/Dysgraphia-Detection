@@ -119,6 +119,34 @@
         btnAddSentence: document.getElementById('btnAddSentence'),
         tasksList: document.getElementById('tasksList'),
         toast: document.getElementById('toast'),
+
+        // Inspection Suite Elements
+        btnInspectionMode: document.getElementById('btnInspectionMode'),
+        inspectionModal: document.getElementById('inspectionModal'),
+        closeInspectionBtn: document.getElementById('closeInspectionBtn'),
+        inspectStudentBadge: document.getElementById('inspectStudentBadge'),
+        inspectMetaDetails: document.getElementById('inspectMetaDetails'),
+        inspectTaskTabs: document.getElementById('inspectTaskTabs'),
+        inspectLayerPills: document.getElementById('inspectLayerPills'),
+        inspectLayerImg: document.getElementById('inspectLayerImg'),
+        inspectLoading: document.getElementById('inspectLoading'),
+        statRuleContam: document.getElementById('statRuleContam'),
+        statRuleDesc: document.getElementById('statRuleDesc'),
+        statCardRule: document.getElementById('statCardRule'),
+        statCleanInk: document.getElementById('statCleanInk'),
+        statGraphNodes: document.getElementById('statGraphNodes'),
+        statDimensions: document.getElementById('statDimensions'),
+        inspectFeatFilter: document.getElementById('inspectFeatFilter'),
+        inspectAlertBanner: document.getElementById('inspectAlertBanner'),
+        inspectTableBody: document.getElementById('inspectTableBody'),
+    };
+
+    // Inspection State
+    const inspectState = {
+        data: null,
+        selectedTaskIdx: 0,
+        selectedLayer: 'raw_url',
+        filter: 'all',
     };
 
     // --- Init ---
@@ -186,6 +214,41 @@
         el.helpModal.addEventListener('click', (e) => {
             if (e.target === el.helpModal) el.helpModal.classList.add('hidden');
         });
+
+        // Inspection Suite Listeners
+        if (el.btnInspectionMode) {
+            el.btnInspectionMode.addEventListener('click', () => {
+                openInspection(Math.max(0, state.selectedTaskIndex));
+            });
+        }
+        if (el.closeInspectionBtn) {
+            el.closeInspectionBtn.addEventListener('click', closeInspection);
+        }
+        if (el.inspectionModal) {
+            el.inspectionModal.addEventListener('click', (e) => {
+                if (e.target === el.inspectionModal) closeInspection();
+            });
+        }
+        if (el.inspectLayerPills) {
+            el.inspectLayerPills.addEventListener('click', (e) => {
+                const btn = e.target.closest('.pill');
+                if (!btn) return;
+                el.inspectLayerPills.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                inspectState.selectedLayer = btn.dataset.layer;
+                updateInspectLayerImage();
+            });
+        }
+        if (el.inspectFeatFilter) {
+            el.inspectFeatFilter.addEventListener('click', (e) => {
+                const btn = e.target.closest('.pill-sm');
+                if (!btn) return;
+                el.inspectFeatFilter.querySelectorAll('.pill-sm').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                inspectState.filter = btn.dataset.filter;
+                renderInspectTable();
+            });
+        }
 
         // Tools
         el.toolSelect.addEventListener('click', () => setTool('select'));
@@ -502,14 +565,25 @@
             card.innerHTML = `
                 <div class="task-card-header">
                     <span class="task-name-label">${s.task_name}</span>
-                    <span class="badge" style="background: rgba(255,255,255,0.08); color: ${scriptColor}; border: 1px solid ${scriptColor};">
-                        ${s.script} • ${s.word_count || 0} words
-                    </span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="btn-inspect" data-idx="${idx}" title="Inspect Feature Extraction & Rule Removal">🔬 Inspect</button>
+                        <span class="badge" style="background: rgba(255,255,255,0.08); color: ${scriptColor}; border: 1px solid ${scriptColor};">
+                            ${s.script} • ${s.word_count || 0} words
+                        </span>
+                    </div>
                 </div>
                 <div class="task-crop-container">
                     ${s.crop_url ? `<img src="${s.crop_url}" class="task-crop-img" alt="${s.task_name}"/>` : `<div style="padding: 12px; color: var(--text-muted, #94a3b8); font-size: 12px; text-align: center;">Saving & cropping...</div>`}
                 </div>
             `;
+
+            const inspectBtn = card.querySelector('.btn-inspect');
+            if (inspectBtn) {
+                inspectBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openInspection(idx);
+                });
+            }
 
             card.addEventListener('click', () => {
                 selectTask(idx);
@@ -1152,6 +1226,164 @@
         toastTimeout = setTimeout(() => {
             el.toast.classList.add('hidden');
         }, 3200);
+    }
+
+    // =========================================================================
+    // Pipeline & Feature Inspection Suite Logic
+    // =========================================================================
+    async function openInspection(targetTaskIdx = 0) {
+        if (!state.currentStudentId) return;
+        el.inspectionModal.classList.remove('hidden');
+        el.inspectionModal.style.display = 'flex';
+        el.inspectLoading.classList.remove('hidden');
+        el.inspectLoading.style.display = 'flex';
+        el.inspectStudentBadge.textContent = state.currentStudentId;
+        const sch = state.currentStudentData?.school === 'school_b' ? 'School B (Kanyashala)' : 'School A (Future Gen)';
+        const grd = state.currentStudentData?.grade ? `Grade ${state.currentStudentData.grade}` : '';
+        const roll = state.currentStudentData?.roll_number ? `Roll ${state.currentStudentData.roll_number}` : '';
+        const lbl = state.currentStudentData?.label === 1 ? '• 🔴 Dysgraphia (Positive)' : (state.currentStudentData?.label === 0 ? '• 🟢 Normal (Control)' : '• Unlabeled');
+        el.inspectMetaDetails.textContent = `${sch} • ${grd} • ${roll} ${lbl}`;
+
+        try {
+            const resp = await fetch(`/api/student/${state.currentStudentId}/inspection`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            inspectState.data = data;
+            const validTaskCount = data.tasks ? data.tasks.length : 0;
+            inspectState.selectedTaskIdx = Math.max(0, Math.min(targetTaskIdx, validTaskCount - 1));
+            
+            el.inspectLoading.classList.add('hidden');
+            el.inspectLoading.style.display = 'none';
+            renderInspectTaskTabs();
+            renderInspectTask(inspectState.selectedTaskIdx);
+        } catch (err) {
+            el.inspectLoading.classList.add('hidden');
+            el.inspectLoading.style.display = 'none';
+            showToast('Inspection generation error: ' + err.message, 'error');
+        }
+    }
+
+    function closeInspection() {
+        el.inspectionModal.classList.add('hidden');
+        el.inspectionModal.style.display = 'none';
+    }
+
+    function renderInspectTaskTabs() {
+        el.inspectTaskTabs.innerHTML = '';
+        if (!inspectState.data || !inspectState.data.tasks) return;
+
+        inspectState.data.tasks.forEach((t, idx) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `inspect-tab-btn ${idx === inspectState.selectedTaskIdx ? 'active' : ''}`;
+            const warnIcon = t.rule_leakage_detected ? ' ⚠️' : '';
+            btn.textContent = `${t.task_name}${warnIcon}`;
+            btn.addEventListener('click', () => {
+                inspectState.selectedTaskIdx = idx;
+                renderInspectTaskTabs();
+                renderInspectTask(idx);
+            });
+            el.inspectTaskTabs.appendChild(btn);
+        });
+    }
+
+    function renderInspectTask(idx) {
+        if (!inspectState.data || !inspectState.data.tasks || !inspectState.data.tasks[idx]) return;
+        const task = inspectState.data.tasks[idx];
+
+        updateInspectLayerImage();
+
+        // Update stats
+        const rulePix = task.overlays.rule_pixels || 0;
+        const cleanPix = task.overlays.clean_ink_pixels || 0;
+        const totalInk = Math.max(1, rulePix + cleanPix);
+        const rulePct = ((rulePix / totalInk) * 100).toFixed(1);
+
+        el.statRuleContam.textContent = `${rulePct}%`;
+        el.statRuleDesc.textContent = `${rulePix.toLocaleString()} rule pixels removed`;
+        if (rulePct > 20) {
+            el.statCardRule.classList.add('alert-stat');
+        } else {
+            el.statCardRule.classList.remove('alert-stat');
+        }
+
+        el.statCleanInk.textContent = `${cleanPix.toLocaleString()} px`;
+        el.statGraphNodes.textContent = `${task.overlays.endpoints_count} EP • ${task.overlays.junctions_count} JC`;
+        el.statDimensions.textContent = `${task.overlays.crop_width} × ${task.overlays.crop_height} px`;
+
+        // Render Alert Banner
+        if (task.rule_leakage_detected) {
+            el.inspectAlertBanner.className = 'inspect-alert warning';
+            el.inspectAlertBanner.classList.remove('hidden');
+            el.inspectAlertBanner.innerHTML = `
+                <div>
+                    <strong>⚠️ Printed Ruled Line Interference Detected:</strong> Notebook lines in this crop connected letters together, which artificially suppressed stroke fragmentation in the raw crop.
+                    Clean ink mask subtraction restores true clinical feature values below.
+                </div>
+            `;
+        } else {
+            el.inspectAlertBanner.classList.add('hidden');
+        }
+
+        renderInspectTable();
+    }
+
+    function updateInspectLayerImage() {
+        if (!inspectState.data || !inspectState.data.tasks) return;
+        const task = inspectState.data.tasks[inspectState.selectedTaskIdx];
+        if (!task || !task.overlays) return;
+
+        const url = task.overlays[inspectState.selectedLayer] || task.overlays.raw_url;
+        el.inspectLayerImg.src = url;
+    }
+
+    function renderInspectTable() {
+        el.inspectTableBody.innerHTML = '';
+        if (!inspectState.data || !inspectState.data.tasks) return;
+        const task = inspectState.data.tasks[inspectState.selectedTaskIdx];
+        if (!task || !task.features) return;
+
+        const filter = inspectState.filter;
+        const filtered = task.features.filter(f => {
+            if (filter === 'rule_leakage') return f.status === 'rule_leakage' || f.status === 'warning';
+            if (filter === 'risk') return f.status === 'risk';
+            return true;
+        });
+
+        filtered.forEach(f => {
+            const tr = document.createElement('tr');
+            const cleanStr = f.clean_value !== null ? f.clean_value : '—';
+            const rawStr = f.raw_value !== null ? f.raw_value : '—';
+
+            let badgeHtml = '';
+            if (f.status === 'rule_leakage') {
+                badgeHtml = `<span class="badge-status rule_leakage">⚠️ Rule Bridged</span>`;
+            } else if (f.status === 'risk') {
+                badgeHtml = `<span class="badge-status risk">🔴 Elevated Risk</span>`;
+            } else if (f.status === 'warning') {
+                badgeHtml = `<span class="badge-status warning">⚠️ Discrepancy</span>`;
+            } else if (f.status === 'nan') {
+                badgeHtml = `<span class="badge-status nan">⚪ N/A</span>`;
+            } else {
+                badgeHtml = `<span class="badge-status normal">✓ Clean</span>`;
+            }
+
+            tr.innerHTML = `
+                <td>
+                    <div class="feat-name-cell">${f.label}</div>
+                    <small style="color: var(--text-muted); font-size: 11px;">${f.description}</small>
+                </td>
+                <td class="feat-val-clean">${cleanStr}</td>
+                <td class="feat-val-raw">${rawStr}</td>
+                <td>
+                    <div style="display:flex; flex-direction:column; gap:2px;">
+                        ${badgeHtml}
+                        <small style="color: var(--text-muted); font-size: 10px;">${f.status_msg || ''}</small>
+                    </div>
+                </td>
+            `;
+            el.inspectTableBody.appendChild(tr);
+        });
     }
 
     // Launch App

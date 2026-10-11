@@ -45,3 +45,5 @@ ehthumbs.db
 # Local datasets (always tracked via DVC pointer files *.dvc)
 data/processed/
 qa/*.html
+scratch/
+

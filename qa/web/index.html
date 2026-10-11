@@ -67,6 +67,9 @@
             </div>
 
             <div class="header-actions">
+                <button id="btnInspectionMode" class="btn btn-primary" style="background: linear-gradient(135deg, #0284c7, #38bdf8); font-weight: 600;" title="Deep Pipeline & Feature Inspection Review">
+                    <span class="icon">&#128300;</span> Feature Inspector
+                </button>
                 <button id="verifyBtn" class="btn btn-verify" title="Mark this sheet as verified (Hotkey: V)">
                     <span class="icon">&#10003;</span> Mark Verified
                 </button>
@@ -212,6 +215,114 @@
                 </div>
             </aside>
         </main>
+
+        <!-- Deep Pipeline & Feature Inspection Modal -->
+        <div id="inspectionModal" class="modal-overlay hidden">
+            <div class="modal-card inspection-modal-card">
+                <div class="inspection-header">
+                    <div class="inspection-title-group">
+                        <div class="inspection-badge">PIPELINE INSPECTOR</div>
+                        <h2>Feature Extraction & Pipeline Review</h2>
+                        <span id="inspectStudentBadge" class="badge">---</span>
+                    </div>
+                    <div class="inspection-header-right">
+                        <span id="inspectMetaDetails" class="inspect-sub">---</span>
+                        <button id="closeInspectionBtn" class="btn btn-icon btn-close-modal" title="Close Inspector">&times;</button>
+                    </div>
+                </div>
+
+                <div class="inspection-body">
+                    <!-- Left Column: Visual Layers Inspection -->
+                    <div class="inspection-left-pane">
+                        <div class="inspect-section-bar">
+                            <label>1. Select Task Sentence:</label>
+                            <div id="inspectTaskTabs" class="inspect-tabs">
+                                <!-- Dynamic Task Tabs -->
+                            </div>
+                        </div>
+
+                        <div class="inspect-section-bar">
+                            <label>2. Pipeline Inspection Layer:</label>
+                            <div class="pill-group" id="inspectLayerPills">
+                                <button class="pill active" data-layer="raw_url">Raw Grayscale</button>
+                                <button class="pill" data-layer="rule_mask_url">🔴 Ruled Lines</button>
+                                <button class="pill" data-layer="clean_ink_url">🟢 Clean Ink</button>
+                                <button class="pill" data-layer="skeleton_url">🕸 Skeleton & Graph</button>
+                                <button class="pill" data-layer="baseline_url">📏 Baseline & Offsets</button>
+                            </div>
+                        </div>
+
+                        <!-- Main Image Viewport for Inspection -->
+                        <div class="inspect-image-viewport">
+                            <img id="inspectLayerImg" src="" alt="Pipeline Stage Layer" class="inspect-layer-img"/>
+                            <div id="inspectLoading" class="inspect-loading hidden">
+                                <div class="spinner"></div>
+                                <span>Generating pipeline layers & features...</span>
+                            </div>
+                        </div>
+
+                        <!-- Stage Diagnostic Metrics Bar -->
+                        <div class="inspect-stats-grid">
+                            <div class="stat-card" id="statCardRule">
+                                <span class="stat-title">Ruled Line Impact</span>
+                                <span class="stat-value" id="statRuleContam">--</span>
+                                <span class="stat-desc" id="statRuleDesc">--</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-title">Clean Ink Pixels</span>
+                                <span class="stat-value" id="statCleanInk">--</span>
+                                <span class="stat-desc">Printed lines subtracted</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-title">Skeleton Graph</span>
+                                <span class="stat-value" id="statGraphNodes">--</span>
+                                <span class="stat-desc">Endpoints • Junctions</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-title">Crop Geometry</span>
+                                <span class="stat-value" id="statDimensions">--</span>
+                                <span class="stat-desc">Width × Height</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Quantitative Feature Diagnostic Table -->
+                    <div class="inspection-right-pane">
+                        <div class="inspect-features-header">
+                            <div>
+                                <h3>Feature Extraction Diagnostic</h3>
+                                <span class="inspect-sub">Side-by-side comparison: Clean Ink vs Raw Crop (Rule Interference)</span>
+                            </div>
+                            <div class="inspect-filter-pills" id="inspectFeatFilter">
+                                <button class="pill-sm active" data-filter="all">All (29)</button>
+                                <button class="pill-sm" data-filter="rule_leakage">⚠️ Rule Shifts</button>
+                                <button class="pill-sm" data-filter="risk">🔴 Risk Markers</button>
+                            </div>
+                        </div>
+
+                        <div id="inspectAlertBanner" class="inspect-alert hidden">
+                            <!-- Alert message -->
+                        </div>
+
+                        <div class="inspect-table-wrap">
+                            <table class="inspect-table">
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Clean Ink</th>
+                                        <th>Raw Crop</th>
+                                        <th>Status / Diagnostic Finding</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inspectTableBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Help Modal -->
         <div id="helpModal" class="modal-overlay hidden">
