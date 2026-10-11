@@ -89,6 +89,19 @@
   - [x] 9.5 Automated Unit Tests: 33/33 tests passed (`pytest tests/ -v`).
   - [x] 9.6 Update documentation (`context.md`, `task_list.md`) and Git commit/push.
 
+- [/] Stage 10: Ruled-Line Removal Investigation & Segmentation-First Collision Architecture Plan:
+  - [x] 10.1 Diagnostic Audit of Ruled Line Erasure & Letter Amputation on Real Scans:
+    - Traced mathematical root cause of stroke slicing in `pipeline/rules.py` and `features/utils.py`.
+    - Identified why 1D column run thresholds (`run_total <= 4`, `dist_below >= 8`) systematically amputate English baseline letters, curved stems, and descenders.
+    - Measured +224% artificial connected component explosion (+384 severed fragments on Grade 3 sheet).
+  - [x] 10.2 Dissected why previous modifications had zero observable impact:
+    - Redundant double-masking in `pipeline/segment.py` operating on already-subtracted ink.
+    - Lack of clean ink file generation in `pipeline/process_dataset.py`.
+  - [x] 10.3 Evaluated Segmentation-Before-Removal feasibility:
+    - Proved continuous lines cause raw CCs to merge into whole-page mega-components.
+    - Proved vertical morphological opening (`1x7`) successfully eliminates continuous horizontal lines, isolating 100% of word segments with zero line interference.
+  - [x] 10.4 Formulated comprehensive architectural blueprint and implementation plan for continuous line trajectory subtraction and stroke preservation.
+
 
 ---
 

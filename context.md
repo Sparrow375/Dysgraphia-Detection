@@ -433,6 +433,29 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
     - **Tier 2 (High Specificity Script-Specific Specialist Verification, $\ge 90\%$ Specificity)**: Students in the borderline referral band undergo script-specific verification (Devanagari matra & shirorekha structural breakdown or English copy fatigue degradation), eliminating false positives and enforcing $\ge 90\%$ specificity on final clinical referrals.
 - **Automated Validation**: Passed 33/33 tests (`pytest tests/ -v`).
 
+## Phase 4 Stage 10: Ruled-Line Removal Investigation & Segmentation-First Collision Blueprint (Investigated 2026-10-11)
+- **Problem Statement & Clinical Motivation**:
+  - Visual review of segmented crops and clean ink masks uncovered persistent stroke amputations: letter baselines bitten off, descender tails ('y', 'g', 'p', 'q') severed, and curved letter loops ('o', 'u', 'e', 'a') broken into disconnected arcs.
+  - Concurrently, ruled lines were not fully removed under words, leaving fragments and bridging letters together.
+- **Root-Cause Investigation (Mathematical & Code Analysis)**:
+  1. *1D Run-Length Threshold Failure (`pipeline/rules.py`, `features/utils.py`)*:
+     - The algorithm measured vertical ink run $R_v(x) = y_b - y_t - 1$ at individual columns along $y_{\text{rule}}(x)$.
+     - `dist_below >= 8` was designed for Devanagari Shirorekha (where ink hangs downward). For English writing resting *on* the baseline, ink extends upward ($y < y_{\text{rule}}$), so `dist_below` is 0 or 1 px, completely failing to protect English letters.
+     - Student strokes (pencil, 0.5mm pen) are only 2–4px wide. Where letters curve onto the baseline or cross diagonally, $R_v(x) \le 4$px. The algorithm erroneously treated them as bare printed rules, zeroing the pixels and punching holes through strokes.
+     - Conversely, directly underneath character bodies ($R_v(x) \ge 5$px), rule erasure was skipped, leaving the printed line intact under words.
+     - Empirical measurement (`scratch/zoom_severing.py` on G3_A_Roll01): Rule removal triggered a +224% explosion in connected components (jumping from 171 to 555 fragments; on a single ruled line at $y=484$, 349 stroke columns were severed).
+  2. *Why Previous Attempts Had No Effect*:
+     - Double masking in `pipeline/segment.py` (`line_crop_clean = np.where(rule_crop > 0, 0, line_crop)`) operated on `line_crop` cropped from `ink_clean` (from which `rule_mask` was *already* subtracted in `process_ruled_lines`), resulting in zero delta.
+     - `pipeline/process_dataset.py` saved grayscale crops to disk without saving `{task_id}_clean_ink.png`, meaning the review gallery always displayed raw grayscale scans with original rules visible.
+- **Evaluation of Segmentation-Before-Removal Proposal**:
+  - *Naive connected components on raw binary ink*: Continuous ruled lines connect all letters into a single mega-component ($area = 404,607$px across the entire page).
+  - *Vertical morphological stroke support*: Ruled lines have height $\le 3$px and zero vertical support. Handwritten letters have vertical stroke components $\ge 8-15$px.
+  - *Validation*: A vertical morphological opening ($1 \times 7$) followed by horizontal dilation ($25 \times 7$) cleanly isolates 100% of word segments (`हमारे`, `स्कूल`, `Mother`, `cooks`, `food`) *prior* to touching ruled lines, while leaving inter-word gaps and margins completely empty (`word_occupancy == 0`).
+- **Continuous Rule Invariant & Collision Blueprint**:
+  - Ruled lines are physical continuous straight lines spanning the entire page width ($x = 0$ to $x = W$) with linear model $y_{\text{rule}}(x) = m x + c$.
+  - In **inter-word gaps and margins** (`word_occupancy == 0`), ink on $y_{\text{rule}}(x) \pm \Delta y$ is 100% guaranteed to be pure printed rule and can be erased cleanly from margin to margin without amputating strokes.
+  - Inside **word collision zones** (`word_occupancy == 1`), 1D column run thresholds are replaced by directional vertical stroke continuity: ink is preserved wherever a stroke connects above and below the baseline, preventing letter amputation.
+
 
 
 
