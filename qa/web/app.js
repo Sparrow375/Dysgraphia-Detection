@@ -214,6 +214,8 @@
         el.closeHelpBtn.addEventListener('click', () => el.helpModal.classList.add('hidden'));
         el.helpModal.addEventListener('click', (e) => {
             if (e.target === el.helpModal) el.helpModal.classList.add('hidden');
+        });
+
         // Crop Review Layer Toggle (Grayscale vs Clean Ink)
         const pillCropGray = document.getElementById('pillCropGray');
         const pillCropClean = document.getElementById('pillCropClean');
