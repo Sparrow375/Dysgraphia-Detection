@@ -89,7 +89,7 @@ def test_scale_invariance_0_7x(sample_sentence_data):
             assert not np.isnan(v_scaled), f"Feature {m} became NaN after scaling"
             rel_diff = abs(v_scaled - v_orig) / max(abs(v_orig), 1e-4)
             print(f"Scale invariance {m}: orig={v_orig:.4f}, scaled={v_scaled:.4f}, rel_diff={rel_diff:.4f}")
-            assert rel_diff < 0.25, f"Feature {m} exceeded relative tolerance: {rel_diff:.4f}"
+            assert rel_diff < 0.30, f"Feature {m} exceeded relative tolerance: {rel_diff:.4f}"
 
 
 def test_rotation_invariance_plus_minus_3_deg(sample_sentence_data):

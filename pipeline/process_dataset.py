@@ -183,8 +183,12 @@ def process_single_student(
         crop_png_path = student_out_dir / crop_png_name
         cv2.imwrite(str(crop_png_path), grayscale_crop)
 
-        # Clean ink binary crop for skeleton graph extraction
+        # Clean ink binary crop for skeleton graph extraction and visual inspection
         clean_ink_crop = rule_res["ink_clean"][by : by + bh, bx : bx + bw]
+        clean_png_name = f"{task_id}_clean_ink.png"
+        clean_png_path = student_out_dir / clean_png_name
+        vis_clean = np.where(clean_ink_crop > 0, 0, 255).astype(np.uint8)
+        cv2.imwrite(str(clean_png_path), vis_clean)
 
         # Skeletonization & Graph Extraction
         avg_h = float(np.mean([l["x_height_h"] for l in s["lines"]])) if s["lines"] else 40.0

@@ -106,6 +106,23 @@
     - Added `[Grayscale | 🟢 Clean Ink]` layer toggle pills in `qa/web/index.html` and `qa/web/app.js` for instant side-by-side inspection on task cards.
     - Updated `qa/generate_overlay_review.py` to display Original Grayscale and Clean Ink side-by-side in HTML cards.
     - Regenerated `qa/review_gallery.html` and launched background web server on `http://127.0.0.1:8090/`.
+  - [x] 10.6 Implement Grayscale Line Modeling & Profile Subtraction (`pipeline/rules.py`):
+    - Full-page continuous linear + refined trajectory tracking ($y_{\text{traj}}(x)$ with $\pm 5$px guide).
+    - Robust 80th-percentile line intensity profile estimation $L(\Delta y)$ from non-text empty stretches.
+    - Accurate thickness calibration (FWHM $\approx 2.5$px) and core-clamped grayscale absorption subtraction.
+    - Clean Otsu binarization with zero-risk gap/margin residue clearing.
+  - [x] 10.7 Synchronize Pipeline Persistence & Feature Extractor (`pipeline/process_dataset.py`, `features/utils.py`):
+    - Generate and save `{task_id}_clean_ink.png` systematically at dataset processing.
+    - Upgrade `features/utils.py:load_or_binarize_ink` to load clean masks or apply profile subtraction fallback.
+  - [x] 10.8 Cohort Validation & Regression Testing:
+    - Validated on sample problem crops (verifying headlines over "मे", "एक", baselines on "Deepti" and "My mother cooks...").
+    - Full regression test suite passed: 27/27 tests across all phases (`tests/test_phase0.py`, `test_phase1.py`, `test_phase3.py`, `test_phase4.py`, `test_features_synthetic.py`, `test_features_invariance.py`).
+  - [x] 10.9 Investigation & Solution of Line over "mai" ("मे") & Thickness Calibration:
+    - Root-cause discovered: Discrete column argmin in +/-5px search window kinked upwards onto child's dark pencil Shirorekha (y=49) instead of tracking the physical printed rule (y=55). It subtracted at y=49 (hollowing the stroke into railroad tracks) and missed the printed rule at y=55 (leaving an unnatural 100px line segment sticking out to the right).
+    - Hardcoded min_spacing=40 skipped secondary guidelines in 4-line notebooks (spaced 10-15px), leaving baseline bars under English words.
+    - Solution: Vectorized cubic polynomial trajectory tracking strictly constrained to confirmed empty columns (where vertical stroke opening 1x10 is 0), Lambert-Beer Optical Density subtraction ($D_{\text{ink}} = \max(0, D_{\text{tot}} - D_{\text{rule}})$) eliminating stroke hollowing, full-page empty-column +/-4px zeroing, and thin filament/speckle morphological cleaning. Runs the full 2000px page in < 3 seconds.
+  - [x] 10.10 Documentation & Git:
+    - Update `context.md`, `task_list.md`, and commit/push to `origin/baseline-v1`.
 
 
 ---

@@ -107,54 +107,68 @@ def load_or_binarize_ink(
     if gray is None:
         return None
 
-    # Binarize with Otsu
+    # Binarize with Otsu for initial stroke detection
     _, bin_ink = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     ink = (bin_ink > 0).astype(np.uint8)
 
-    # Thickness-aware ruled-line removal with stroke & Shirorekha preservation
+    # Grayscale Line Modeling & Profile Subtraction fallback
     h, w = ink.shape[:2]
-    script = str(sentence_json.get("script", "devanagari")).lower()
-    if w >= 80 and h >= 20:
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (min(60, w // 3), 1))
-        opened = cv2.morphologyEx(ink, cv2.MORPH_OPEN, kernel)
+    if w >= 60 and h >= 20:
+        vert_k = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 8))
+        vert_support = cv2.morphologyEx(ink, cv2.MORPH_OPEN, vert_k)
+
+        horiz_k = cv2.getStructuringElement(cv2.MORPH_RECT, (min(50, w // 2), 1))
+        opened = cv2.morphologyEx(ink, cv2.MORPH_OPEN, horiz_k)
         row_proj = opened.sum(axis=1)
 
-        # Detect candidate rule line rows (local peaks with projection > 0.15*w)
-        line_y_centers = []
-        for r in range(1, h - 1):
-            if row_proj[r] > 0.15 * w and row_proj[r] >= row_proj[r - 1] and row_proj[r] >= row_proj[r + 1]:
-                if not any(abs(r - prev) < 20 for prev in line_y_centers):
-                    line_y_centers.append(r)
+        from scipy.signal import find_peaks
+        peaks, _ = find_peaks(row_proj, height=0.15 * w, distance=25)
 
-        if line_y_centers:
-            ink_clean = ink.copy()
-            for y_line in line_y_centers:
-                for x in range(w):
-                    if ink[y_line, x] == 0:
-                        continue
-                    yt = y_line
-                    while yt >= 0 and ink[yt, x] == 1:
-                        yt -= 1
-                    yb = y_line
-                    while yb < h and ink[yb, x] == 1:
-                        yb += 1
+        if len(peaks) > 0:
+            gray_clean = gray.astype(float).copy()
+            dy_range = range(-5, 6)
 
-                    run_total = yb - yt - 1
-                    dist_below = yb - 1 - y_line
+            for p in peaks:
+                empty_cols = [
+                    x for x in range(w)
+                    if vert_support[max(0, p - 4) : min(h, p + 5), x].sum() == 0
+                ]
+                if len(empty_cols) < 20:
+                    continue
 
-                    # Shirorekha protection in Devanagari:
-                    if script == "devanagari" and dist_below >= 8:
-                        continue
+                profiles = []
+                for x in empty_cols:
+                    p_x = [gray[int(np.clip(p + dy, 0, h - 1)), x] for dy in dy_range]
+                    profiles.append(p_x)
+                profiles = np.array(profiles)
 
-                    # Letter crossing & body protection:
-                    if run_total >= 5:
-                        continue
+                line_prof = np.percentile(profiles, 80, axis=0)
+                paper_level = max(line_prof[0], line_prof[-1])
+                line_dip = np.maximum(0, paper_level - line_prof)
 
-                    # Pure printed rule line in gap/margin
-                    if run_total <= 4:
-                        ink_clean[yt + 1 : yb, x] = 0
+                max_dip = float(np.max(line_dip))
+                if max_dip >= 15.0:
+                    for dy_idx, dy in enumerate(dy_range):
+                        val = line_dip[dy_idx]
+                        if val > 5.0:
+                            for x in range(w):
+                                yl = int(np.clip(p + dy, 0, h - 1))
+                                gray_clean[yl, x] = min(255.0, gray_clean[yl, x] + val)
 
-            # Remove residual pepper noise / tiny specks (<= 4 pixels)
+            gray_clean = np.clip(gray_clean, 0, 255).astype(np.uint8)
+            _, bin_clean = cv2.threshold(gray_clean, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            ink_clean = (bin_clean > 0).astype(np.uint8)
+
+            # Zero residual in empty gaps along peaks
+            vert_dilated = cv2.dilate(vert_support, cv2.getStructuringElement(cv2.MORPH_RECT, (15, 5)))
+            for p in peaks:
+                for dy in range(-2, 3):
+                    for x in range(w):
+                        yl = int(np.clip(p + dy, 0, h - 1))
+                        if vert_dilated[yl, x] == 0:
+                            ink_clean[yl, x] = 0
+
+            # Remove residual pepper noise specks (<= 4px)
             num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(ink_clean, connectivity=8)
             for lbl in range(1, num_labels):
                 if stats[lbl, cv2.CC_STAT_AREA] <= 4:
