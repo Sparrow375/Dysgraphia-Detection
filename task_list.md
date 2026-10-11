@@ -101,6 +101,11 @@
     - Proved continuous lines cause raw CCs to merge into whole-page mega-components.
     - Proved vertical morphological opening (`1x7`) successfully eliminates continuous horizontal lines, isolating 100% of word segments with zero line interference.
   - [x] 10.4 Formulated comprehensive architectural blueprint and implementation plan for continuous line trajectory subtraction and stroke preservation.
+  - [x] 10.5 Updated Visual Review Galleries & Web App Layer Toggling:
+    - Updated `qa/app.py` to auto-generate and serve `clean_ink_url` alongside `crop_url`.
+    - Added `[Grayscale | 🟢 Clean Ink]` layer toggle pills in `qa/web/index.html` and `qa/web/app.js` for instant side-by-side inspection on task cards.
+    - Updated `qa/generate_overlay_review.py` to display Original Grayscale and Clean Ink side-by-side in HTML cards.
+    - Regenerated `qa/review_gallery.html` and launched background web server on `http://127.0.0.1:8090/`.
 
 
 ---

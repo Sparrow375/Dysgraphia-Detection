@@ -455,6 +455,11 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - Ruled lines are physical continuous straight lines spanning the entire page width ($x = 0$ to $x = W$) with linear model $y_{\text{rule}}(x) = m x + c$.
   - In **inter-word gaps and margins** (`word_occupancy == 0`), ink on $y_{\text{rule}}(x) \pm \Delta y$ is 100% guaranteed to be pure printed rule and can be erased cleanly from margin to margin without amputating strokes.
   - Inside **word collision zones** (`word_occupancy == 1`), 1D column run thresholds are replaced by directional vertical stroke continuity: ink is preserved wherever a stroke connects above and below the baseline, preventing letter amputation.
+- **Visual Review & Web App Layer Toggling Upgrades**:
+  - `qa/app.py`: Updated `api_get_student_detail` and `api_update_sentence` to dynamically generate and serve `{task_id}_clean_ink.png` alongside `{task_id}.png`.
+  - `qa/web/index.html` & `qa/web/app.js`: Added `[Grayscale | 🟢 Clean Ink]` layer toggle pills above the task card list, allowing users to flip between raw scans and current clean ink masks with 1 click.
+  - `qa/generate_overlay_review.py`: Updated review cards to display Original Grayscale Scan and Clean Ink mask side-by-side with clear color-coded badges. Regenerated `qa/review_gallery.html`.
+  - Live server running on `http://127.0.0.1:8090/`.
 
 
 

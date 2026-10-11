@@ -19,6 +19,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 import cv2
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
@@ -140,11 +141,31 @@ def run_qa_review(
 
             crop_fn = s_data["crop_filename"]
             crop_rel_path = f"../{output_dir}/{school}/{student_id}/{crop_fn}"
+            clean_fn = Path(crop_fn).stem + "_clean_ink.png"
+            clean_path = student_dir / clean_fn
+            if not clean_path.exists():
+                from features.utils import load_or_binarize_ink
+                crop_gray = cv2.imread(str(student_dir / crop_fn), cv2.IMREAD_GRAYSCALE)
+                if crop_gray is not None:
+                    clean_mask = load_or_binarize_ink(s_data, crop_gray)
+                    if clean_mask is not None:
+                        vis_clean = np.where(clean_mask > 0, 0, 255).astype(np.uint8)
+                        cv2.imwrite(str(clean_path), vis_clean)
+            clean_rel_path = f"../{output_dir}/{school}/{student_id}/{clean_fn}"
 
             sentence_cards.append(
                 f"""<div class="sentence-box">
                     <strong>{t_name}</strong> ({script}) — {wc} words<br>
-                    <img src="{crop_rel_path}" class="crop-img" alt="{t_name}"/>
+                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 2px;">Original Grayscale Scan</div>
+                            <img src="{crop_rel_path}" class="crop-img" alt="{t_name} raw"/>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 11px; color: #10b981; font-weight: 600; margin-bottom: 2px;">🟢 Clean Ink (Current Pipeline)</div>
+                            <img src="{clean_rel_path}" class="crop-img" style="background: white; border: 1px solid #10b981;" alt="{t_name} clean"/>
+                        </div>
+                    </div>
                 </div>"""
             )
 

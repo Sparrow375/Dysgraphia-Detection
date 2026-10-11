@@ -28,6 +28,7 @@
 
         hasUnsavedChanges: false,
         isAddingNewTask: false,
+        cropViewMode: 'gray', // 'gray' | 'clean'
     };
 
     const standardTasks = [
@@ -213,7 +214,23 @@
         el.closeHelpBtn.addEventListener('click', () => el.helpModal.classList.add('hidden'));
         el.helpModal.addEventListener('click', (e) => {
             if (e.target === el.helpModal) el.helpModal.classList.add('hidden');
-        });
+        // Crop Review Layer Toggle (Grayscale vs Clean Ink)
+        const pillCropGray = document.getElementById('pillCropGray');
+        const pillCropClean = document.getElementById('pillCropClean');
+        if (pillCropGray && pillCropClean) {
+            pillCropGray.addEventListener('click', () => {
+                state.cropViewMode = 'gray';
+                pillCropGray.classList.add('active');
+                pillCropClean.classList.remove('active');
+                renderTaskCards();
+            });
+            pillCropClean.addEventListener('click', () => {
+                state.cropViewMode = 'clean';
+                pillCropClean.classList.add('active');
+                pillCropGray.classList.remove('active');
+                renderTaskCards();
+            });
+        }
 
         // Inspection Suite Listeners
         if (el.btnInspectionMode) {
@@ -561,10 +578,18 @@
             card.dataset.index = idx;
 
             const scriptColor = s.script === 'devanagari' ? '#10b981' : '#f59e0b';
+            const isCleanMode = (state.cropViewMode === 'clean');
+            const activeImgUrl = (isCleanMode && s.clean_ink_url) ? s.clean_ink_url : s.crop_url;
+            const layerLabel = isCleanMode ? 
+                '<span style="font-size: 10px; color: #10b981; font-weight: 600;">[🟢 Clean Ink (Current Pipeline)]</span>' : 
+                '<span style="font-size: 10px; color: #94a3b8; font-weight: 500;">[Grayscale (Original Scan)]</span>';
 
             card.innerHTML = `
                 <div class="task-card-header">
-                    <span class="task-name-label">${s.task_name}</span>
+                    <div>
+                        <span class="task-name-label">${s.task_name}</span>
+                        <div style="margin-top: 2px;">${layerLabel}</div>
+                    </div>
                     <div style="display: flex; align-items: center; gap: 6px;">
                         <button type="button" class="btn-inspect" data-idx="${idx}" title="Inspect Feature Extraction & Rule Removal">🔬 Inspect</button>
                         <span class="badge" style="background: rgba(255,255,255,0.08); color: ${scriptColor}; border: 1px solid ${scriptColor};">
@@ -572,8 +597,8 @@
                         </span>
                     </div>
                 </div>
-                <div class="task-crop-container">
-                    ${s.crop_url ? `<img src="${s.crop_url}" class="task-crop-img" alt="${s.task_name}"/>` : `<div style="padding: 12px; color: var(--text-muted, #94a3b8); font-size: 12px; text-align: center;">Saving & cropping...</div>`}
+                <div class="task-crop-container" style="${isCleanMode ? 'background: #ffffff; border-radius: 4px; padding: 4px;' : ''}">
+                    ${activeImgUrl ? `<img src="${activeImgUrl}" class="task-crop-img" alt="${s.task_name}"/>` : `<div style="padding: 12px; color: var(--text-muted, #94a3b8); font-size: 12px; text-align: center;">Saving & cropping...</div>`}
                 </div>
             `;
 

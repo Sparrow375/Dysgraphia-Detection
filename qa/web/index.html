@@ -209,6 +209,15 @@
                         <button id="btnAddSentence" class="btn btn-small btn-secondary">+ Add Task</button>
                     </div>
 
+                    <!-- Crop Review Layer Toggle Bar -->
+                    <div class="crop-layer-toggle-bar" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; margin-bottom: 8px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid var(--border-subtle, rgba(255,255,255,0.1));">
+                        <span style="font-size: 11px; font-weight: 600; color: var(--text-muted, #94a3b8); text-transform: uppercase;">Review Layer:</span>
+                        <div class="pill-group" id="cropLayerPillGroup" style="display: flex; gap: 2px;">
+                            <button type="button" class="pill active" id="pillCropGray" data-mode="gray" title="Show original grayscale scan with ruled lines">Grayscale</button>
+                            <button type="button" class="pill" id="pillCropClean" data-mode="clean" title="Show clean ink with ruled lines removed (current pipeline)">🟢 Clean Ink</button>
+                        </div>
+                    </div>
+
                     <div class="tasks-scroll" id="tasksList">
                         <!-- Task cards injected dynamically -->
                     </div>

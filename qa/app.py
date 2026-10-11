@@ -203,14 +203,29 @@ async def api_get_student_detail(request: web.Request) -> web.Response:
         try:
             with open(jf, "r", encoding="utf-8") as f:
                 s_data = json.load(f)
-            crop_fn = s_data.get("crop_filename", f"{s_data['task_id']}.png")
+            t_id = s_data.get("task_id", jf.stem)
+            crop_fn = s_data.get("crop_filename", f"{t_id}.png")
+            clean_fn = f"{t_id}_clean_ink.png"
+            clean_path = s_dir / clean_fn
+
+            # Ensure clean ink file exists for visual inspection
+            if not clean_path.exists() and img is not None:
+                bx, by, bw, bh = s_data.get("crop_bbox", [0, 0, 100, 100])
+                crop_gray = img[by : by + bh, bx : bx + bw]
+                from features.utils import load_or_binarize_ink
+                clean_mask = load_or_binarize_ink(s_data, crop_gray)
+                if clean_mask is not None:
+                    vis_clean = np.where(clean_mask > 0, 0, 255).astype(np.uint8)
+                    cv2.imwrite(str(clean_path), vis_clean)
+
             sentences.append({
-                "task_id": s_data.get("task_id", jf.stem),
+                "task_id": t_id,
                 "task_name": s_data.get("task_name", "task"),
                 "script": s_data.get("script", "devanagari"),
                 "crop_bbox": s_data.get("crop_bbox", [0, 0, 100, 100]),
                 "word_count": s_data.get("qa_flags", {}).get("word_count_detected", 0),
                 "crop_url": f"/files/processed/{school}/{sid}/{crop_fn}?t={int(time.time())}",
+                "clean_ink_url": f"/files/processed/{school}/{sid}/{clean_fn}?t={int(time.time())}",
                 "is_manually_adjusted": s_data.get("is_manually_adjusted", False),
             })
         except Exception:
@@ -358,6 +373,14 @@ async def api_update_sentence(request: web.Request) -> web.Response:
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(schema, f, indent=2)
 
+    # Generate clean ink image for updated crop
+    clean_fn = f"{task_id}_clean_ink.png"
+    from features.utils import load_or_binarize_ink
+    clean_mask = load_or_binarize_ink(schema, crop)
+    if clean_mask is not None:
+        vis_clean = np.where(clean_mask > 0, 0, 255).astype(np.uint8)
+        cv2.imwrite(str(s_dir / clean_fn), vis_clean)
+
     # Regenerate overlay
     regenerate_student_overlay(s_dir)
 
@@ -367,6 +390,7 @@ async def api_update_sentence(request: web.Request) -> web.Response:
         "crop_bbox": clamped_bbox,
         "word_count": word_count,
         "crop_url": f"/files/processed/{school}/{sid}/{crop_fn}?t={int(time.time())}",
+        "clean_ink_url": f"/files/processed/{school}/{sid}/{clean_fn}?t={int(time.time())}",
         "overlay_url": f"/files/processed/{school}/{sid}/overlay_debug.png?t={int(time.time())}",
     })
 
