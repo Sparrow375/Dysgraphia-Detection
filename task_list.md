@@ -150,7 +150,11 @@
   - [x] 12.6 Compare Sensitivity, Specificity, AUROC, and AUPRC metrics against previous baseline.
   - [x] 12.7 Update documentation (`context.md`, `architechture.md`), and Git commit/push.
 
-
+- [x] Stage 13: Comprehensive Benchmark & Clinical Relevance Whitepaper:
+  - [x] 13.1 Synthesize all benchmark findings across sentence-level, student-level, scripts, external cross-school validation, and ablations.
+  - [x] 13.2 Author authoritative report `reports/model_benchmark_clinical_report.md` covering "What we did", "How we did it", "What we got", capability limit analysis, and clinical relevance evaluation.
+  - [x] 13.3 Update `context.md`, `architechture.md`, and `task_list.md`.
+  - [x] 13.4 Git commit and push to `origin/baseline-v1`.
 
 ---
 

@@ -112,12 +112,15 @@ Dysgraphia-Detection/
 │       ├── style.css                 # Modern responsive styling and dark mode design system
 │       └── app.js                    # Canvas rendering, layer toggles, and annotation controls
 ├── reports/                          # Structured benchmark outputs, metrics JSONs, and CSV tables
+│   ├── model_benchmark_clinical_report.md # Comprehensive technical benchmark & clinical evaluation report
 │   ├── student_benchmark_results.csv # 5-repeat 5-fold nested CV results on student level
 │   ├── student_benchmark_results.json# Detailed per-fold student evaluation metrics
 │   ├── benchmark_all_datasets.csv    # Cross-dataset comparative summary table
 │   ├── benchmark_hindi.csv           # Sentence-level Hindi benchmark results
 │   ├── benchmark_english.csv         # Sentence-level English benchmark results
 │   ├── benchmark_combined.csv        # Sentence-level Combined benchmark results
+│   ├── cross_school_external_validation.csv # Generalization metrics across schools (A→B, B→A)
+│   ├── pooled_multischool_benchmark.csv # Pooled multi-school nested CV metrics
 │   └── misclassified_gallery.html    # Qualitative visual analysis of false positives & false negatives
 ├── scratch/                          # Diagnostic scripts, algorithm prototypes, and visual validation crops
 └── tests/                            # Automated unit, regression, and mathematical invariant tests
