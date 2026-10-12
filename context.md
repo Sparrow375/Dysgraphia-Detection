@@ -561,6 +561,27 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - Tier 1 Community Triage: Sensitivity = 88.0%, Specificity = 75.0%, ruling out 75% of neurotypical children while catching 9 out of 10 at-risk students, eliminating the clinical diagnostic bottleneck in low-resource schools.
   - Tier 2 Specialist Referral: Specificity = 90.0%, Positive Likelihood Ratio $LR^+ = 5.42$, shifting post-test probability from 18.6% to >55.3% for targeted occupational therapy referrals.
 
+## Phase 4 Stage 14: Strategic Deep-Dive & Empirical Research on Next Frontiers (Completed 2026-10-12)
+- **Artifact**: Comprehensive strategic analysis and execution whitepaper at `docs/strategic_roadmap_next_frontiers.md`.
+- **Empirical Stylus-to-Paper Correlation Gate (`scratch/analyze_paper_vs_stylus.py`)**:
+  - Tested 94 matched students with both static paper features and $200\text{ Hz}$ digital stylus kinematics.
+  - Statistically significant couplings confirmed ($p < 0.001$): `jerk_proxy_mean` vs `stroke_count` ($\rho = -0.395, p = 8.2\times 10^{-5}$); `gap_fraction_above_2h` vs `mean_stroke_dur` ($\rho = -0.331, p = 0.0017$) and `mean_pause_sec` ($\rho = -0.253, p = 0.018$); `components_per_unit_width_dict_mean` vs `cv_vel` ($\rho = -0.302, p = 0.0045$) and `mean_jerk` ($\rho = -0.287, p = 0.0071$).
+  - **Verdict on Pseudo-Kinematics**: Moderate correlation ($|\rho| \approx 0.25–0.40$) proves paper features reflect true neuromotor tremor, BUT continuous pointwise $v(t)$ synthesis via 2/3 power law is mathematically flawed (assumes smooth motion; ignores 50–65% in-air hesitation).
+  - **Pivot**: Use stylus data for a supervised *summary motion predictor* (predicting global in-air ratio, velocity instability, and speed).
+- **Empirical Content Stream Gate (OCR & Legibility, `scratch/test_ocr_content_stream.py`)**:
+  - Live EasyOCR evaluation demonstrated severe confidence and word count collapse on dysgraphic crops:
+    - Control student (`G4_A_Roll04`): 16 words recognized, mean confidence **0.399**.
+    - Slow compensatory writer (`G4_A_Roll09`): Garbled text, mean confidence **0.228**.
+    - Severe fragmentation writer (`G4_A_Roll11`): Recognized word count collapsed to **5 words**, mean confidence collapsed to **0.149** ($2.7\times$ drop).
+  - Proves the Content Stream directly captures Phenotype B (slow compensatory writers) who suppress stroke fragmentation at the cost of spelling and completeness.
+- **Prioritization Matrix Established**:
+  1. **Priority 1 (Sprint 1)**: Content Stream (CER, WER, omission ratio, OCR legibility confidence, $\Delta\text{CER}_{\text{dict}-\text{copy}}$).
+  2. **Priority 2 (Sprint 1)**: Operationalize the Two-Tier Screening Cascade ($P \ge 0.35$ Tier 1 triage, $P \ge 0.60$ Tier 2 referral) in evaluator and web UI.
+  3. **Priority 3 (Sprint 2)**: Stylus-Anchored Supervised Summary Motion Predictor.
+  4. **Priority 4 (Sprint 3)**: Learned Vision Features (Frozen DINOv2 PCA $\le 8$ regularized linear probe as orthogonal visual sanity check).
+  5. **De-prioritize**: Pointwise 2/3 power law pseudo-kinematic trajectory synthesis.
+
+
 
 
 

@@ -156,6 +156,13 @@
   - [x] 13.3 Update `context.md`, `architechture.md`, and `task_list.md`.
   - [x] 13.4 Git commit and push to `origin/baseline-v1`.
 
+- [x] Stage 14: Strategic Deep-Dive & Empirical Research on Next Frontiers:
+  - [x] 14.1 Execute empirical gating correlation test between static paper features and $200\text{ Hz}$ digital stylus kinematics across 94 matched students (`scratch/analyze_paper_vs_stylus.py`).
+  - [x] 14.2 Execute empirical gating test on EasyOCR legibility and token confidence across control vs dysgraphic crops (`scratch/test_ocr_content_stream.py`).
+  - [x] 14.3 Dissect theoretical limits of point-by-point 2/3 power law pseudo-kinematics vs supervised summary motion prediction.
+  - [x] 14.4 Author comprehensive strategic whitepaper and prioritized execution roadmap (`docs/strategic_roadmap_next_frontiers.md`).
+  - [x] 14.5 Update `context.md`, `architechture.md`, `task_list.md`, and commit/push to `origin/baseline-v1`.
+
 ---
 
 ## Completed Sprints
