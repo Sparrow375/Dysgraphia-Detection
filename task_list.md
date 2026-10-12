@@ -180,6 +180,15 @@
     - Hybrid Ensemble AUROC **0.871 +/- 0.004** (95% CI: [0.841, 0.893]), AUPRC **0.488**.
   - [x] 15.7 Documentation (`context.md`, `architechture.md`) & Git commit/push to `feature-streams-v2`.
 
+- [x] Stage 16: Cross-Continental External Validation on Slovak Dataset:
+  - [x] 16.1 Implement `pipeline/slovak_validation.py` to adapt and extract Latin spatial-geometric features across all 249 Slovak line crops (135 Low Potential Dysgraphia, 114 Potential Dysgraphia).
+  - [x] 16.2 Train English models on Indian cohort (`dataset_english.csv`) and evaluate Zero-Shot Transfer on Slovak dataset (Elastic-Net AUROC 0.583, AUPRC 0.515; HistGBM AUROC 0.564, AUPRC 0.506).
+  - [x] 16.3 Evaluate within-cohort 5-Fold Cross-Validation on the Slovak dataset to measure discriminative power on European handwriting (Random Forest AUROC **0.852**, AUPRC **0.834**, Sens@80%Spec **77.2%**; Elastic-Net AUROC **0.834**, Sens@80%Spec **73.7%**; HistGBM AUROC **0.837**).
+  - [x] 16.4 Discovered top European discriminative features: `junctions_per_unit_width` (AUROC = 0.706, $p = 7.44\times 10^{-9}$, 1.83x explosion in stroke crossings in dysgraphia), `tortuosity_median` (AUROC = 0.675, $p = 1.25\times 10^{-6}$), `endpoints_per_unit_width` (AUROC = 0.618, $p = 1.19\times 10^{-3}$, +31% pen lifts).
+  - [x] 16.5 Author structured analytical reports (`reports/slovak_external_validation_report.md`, `reports/slovak_validation_metrics.json`).
+  - [x] 16.6 Unit testing (`tests/test_slovak_validation.py`: 2/2 passed; full regression suite 47/47 passed).
+  - [x] 16.7 Update `context.md`, `architechture.md`, `task_list.md`, and commit/push to `feature-streams-v2`.
+
 ---
 
 ## Completed Sprints

@@ -1,0 +1,209 @@
+{
+  "n_samples": 249,
+  "n_control": 135,
+  "n_dysgraphic": 114,
+  "shared_features": [
+    "components_per_unit_width",
+    "endpoints_per_unit_width",
+    "junctions_per_unit_width",
+    "jerk_proxy",
+    "tortuosity_median",
+    "tangent_variance_short_wavelength",
+    "kappa_sign_changes_per_h",
+    "gap_mean",
+    "gap_cv",
+    "gap_fraction_above_2h",
+    "word_height_cv",
+    "word_width_per_char",
+    "baseline_rmse_norm",
+    "slant_mean_deg"
+  ],
+  "univariate_rankings": [
+    {
+      "feature": "junctions_per_unit_width",
+      "slovak_univariate_auroc": 0.7063027940220922,
+      "spearman_rho": 0.35605672917527537,
+      "p_value": 7.436082510603103e-09,
+      "direction": "higher in dysgraphia",
+      "mean_control": 7.715846618956106,
+      "mean_dysgraphic": 14.145572963316468
+    },
+    {
+      "feature": "tortuosity_median",
+      "slovak_univariate_auroc": 0.6746913580246914,
+      "spearman_rho": -0.30149886249694113,
+      "p_value": 1.254117553987186e-06,
+      "direction": "lower in dysgraphia",
+      "mean_control": 1.1731138987344059,
+      "mean_dysgraphic": 1.0924772737113817
+    },
+    {
+      "feature": "endpoints_per_unit_width",
+      "slovak_univariate_auroc": 0.6183235867446394,
+      "spearman_rho": 0.20421395396163042,
+      "p_value": 0.0011934385435406353,
+      "direction": "higher in dysgraphia",
+      "mean_control": 3.3880729998972607,
+      "mean_dysgraphic": 4.445978538648115
+    },
+    {
+      "feature": "jerk_proxy",
+      "slovak_univariate_auroc": 0.6126055880441845,
+      "spearman_rho": -0.19434529501126055,
+      "p_value": 0.0020650565854756736,
+      "direction": "lower in dysgraphia",
+      "mean_control": 18.030213497374614,
+      "mean_dysgraphic": 15.93937915187305
+    },
+    {
+      "feature": "tangent_variance_short_wavelength",
+      "slovak_univariate_auroc": 0.575698505523067,
+      "spearman_rho": 0.1306475872406916,
+      "p_value": 0.039393892584329265,
+      "direction": "higher in dysgraphia",
+      "mean_control": 0.4070762900825314,
+      "mean_dysgraphic": 0.42740208816168934
+    },
+    {
+      "feature": "kappa_sign_changes_per_h",
+      "slovak_univariate_auroc": 0.5705003248862899,
+      "spearman_rho": 0.12167607910399175,
+      "p_value": 0.055176270795883615,
+      "direction": "higher in dysgraphia",
+      "mean_control": 2.341691647970624,
+      "mean_dysgraphic": 2.5134159182244424
+    },
+    {
+      "feature": "slant_mean_deg",
+      "slovak_univariate_auroc": 0.5623781676413255,
+      "spearman_rho": 0.10765809764039824,
+      "p_value": 0.09003777486507447,
+      "direction": "higher in dysgraphia",
+      "mean_control": 0.35869478340023014,
+      "mean_dysgraphic": 1.5645982388385271
+    },
+    {
+      "feature": "components_per_unit_width",
+      "slovak_univariate_auroc": 0.5211176088369072,
+      "spearman_rho": -0.03644675180534315,
+      "p_value": 0.5670398864412153,
+      "direction": "lower in dysgraphia",
+      "mean_control": 1.1036448640275063,
+      "mean_dysgraphic": 1.1069343264112872
+    },
+    {
+      "feature": "gap_cv",
+      "slovak_univariate_auroc": 0.5080571799870046,
+      "spearman_rho": -0.08994258510841462,
+      "p_value": 0.15706903842930778,
+      "direction": "lower in dysgraphia",
+      "mean_control": 0.4017154048726728,
+      "mean_dysgraphic": 0.4005794668088031
+    },
+    {
+      "feature": "gap_mean",
+      "slovak_univariate_auroc": 0.5080571799870046,
+      "spearman_rho": -0.08994258510841462,
+      "p_value": 0.15706903842930778,
+      "direction": "lower in dysgraphia",
+      "mean_control": 0.8572751322751323,
+      "mean_dysgraphic": 0.8569862155388475
+    },
+    {
+      "feature": "baseline_rmse_norm",
+      "slovak_univariate_auroc": 0.5080571799870046,
+      "spearman_rho": 0.08994258510841462,
+      "p_value": 0.15706903842930778,
+      "direction": "higher in dysgraphia",
+      "mean_control": 9.231067760041995,
+      "mean_dysgraphic": 9.379189898591509
+    },
+    {
+      "feature": "word_height_cv",
+      "slovak_univariate_auroc": 0.5080571799870046,
+      "spearman_rho": -0.08994258510841462,
+      "p_value": 0.15706903842930778,
+      "direction": "lower in dysgraphia",
+      "mean_control": 1.2023038140373037,
+      "mean_dysgraphic": 1.1998590628131995
+    },
+    {
+      "feature": "gap_fraction_above_2h",
+      "slovak_univariate_auroc": 0.5,
+      "spearman_rho": NaN,
+      "p_value": NaN,
+      "direction": "higher in dysgraphia",
+      "mean_control": 0.0,
+      "mean_dysgraphic": 0.0
+    },
+    {
+      "feature": "word_width_per_char",
+      "slovak_univariate_auroc": 0.5,
+      "spearman_rho": NaN,
+      "p_value": NaN,
+      "direction": "higher in dysgraphia",
+      "mean_control": 30.368421052631586,
+      "mean_dysgraphic": 30.368421052631575
+    }
+  ],
+  "zero_shot_transfer": {
+    "Elastic-Net Logistic Regression": {
+      "auroc": 0.583,
+      "auprc": 0.515,
+      "brier": 0.286,
+      "sens_at_90_spec": 10.5,
+      "sens_at_80_spec": 25.4
+    },
+    "Regularized Logistic Regression (L2)": {
+      "auroc": 0.54,
+      "auprc": 0.461,
+      "brier": 0.314,
+      "sens_at_90_spec": 5.3,
+      "sens_at_80_spec": 14.0
+    },
+    "Random Forest (d=3, leaf=4)": {
+      "auroc": 0.521,
+      "auprc": 0.463,
+      "brier": 0.254,
+      "sens_at_90_spec": 8.8,
+      "sens_at_80_spec": 14.0
+    },
+    "HistGradientBoosting (d=2, lr=0.03)": {
+      "auroc": 0.564,
+      "auprc": 0.506,
+      "brier": 0.244,
+      "sens_at_90_spec": 7.9,
+      "sens_at_80_spec": 8.8
+    }
+  },
+  "within_slovak_cv": {
+    "Elastic-Net Logistic Regression": {
+      "auroc": 0.834,
+      "auprc": 0.814,
+      "brier": 0.177,
+      "sens_at_90_spec": 57.9,
+      "sens_at_80_spec": 73.7
+    },
+    "Regularized Logistic Regression (L2)": {
+      "auroc": 0.832,
+      "auprc": 0.815,
+      "brier": 0.183,
+      "sens_at_90_spec": 61.4,
+      "sens_at_80_spec": 71.1
+    },
+    "Random Forest (d=3, leaf=4)": {
+      "auroc": 0.852,
+      "auprc": 0.834,
+      "brier": 0.178,
+      "sens_at_90_spec": 50.9,
+      "sens_at_80_spec": 77.2
+    },
+    "HistGradientBoosting (d=2, lr=0.03)": {
+      "auroc": 0.837,
+      "auprc": 0.829,
+      "brier": 0.165,
+      "sens_at_90_spec": 54.4,
+      "sens_at_80_spec": 71.1
+    }
+  }
+}
