@@ -523,6 +523,29 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
 - **Test Suite Results**:
   - All 21 tests pass across `tests/test_phase0.py`, `tests/test_phase1.py`, `tests/test_phase3.py`, `tests/test_phase4.py`.
 
+## Phase 4 Stage 12: End-to-End Pipeline Execution & ML Benchmark Re-Evaluation (Completed 2026-10-12)
+- **Cohort Reprocessing**:
+  - Regenerated all 1,211 `{task_id}_clean_ink.png` masks across School A and School B using the stroke-preserving algorithm via `scratch/batch_regenerate_clean_masks.py` in 52 seconds (6 parallel workers).
+  - Batch extracted features across all 1,145 sentence tasks via `python -m features.extractor --school all --workers 6` in 1 minute 56 seconds, saving `data/features/features_raw.csv`.
+  - Assembled normalized datasets via `python -m pipeline.dataset_assembly` (6s): `dataset_hindi.csv` (570 rows), `dataset_english.csv` (575 rows), and `dataset_combined.csv` (1,145 rows).
+  - Aggregated student-level features via `python -m models.student_features` (7s): `dataset_student_level.csv` (215 students, 312 columns).
+- **Benchmark Metrics & Diagnostic Findings**:
+  - **Sentence-Level Hindi (Devanagari)**:
+    - Elastic-Net AUROC surged from **0.612** to **0.682** (95% CI: [0.560, 0.795]).
+    - Random Forest AUROC surged from **0.589** to **0.662** (95% CI: [0.535, 0.775]).
+    - Gradient Boosting AUROC reached **0.687** (95% CI: [0.572, 0.789]).
+    - *Mechanism*: Preserving Shirorekhas and upper/lower matras without horizontal slicing eradicated artificial noise from `shirorekha_rms_deviation_norm` and `matra_ratio`, directly sharpening the dysgraphic motor signature.
+  - **Sentence-Level English (Latin)**:
+    - SVM (RBF) AUROC reached **0.678** (95% CI: [0.569, 0.782]), Random Forest reached **0.644**, and Elastic-Net reached **0.628**.
+    - *Mechanism*: Closed loops (`o`, `e`, `a`, `d`) and continuous ascender/descender stems eliminated artificial component inflation (`components_per_unit_width`).
+  - **Student-Level Multi-Phenotype Models (215 Students)**:
+    - **Regularized Logistic Regression (L2)**: AUROC = **0.874 +/- 0.007** (95% CI: [0.848, 0.897]), AUPRC jumped to **0.480** (up from 0.454), Sensitivity @ 80% Specificity = **71.7%**, Sensitivity @ 90% Specificity = **54.2%**.
+    - **Elastic-Net Logistic Regression**: AUROC = **0.873 +/- 0.005** (95% CI: [0.848, 0.897]), AUPRC jumped to **0.481**, Sensitivity @ 80% Specificity = **73.3%**, Sensitivity @ 90% Specificity = **54.2%**.
+    - **Hybrid Ensemble (0.7 LR + 0.3 RF)**: AUROC = **0.872 +/- 0.005**, AUPRC = **0.480**, Sensitivity @ 80% Specificity = **72.5%**.
+- **Architecture & System Documentation Overhaul**:
+  - Significantly expanded and enriched `architechture.md` (580+ lines), detailing repository directory hierarchy, end-to-end data flow, module specifications, mathematical feature formulas, and the Two-Tier Screening Cascade.
+
+
 
 
 

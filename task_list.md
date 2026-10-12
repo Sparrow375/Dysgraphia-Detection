@@ -141,8 +141,15 @@
     - Vectorized `max_R_v` neighborhood filtering via `(9, 3)` morphological dilation.
     - Full-width polynomial line tracking $y_{\text{line}}(x)$ capturing secondary guidelines (`distance=6`).
     - Unified stroke-preserving logic across `pipeline/rules.py` and `features/utils.py`.
-  - [x] 11.5 Full Cohort Validation, Regression Testing, Documentation (`context.md`, `architechture.md`), and Git Commit/Push:
-    - 21/21 unit tests passing across `tests/test_phase0.py`, `tests/test_phase1.py`, `tests/test_phase3.py`, `tests/test_phase4.py`.
+- [x] Stage 12: End-to-End Pipeline Reprocessing & ML Benchmark Re-evaluation:
+  - [x] 12.1 Regenerate Clean Ink Masks across full cohort (School A & School B) using the definitive stroke-preserving algorithm.
+  - [x] 12.2 Extract features across all 1,145 sentence tasks with stroke-preserving masks (`features/extractor.py`).
+  - [x] 12.3 Re-assemble normalized multi-school datasets (`pipeline/dataset_assembly.py`).
+  - [x] 12.4 Aggregate 215-student level feature matrices (`models/student_features.py`).
+  - [x] 12.5 Re-evaluate ML Benchmarks & Multi-Model Cascade (`models/student_experiments.py` & `models/run_full_benchmark.py`).
+  - [x] 12.6 Compare Sensitivity, Specificity, AUROC, and AUPRC metrics against previous baseline.
+  - [x] 12.7 Update documentation (`context.md`, `architechture.md`), and Git commit/push.
+
 
 
 ---

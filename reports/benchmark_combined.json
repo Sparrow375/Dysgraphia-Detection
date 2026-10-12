@@ -4,18 +4,18 @@
     "model_name": "Majority Class",
     "feature_type": "none",
     "num_features": 0,
-    "n_repeats": 5,
+    "n_repeats": 1,
     "n_outer_folds": 5,
-    "elapsed_seconds": 3.3,
+    "elapsed_seconds": 0.79,
     "median_threshold": 0.51,
     "point_metrics": {
       "n_students": 115.0,
       "n_positives": 24.0,
       "n_negatives": 91.0,
-      "auroc": 0.4219322344322344,
-      "auprc": 0.19920273359837004,
-      "brier": 0.25011012529641,
-      "sensitivity_at_90_spec": 0.125,
+      "auroc": 0.4789377289377289,
+      "auprc": 0.20153985507246375,
+      "brier": 0.24748092436534397,
+      "sensitivity_at_90_spec": 0.0,
       "sensitivity_at_95_spec": 0.0,
       "threshold": 0.5099999999999999,
       "accuracy": 0.7913043478260869,
@@ -30,34 +30,34 @@
     },
     "bootstrap_ci": {
       "auroc": {
-        "mean": 0.42222058244498545,
-        "std": 0.06455828720770934,
-        "ci_low": 0.2916429924242424,
-        "ci_high": 0.5505520467836257
+        "mean": 0.4804836915235475,
+        "std": 0.056955056361541655,
+        "ci_low": 0.3643501819186007,
+        "ci_high": 0.5922777255639097
       },
       "auprc": {
-        "mean": 0.21381195930735367,
-        "std": 0.04910723220074214,
-        "ci_low": 0.13170276854717688,
-        "ci_high": 0.31336869411269125
+        "mean": 0.2079477664013415,
+        "std": 0.04041598402492863,
+        "ci_low": 0.13474141418488106,
+        "ci_high": 0.2909563132198564
       },
       "brier": {
-        "mean": 0.25010228969518783,
-        "std": 0.0002492368193462089,
-        "ci_low": 0.24962841997960192,
-        "ci_high": 0.2506026191704721
+        "mean": 0.2474716785991834,
+        "std": 0.00047078034245653694,
+        "ci_low": 0.24659355081127574,
+        "ci_high": 0.24840488829394472
       },
       "sensitivity_at_90_spec": {
-        "mean": 0.11698441815782945,
-        "std": 0.07239696545417831,
+        "mean": 0.00019221967963386726,
+        "std": 0.004313330578300439,
         "ci_low": 0.0,
-        "ci_high": 0.2759655172413792
+        "ci_high": 0.0
       },
       "sensitivity_at_95_spec": {
-        "mean": 0.0419320902600377,
-        "std": 0.06543114056141162,
+        "mean": 0.0,
+        "std": 0.0,
         "ci_low": 0.0,
-        "ci_high": 0.2083881578947368
+        "ci_high": 0.0
       },
       "sensitivity": {
         "mean": 0.0,
@@ -88,692 +88,692 @@
       {
         "student_id": "G3_A_Roll01",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936847185030107,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll03",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll05",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll06",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll07",
         "label": 0,
-        "pred_prob": 0.506345705271466,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll08",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll09",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll10",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll12",
         "label": 1,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll13",
         "label": 1,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll14",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll15",
         "label": 1,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll16",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll17",
         "label": 0,
-        "pred_prob": 0.5030655518080119,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll19",
         "label": 1,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll21",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll22",
         "label": 0,
-        "pred_prob": 0.5063457052714659,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll23",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll01",
         "label": 0,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll02",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll03",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll04",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll05",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll06",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll07",
         "label": 0,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936847185030107,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll08",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936847185030107,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll09",
         "label": 1,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll11",
         "label": 1,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll12",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll13",
         "label": 0,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll14",
         "label": 1,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll15",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll16",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll17",
         "label": 1,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll18",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll19",
         "label": 0,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5063457052714659,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll22",
         "label": 1,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll23",
         "label": 1,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll24",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll25",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll26",
         "label": 0,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll03",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll04",
         "label": 0,
-        "pred_prob": 0.506345705271466,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll05",
         "label": 1,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll06",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll07",
         "label": 1,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll08",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll09",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll10",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll11",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll12",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll13",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll14",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll15",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll16",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll01",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll03",
         "label": 0,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll04",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll05",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll07",
         "label": 0,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll08",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll10",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll11",
         "label": 0,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936847185030107,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll12",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll13",
         "label": 0,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936847185030107,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll14",
         "label": 1,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll15",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll16",
         "label": 1,
-        "pred_prob": 0.5030655518080119,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll17",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll18",
         "label": 1,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll19",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll21",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll22",
         "label": 1,
-        "pred_prob": 0.5063457052714659,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll23",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll24",
         "label": 1,
-        "pred_prob": 0.5030655518080119,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll25",
         "label": 1,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll26",
         "label": 1,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll27",
         "label": 1,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936847185030107,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll28",
         "label": 1,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll29",
         "label": 0,
-        "pred_prob": 0.5063457052714659,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll30",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll01",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll03",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll05",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll06",
         "label": 1,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll07",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll08",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll10",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll11",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll12",
         "label": 1,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll13",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll14",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll15",
         "label": 1,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll16",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll17",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll18",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll19",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll20",
         "label": 0,
-        "pred_prob": 0.4965052448811037,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll21",
         "label": 0,
-        "pred_prob": 0.5030655518080118,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll22",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936894062827686,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll23",
         "label": 0,
-        "pred_prob": 0.49650524488110365,
+        "pred_prob": 0.4936894062827686,
         "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll24",
         "label": 0,
-        "pred_prob": 0.4997853983445578,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5023153126073558,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll25",
         "label": 0,
-        "pred_prob": 0.49978539834455776,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4936847185030107,
+        "threshold": 0.5099999999999999
       }
     ]
   },
@@ -782,19 +782,19 @@
     "model_name": "Grade-Only Logistic",
     "feature_type": "grade_only",
     "num_features": 1,
-    "n_repeats": 5,
+    "n_repeats": 1,
     "n_outer_folds": 5,
-    "elapsed_seconds": 5.72,
+    "elapsed_seconds": 1.26,
     "median_threshold": 0.56,
     "point_metrics": {
       "n_students": 115.0,
       "n_positives": 24.0,
       "n_negatives": 91.0,
-      "auroc": 0.5242673992673993,
-      "auprc": 0.22649600431983505,
-      "brier": 0.24548866297580418,
+      "auroc": 0.4649725274725275,
+      "auprc": 0.19486197435804029,
+      "brier": 0.24762061368299967,
       "sensitivity_at_90_spec": 0.041666666666666664,
-      "sensitivity_at_95_spec": 0.041666666666666664,
+      "sensitivity_at_95_spec": 0.0,
       "threshold": 0.5599999999999999,
       "accuracy": 0.7913043478260869,
       "balanced_accuracy": 0.5,
@@ -808,34 +808,34 @@
     },
     "bootstrap_ci": {
       "auroc": {
-        "mean": 0.5247987993697777,
-        "std": 0.0663520532502356,
-        "ci_low": 0.3965931898605818,
-        "ci_high": 0.6571855236450265
+        "mean": 0.47018856113559204,
+        "std": 0.06383571826440343,
+        "ci_low": 0.34305557904686107,
+        "ci_high": 0.5949099511599512
       },
       "auprc": {
-        "mean": 0.24747908387032305,
-        "std": 0.057559856912470585,
-        "ci_low": 0.15142745713859507,
-        "ci_high": 0.36917256962522593
+        "mean": 0.2116022667236374,
+        "std": 0.046665678514517854,
+        "ci_low": 0.13358342128036377,
+        "ci_high": 0.31308634171990296
       },
       "brier": {
-        "mean": 0.24546169681218694,
-        "std": 0.0011038742521712521,
-        "ci_low": 0.2433272154103617,
-        "ci_high": 0.2475370930372918
+        "mean": 0.24746854719174508,
+        "std": 0.0019790305562291206,
+        "ci_low": 0.24380235413638612,
+        "ci_high": 0.25136708648489237
       },
       "sensitivity_at_90_spec": {
-        "mean": 0.04645774086289891,
-        "std": 0.04865976945173665,
+        "mean": 0.05371635083252113,
+        "std": 0.0511658794786899,
         "ci_low": 0.0,
-        "ci_high": 0.1724137931034483
+        "ci_high": 0.17391304347826086
       },
       "sensitivity_at_95_spec": {
-        "mean": 0.04161416628254897,
-        "std": 0.04393498695164978,
+        "mean": 0.019629978528183344,
+        "std": 0.03555949334698882,
         "ci_low": 0.0,
-        "ci_high": 0.15384615384615385
+        "ci_high": 0.1154999999999999
       },
       "sensitivity": {
         "mean": 0.0,
@@ -866,692 +866,692 @@
       {
         "student_id": "G3_A_Roll01",
         "label": 0,
-        "pred_prob": 0.44823256147515583,
-        "threshold": 0.5619999999999999
+        "pred_prob": 0.4677197068681002,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G3_A_Roll02",
         "label": 0,
-        "pred_prob": 0.46846335720094057,
-        "threshold": 0.576
+        "pred_prob": 0.4713376021528036,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G3_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5023832057275011,
-        "threshold": 0.5479999999999999
+        "pred_prob": 0.44821174898080685,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4720163895040126,
-        "threshold": 0.592
+        "pred_prob": 0.5276033518218451,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll05",
         "label": 0,
-        "pred_prob": 0.47473385169476473,
-        "threshold": 0.5499999999999999
+        "pred_prob": 0.4558898625134624,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll06",
         "label": 0,
-        "pred_prob": 0.4517267012115055,
-        "threshold": 0.578
+        "pred_prob": 0.5276033518218451,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll07",
         "label": 0,
-        "pred_prob": 0.523555687278648,
-        "threshold": 0.57
+        "pred_prob": 0.4713376021528036,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G3_A_Roll08",
         "label": 0,
-        "pred_prob": 0.49449765152280734,
-        "threshold": 0.576
+        "pred_prob": 0.4677197068681002,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G3_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5070264866949383,
-        "threshold": 0.5879999999999999
+        "pred_prob": 0.44821174898080685,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll10",
         "label": 0,
-        "pred_prob": 0.48113203049332454,
-        "threshold": 0.578
+        "pred_prob": 0.5276033518218451,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll12",
         "label": 1,
-        "pred_prob": 0.4882188950550505,
-        "threshold": 0.5479999999999999
+        "pred_prob": 0.44821174898080685,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll13",
         "label": 1,
-        "pred_prob": 0.4885255576246877,
-        "threshold": 0.568
+        "pred_prob": 0.4558898625134624,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll14",
         "label": 0,
-        "pred_prob": 0.4911864628748718,
-        "threshold": 0.5539999999999999
+        "pred_prob": 0.4677197068681002,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G3_A_Roll15",
         "label": 1,
-        "pred_prob": 0.49915225994812984,
-        "threshold": 0.564
+        "pred_prob": 0.4713376021528036,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G3_A_Roll16",
         "label": 0,
-        "pred_prob": 0.48095107626538736,
-        "threshold": 0.5559999999999999
+        "pred_prob": 0.4558898625134624,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll17",
         "label": 0,
-        "pred_prob": 0.5071040466243635,
-        "threshold": 0.5499999999999999
+        "pred_prob": 0.4713376021528036,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G3_A_Roll19",
         "label": 1,
-        "pred_prob": 0.4867646711983948,
-        "threshold": 0.578
+        "pred_prob": 0.5276033518218451,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5042164531337686,
-        "threshold": 0.576
+        "pred_prob": 0.44821174898080685,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll21",
         "label": 0,
-        "pred_prob": 0.5071824149059359,
-        "threshold": 0.5519999999999999
+        "pred_prob": 0.44821174898080685,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll22",
         "label": 0,
-        "pred_prob": 0.4822693193134784,
-        "threshold": 0.602
+        "pred_prob": 0.5276033518218451,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll23",
         "label": 0,
-        "pred_prob": 0.47367728344188736,
-        "threshold": 0.596
+        "pred_prob": 0.5276033518218451,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll01",
         "label": 0,
-        "pred_prob": 0.4967868872900292,
-        "threshold": 0.568
+        "pred_prob": 0.476982367842062,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G4_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4799670926018676,
-        "threshold": 0.574
+        "pred_prob": 0.5156469345900843,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll03",
         "label": 0,
-        "pred_prob": 0.4933376711036533,
-        "threshold": 0.566
+        "pred_prob": 0.47366679897288827,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4895945605404794,
-        "threshold": 0.594
+        "pred_prob": 0.5156469345900843,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll05",
         "label": 0,
-        "pred_prob": 0.48856092664842443,
-        "threshold": 0.59
+        "pred_prob": 0.4664907163763415,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll06",
         "label": 0,
-        "pred_prob": 0.4889981696096567,
-        "threshold": 0.572
+        "pred_prob": 0.5156469345900843,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll07",
         "label": 0,
-        "pred_prob": 0.4922330078774036,
-        "threshold": 0.566
+        "pred_prob": 0.4779302734681347,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll08",
         "label": 0,
-        "pred_prob": 0.4901051132663973,
-        "threshold": 0.5559999999999999
+        "pred_prob": 0.4779302734681347,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll09",
         "label": 1,
-        "pred_prob": 0.4837621057435234,
-        "threshold": 0.5579999999999999
+        "pred_prob": 0.476982367842062,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G4_A_Roll11",
         "label": 1,
-        "pred_prob": 0.48901777860462625,
-        "threshold": 0.5439999999999999
+        "pred_prob": 0.4664907163763415,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll12",
         "label": 0,
-        "pred_prob": 0.49470759622957533,
-        "threshold": 0.58
+        "pred_prob": 0.4779302734681347,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll13",
         "label": 0,
-        "pred_prob": 0.47746554687280185,
-        "threshold": 0.574
+        "pred_prob": 0.4664907163763415,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll14",
         "label": 1,
-        "pred_prob": 0.4934502099207222,
-        "threshold": 0.574
+        "pred_prob": 0.4779302734681347,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll15",
         "label": 0,
-        "pred_prob": 0.49197773147406576,
-        "threshold": 0.588
+        "pred_prob": 0.5156469345900843,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll16",
         "label": 0,
-        "pred_prob": 0.49692547209605803,
-        "threshold": 0.5519999999999999
+        "pred_prob": 0.4664907163763415,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll17",
         "label": 1,
-        "pred_prob": 0.4797759332812001,
-        "threshold": 0.5559999999999999
+        "pred_prob": 0.4698008727174332,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll18",
         "label": 0,
-        "pred_prob": 0.47673579635349805,
-        "threshold": 0.568
+        "pred_prob": 0.47366679897288827,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll19",
         "label": 0,
-        "pred_prob": 0.4839688706176439,
-        "threshold": 0.5439999999999999
+        "pred_prob": 0.476982367842062,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G4_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5097863352721024,
-        "threshold": 0.582
+        "pred_prob": 0.476982367842062,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G4_A_Roll22",
         "label": 1,
-        "pred_prob": 0.4867688981651844,
-        "threshold": 0.586
+        "pred_prob": 0.5156469345900843,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll23",
         "label": 1,
-        "pred_prob": 0.4830348229467326,
-        "threshold": 0.5559999999999999
+        "pred_prob": 0.476982367842062,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G4_A_Roll24",
         "label": 0,
-        "pred_prob": 0.48264699414851275,
-        "threshold": 0.564
+        "pred_prob": 0.4664907163763415,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll25",
         "label": 0,
-        "pred_prob": 0.4788011874265834,
-        "threshold": 0.5519999999999999
+        "pred_prob": 0.4664907163763415,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll26",
         "label": 0,
-        "pred_prob": 0.49711002269629717,
-        "threshold": 0.5599999999999999
+        "pred_prob": 0.476982367842062,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G5_A_Roll01",
         "label": 0,
-        "pred_prob": 0.4921688470217808,
-        "threshold": 0.582
+        "pred_prob": 0.5036725783676006,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4955102707502216,
-        "threshold": 0.566
+        "pred_prob": 0.488159316527291,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G5_A_Roll03",
         "label": 0,
-        "pred_prob": 0.4911401231952343,
-        "threshold": 0.5539999999999999
+        "pred_prob": 0.4826330194795629,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G5_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4958790378808563,
-        "threshold": 0.588
+        "pred_prob": 0.5036725783676006,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll05",
         "label": 1,
-        "pred_prob": 0.4944557671922188,
-        "threshold": 0.572
+        "pred_prob": 0.488159316527291,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G5_A_Roll06",
         "label": 0,
-        "pred_prob": 0.49503741625927117,
-        "threshold": 0.578
+        "pred_prob": 0.4768259261338476,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll07",
         "label": 1,
-        "pred_prob": 0.49693598152993107,
-        "threshold": 0.5619999999999999
+        "pred_prob": 0.4826330194795629,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G5_A_Roll08",
         "label": 0,
-        "pred_prob": 0.49693520705348143,
-        "threshold": 0.5599999999999999
+        "pred_prob": 0.4826330194795629,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G5_A_Roll09",
         "label": 0,
-        "pred_prob": 0.4971091174953305,
-        "threshold": 0.578
+        "pred_prob": 0.4826330194795629,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G5_A_Roll10",
         "label": 0,
-        "pred_prob": 0.49081832763592337,
-        "threshold": 0.5459999999999999
+        "pred_prob": 0.49151074669507994,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll11",
         "label": 0,
-        "pred_prob": 0.49362336195539036,
-        "threshold": 0.5519999999999999
+        "pred_prob": 0.4826330194795629,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G5_A_Roll12",
         "label": 0,
-        "pred_prob": 0.4918506712046601,
-        "threshold": 0.5619999999999999
+        "pred_prob": 0.488159316527291,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G5_A_Roll13",
         "label": 0,
-        "pred_prob": 0.49169551209650253,
-        "threshold": 0.578
+        "pred_prob": 0.5036725783676006,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll14",
         "label": 0,
-        "pred_prob": 0.4879389720885161,
-        "threshold": 0.5479999999999999
+        "pred_prob": 0.4826330194795629,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G5_A_Roll15",
         "label": 0,
-        "pred_prob": 0.4863934855180469,
-        "threshold": 0.58
+        "pred_prob": 0.5036725783676006,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll16",
         "label": 0,
-        "pred_prob": 0.49265780259067515,
-        "threshold": 0.576
+        "pred_prob": 0.5036725783676006,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll01",
         "label": 0,
-        "pred_prob": 0.4891075056797404,
-        "threshold": 0.57
+        "pred_prob": 0.4983982862121457,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll02",
         "label": 0,
-        "pred_prob": 0.49372385429521326,
-        "threshold": 0.58
+        "pred_prob": 0.491694007687762,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll03",
         "label": 0,
-        "pred_prob": 0.4925124240205906,
-        "threshold": 0.582
+        "pred_prob": 0.5032704863899702,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll04",
         "label": 0,
-        "pred_prob": 0.5010584714912941,
-        "threshold": 0.586
+        "pred_prob": 0.491694007687762,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll05",
         "label": 0,
-        "pred_prob": 0.48753721208565615,
-        "threshold": 0.568
+        "pred_prob": 0.5093763511705306,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll07",
         "label": 0,
-        "pred_prob": 0.4862786223853043,
-        "threshold": 0.566
+        "pred_prob": 0.4882881161721058,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G6_A_Roll08",
         "label": 0,
-        "pred_prob": 0.49735814243238796,
-        "threshold": 0.5519999999999999
+        "pred_prob": 0.5093763511705306,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll09",
         "label": 0,
-        "pred_prob": 0.49826565704385334,
-        "threshold": 0.566
+        "pred_prob": 0.5032704863899702,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll10",
         "label": 0,
-        "pred_prob": 0.48535057250554703,
-        "threshold": 0.574
+        "pred_prob": 0.5093763511705306,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll11",
         "label": 0,
-        "pred_prob": 0.49439291259606055,
-        "threshold": 0.5579999999999999
+        "pred_prob": 0.4983982862121457,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll12",
         "label": 0,
-        "pred_prob": 0.49477590031791274,
-        "threshold": 0.5619999999999999
+        "pred_prob": 0.4983982862121457,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll13",
         "label": 0,
-        "pred_prob": 0.493794310612741,
-        "threshold": 0.572
+        "pred_prob": 0.4983982862121457,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll14",
         "label": 1,
-        "pred_prob": 0.497493940233228,
-        "threshold": 0.57
+        "pred_prob": 0.5093763511705306,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll15",
         "label": 0,
-        "pred_prob": 0.4891244492293493,
-        "threshold": 0.582
+        "pred_prob": 0.4983982862121457,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll16",
         "label": 1,
-        "pred_prob": 0.4985690323366356,
-        "threshold": 0.5799999999999998
+        "pred_prob": 0.5093763511705306,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll17",
         "label": 0,
-        "pred_prob": 0.4915443888949005,
-        "threshold": 0.58
+        "pred_prob": 0.5093763511705306,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll18",
         "label": 1,
-        "pred_prob": 0.4976176195405584,
-        "threshold": 0.564
+        "pred_prob": 0.5032704863899702,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll19",
         "label": 0,
-        "pred_prob": 0.4929606082702964,
-        "threshold": 0.584
+        "pred_prob": 0.5032704863899702,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll20",
         "label": 0,
-        "pred_prob": 0.49022266071038745,
-        "threshold": 0.6
+        "pred_prob": 0.5093763511705306,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll21",
         "label": 0,
-        "pred_prob": 0.49529391111212745,
-        "threshold": 0.5499999999999999
+        "pred_prob": 0.5093763511705306,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll22",
         "label": 1,
-        "pred_prob": 0.5015904275500321,
-        "threshold": 0.606
+        "pred_prob": 0.491694007687762,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll23",
         "label": 0,
-        "pred_prob": 0.5010079428290192,
-        "threshold": 0.5719999999999998
+        "pred_prob": 0.4983982862121457,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll24",
         "label": 1,
-        "pred_prob": 0.49797221510323314,
-        "threshold": 0.57
+        "pred_prob": 0.5093763511705306,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll25",
         "label": 1,
-        "pred_prob": 0.4890769045457707,
-        "threshold": 0.5519999999999999
+        "pred_prob": 0.5032704863899702,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll26",
         "label": 1,
-        "pred_prob": 0.4930650100453553,
-        "threshold": 0.564
+        "pred_prob": 0.5032704863899702,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll27",
         "label": 1,
-        "pred_prob": 0.4918815212183373,
-        "threshold": 0.564
+        "pred_prob": 0.4983982862121457,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll28",
         "label": 1,
-        "pred_prob": 0.493115640329896,
-        "threshold": 0.5579999999999999
+        "pred_prob": 0.4882881161721058,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G6_A_Roll29",
         "label": 0,
-        "pred_prob": 0.4993471957270604,
-        "threshold": 0.5719999999999998
+        "pred_prob": 0.5032704863899702,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll30",
         "label": 0,
-        "pred_prob": 0.4929469402406818,
-        "threshold": 0.57
+        "pred_prob": 0.4983982862121457,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G7_A_Roll01",
         "label": 0,
-        "pred_prob": 0.49733255018244427,
-        "threshold": 0.566
+        "pred_prob": 0.5272180373511339,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5136694114843948,
-        "threshold": 0.566
+        "pred_prob": 0.5216720065281535,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll03",
         "label": 0,
-        "pred_prob": 0.4837610603816172,
-        "threshold": 0.5459999999999999
+        "pred_prob": 0.493946212479287,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G7_A_Roll04",
         "label": 0,
-        "pred_prob": 0.48612334265882795,
-        "threshold": 0.568
+        "pred_prob": 0.5272180373511339,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll05",
         "label": 0,
-        "pred_prob": 0.4975524980066043,
-        "threshold": 0.5619999999999999
+        "pred_prob": 0.5216720065281535,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll06",
         "label": 1,
-        "pred_prob": 0.5012038545514157,
-        "threshold": 0.572
+        "pred_prob": 0.5086385994316011,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G7_A_Roll07",
         "label": 0,
-        "pred_prob": 0.48734954110285517,
+        "pred_prob": 0.5216720065281535,
         "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll08",
         "label": 0,
-        "pred_prob": 0.4976527105276472,
-        "threshold": 0.576
+        "pred_prob": 0.5272180373511339,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll09",
         "label": 0,
-        "pred_prob": 0.4919881808331354,
-        "threshold": 0.5519999999999999
+        "pred_prob": 0.5086385994316011,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G7_A_Roll10",
         "label": 0,
-        "pred_prob": 0.497747694622167,
-        "threshold": 0.5559999999999999
+        "pred_prob": 0.493946212479287,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G7_A_Roll11",
         "label": 0,
-        "pred_prob": 0.5044934471805096,
-        "threshold": 0.578
+        "pred_prob": 0.47972496641193524,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll12",
         "label": 1,
-        "pred_prob": 0.5148658564240173,
-        "threshold": 0.584
+        "pred_prob": 0.47972496641193524,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll13",
         "label": 0,
-        "pred_prob": 0.5103382319125455,
-        "threshold": 0.584
+        "pred_prob": 0.5086385994316011,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G7_A_Roll14",
         "label": 0,
-        "pred_prob": 0.4919028282129436,
-        "threshold": 0.5439999999999999
+        "pred_prob": 0.493946212479287,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G7_A_Roll15",
         "label": 1,
-        "pred_prob": 0.4976389211927989,
-        "threshold": 0.578
+        "pred_prob": 0.5272180373511339,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll16",
         "label": 0,
-        "pred_prob": 0.5023938401906529,
-        "threshold": 0.578
+        "pred_prob": 0.47972496641193524,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll17",
         "label": 0,
-        "pred_prob": 0.47858151800318094,
-        "threshold": 0.578
+        "pred_prob": 0.493946212479287,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G7_A_Roll18",
         "label": 0,
-        "pred_prob": 0.49733255018244427,
-        "threshold": 0.566
+        "pred_prob": 0.5272180373511339,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll19",
         "label": 0,
-        "pred_prob": 0.5110068173925955,
-        "threshold": 0.5479999999999999
+        "pred_prob": 0.5272180373511339,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll20",
         "label": 0,
-        "pred_prob": 0.4970294276500297,
-        "threshold": 0.564
+        "pred_prob": 0.5272180373511339,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll21",
         "label": 0,
-        "pred_prob": 0.5032364823246479,
-        "threshold": 0.5539999999999999
+        "pred_prob": 0.493946212479287,
+        "threshold": 0.5399999999999999
       },
       {
         "student_id": "G7_A_Roll22",
         "label": 0,
-        "pred_prob": 0.4971278497500565,
-        "threshold": 0.574
+        "pred_prob": 0.5216720065281535,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll23",
         "label": 0,
-        "pred_prob": 0.4915164046799041,
-        "threshold": 0.574
+        "pred_prob": 0.5216720065281535,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll24",
         "label": 0,
-        "pred_prob": 0.515153989061405,
-        "threshold": 0.582
+        "pred_prob": 0.47972496641193524,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll25",
         "label": 0,
-        "pred_prob": 0.5066886094884244,
-        "threshold": 0.5599999999999999
+        "pred_prob": 0.5086385994316011,
+        "threshold": 0.5299999999999999
       }
     ]
   },
@@ -1560,60 +1560,60 @@
     "model_name": "Elastic-Net Logistic Regression",
     "feature_type": "z_score",
     "num_features": 31,
-    "n_repeats": 5,
+    "n_repeats": 1,
     "n_outer_folds": 5,
-    "elapsed_seconds": 28.49,
-    "median_threshold": 0.59,
+    "elapsed_seconds": 4.98,
+    "median_threshold": 0.6,
     "point_metrics": {
       "n_students": 115.0,
       "n_positives": 24.0,
       "n_negatives": 91.0,
-      "auroc": 0.5398351648351648,
-      "auprc": 0.23929632029449566,
-      "brier": 0.24910815945017586,
-      "sensitivity_at_90_spec": 0.16666666666666666,
-      "sensitivity_at_95_spec": 0.0,
-      "threshold": 0.59,
-      "accuracy": 0.7913043478260869,
-      "balanced_accuracy": 0.5,
+      "auroc": 0.6529304029304029,
+      "auprc": 0.3319309211638953,
+      "brier": 0.23931205033802808,
+      "sensitivity_at_90_spec": 0.2916666666666667,
+      "sensitivity_at_95_spec": 0.125,
+      "threshold": 0.6,
+      "accuracy": 0.782608695652174,
+      "balanced_accuracy": 0.4945054945054945,
       "sensitivity": 0.0,
-      "specificity": 1.0,
+      "specificity": 0.989010989010989,
       "f1": 0.0,
       "tp": 0.0,
-      "fp": 0.0,
-      "tn": 91.0,
+      "fp": 1.0,
+      "tn": 90.0,
       "fn": 24.0
     },
     "bootstrap_ci": {
       "auroc": {
-        "mean": 0.5376213600390334,
-        "std": 0.06838790058862898,
-        "ci_low": 0.3997068903318904,
-        "ci_high": 0.6680209914001543
+        "mean": 0.6503262235285706,
+        "std": 0.06117213866586064,
+        "ci_low": 0.5180754170922711,
+        "ci_high": 0.7649354530241453
       },
       "auprc": {
-        "mean": 0.256605331975981,
-        "std": 0.05732206901787943,
-        "ci_low": 0.15417475042994794,
-        "ci_high": 0.37749707164108226
+        "mean": 0.35582306303012756,
+        "std": 0.08110967386202426,
+        "ci_low": 0.21260266664811853,
+        "ci_high": 0.5254745936611648
       },
       "brier": {
-        "mean": 0.2490924995663919,
-        "std": 0.0024608189088427654,
-        "ci_low": 0.24448358421417182,
-        "ci_high": 0.25436157215076055
+        "mean": 0.23938169302608645,
+        "std": 0.004426009524326404,
+        "ci_low": 0.23081575964378076,
+        "ci_high": 0.24756750788566903
       },
       "sensitivity_at_90_spec": {
-        "mean": 0.13086968945114968,
-        "std": 0.0943921063343586,
-        "ci_low": 0.0,
-        "ci_high": 0.31584928229665066
+        "mean": 0.2703599412979509,
+        "std": 0.10750893649732353,
+        "ci_low": 0.05874183006535955,
+        "ci_high": 0.4815656565656565
       },
       "sensitivity_at_95_spec": {
-        "mean": 0.02518419099842469,
-        "std": 0.05998671765722374,
+        "mean": 0.1263341266319763,
+        "std": 0.10714204437485567,
         "ci_low": 0.0,
-        "ci_high": 0.20833333333333334
+        "ci_high": 0.38115079365079346
       },
       "sensitivity": {
         "mean": 0.0,
@@ -1622,15 +1622,15 @@
         "ci_high": 0.0
       },
       "specificity": {
-        "mean": 1.0,
-        "std": 0.0,
-        "ci_low": 1.0,
+        "mean": 0.9884799210719015,
+        "std": 0.011337845393741032,
+        "ci_low": 0.963855421686747,
         "ci_high": 1.0
       },
       "balanced_accuracy": {
-        "mean": 0.5,
-        "std": 0.0,
-        "ci_low": 0.5,
+        "mean": 0.49423996053595076,
+        "std": 0.005668922696870516,
+        "ci_low": 0.4819277108433735,
         "ci_high": 0.5
       },
       "f1": {
@@ -1644,692 +1644,692 @@
       {
         "student_id": "G3_A_Roll01",
         "label": 0,
-        "pred_prob": 0.48584367648432203,
-        "threshold": 0.5959999999999999
+        "pred_prob": 0.4674796888731419,
+        "threshold": 0.6
       },
       {
         "student_id": "G3_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5157716622825219,
-        "threshold": 0.58
+        "pred_prob": 0.41763114148678904,
+        "threshold": 0.6
       },
       {
         "student_id": "G3_A_Roll03",
         "label": 0,
-        "pred_prob": 0.47886523308247514,
-        "threshold": 0.584
+        "pred_prob": 0.49987631273052496,
+        "threshold": 0.57
       },
       {
         "student_id": "G3_A_Roll04",
         "label": 0,
-        "pred_prob": 0.46766661606069826,
-        "threshold": 0.6819999999999999
+        "pred_prob": 0.4124441759384545,
+        "threshold": 0.63
       },
       {
         "student_id": "G3_A_Roll05",
         "label": 0,
-        "pred_prob": 0.5124037960340441,
-        "threshold": 0.584
+        "pred_prob": 0.5437197096347293,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G3_A_Roll06",
         "label": 0,
-        "pred_prob": 0.47265968421446375,
-        "threshold": 0.588
+        "pred_prob": 0.4790458492920501,
+        "threshold": 0.63
       },
       {
         "student_id": "G3_A_Roll07",
         "label": 0,
-        "pred_prob": 0.5125143188489124,
-        "threshold": 0.582
+        "pred_prob": 0.521098333088061,
+        "threshold": 0.6
       },
       {
         "student_id": "G3_A_Roll08",
         "label": 0,
-        "pred_prob": 0.4764194869607139,
-        "threshold": 0.6239999999999999
+        "pred_prob": 0.45394884544380054,
+        "threshold": 0.6
       },
       {
         "student_id": "G3_A_Roll09",
         "label": 0,
-        "pred_prob": 0.501601089921732,
-        "threshold": 0.6799999999999999
+        "pred_prob": 0.5098721067756761,
+        "threshold": 0.57
       },
       {
         "student_id": "G3_A_Roll10",
         "label": 0,
-        "pred_prob": 0.44825120257057616,
-        "threshold": 0.584
+        "pred_prob": 0.5013031116874893,
+        "threshold": 0.63
       },
       {
         "student_id": "G3_A_Roll12",
         "label": 1,
-        "pred_prob": 0.5363689758640033,
-        "threshold": 0.6419999999999999
+        "pred_prob": 0.5293135954289434,
+        "threshold": 0.57
       },
       {
         "student_id": "G3_A_Roll13",
         "label": 1,
-        "pred_prob": 0.46222063331864477,
-        "threshold": 0.586
+        "pred_prob": 0.5907797896400249,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G3_A_Roll14",
         "label": 0,
-        "pred_prob": 0.49416073508097524,
-        "threshold": 0.576
+        "pred_prob": 0.5351678594081942,
+        "threshold": 0.6
       },
       {
         "student_id": "G3_A_Roll15",
         "label": 1,
-        "pred_prob": 0.5077611063380479,
-        "threshold": 0.578
+        "pred_prob": 0.4785970656642083,
+        "threshold": 0.6
       },
       {
         "student_id": "G3_A_Roll16",
         "label": 0,
-        "pred_prob": 0.4919318887858738,
-        "threshold": 0.5959999999999999
+        "pred_prob": 0.5208180094563956,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G3_A_Roll17",
         "label": 0,
-        "pred_prob": 0.4419205441535522,
-        "threshold": 0.58
+        "pred_prob": 0.4047607413582937,
+        "threshold": 0.6
       },
       {
         "student_id": "G3_A_Roll19",
         "label": 1,
-        "pred_prob": 0.4953385516529133,
-        "threshold": 0.61
+        "pred_prob": 0.5193769331411194,
+        "threshold": 0.63
       },
       {
         "student_id": "G3_A_Roll20",
         "label": 0,
-        "pred_prob": 0.48869919110179066,
-        "threshold": 0.592
+        "pred_prob": 0.48216807654334404,
+        "threshold": 0.57
       },
       {
         "student_id": "G3_A_Roll21",
         "label": 0,
-        "pred_prob": 0.479780034312321,
-        "threshold": 0.5959999999999999
+        "pred_prob": 0.4745732247770963,
+        "threshold": 0.57
       },
       {
         "student_id": "G3_A_Roll22",
         "label": 0,
-        "pred_prob": 0.5484727098192238,
-        "threshold": 0.61
+        "pred_prob": 0.54577374273662,
+        "threshold": 0.63
       },
       {
         "student_id": "G3_A_Roll23",
         "label": 0,
-        "pred_prob": 0.5104092726790358,
-        "threshold": 0.6119999999999999
+        "pred_prob": 0.6012494695637456,
+        "threshold": 0.63
       },
       {
         "student_id": "G4_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5148675746565041,
-        "threshold": 0.606
+        "pred_prob": 0.5294548031293776,
+        "threshold": 0.6
       },
       {
         "student_id": "G4_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4847166956758794,
-        "threshold": 0.6439999999999999
+        "pred_prob": 0.4316053618824404,
+        "threshold": 0.63
       },
       {
         "student_id": "G4_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5465939107249481,
-        "threshold": 0.602
+        "pred_prob": 0.49577515621246504,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G4_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4891541956551781,
-        "threshold": 0.6079999999999999
+        "pred_prob": 0.44694260960631027,
+        "threshold": 0.63
       },
       {
         "student_id": "G4_A_Roll05",
         "label": 0,
-        "pred_prob": 0.5050264726946146,
-        "threshold": 0.6119999999999999
+        "pred_prob": 0.5105458378051472,
+        "threshold": 0.57
       },
       {
         "student_id": "G4_A_Roll06",
         "label": 0,
-        "pred_prob": 0.47211337455606195,
-        "threshold": 0.576
+        "pred_prob": 0.47211289836032205,
+        "threshold": 0.63
       },
       {
         "student_id": "G4_A_Roll07",
         "label": 0,
-        "pred_prob": 0.4757260031072267,
-        "threshold": 0.598
+        "pred_prob": 0.47201598048293986,
+        "threshold": 0.6
       },
       {
         "student_id": "G4_A_Roll08",
         "label": 0,
-        "pred_prob": 0.5053974748251384,
-        "threshold": 0.6199999999999999
+        "pred_prob": 0.4834797730555973,
+        "threshold": 0.6
       },
       {
         "student_id": "G4_A_Roll09",
         "label": 1,
-        "pred_prob": 0.4458092616284052,
-        "threshold": 0.594
+        "pred_prob": 0.5543257643301656,
+        "threshold": 0.6
       },
       {
         "student_id": "G4_A_Roll11",
         "label": 1,
-        "pred_prob": 0.5013992391773662,
-        "threshold": 0.602
+        "pred_prob": 0.5560174960226509,
+        "threshold": 0.57
       },
       {
         "student_id": "G4_A_Roll12",
         "label": 0,
-        "pred_prob": 0.5010772870512781,
-        "threshold": 0.6399999999999999
+        "pred_prob": 0.5219543124436659,
+        "threshold": 0.6
       },
       {
         "student_id": "G4_A_Roll13",
         "label": 0,
-        "pred_prob": 0.5114498633442748,
-        "threshold": 0.6299999999999999
+        "pred_prob": 0.5359328607604678,
+        "threshold": 0.57
       },
       {
         "student_id": "G4_A_Roll14",
         "label": 1,
-        "pred_prob": 0.5381776211017197,
-        "threshold": 0.6079999999999999
+        "pred_prob": 0.5580088938273192,
+        "threshold": 0.6
       },
       {
         "student_id": "G4_A_Roll15",
         "label": 0,
-        "pred_prob": 0.5116683351344256,
-        "threshold": 0.614
+        "pred_prob": 0.47360346938762693,
+        "threshold": 0.63
       },
       {
         "student_id": "G4_A_Roll16",
         "label": 0,
-        "pred_prob": 0.46695513362264096,
-        "threshold": 0.6699999999999999
+        "pred_prob": 0.4519506192023767,
+        "threshold": 0.57
       },
       {
         "student_id": "G4_A_Roll17",
         "label": 1,
-        "pred_prob": 0.5064913553026169,
-        "threshold": 0.572
+        "pred_prob": 0.5535632004464806,
+        "threshold": 0.6
       },
       {
         "student_id": "G4_A_Roll18",
         "label": 0,
-        "pred_prob": 0.48846384277508176,
-        "threshold": 0.6439999999999999
+        "pred_prob": 0.4948453302863527,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G4_A_Roll19",
         "label": 0,
-        "pred_prob": 0.46580873523377797,
-        "threshold": 0.59
+        "pred_prob": 0.4366520685722614,
+        "threshold": 0.6
       },
       {
         "student_id": "G4_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5264391181006337,
-        "threshold": 0.6199999999999999
+        "pred_prob": 0.5897292779607841,
+        "threshold": 0.6
       },
       {
         "student_id": "G4_A_Roll22",
         "label": 1,
-        "pred_prob": 0.5369441716443889,
-        "threshold": 0.576
+        "pred_prob": 0.5682637217007042,
+        "threshold": 0.63
       },
       {
         "student_id": "G4_A_Roll23",
         "label": 1,
-        "pred_prob": 0.4436562330554755,
-        "threshold": 0.57
+        "pred_prob": 0.4936440268363798,
+        "threshold": 0.6
       },
       {
         "student_id": "G4_A_Roll24",
         "label": 0,
-        "pred_prob": 0.5064542606461226,
-        "threshold": 0.5959999999999999
+        "pred_prob": 0.46452364902490456,
+        "threshold": 0.57
       },
       {
         "student_id": "G4_A_Roll25",
         "label": 0,
-        "pred_prob": 0.49248070168374714,
-        "threshold": 0.6579999999999999
+        "pred_prob": 0.45642339638645074,
+        "threshold": 0.57
       },
       {
         "student_id": "G4_A_Roll26",
         "label": 0,
-        "pred_prob": 0.49050159736095666,
-        "threshold": 0.622
+        "pred_prob": 0.40711693667116866,
+        "threshold": 0.6
       },
       {
         "student_id": "G5_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5546639297338192,
-        "threshold": 0.5959999999999999
+        "pred_prob": 0.5441049519438755,
+        "threshold": 0.63
       },
       {
         "student_id": "G5_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5204175960817932,
-        "threshold": 0.5879999999999999
+        "pred_prob": 0.5294369194762228,
+        "threshold": 0.6
       },
       {
         "student_id": "G5_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5092488017006149,
-        "threshold": 0.6039999999999999
+        "pred_prob": 0.5071110530609385,
+        "threshold": 0.6
       },
       {
         "student_id": "G5_A_Roll04",
         "label": 0,
-        "pred_prob": 0.5050686458373512,
-        "threshold": 0.5959999999999999
+        "pred_prob": 0.4610815306258522,
+        "threshold": 0.63
       },
       {
         "student_id": "G5_A_Roll05",
         "label": 1,
-        "pred_prob": 0.5284067775123915,
-        "threshold": 0.618
+        "pred_prob": 0.5436804869253372,
+        "threshold": 0.6
       },
       {
         "student_id": "G5_A_Roll06",
         "label": 0,
-        "pred_prob": 0.48581541017683516,
-        "threshold": 0.594
+        "pred_prob": 0.47703822710339133,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G5_A_Roll07",
         "label": 1,
-        "pred_prob": 0.47374711445777684,
-        "threshold": 0.6359999999999999
+        "pred_prob": 0.4143054027645081,
+        "threshold": 0.6
       },
       {
         "student_id": "G5_A_Roll08",
         "label": 0,
-        "pred_prob": 0.47972598443894193,
-        "threshold": 0.63
+        "pred_prob": 0.33026853613379675,
+        "threshold": 0.6
       },
       {
         "student_id": "G5_A_Roll09",
         "label": 0,
-        "pred_prob": 0.501463565421411,
-        "threshold": 0.6599999999999999
+        "pred_prob": 0.479722416714307,
+        "threshold": 0.6
       },
       {
         "student_id": "G5_A_Roll10",
         "label": 0,
-        "pred_prob": 0.483534097454177,
-        "threshold": 0.598
+        "pred_prob": 0.47592490753270494,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G5_A_Roll11",
         "label": 0,
-        "pred_prob": 0.45465000751771434,
-        "threshold": 0.5879999999999999
+        "pred_prob": 0.3342336221647453,
+        "threshold": 0.6
       },
       {
         "student_id": "G5_A_Roll12",
         "label": 0,
-        "pred_prob": 0.48896102231373834,
-        "threshold": 0.598
+        "pred_prob": 0.5277230772637628,
+        "threshold": 0.6
       },
       {
         "student_id": "G5_A_Roll13",
         "label": 0,
-        "pred_prob": 0.5256746878285063,
-        "threshold": 0.578
+        "pred_prob": 0.48892842762920763,
+        "threshold": 0.63
       },
       {
         "student_id": "G5_A_Roll14",
         "label": 0,
-        "pred_prob": 0.5093497389006196,
-        "threshold": 0.568
+        "pred_prob": 0.5747836212708175,
+        "threshold": 0.6
       },
       {
         "student_id": "G5_A_Roll15",
         "label": 0,
-        "pred_prob": 0.4794017369231735,
-        "threshold": 0.608
+        "pred_prob": 0.5269976218421255,
+        "threshold": 0.63
       },
       {
         "student_id": "G5_A_Roll16",
         "label": 0,
-        "pred_prob": 0.5007341879206646,
-        "threshold": 0.618
+        "pred_prob": 0.4829900764040643,
+        "threshold": 0.63
       },
       {
         "student_id": "G6_A_Roll01",
         "label": 0,
-        "pred_prob": 0.4557346300895865,
-        "threshold": 0.6539999999999999
+        "pred_prob": 0.44807304666035797,
+        "threshold": 0.6
       },
       {
         "student_id": "G6_A_Roll02",
         "label": 0,
-        "pred_prob": 0.47866982419744436,
-        "threshold": 0.598
+        "pred_prob": 0.48088917238529927,
+        "threshold": 0.63
       },
       {
         "student_id": "G6_A_Roll03",
         "label": 0,
-        "pred_prob": 0.4993991126519247,
-        "threshold": 0.6819999999999999
+        "pred_prob": 0.5261078107832037,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll04",
         "label": 0,
-        "pred_prob": 0.46250561996881634,
-        "threshold": 0.58
+        "pred_prob": 0.390007312048762,
+        "threshold": 0.63
       },
       {
         "student_id": "G6_A_Roll05",
         "label": 0,
-        "pred_prob": 0.4694268838429673,
-        "threshold": 0.6279999999999999
+        "pred_prob": 0.49411061213766416,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G6_A_Roll07",
         "label": 0,
-        "pred_prob": 0.4913814014965382,
-        "threshold": 0.606
+        "pred_prob": 0.45870321398590413,
+        "threshold": 0.6
       },
       {
         "student_id": "G6_A_Roll08",
         "label": 0,
-        "pred_prob": 0.5086465122068085,
-        "threshold": 0.584
+        "pred_prob": 0.5374327007941573,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G6_A_Roll09",
         "label": 0,
-        "pred_prob": 0.48231885066895314,
-        "threshold": 0.602
+        "pred_prob": 0.4963474064760806,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll10",
         "label": 0,
-        "pred_prob": 0.48833898925162894,
-        "threshold": 0.6279999999999999
+        "pred_prob": 0.46166011852064975,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G6_A_Roll11",
         "label": 0,
-        "pred_prob": 0.5005318403866488,
-        "threshold": 0.574
+        "pred_prob": 0.5428361084331511,
+        "threshold": 0.6
       },
       {
         "student_id": "G6_A_Roll12",
         "label": 0,
-        "pred_prob": 0.5136314579807784,
-        "threshold": 0.57
+        "pred_prob": 0.523546004837504,
+        "threshold": 0.6
       },
       {
         "student_id": "G6_A_Roll13",
         "label": 0,
-        "pred_prob": 0.48916243331247455,
-        "threshold": 0.592
+        "pred_prob": 0.45780232543916816,
+        "threshold": 0.6
       },
       {
         "student_id": "G6_A_Roll14",
         "label": 1,
-        "pred_prob": 0.5024320948251375,
-        "threshold": 0.622
+        "pred_prob": 0.5673543862775497,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G6_A_Roll15",
         "label": 0,
-        "pred_prob": 0.4875874705677085,
-        "threshold": 0.6119999999999999
+        "pred_prob": 0.46460819341412996,
+        "threshold": 0.6
       },
       {
         "student_id": "G6_A_Roll16",
         "label": 1,
-        "pred_prob": 0.5026447926654977,
-        "threshold": 0.594
+        "pred_prob": 0.4980699947784153,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G6_A_Roll17",
         "label": 0,
-        "pred_prob": 0.49621459432810583,
-        "threshold": 0.63
+        "pred_prob": 0.5080501754805968,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G6_A_Roll18",
         "label": 1,
-        "pred_prob": 0.4765161458510381,
-        "threshold": 0.5999999999999999
+        "pred_prob": 0.4958279828032383,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll19",
         "label": 0,
-        "pred_prob": 0.46925823917843673,
-        "threshold": 0.614
+        "pred_prob": 0.46595369394237357,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5024210670784257,
-        "threshold": 0.6359999999999999
+        "pred_prob": 0.48258703621356974,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G6_A_Roll21",
         "label": 0,
-        "pred_prob": 0.49312748429715647,
-        "threshold": 0.58
+        "pred_prob": 0.5192956389451485,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G6_A_Roll22",
         "label": 1,
-        "pred_prob": 0.5034195877240659,
-        "threshold": 0.6839999999999999
+        "pred_prob": 0.4570679630288088,
+        "threshold": 0.63
       },
       {
         "student_id": "G6_A_Roll23",
         "label": 0,
-        "pred_prob": 0.5085413444043219,
-        "threshold": 0.586
+        "pred_prob": 0.5460545157154184,
+        "threshold": 0.6
       },
       {
         "student_id": "G6_A_Roll24",
         "label": 1,
-        "pred_prob": 0.5190440235636052,
-        "threshold": 0.594
+        "pred_prob": 0.4934573579635688,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G6_A_Roll25",
         "label": 1,
-        "pred_prob": 0.4953930307305668,
-        "threshold": 0.5799999999999998
+        "pred_prob": 0.5324027724031039,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll26",
         "label": 1,
-        "pred_prob": 0.5036181665535817,
-        "threshold": 0.6479999999999999
+        "pred_prob": 0.5306246429611116,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll27",
         "label": 1,
-        "pred_prob": 0.5030548255619612,
-        "threshold": 0.578
+        "pred_prob": 0.48996352166378765,
+        "threshold": 0.6
       },
       {
         "student_id": "G6_A_Roll28",
         "label": 1,
-        "pred_prob": 0.43051257433881773,
-        "threshold": 0.6319999999999999
+        "pred_prob": 0.46069423143427174,
+        "threshold": 0.6
       },
       {
         "student_id": "G6_A_Roll29",
         "label": 0,
-        "pred_prob": 0.5220139353746913,
-        "threshold": 0.61
+        "pred_prob": 0.5322110030303876,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll30",
         "label": 0,
-        "pred_prob": 0.49354792213466203,
-        "threshold": 0.614
+        "pred_prob": 0.5561919638752523,
+        "threshold": 0.6
       },
       {
         "student_id": "G7_A_Roll01",
         "label": 0,
-        "pred_prob": 0.533823209272926,
-        "threshold": 0.6559999999999999
+        "pred_prob": 0.500750628635097,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G7_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5064037007369735,
-        "threshold": 0.582
+        "pred_prob": 0.4879089182359717,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5606386950891878,
-        "threshold": 0.586
+        "pred_prob": 0.4341947464922365,
+        "threshold": 0.6
       },
       {
         "student_id": "G7_A_Roll04",
         "label": 0,
-        "pred_prob": 0.48510134909980057,
-        "threshold": 0.6359999999999999
+        "pred_prob": 0.4409379100685496,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G7_A_Roll05",
         "label": 0,
-        "pred_prob": 0.49263859874708327,
-        "threshold": 0.594
+        "pred_prob": 0.4657774367509484,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll06",
         "label": 1,
-        "pred_prob": 0.512465367875859,
-        "threshold": 0.666
+        "pred_prob": 0.4708952810293627,
+        "threshold": 0.6
       },
       {
         "student_id": "G7_A_Roll07",
         "label": 0,
-        "pred_prob": 0.495121059436754,
-        "threshold": 0.6139999999999999
+        "pred_prob": 0.5346758648079603,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll08",
         "label": 0,
-        "pred_prob": 0.576915992751493,
-        "threshold": 0.608
+        "pred_prob": 0.5619566375175445,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G7_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5609080743801811,
-        "threshold": 0.576
+        "pred_prob": 0.5706595256735177,
+        "threshold": 0.6
       },
       {
         "student_id": "G7_A_Roll10",
         "label": 0,
-        "pred_prob": 0.47873778042713677,
-        "threshold": 0.598
+        "pred_prob": 0.45576586288690885,
+        "threshold": 0.6
       },
       {
         "student_id": "G7_A_Roll11",
         "label": 0,
-        "pred_prob": 0.5060504403027808,
-        "threshold": 0.578
+        "pred_prob": 0.4961284302759869,
+        "threshold": 0.63
       },
       {
         "student_id": "G7_A_Roll12",
         "label": 1,
-        "pred_prob": 0.4915025138334509,
-        "threshold": 0.614
+        "pred_prob": 0.47927452728370384,
+        "threshold": 0.63
       },
       {
         "student_id": "G7_A_Roll13",
         "label": 0,
-        "pred_prob": 0.4908186835409394,
-        "threshold": 0.6319999999999999
+        "pred_prob": 0.4647648317060952,
+        "threshold": 0.6
       },
       {
         "student_id": "G7_A_Roll14",
         "label": 0,
-        "pred_prob": 0.45140324537432086,
-        "threshold": 0.594
+        "pred_prob": 0.38386163968843356,
+        "threshold": 0.6
       },
       {
         "student_id": "G7_A_Roll15",
         "label": 1,
-        "pred_prob": 0.49778386879978614,
-        "threshold": 0.594
+        "pred_prob": 0.4992133867977433,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G7_A_Roll16",
         "label": 0,
-        "pred_prob": 0.5023934846424721,
-        "threshold": 0.582
+        "pred_prob": 0.4640462931595149,
+        "threshold": 0.63
       },
       {
         "student_id": "G7_A_Roll17",
         "label": 0,
-        "pred_prob": 0.45609062929030547,
-        "threshold": 0.594
+        "pred_prob": 0.41939861459686706,
+        "threshold": 0.6
       },
       {
         "student_id": "G7_A_Roll18",
         "label": 0,
-        "pred_prob": 0.48262534270283997,
-        "threshold": 0.6559999999999999
+        "pred_prob": 0.4884704260354307,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G7_A_Roll19",
         "label": 0,
-        "pred_prob": 0.5125247927788406,
-        "threshold": 0.606
+        "pred_prob": 0.49024509710960357,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G7_A_Roll20",
         "label": 0,
-        "pred_prob": 0.504253927616926,
-        "threshold": 0.602
+        "pred_prob": 0.5309465640613826,
+        "threshold": 0.6599999999999999
       },
       {
         "student_id": "G7_A_Roll21",
         "label": 0,
-        "pred_prob": 0.47382741349451596,
-        "threshold": 0.58
+        "pred_prob": 0.3754978334603818,
+        "threshold": 0.6
       },
       {
         "student_id": "G7_A_Roll22",
         "label": 0,
-        "pred_prob": 0.5038302879326454,
-        "threshold": 0.6359999999999999
+        "pred_prob": 0.5099119557757633,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll23",
         "label": 0,
-        "pred_prob": 0.524704631652501,
-        "threshold": 0.6499999999999999
+        "pred_prob": 0.5510188065830602,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll24",
         "label": 0,
-        "pred_prob": 0.4831576241034969,
-        "threshold": 0.588
+        "pred_prob": 0.43448434097227145,
+        "threshold": 0.63
       },
       {
         "student_id": "G7_A_Roll25",
         "label": 0,
-        "pred_prob": 0.5568442190614903,
-        "threshold": 0.574
+        "pred_prob": 0.5599569758968524,
+        "threshold": 0.6
       }
     ]
   },
@@ -2338,776 +2338,776 @@
     "model_name": "SVM (RBF Kernel)",
     "feature_type": "z_score",
     "num_features": 31,
-    "n_repeats": 5,
+    "n_repeats": 1,
     "n_outer_folds": 5,
-    "elapsed_seconds": 13.85,
-    "median_threshold": 0.53,
+    "elapsed_seconds": 6.72,
+    "median_threshold": 0.55,
     "point_metrics": {
       "n_students": 115.0,
       "n_positives": 24.0,
       "n_negatives": 91.0,
-      "auroc": 0.6076007326007327,
-      "auprc": 0.27909457645223285,
-      "brier": 0.2440380763981056,
-      "sensitivity_at_90_spec": 0.125,
-      "sensitivity_at_95_spec": 0.041666666666666664,
-      "threshold": 0.5299999999999999,
-      "accuracy": 0.6956521739130435,
-      "balanced_accuracy": 0.5162545787545787,
-      "sensitivity": 0.20833333333333334,
-      "specificity": 0.8241758241758241,
-      "f1": 0.2222222222222222,
-      "tp": 5.0,
-      "fp": 16.0,
-      "tn": 75.0,
-      "fn": 19.0
+      "auroc": 0.61996336996337,
+      "auprc": 0.3445094023241669,
+      "brier": 0.24453441516413968,
+      "sensitivity_at_90_spec": 0.25,
+      "sensitivity_at_95_spec": 0.16666666666666666,
+      "threshold": 0.5499999999999999,
+      "accuracy": 0.7652173913043478,
+      "balanced_accuracy": 0.5755494505494505,
+      "sensitivity": 0.25,
+      "specificity": 0.9010989010989011,
+      "f1": 0.3076923076923077,
+      "tp": 6.0,
+      "fp": 9.0,
+      "tn": 82.0,
+      "fn": 18.0
     },
     "bootstrap_ci": {
       "auroc": {
-        "mean": 0.6062420570772834,
-        "std": 0.06528470986729688,
-        "ci_low": 0.47749164113145537,
-        "ci_high": 0.7336072485964906
+        "mean": 0.6211373426933201,
+        "std": 0.06855916607031762,
+        "ci_low": 0.4834638157894737,
+        "ci_high": 0.7500118147448014
       },
       "auprc": {
-        "mean": 0.3023953468048974,
-        "std": 0.07068269003174821,
-        "ci_low": 0.18468881594915396,
-        "ci_high": 0.450448203232576
+        "mean": 0.37301678053281,
+        "std": 0.09001114290341844,
+        "ci_low": 0.20059147046980758,
+        "ci_high": 0.564637890728779
       },
       "brier": {
-        "mean": 0.24397129599964915,
-        "std": 0.003335418021748429,
-        "ci_low": 0.23756650806938287,
-        "ci_high": 0.25104534288622365
+        "mean": 0.24448636499414964,
+        "std": 0.004187270409962856,
+        "ci_low": 0.23586063952836056,
+        "ci_high": 0.25283688832782636
       },
       "sensitivity_at_90_spec": {
-        "mean": 0.12333079681169795,
-        "std": 0.08401405486846258,
-        "ci_low": 0.0,
-        "ci_high": 0.3044314381270902
+        "mean": 0.2762022439909233,
+        "std": 0.10950282688747096,
+        "ci_low": 0.08333333333333333,
+        "ci_high": 0.5
       },
       "sensitivity_at_95_spec": {
-        "mean": 0.053394079056077744,
-        "std": 0.055088571186724486,
+        "mean": 0.17920006699909374,
+        "std": 0.1022941329235801,
         "ci_low": 0.0,
-        "ci_high": 0.1875744047619047
+        "ci_high": 0.4074494949494949
       },
       "sensitivity": {
-        "mean": 0.20277533425659602,
-        "std": 0.07935726227936311,
-        "ci_low": 0.05555555555555555,
-        "ci_high": 0.36375598086124394
+        "mean": 0.24777126978115105,
+        "std": 0.09210093827475849,
+        "ci_low": 0.08317307692307706,
+        "ci_high": 0.44
       },
       "specificity": {
-        "mean": 0.8265472320425086,
-        "std": 0.038628219983651894,
-        "ci_low": 0.7418870967741936,
-        "ci_high": 0.8965811128526646
+        "mean": 0.902395894013765,
+        "std": 0.03038640873619467,
+        "ci_low": 0.8420753588516746,
+        "ci_high": 0.9565217391304348
       },
       "balanced_accuracy": {
-        "mean": 0.5146612831495523,
-        "std": 0.045177291510280444,
-        "ci_low": 0.42646865033664066,
-        "ci_high": 0.6050963504088505
+        "mean": 0.575083581897458,
+        "std": 0.04880114714880178,
+        "ci_low": 0.48784069548872183,
+        "ci_high": 0.6746064718022039
       },
       "f1": {
-        "mean": 0.2150608057815553,
-        "std": 0.08024040760962287,
-        "ci_low": 0.057103174603174635,
-        "ci_high": 0.375
+        "mean": 0.3006319410072527,
+        "std": 0.09915885407014513,
+        "ci_low": 0.1080369843527739,
+        "ci_high": 0.4849223946784922
       }
     },
     "student_predictions": [
       {
         "student_id": "G3_A_Roll01",
         "label": 0,
-        "pred_prob": 0.4454037897903328,
-        "threshold": 0.522
+        "pred_prob": 0.4425032642337404,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G3_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4800341140340274,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.44901740562903814,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll03",
         "label": 0,
-        "pred_prob": 0.4674015905640204,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5612945359754229,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll04",
         "label": 0,
-        "pred_prob": 0.47260480276775274,
-        "threshold": 0.576
+        "pred_prob": 0.406273905832817,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G3_A_Roll05",
         "label": 0,
-        "pred_prob": 0.5292849243912091,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.49089855721749187,
+        "threshold": 0.57
       },
       {
         "student_id": "G3_A_Roll06",
         "label": 0,
-        "pred_prob": 0.4587507881883245,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5000131212970964,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G3_A_Roll07",
         "label": 0,
-        "pred_prob": 0.5538716328785517,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5506994886460072,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll08",
         "label": 0,
-        "pred_prob": 0.4513393687009901,
-        "threshold": 0.5479999999999999
+        "pred_prob": 0.4580658194157663,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G3_A_Roll09",
         "label": 0,
-        "pred_prob": 0.47504664707852806,
-        "threshold": 0.5599999999999999
+        "pred_prob": 0.501958009425501,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll10",
         "label": 0,
-        "pred_prob": 0.44486660309243653,
-        "threshold": 0.5459999999999999
+        "pred_prob": 0.4671989447069968,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G3_A_Roll12",
         "label": 1,
-        "pred_prob": 0.5705640987602526,
-        "threshold": 0.5639999999999998
+        "pred_prob": 0.5825707453992987,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll13",
         "label": 1,
-        "pred_prob": 0.5129060999070137,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.5468647424556088,
+        "threshold": 0.57
       },
       {
         "student_id": "G3_A_Roll14",
         "label": 0,
-        "pred_prob": 0.4750824369720827,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.516770612697206,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G3_A_Roll15",
         "label": 1,
-        "pred_prob": 0.5153461415789431,
-        "threshold": 0.51
+        "pred_prob": 0.4619142034973162,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll16",
         "label": 0,
-        "pred_prob": 0.4962150144270819,
-        "threshold": 0.5399999999999999
+        "pred_prob": 0.5182808269931304,
+        "threshold": 0.57
       },
       {
         "student_id": "G3_A_Roll17",
         "label": 0,
-        "pred_prob": 0.38666143481628534,
-        "threshold": 0.4999999999999999
+        "pred_prob": 0.3460266708820157,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G3_A_Roll19",
         "label": 1,
-        "pred_prob": 0.5045593764508081,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5317930995972069,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G3_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5140191822114744,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.5364974207328301,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll21",
         "label": 0,
-        "pred_prob": 0.46466338884523567,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.42911237004861535,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll22",
         "label": 0,
-        "pred_prob": 0.5737276269636784,
-        "threshold": 0.526
+        "pred_prob": 0.5949063877723699,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G3_A_Roll23",
         "label": 0,
-        "pred_prob": 0.51279562013868,
-        "threshold": 0.558
+        "pred_prob": 0.5458548008656983,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G4_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5559682834063466,
-        "threshold": 0.542
+        "pred_prob": 0.4830789164519083,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4645204145961582,
-        "threshold": 0.568
+        "pred_prob": 0.4353919267700306,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G4_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5395383791114671,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5321648609341867,
+        "threshold": 0.57
       },
       {
         "student_id": "G4_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4861693301895965,
-        "threshold": 0.51
+        "pred_prob": 0.48731963431568764,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G4_A_Roll05",
         "label": 0,
-        "pred_prob": 0.509828216550911,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.54606121519999,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll06",
         "label": 0,
-        "pred_prob": 0.48550170973988893,
-        "threshold": 0.502
+        "pred_prob": 0.48037562522169336,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G4_A_Roll07",
         "label": 0,
-        "pred_prob": 0.4716764201761392,
-        "threshold": 0.5459999999999999
+        "pred_prob": 0.49528922494348177,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G4_A_Roll08",
         "label": 0,
-        "pred_prob": 0.5117182766398255,
-        "threshold": 0.5339999999999999
+        "pred_prob": 0.4804936052905428,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G4_A_Roll09",
         "label": 1,
-        "pred_prob": 0.48283288118359496,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.5683434146837983,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll11",
         "label": 1,
-        "pred_prob": 0.5298714207160489,
-        "threshold": 0.5619999999999999
+        "pred_prob": 0.5569278971056715,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll12",
         "label": 0,
-        "pred_prob": 0.49206283249470484,
-        "threshold": 0.5399999999999999
+        "pred_prob": 0.503494201744242,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G4_A_Roll13",
         "label": 0,
-        "pred_prob": 0.4891594737935808,
-        "threshold": 0.5539999999999999
+        "pred_prob": 0.5602208236611531,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll14",
         "label": 1,
-        "pred_prob": 0.5525114321373069,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.5079440252871421,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G4_A_Roll15",
         "label": 0,
-        "pred_prob": 0.5154760821690648,
-        "threshold": 0.5539999999999999
+        "pred_prob": 0.4781355490065889,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G4_A_Roll16",
         "label": 0,
-        "pred_prob": 0.47270214169840125,
-        "threshold": 0.566
+        "pred_prob": 0.45278546685931476,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll17",
         "label": 1,
-        "pred_prob": 0.5389703841045497,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5707950737719383,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G4_A_Roll18",
         "label": 0,
-        "pred_prob": 0.47772120441383015,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.48729269933679636,
+        "threshold": 0.57
       },
       {
         "student_id": "G4_A_Roll19",
         "label": 0,
-        "pred_prob": 0.4591832424599379,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.4580824019196544,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5374897524398964,
-        "threshold": 0.5359999999999999
+        "pred_prob": 0.5258014594228427,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll22",
         "label": 1,
-        "pred_prob": 0.49801987951797705,
-        "threshold": 0.518
+        "pred_prob": 0.5277122218365283,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G4_A_Roll23",
         "label": 1,
-        "pred_prob": 0.4602363668259845,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.46821922855306336,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G4_A_Roll24",
         "label": 0,
-        "pred_prob": 0.5168021017814712,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.4831239873789442,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll25",
         "label": 0,
-        "pred_prob": 0.4846973056375446,
-        "threshold": 0.5539999999999999
+        "pred_prob": 0.46774270918780947,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll26",
         "label": 0,
-        "pred_prob": 0.48959813117429185,
-        "threshold": 0.5439999999999999
+        "pred_prob": 0.46003461637375587,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5644084429830445,
-        "threshold": 0.5599999999999999
+        "pred_prob": 0.5029700325948709,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G5_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5608020850245055,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.4855915484046264,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G5_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5038319346779039,
-        "threshold": 0.5259999999999999
+        "pred_prob": 0.5541524260544306,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll04",
         "label": 0,
-        "pred_prob": 0.48666809671498135,
-        "threshold": 0.526
+        "pred_prob": 0.4551104684516589,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G5_A_Roll05",
         "label": 1,
-        "pred_prob": 0.5345000096510246,
-        "threshold": 0.5439999999999999
+        "pred_prob": 0.48756613877894067,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G5_A_Roll06",
         "label": 0,
-        "pred_prob": 0.49083132776120486,
-        "threshold": 0.4699999999999999
+        "pred_prob": 0.47351627156055676,
+        "threshold": 0.57
       },
       {
         "student_id": "G5_A_Roll07",
         "label": 1,
-        "pred_prob": 0.46373658118295635,
-        "threshold": 0.5539999999999999
+        "pred_prob": 0.4352977274846707,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll08",
         "label": 0,
-        "pred_prob": 0.4387606393211504,
-        "threshold": 0.5359999999999999
+        "pred_prob": 0.3010629964143183,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll09",
         "label": 0,
-        "pred_prob": 0.531539562155863,
-        "threshold": 0.5539999999999999
+        "pred_prob": 0.4893551326488077,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll10",
         "label": 0,
-        "pred_prob": 0.4691365321805502,
-        "threshold": 0.534
+        "pred_prob": 0.4601806024107274,
+        "threshold": 0.57
       },
       {
         "student_id": "G5_A_Roll11",
         "label": 0,
-        "pred_prob": 0.4418659856456765,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.35080188148473185,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll12",
         "label": 0,
-        "pred_prob": 0.4718724043898276,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5123357472523179,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G5_A_Roll13",
         "label": 0,
-        "pred_prob": 0.5278920569965353,
-        "threshold": 0.49799999999999994
+        "pred_prob": 0.4919786045174621,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G5_A_Roll14",
         "label": 0,
-        "pred_prob": 0.4772333759911069,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.574800672403006,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G5_A_Roll15",
         "label": 0,
-        "pred_prob": 0.4730065723598538,
-        "threshold": 0.5259999999999999
+        "pred_prob": 0.5410588523616812,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G5_A_Roll16",
         "label": 0,
-        "pred_prob": 0.49603269107546416,
-        "threshold": 0.5479999999999999
+        "pred_prob": 0.4914796345036035,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G6_A_Roll01",
         "label": 0,
-        "pred_prob": 0.45328254089004555,
-        "threshold": 0.5479999999999999
+        "pred_prob": 0.5110171159745863,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G6_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4578270554395011,
-        "threshold": 0.502
+        "pred_prob": 0.4682447167627693,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G6_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5061472804365483,
-        "threshold": 0.5599999999999999
+        "pred_prob": 0.5606500941269504,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll04",
         "label": 0,
-        "pred_prob": 0.46009776967446714,
-        "threshold": 0.5359999999999999
+        "pred_prob": 0.46294690601542593,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G6_A_Roll05",
         "label": 0,
-        "pred_prob": 0.48167577501497333,
-        "threshold": 0.5399999999999999
+        "pred_prob": 0.5069686841164841,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll07",
         "label": 0,
-        "pred_prob": 0.4823441198485835,
-        "threshold": 0.5559999999999999
+        "pred_prob": 0.4742748100341205,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll08",
         "label": 0,
-        "pred_prob": 0.5163191537622681,
-        "threshold": 0.4839999999999999
+        "pred_prob": 0.5383540177549784,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll09",
         "label": 0,
-        "pred_prob": 0.4726484271375341,
-        "threshold": 0.534
+        "pred_prob": 0.512620814376406,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll10",
         "label": 0,
-        "pred_prob": 0.485862783957424,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.45680017078193896,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll11",
         "label": 0,
-        "pred_prob": 0.5192431843566838,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5373837498874982,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G6_A_Roll12",
         "label": 0,
-        "pred_prob": 0.5237573705453875,
-        "threshold": 0.51
+        "pred_prob": 0.5266253139658975,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G6_A_Roll13",
         "label": 0,
-        "pred_prob": 0.4787828894598836,
-        "threshold": 0.5359999999999999
+        "pred_prob": 0.5052230819087767,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G6_A_Roll14",
         "label": 1,
-        "pred_prob": 0.5139565480676513,
-        "threshold": 0.522
+        "pred_prob": 0.558032784779034,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll15",
         "label": 0,
-        "pred_prob": 0.45427390738930473,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.47914050023280885,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G6_A_Roll16",
         "label": 1,
-        "pred_prob": 0.5024144332759023,
-        "threshold": 0.4919999999999999
+        "pred_prob": 0.5103196455690823,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll17",
         "label": 0,
-        "pred_prob": 0.4612556111098446,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5221828686023073,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll18",
         "label": 1,
-        "pred_prob": 0.4495221342277883,
-        "threshold": 0.5339999999999999
+        "pred_prob": 0.45150953824726353,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll19",
         "label": 0,
-        "pred_prob": 0.46833278748720736,
-        "threshold": 0.55
+        "pred_prob": 0.5183567999314479,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll20",
         "label": 0,
-        "pred_prob": 0.45845842251569646,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.494092637313279,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll21",
         "label": 0,
-        "pred_prob": 0.4971667820688254,
-        "threshold": 0.49399999999999994
+        "pred_prob": 0.516182175082431,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll22",
         "label": 1,
-        "pred_prob": 0.48159744601596055,
-        "threshold": 0.5619999999999999
+        "pred_prob": 0.4762338645747867,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G6_A_Roll23",
         "label": 0,
-        "pred_prob": 0.506087543796869,
-        "threshold": 0.506
+        "pred_prob": 0.5760642218959363,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G6_A_Roll24",
         "label": 1,
-        "pred_prob": 0.5478504671666535,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5009372880576605,
+        "threshold": 0.57
       },
       {
         "student_id": "G6_A_Roll25",
         "label": 1,
-        "pred_prob": 0.4933314761392079,
-        "threshold": 0.5419999999999999
+        "pred_prob": 0.5794800992075334,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll26",
         "label": 1,
-        "pred_prob": 0.512813151991752,
-        "threshold": 0.534
+        "pred_prob": 0.5466513728097567,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll27",
         "label": 1,
-        "pred_prob": 0.5216871306044099,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5235673808437866,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G6_A_Roll28",
         "label": 1,
-        "pred_prob": 0.41670152871055566,
-        "threshold": 0.5579999999999999
+        "pred_prob": 0.4374967966474373,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G6_A_Roll29",
         "label": 0,
-        "pred_prob": 0.5389997488473107,
-        "threshold": 0.5519999999999999
+        "pred_prob": 0.5481204680056684,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll30",
         "label": 0,
-        "pred_prob": 0.4827887806947021,
-        "threshold": 0.542
+        "pred_prob": 0.5530735299506537,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G7_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5588272893773909,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.5259714715914096,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll02",
         "label": 0,
-        "pred_prob": 0.48196885157702035,
-        "threshold": 0.526
+        "pred_prob": 0.5220409540008438,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5350086368203445,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.49236371360194825,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4620739007307929,
-        "threshold": 0.4999999999999999
+        "pred_prob": 0.5005525764307425,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll05",
         "label": 0,
-        "pred_prob": 0.48552691477298604,
-        "threshold": 0.5039999999999999
+        "pred_prob": 0.4350971172587035,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll06",
         "label": 1,
-        "pred_prob": 0.5023295317049767,
-        "threshold": 0.5479999999999999
+        "pred_prob": 0.5088876575755451,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G7_A_Roll07",
         "label": 0,
-        "pred_prob": 0.49699780717069036,
-        "threshold": 0.5459999999999999
+        "pred_prob": 0.5242134342131978,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll08",
         "label": 0,
-        "pred_prob": 0.5421489151774646,
-        "threshold": 0.4959999999999999
+        "pred_prob": 0.5393335647019386,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5632828333894215,
-        "threshold": 0.534
+        "pred_prob": 0.538268758678519,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G7_A_Roll10",
         "label": 0,
-        "pred_prob": 0.4552715462082485,
-        "threshold": 0.5399999999999999
+        "pred_prob": 0.4383616611805223,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll11",
         "label": 0,
-        "pred_prob": 0.4903150508250696,
-        "threshold": 0.49799999999999994
+        "pred_prob": 0.4864991426949612,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G7_A_Roll12",
         "label": 1,
-        "pred_prob": 0.46218465353194194,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.520365866532239,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G7_A_Roll13",
         "label": 0,
-        "pred_prob": 0.48049714621772627,
-        "threshold": 0.5359999999999999
+        "pred_prob": 0.48127397210351913,
+        "threshold": 0.4599999999999999
       },
       {
         "student_id": "G7_A_Roll14",
         "label": 0,
-        "pred_prob": 0.42605837120395346,
-        "threshold": 0.5379999999999999
+        "pred_prob": 0.41841457225152506,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll15",
         "label": 1,
-        "pred_prob": 0.5025599650557713,
-        "threshold": 0.4699999999999999
+        "pred_prob": 0.5001758810144474,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll16",
         "label": 0,
-        "pred_prob": 0.5128562910387449,
+        "pred_prob": 0.5096035935746285,
         "threshold": 0.5499999999999999
       },
       {
         "student_id": "G7_A_Roll17",
         "label": 0,
-        "pred_prob": 0.43031115285854205,
-        "threshold": 0.502
+        "pred_prob": 0.45841417237803844,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll18",
         "label": 0,
-        "pred_prob": 0.4464517231105091,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.48261541188201473,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll19",
         "label": 0,
-        "pred_prob": 0.5319512391305345,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.5231142419759581,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5042024402484263,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5032384834860734,
+        "threshold": 0.57
       },
       {
         "student_id": "G7_A_Roll21",
         "label": 0,
-        "pred_prob": 0.49455076246182833,
-        "threshold": 0.5259999999999999
+        "pred_prob": 0.41411089448441346,
+        "threshold": 0.5599999999999999
       },
       {
         "student_id": "G7_A_Roll22",
         "label": 0,
-        "pred_prob": 0.4769977436813039,
-        "threshold": 0.5619999999999999
+        "pred_prob": 0.5019849518045665,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll23",
         "label": 0,
-        "pred_prob": 0.5481290864137612,
-        "threshold": 0.5579999999999999
+        "pred_prob": 0.5385398096839887,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll24",
         "label": 0,
-        "pred_prob": 0.4778767091128972,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.49909151132900265,
+        "threshold": 0.5499999999999999
       },
       {
         "student_id": "G7_A_Roll25",
         "label": 0,
-        "pred_prob": 0.5330802709558097,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.5411921289540172,
+        "threshold": 0.4599999999999999
       }
     ]
   },
@@ -3116,776 +3116,776 @@
     "model_name": "Random Forest",
     "feature_type": "raw",
     "num_features": 31,
-    "n_repeats": 5,
+    "n_repeats": 1,
     "n_outer_folds": 5,
-    "elapsed_seconds": 66.2,
-    "median_threshold": 0.51,
+    "elapsed_seconds": 14.03,
+    "median_threshold": 0.52,
     "point_metrics": {
       "n_students": 115.0,
       "n_positives": 24.0,
       "n_negatives": 91.0,
-      "auroc": 0.4505494505494505,
-      "auprc": 0.21824716048950568,
-      "brier": 0.2520796489486064,
-      "sensitivity_at_90_spec": 0.08333333333333333,
+      "auroc": 0.6332417582417582,
+      "auprc": 0.3090080575890974,
+      "brier": 0.247056333118703,
+      "sensitivity_at_90_spec": 0.125,
       "sensitivity_at_95_spec": 0.041666666666666664,
-      "threshold": 0.5099999999999999,
-      "accuracy": 0.6521739130434783,
-      "balanced_accuracy": 0.519459706959707,
-      "sensitivity": 0.2916666666666667,
-      "specificity": 0.7472527472527473,
-      "f1": 0.25925925925925924,
-      "tp": 7.0,
-      "fp": 23.0,
-      "tn": 68.0,
-      "fn": 17.0
+      "threshold": 0.5199999999999999,
+      "accuracy": 0.6608695652173913,
+      "balanced_accuracy": 0.5709706959706959,
+      "sensitivity": 0.4166666666666667,
+      "specificity": 0.7252747252747253,
+      "f1": 0.3389830508474576,
+      "tp": 10.0,
+      "fp": 25.0,
+      "tn": 66.0,
+      "fn": 14.0
     },
     "bootstrap_ci": {
       "auroc": {
-        "mean": 0.45016838339832627,
-        "std": 0.07263102331899728,
-        "ci_low": 0.30864893729479653,
-        "ci_high": 0.5956509306567503
+        "mean": 0.6286955124977169,
+        "std": 0.059306213727690814,
+        "ci_low": 0.5105244252873563,
+        "ci_high": 0.7458791208791208
       },
       "auprc": {
-        "mean": 0.23963941654061824,
-        "std": 0.06163606254030962,
-        "ci_low": 0.13453713239082907,
-        "ci_high": 0.37372401036317426
+        "mean": 0.3217886561090817,
+        "std": 0.07142621411432142,
+        "ci_low": 0.19113498021145572,
+        "ci_high": 0.4651872376960203
       },
       "brier": {
-        "mean": 0.2520296377352178,
-        "std": 0.0017325930838231313,
-        "ci_low": 0.24872451831812142,
-        "ci_high": 0.2554733888440512
+        "mean": 0.24721267520542317,
+        "std": 0.0031797805272345725,
+        "ci_low": 0.24089123369498278,
+        "ci_high": 0.2532093419886499
       },
       "sensitivity_at_90_spec": {
-        "mean": 0.07411017873094077,
-        "std": 0.06318452157340483,
+        "mean": 0.12331409621651326,
+        "std": 0.07686030508954024,
         "ci_low": 0.0,
-        "ci_high": 0.22727272727272727
+        "ci_high": 0.3
       },
       "sensitivity_at_95_spec": {
-        "mean": 0.04457850235777741,
-        "std": 0.043387854306388716,
+        "mean": 0.06625189723321395,
+        "std": 0.060015059477383316,
         "ci_low": 0.0,
-        "ci_high": 0.14708605664488014
+        "ci_high": 0.2083881578947368
       },
       "sensitivity": {
-        "mean": 0.28734631306709224,
-        "std": 0.09310220548203584,
-        "ci_low": 0.11759049773755662,
-        "ci_high": 0.5
+        "mean": 0.40906476942998554,
+        "std": 0.09695562197625658,
+        "ci_low": 0.21739130434782608,
+        "ci_high": 0.6071816770186335
       },
       "specificity": {
-        "mean": 0.7498415090514613,
-        "std": 0.04795283869368968,
-        "ci_low": 0.6521739130434783,
-        "ci_high": 0.840938995215311
+        "mean": 0.7258675990743059,
+        "std": 0.04614647010667318,
+        "ci_low": 0.6363636363636364,
+        "ci_high": 0.8161442006269592
       },
       "balanced_accuracy": {
-        "mean": 0.5185939110592768,
-        "std": 0.05221946525135007,
-        "ci_low": 0.4198950578990902,
-        "ci_high": 0.6287913327806944
+        "mean": 0.5674661842521457,
+        "std": 0.05393401153253307,
+        "ci_low": 0.4619002073798627,
+        "ci_high": 0.6752122087884026
       },
       "f1": {
-        "mean": 0.2539363594614828,
-        "std": 0.07909078265450996,
-        "ci_low": 0.1110606060606061,
-        "ci_high": 0.4067796610169492
+        "mean": 0.3308793769261326,
+        "std": 0.07826326826400443,
+        "ci_low": 0.17540045766590392,
+        "ci_high": 0.4905825885468388
       }
     },
     "student_predictions": [
       {
         "student_id": "G3_A_Roll01",
         "label": 0,
-        "pred_prob": 0.4963793667837063,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.5032260695740938,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G3_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5070929492934966,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5432352328912011,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5080906976663735,
-        "threshold": 0.518
+        "pred_prob": 0.5030480468471714,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G3_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4741811370399745,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.4015001227610776,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll05",
         "label": 0,
-        "pred_prob": 0.5300439320085891,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.5107391292654476,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G3_A_Roll06",
         "label": 0,
-        "pred_prob": 0.5069473954444013,
-        "threshold": 0.5039999999999999
+        "pred_prob": 0.49665674110193364,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll07",
         "label": 0,
-        "pred_prob": 0.5062057440037618,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.5542336502389862,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll08",
         "label": 0,
-        "pred_prob": 0.49399595173682764,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.47192786613633586,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G3_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5137259407559015,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.5211292475568324,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G3_A_Roll10",
         "label": 0,
-        "pred_prob": 0.47738209462291864,
-        "threshold": 0.518
+        "pred_prob": 0.532497461629846,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll12",
         "label": 1,
-        "pred_prob": 0.5152484090262015,
-        "threshold": 0.518
+        "pred_prob": 0.506644638896546,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G3_A_Roll13",
         "label": 1,
-        "pred_prob": 0.4945971626960729,
-        "threshold": 0.5039999999999999
+        "pred_prob": 0.5361972592487522,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G3_A_Roll14",
         "label": 0,
-        "pred_prob": 0.4835789830582037,
-        "threshold": 0.5399999999999999
+        "pred_prob": 0.48725086452697447,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G3_A_Roll15",
         "label": 1,
-        "pred_prob": 0.48542175280618505,
-        "threshold": 0.506
+        "pred_prob": 0.5273285004538536,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll16",
         "label": 0,
-        "pred_prob": 0.49862542960075495,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5055663559278843,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G3_A_Roll17",
         "label": 0,
-        "pred_prob": 0.45041724274852923,
+        "pred_prob": 0.44647308765395566,
         "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll19",
         "label": 1,
-        "pred_prob": 0.5002422987733487,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.49757096814174206,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll20",
         "label": 0,
-        "pred_prob": 0.49612807630014444,
-        "threshold": 0.518
+        "pred_prob": 0.49293006909504394,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G3_A_Roll21",
         "label": 0,
-        "pred_prob": 0.5164555726318849,
-        "threshold": 0.506
+        "pred_prob": 0.4997882595380589,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G3_A_Roll22",
         "label": 0,
-        "pred_prob": 0.5316781873369404,
-        "threshold": 0.5339999999999999
+        "pred_prob": 0.5406559306388433,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll23",
         "label": 0,
-        "pred_prob": 0.4973262662779433,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5161393591842436,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5307130631471154,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.5783404060707197,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5004781818399506,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.48987495695117866,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5253807745397452,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5372034398027612,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G4_A_Roll04",
         "label": 0,
-        "pred_prob": 0.5144336079084797,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.48454017072841093,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll05",
         "label": 0,
-        "pred_prob": 0.5169483077389673,
-        "threshold": 0.51
+        "pred_prob": 0.5243970322939261,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll06",
         "label": 0,
-        "pred_prob": 0.5088645828774393,
-        "threshold": 0.51
+        "pred_prob": 0.5399771531626395,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll07",
         "label": 0,
-        "pred_prob": 0.4885921655889283,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5120041548478956,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G4_A_Roll08",
         "label": 0,
-        "pred_prob": 0.5238480185070472,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.5373566240604531,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G4_A_Roll09",
         "label": 1,
-        "pred_prob": 0.491280285913238,
-        "threshold": 0.518
+        "pred_prob": 0.5449985531361544,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll11",
         "label": 1,
-        "pred_prob": 0.4961549468270201,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.5335489173122978,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll12",
         "label": 0,
-        "pred_prob": 0.5220787714927257,
-        "threshold": 0.5379999999999999
+        "pred_prob": 0.5490180150843451,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G4_A_Roll13",
         "label": 0,
-        "pred_prob": 0.5332698503081453,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.5402797033734031,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll14",
         "label": 1,
-        "pred_prob": 0.5115325364806569,
-        "threshold": 0.5339999999999999
+        "pred_prob": 0.5370961862408404,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G4_A_Roll15",
         "label": 0,
-        "pred_prob": 0.5205657630048511,
-        "threshold": 0.526
+        "pred_prob": 0.5323237426163514,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll16",
         "label": 0,
-        "pred_prob": 0.4898246918604576,
+        "pred_prob": 0.4901994050615595,
         "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll17",
         "label": 1,
-        "pred_prob": 0.5098253010726885,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5810126778716691,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G4_A_Roll18",
         "label": 0,
-        "pred_prob": 0.49893391111991703,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.5032731896749132,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G4_A_Roll19",
         "label": 0,
-        "pred_prob": 0.48914526837532896,
-        "threshold": 0.5259999999999999
+        "pred_prob": 0.4948735387301107,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5356215506052053,
-        "threshold": 0.518
+        "pred_prob": 0.5600046338072718,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll22",
         "label": 1,
-        "pred_prob": 0.5231447246367379,
-        "threshold": 0.502
+        "pred_prob": 0.5528917269368403,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll23",
         "label": 1,
-        "pred_prob": 0.46240663943384436,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.521435427114029,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll24",
         "label": 0,
-        "pred_prob": 0.4993285123429649,
-        "threshold": 0.4959999999999999
+        "pred_prob": 0.49550781478211725,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll25",
         "label": 0,
-        "pred_prob": 0.4979533945716318,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.4950770670492372,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G4_A_Roll26",
         "label": 0,
-        "pred_prob": 0.531732249075885,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.5562595747727631,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5111131637152829,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.4594053611039477,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5342533984672238,
-        "threshold": 0.526
+        "pred_prob": 0.4802526021676319,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G5_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5078891836561034,
+        "pred_prob": 0.539097788556338,
         "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll04",
         "label": 0,
-        "pred_prob": 0.5090961359464583,
-        "threshold": 0.5339999999999999
+        "pred_prob": 0.47609094902536314,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll05",
         "label": 1,
-        "pred_prob": 0.5299124070411481,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.4961087138900255,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G5_A_Roll06",
         "label": 0,
-        "pred_prob": 0.49560332683187935,
-        "threshold": 0.502
+        "pred_prob": 0.49535603600373906,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G5_A_Roll07",
         "label": 1,
-        "pred_prob": 0.47982990970512535,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.48206223182041685,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll08",
         "label": 0,
-        "pred_prob": 0.45151898977448807,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.3778556869858245,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll09",
         "label": 0,
-        "pred_prob": 0.503202227236204,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.5239918477080927,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll10",
         "label": 0,
-        "pred_prob": 0.4988167585213956,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.4647984438584254,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G5_A_Roll11",
         "label": 0,
-        "pred_prob": 0.48864248459630993,
-        "threshold": 0.5339999999999999
+        "pred_prob": 0.4107611495133015,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll12",
         "label": 0,
-        "pred_prob": 0.499384216337993,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4691556331413653,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G5_A_Roll13",
         "label": 0,
-        "pred_prob": 0.49063690995430964,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.467572389415074,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll14",
         "label": 0,
-        "pred_prob": 0.48952504815177444,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5703026236500325,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll15",
         "label": 0,
-        "pred_prob": 0.506918854002383,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.49430446712458015,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll16",
         "label": 0,
-        "pred_prob": 0.510017643188847,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.49466392640570195,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll01",
         "label": 0,
-        "pred_prob": 0.46176436280890937,
-        "threshold": 0.5379999999999999
+        "pred_prob": 0.48000987208892937,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G6_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4851143846917775,
-        "threshold": 0.502
+        "pred_prob": 0.4432058361855802,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5247413470750788,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5066689696854157,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4929667005184156,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.49737280405878587,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll05",
         "label": 0,
-        "pred_prob": 0.4830450643279457,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5002882454400394,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G6_A_Roll07",
         "label": 0,
-        "pred_prob": 0.5100529349632212,
-        "threshold": 0.5059999999999999
+        "pred_prob": 0.4853516493383472,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll08",
         "label": 0,
-        "pred_prob": 0.5061209949089657,
-        "threshold": 0.5039999999999999
+        "pred_prob": 0.5342518591825168,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G6_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5077785779941729,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.494613591981635,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll10",
         "label": 0,
-        "pred_prob": 0.49475752144111385,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.4937652848761545,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G6_A_Roll11",
         "label": 0,
-        "pred_prob": 0.5058766963983435,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.532674503416206,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G6_A_Roll12",
         "label": 0,
-        "pred_prob": 0.5435868316873808,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.5475212664540343,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G6_A_Roll13",
         "label": 0,
-        "pred_prob": 0.4964352489095451,
-        "threshold": 0.51
+        "pred_prob": 0.43373483529593004,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G6_A_Roll14",
         "label": 1,
-        "pred_prob": 0.48976705003604665,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5311373825276524,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G6_A_Roll15",
         "label": 0,
-        "pred_prob": 0.48644429468295636,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.44445759029375237,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G6_A_Roll16",
         "label": 1,
-        "pred_prob": 0.5048288939575716,
-        "threshold": 0.51
+        "pred_prob": 0.510784741367276,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G6_A_Roll17",
         "label": 0,
-        "pred_prob": 0.506364821251208,
-        "threshold": 0.51
+        "pred_prob": 0.48733819643671134,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G6_A_Roll18",
         "label": 1,
-        "pred_prob": 0.488021148041142,
-        "threshold": 0.502
+        "pred_prob": 0.5006790460149644,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll19",
         "label": 0,
-        "pred_prob": 0.4972901735186242,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.49277781336212373,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5073034390661849,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5039167762301806,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G6_A_Roll21",
         "label": 0,
-        "pred_prob": 0.5077925487513826,
-        "threshold": 0.522
+        "pred_prob": 0.5041592639289859,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G6_A_Roll22",
         "label": 1,
-        "pred_prob": 0.47131508378603987,
-        "threshold": 0.518
+        "pred_prob": 0.49999374168498556,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll23",
         "label": 0,
-        "pred_prob": 0.509457384543384,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.4994702209822366,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G6_A_Roll24",
         "label": 1,
-        "pred_prob": 0.5158256564780257,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.5273728204917326,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G6_A_Roll25",
         "label": 1,
-        "pred_prob": 0.512204277179246,
-        "threshold": 0.5039999999999999
+        "pred_prob": 0.5128133907451914,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll26",
         "label": 1,
-        "pred_prob": 0.5399982357149322,
-        "threshold": 0.51
+        "pred_prob": 0.5098359505447755,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll27",
         "label": 1,
-        "pred_prob": 0.5098639770647938,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.4474695308300427,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G6_A_Roll28",
         "label": 1,
-        "pred_prob": 0.4528552176514967,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.46222133584803,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll29",
         "label": 0,
-        "pred_prob": 0.5180548724421317,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5155094963669865,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G6_A_Roll30",
         "label": 0,
-        "pred_prob": 0.4908558036078592,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5258999605330722,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G7_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5055247166678024,
-        "threshold": 0.5059999999999999
+        "pred_prob": 0.520809205794648,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G7_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5041161481709486,
-        "threshold": 0.506
+        "pred_prob": 0.5215628473617957,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G7_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5002521741287195,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.5069990422175674,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll04",
         "label": 0,
-        "pred_prob": 0.488990244175473,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.4930706892549461,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G7_A_Roll05",
         "label": 0,
-        "pred_prob": 0.4743754391338122,
-        "threshold": 0.4959999999999999
+        "pred_prob": 0.48333652282748335,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G7_A_Roll06",
         "label": 1,
-        "pred_prob": 0.4725327850192948,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.506655991541069,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G7_A_Roll07",
         "label": 0,
-        "pred_prob": 0.49852982427718917,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.5045674465818176,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G7_A_Roll08",
         "label": 0,
-        "pred_prob": 0.5042239996780518,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.48762717599729993,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G7_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5142079442320813,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5128431899478579,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G7_A_Roll10",
         "label": 0,
-        "pred_prob": 0.48603903590846664,
-        "threshold": 0.502
+        "pred_prob": 0.482102282752133,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll11",
         "label": 0,
-        "pred_prob": 0.4839593313286043,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.46934581911365064,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll12",
         "label": 1,
-        "pred_prob": 0.46623374475566914,
-        "threshold": 0.5259999999999999
+        "pred_prob": 0.4868492761708654,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll13",
         "label": 0,
-        "pred_prob": 0.4817773594134147,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.44430571984370615,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G7_A_Roll14",
         "label": 0,
-        "pred_prob": 0.48253530383107757,
-        "threshold": 0.526
+        "pred_prob": 0.46655604444167453,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll15",
         "label": 1,
-        "pred_prob": 0.49890986931721254,
-        "threshold": 0.502
+        "pred_prob": 0.5120919947615089,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G7_A_Roll16",
         "label": 0,
-        "pred_prob": 0.4896393613633463,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.4933921950235658,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll17",
         "label": 0,
-        "pred_prob": 0.4750414030782249,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.4566556049853699,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll18",
         "label": 0,
-        "pred_prob": 0.48507194170613,
-        "threshold": 0.5059999999999999
+        "pred_prob": 0.5113240580502004,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G7_A_Roll19",
         "label": 0,
-        "pred_prob": 0.4950469815783286,
-        "threshold": 0.5439999999999999
+        "pred_prob": 0.4807877968522068,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G7_A_Roll20",
         "label": 0,
-        "pred_prob": 0.4931783203083609,
-        "threshold": 0.4999999999999999
+        "pred_prob": 0.5340624087667533,
+        "threshold": 0.48999999999999994
       },
       {
         "student_id": "G7_A_Roll21",
         "label": 0,
-        "pred_prob": 0.5014417602012228,
-        "threshold": 0.5039999999999999
+        "pred_prob": 0.44221298933707454,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll22",
         "label": 0,
-        "pred_prob": 0.48974555544278625,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.49616885924272464,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G7_A_Roll23",
         "label": 0,
-        "pred_prob": 0.5305356237019773,
-        "threshold": 0.5039999999999999
+        "pred_prob": 0.5170674219380597,
+        "threshold": 0.5299999999999999
       },
       {
         "student_id": "G7_A_Roll24",
         "label": 0,
-        "pred_prob": 0.48423313161101234,
-        "threshold": 0.5059999999999999
+        "pred_prob": 0.41097870219082083,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll25",
         "label": 0,
-        "pred_prob": 0.5045547528843604,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.5120387587552312,
+        "threshold": 0.49999999999999994
       }
     ]
   },
@@ -3894,776 +3894,776 @@
     "model_name": "Gradient Boosting",
     "feature_type": "raw",
     "num_features": 31,
-    "n_repeats": 5,
+    "n_repeats": 1,
     "n_outer_folds": 5,
-    "elapsed_seconds": 28.74,
+    "elapsed_seconds": 8.59,
     "median_threshold": 0.52,
     "point_metrics": {
       "n_students": 115.0,
       "n_positives": 24.0,
       "n_negatives": 91.0,
-      "auroc": 0.3502747252747253,
-      "auprc": 0.17109462480934767,
-      "brier": 0.25245137145063634,
-      "sensitivity_at_90_spec": 0.08333333333333333,
-      "sensitivity_at_95_spec": 0.041666666666666664,
+      "auroc": 0.625,
+      "auprc": 0.3183243834215042,
+      "brier": 0.25079826366257574,
+      "sensitivity_at_90_spec": 0.16666666666666666,
+      "sensitivity_at_95_spec": 0.125,
       "threshold": 0.5199999999999999,
-      "accuracy": 0.7304347826086957,
-      "balanced_accuracy": 0.47687728937728935,
-      "sensitivity": 0.041666666666666664,
-      "specificity": 0.9120879120879121,
-      "f1": 0.06060606060606061,
-      "tp": 1.0,
-      "fp": 8.0,
-      "tn": 83.0,
-      "fn": 23.0
+      "accuracy": 0.6521739130434783,
+      "balanced_accuracy": 0.5808150183150184,
+      "sensitivity": 0.4583333333333333,
+      "specificity": 0.7032967032967034,
+      "f1": 0.3548387096774194,
+      "tp": 11.0,
+      "fp": 27.0,
+      "tn": 64.0,
+      "fn": 13.0
     },
     "bootstrap_ci": {
       "auroc": {
-        "mean": 0.34832669115266596,
-        "std": 0.06610343670280533,
-        "ci_low": 0.23102117297596023,
-        "ci_high": 0.4866288210587786
+        "mean": 0.618594309752877,
+        "std": 0.06619937032856685,
+        "ci_low": 0.4856587856587856,
+        "ci_high": 0.7371198479391756
       },
       "auprc": {
-        "mean": 0.1872471348280318,
-        "std": 0.04417684608752789,
-        "ci_low": 0.11681157825632982,
-        "ci_high": 0.2824840301330715
+        "mean": 0.3412534930066855,
+        "std": 0.08002752779629087,
+        "ci_low": 0.20240455717598133,
+        "ci_high": 0.5100410601972244
       },
       "brier": {
-        "mean": 0.25244879353174127,
-        "std": 0.0011883455163468825,
-        "ci_low": 0.25017918397479255,
-        "ci_high": 0.25483327217729834
+        "mean": 0.2510699317515285,
+        "std": 0.0036247993466355316,
+        "ci_low": 0.243896832654111,
+        "ci_high": 0.2578735820182766
       },
       "sensitivity_at_90_spec": {
-        "mean": 0.07960144334931013,
-        "std": 0.06126171563288141,
-        "ci_low": 0.0,
-        "ci_high": 0.21739130434782608
+        "mean": 0.19782112376749456,
+        "std": 0.09212351307657686,
+        "ci_low": 0.04,
+        "ci_high": 0.3930357142857141
       },
       "sensitivity_at_95_spec": {
-        "mean": 0.03073416603139664,
-        "std": 0.04300895815167371,
+        "mean": 0.1347306324569616,
+        "std": 0.07999893117916053,
         "ci_low": 0.0,
-        "ci_high": 0.14285714285714285
+        "ci_high": 0.3076923076923077
       },
       "sensitivity": {
-        "mean": 0.041380933863652304,
-        "std": 0.04075379911208936,
-        "ci_low": 0.0,
-        "ci_high": 0.13805418719211812
+        "mean": 0.44802448484127855,
+        "std": 0.10208621150566613,
+        "ci_low": 0.24,
+        "ci_high": 0.6521739130434783
       },
       "specificity": {
-        "mean": 0.9129992566798093,
-        "std": 0.030031529587158174,
-        "ci_low": 0.8494379276637342,
-        "ci_high": 0.9662921348314607
+        "mean": 0.7037790878802966,
+        "std": 0.04873092412206856,
+        "ci_low": 0.6111111111111112,
+        "ci_high": 0.8
       },
       "balanced_accuracy": {
-        "mean": 0.4771900952717307,
-        "std": 0.024937317876749708,
-        "ci_low": 0.4325591366055589,
-        "ci_high": 0.5318050986842106
+        "mean": 0.5759017863607876,
+        "std": 0.056179726024037216,
+        "ci_low": 0.4673454106280193,
+        "ci_high": 0.6850452059672213
       },
       "f1": {
-        "mean": 0.05839761713247421,
-        "std": 0.055822731293458716,
-        "ci_low": 0.0,
-        "ci_high": 0.19055299539170498
+        "mean": 0.3448323822820946,
+        "std": 0.0768270581551913,
+        "ci_low": 0.19351736972704717,
+        "ci_high": 0.49230769230769234
       }
     },
     "student_predictions": [
       {
         "student_id": "G3_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5020114182102964,
-        "threshold": 0.534
+        "pred_prob": 0.5291192640000871,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5034135894227907,
-        "threshold": 0.518
+        "pred_prob": 0.5444253193009507,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G3_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5164937396820111,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5081037871831551,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll04",
         "label": 0,
-        "pred_prob": 0.48746481860338003,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.4326959129256669,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll05",
         "label": 0,
-        "pred_prob": 0.5126094265504572,
-        "threshold": 0.542
+        "pred_prob": 0.5102508069802585,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll06",
         "label": 0,
-        "pred_prob": 0.49282751270371217,
-        "threshold": 0.51
+        "pred_prob": 0.5099555673125389,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll07",
         "label": 0,
-        "pred_prob": 0.49932605796141755,
-        "threshold": 0.518
+        "pred_prob": 0.5628385631090449,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G3_A_Roll08",
         "label": 0,
-        "pred_prob": 0.5034803403826009,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.47285705119939125,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5149616348822315,
+        "pred_prob": 0.5147469776077291,
         "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll10",
         "label": 0,
-        "pred_prob": 0.48978617416974435,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5670739971632035,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll12",
         "label": 1,
-        "pred_prob": 0.5026944289176459,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.5212681993577645,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll13",
         "label": 1,
-        "pred_prob": 0.4975000351158652,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.542883049048754,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll14",
         "label": 0,
-        "pred_prob": 0.4844833830558459,
-        "threshold": 0.5339999999999999
+        "pred_prob": 0.49092093055903935,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll15",
         "label": 1,
-        "pred_prob": 0.49784761390187793,
-        "threshold": 0.4999999999999999
+        "pred_prob": 0.5598594435636793,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G3_A_Roll16",
         "label": 0,
-        "pred_prob": 0.4877880540326284,
-        "threshold": 0.5399999999999999
+        "pred_prob": 0.4933331815962082,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll17",
         "label": 0,
-        "pred_prob": 0.4797329664819408,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.4100369296238914,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G3_A_Roll19",
         "label": 1,
-        "pred_prob": 0.4935260482440992,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.51100064251679,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll20",
         "label": 0,
-        "pred_prob": 0.4956962034836482,
-        "threshold": 0.5419999999999999
+        "pred_prob": 0.4856052296904382,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll21",
         "label": 0,
-        "pred_prob": 0.5201808010887575,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.5016436499632553,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G3_A_Roll22",
         "label": 0,
-        "pred_prob": 0.5215633900396356,
-        "threshold": 0.5379999999999999
+        "pred_prob": 0.5247529881624554,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G3_A_Roll23",
         "label": 0,
-        "pred_prob": 0.5038146542881321,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5388431069660744,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5191997867338121,
-        "threshold": 0.4959999999999999
+        "pred_prob": 0.5587994172067727,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G4_A_Roll02",
         "label": 0,
-        "pred_prob": 0.5049040340581972,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.5015666768161754,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll03",
         "label": 0,
-        "pred_prob": 0.4837632379546831,
-        "threshold": 0.5379999999999999
+        "pred_prob": 0.5311138169511532,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll04",
         "label": 0,
-        "pred_prob": 0.5086660379782316,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5116845230516847,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll05",
         "label": 0,
-        "pred_prob": 0.5044894143526112,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.5243230074827252,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll06",
         "label": 0,
-        "pred_prob": 0.5111498364734836,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.510331835978197,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll07",
         "label": 0,
-        "pred_prob": 0.49566378901708463,
-        "threshold": 0.5179999999999999
+        "pred_prob": 0.5299070321098341,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll08",
         "label": 0,
-        "pred_prob": 0.5138219669922365,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5631014334131415,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll09",
         "label": 1,
-        "pred_prob": 0.4928319504596465,
-        "threshold": 0.5039999999999999
+        "pred_prob": 0.5654339554729485,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G4_A_Roll11",
         "label": 1,
-        "pred_prob": 0.4925433631915565,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.5245958714617708,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll12",
         "label": 0,
-        "pred_prob": 0.5166083392086362,
-        "threshold": 0.5379999999999999
+        "pred_prob": 0.5559526215270464,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll13",
         "label": 0,
-        "pred_prob": 0.513908786078775,
-        "threshold": 0.51
+        "pred_prob": 0.540737438267493,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll14",
         "label": 1,
-        "pred_prob": 0.49980627652250414,
-        "threshold": 0.5399999999999999
+        "pred_prob": 0.5372448415229041,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll15",
         "label": 0,
-        "pred_prob": 0.5142383990896514,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.5111832131378676,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll16",
         "label": 0,
-        "pred_prob": 0.49952642600751085,
-        "threshold": 0.5339999999999999
+        "pred_prob": 0.49445252901046555,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll17",
         "label": 1,
-        "pred_prob": 0.503595762306549,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.5736317302070812,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll18",
         "label": 0,
-        "pred_prob": 0.5022177931515739,
-        "threshold": 0.5379999999999999
+        "pred_prob": 0.5148815622645845,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll19",
         "label": 0,
-        "pred_prob": 0.49435161360719826,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.5154750700011198,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G4_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5263458479330995,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.6249997659626898,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G4_A_Roll22",
         "label": 1,
-        "pred_prob": 0.5223826069746443,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.5675129002823159,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G4_A_Roll23",
         "label": 1,
-        "pred_prob": 0.4731063258750092,
-        "threshold": 0.5059999999999999
+        "pred_prob": 0.5293098533814689,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G4_A_Roll24",
         "label": 0,
-        "pred_prob": 0.5015671077440524,
-        "threshold": 0.51
+        "pred_prob": 0.499790832714428,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll25",
         "label": 0,
-        "pred_prob": 0.49586501835647584,
-        "threshold": 0.5419999999999999
+        "pred_prob": 0.5067746343014893,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G4_A_Roll26",
         "label": 0,
-        "pred_prob": 0.5242036810668608,
-        "threshold": 0.49399999999999994
+        "pred_prob": 0.5507139448487247,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G5_A_Roll01",
         "label": 0,
-        "pred_prob": 0.5164107794673244,
-        "threshold": 0.5199999999999999
+        "pred_prob": 0.5293457788263817,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll02",
         "label": 0,
-        "pred_prob": 0.525765815240214,
-        "threshold": 0.514
+        "pred_prob": 0.4945268543278605,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5048268182310667,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5517917998178576,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G5_A_Roll04",
         "label": 0,
-        "pred_prob": 0.5117133190847112,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.47851664573157904,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll05",
         "label": 1,
-        "pred_prob": 0.5159747146255771,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5395785256079002,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll06",
         "label": 0,
-        "pred_prob": 0.4979102262366656,
-        "threshold": 0.5399999999999999
+        "pred_prob": 0.48413559316025206,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll07",
         "label": 1,
-        "pred_prob": 0.48830747441766026,
-        "threshold": 0.5039999999999999
+        "pred_prob": 0.5068906446222613,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G5_A_Roll08",
         "label": 0,
-        "pred_prob": 0.45884956737786037,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.3682315400600226,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G5_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5020761639977592,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.5030153622526837,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G5_A_Roll10",
         "label": 0,
-        "pred_prob": 0.5016053690030647,
-        "threshold": 0.5539999999999999
+        "pred_prob": 0.4602061817934031,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll11",
         "label": 0,
-        "pred_prob": 0.49250704967564707,
-        "threshold": 0.534
+        "pred_prob": 0.40908468647034707,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G5_A_Roll12",
         "label": 0,
-        "pred_prob": 0.4978330165554777,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.4804092770204171,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G5_A_Roll13",
         "label": 0,
-        "pred_prob": 0.49806245316283615,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.4770834793740815,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll14",
         "label": 0,
-        "pred_prob": 0.492864713176696,
-        "threshold": 0.4959999999999999
+        "pred_prob": 0.571306185793367,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G5_A_Roll15",
         "label": 0,
-        "pred_prob": 0.4985541783809174,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.49149768850893927,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G5_A_Roll16",
         "label": 0,
-        "pred_prob": 0.49900391710761915,
-        "threshold": 0.5379999999999999
+        "pred_prob": 0.5234166767535067,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll01",
         "label": 0,
-        "pred_prob": 0.48623125803374745,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.49494988755085934,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4893566073208662,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5060291513382791,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll03",
         "label": 0,
-        "pred_prob": 0.5092924391220882,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.5087099707014645,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll04",
         "label": 0,
-        "pred_prob": 0.5011144892710011,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.4396553896760835,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll05",
         "label": 0,
-        "pred_prob": 0.4907034142643085,
-        "threshold": 0.5439999999999999
+        "pred_prob": 0.49931748360412703,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll07",
         "label": 0,
-        "pred_prob": 0.5037005529621242,
-        "threshold": 0.4879999999999999
+        "pred_prob": 0.5257195877157854,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G6_A_Roll08",
         "label": 0,
-        "pred_prob": 0.49757508537507844,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.5281177024623392,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5003106121667132,
-        "threshold": 0.5259999999999999
+        "pred_prob": 0.5079673017429828,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll10",
         "label": 0,
-        "pred_prob": 0.486771500201562,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.49307221211976754,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll11",
         "label": 0,
-        "pred_prob": 0.5027995943843206,
-        "threshold": 0.526
+        "pred_prob": 0.5372992200413104,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll12",
         "label": 0,
-        "pred_prob": 0.5331758302319527,
-        "threshold": 0.5379999999999999
+        "pred_prob": 0.5213694456003526,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll13",
         "label": 0,
-        "pred_prob": 0.5013778758689038,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.4409648006593086,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll14",
         "label": 1,
-        "pred_prob": 0.4791628685430432,
-        "threshold": 0.5499999999999999
+        "pred_prob": 0.5337041838736942,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll15",
         "label": 0,
-        "pred_prob": 0.4902815015762786,
-        "threshold": 0.5399999999999999
+        "pred_prob": 0.44936272165404895,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll16",
         "label": 1,
-        "pred_prob": 0.48969877326220573,
-        "threshold": 0.5479999999999999
+        "pred_prob": 0.5150590115916563,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll17",
         "label": 0,
-        "pred_prob": 0.5012244850671508,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.46996988416114016,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll18",
         "label": 1,
-        "pred_prob": 0.49589457795855474,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5071247116239618,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll19",
         "label": 0,
-        "pred_prob": 0.4899805953409877,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.48394010270261484,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll20",
         "label": 0,
-        "pred_prob": 0.5006177781072104,
-        "threshold": 0.5519999999999999
+        "pred_prob": 0.5019203738826018,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll21",
         "label": 0,
-        "pred_prob": 0.506864112888389,
-        "threshold": 0.538
+        "pred_prob": 0.49554788737954,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll22",
         "label": 1,
-        "pred_prob": 0.47945850540831325,
-        "threshold": 0.5379999999999999
+        "pred_prob": 0.4961511726459338,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G6_A_Roll23",
         "label": 0,
-        "pred_prob": 0.5033730768423343,
-        "threshold": 0.5479999999999999
+        "pred_prob": 0.49800901302547224,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll24",
         "label": 1,
-        "pred_prob": 0.5040361803046829,
-        "threshold": 0.5599999999999999
+        "pred_prob": 0.4932843718480919,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll25",
         "label": 1,
-        "pred_prob": 0.4977944579937419,
-        "threshold": 0.4999999999999999
+        "pred_prob": 0.5198150781578282,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll26",
         "label": 1,
-        "pred_prob": 0.5192992344634517,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.5141575764542637,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll27",
         "label": 1,
-        "pred_prob": 0.49670990716585567,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.41215689218299884,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll28",
         "label": 1,
-        "pred_prob": 0.4841671827288173,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.43974234740446555,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G6_A_Roll29",
         "label": 0,
-        "pred_prob": 0.5216976682476192,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.5236090617540076,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G6_A_Roll30",
         "label": 0,
-        "pred_prob": 0.4945619664438043,
+        "pred_prob": 0.5162704727785259,
         "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll01",
         "label": 0,
-        "pred_prob": 0.4893239323837576,
-        "threshold": 0.5419999999999999
+        "pred_prob": 0.5136626213838462,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll02",
         "label": 0,
-        "pred_prob": 0.4944577574172099,
-        "threshold": 0.518
+        "pred_prob": 0.516259779201636,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll03",
         "label": 0,
-        "pred_prob": 0.500774879756788,
-        "threshold": 0.5119999999999999
+        "pred_prob": 0.5129204408982128,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G7_A_Roll04",
         "label": 0,
-        "pred_prob": 0.4931357330342858,
-        "threshold": 0.5359999999999999
+        "pred_prob": 0.49454113554429835,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll05",
         "label": 0,
-        "pred_prob": 0.4826389138484187,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.4854618705157913,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll06",
         "label": 1,
-        "pred_prob": 0.4664174660932899,
-        "threshold": 0.5259999999999999
+        "pred_prob": 0.5100385455364685,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll07",
         "label": 0,
-        "pred_prob": 0.5039648826710712,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.5038703062553679,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll08",
         "label": 0,
-        "pred_prob": 0.4984766599241167,
-        "threshold": 0.5279999999999999
+        "pred_prob": 0.4565895687189035,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll09",
         "label": 0,
-        "pred_prob": 0.5102883769362432,
-        "threshold": 0.518
+        "pred_prob": 0.5048043224123867,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll10",
         "label": 0,
-        "pred_prob": 0.49593780256640735,
-        "threshold": 0.51
+        "pred_prob": 0.5357079977785167,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G7_A_Roll11",
         "label": 0,
-        "pred_prob": 0.4924012242247667,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.5174101159713437,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll12",
         "label": 1,
-        "pred_prob": 0.46463297145942367,
-        "threshold": 0.5319999999999999
+        "pred_prob": 0.47930713332251146,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll13",
         "label": 0,
-        "pred_prob": 0.4958867434356883,
-        "threshold": 0.5359999999999999
+        "pred_prob": 0.45565478384633423,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll14",
         "label": 0,
-        "pred_prob": 0.5003937196774023,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.5090772086377743,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G7_A_Roll15",
         "label": 1,
-        "pred_prob": 0.49612445451968157,
-        "threshold": 0.5399999999999999
+        "pred_prob": 0.4956391043036594,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll16",
         "label": 0,
-        "pred_prob": 0.5009161121029206,
-        "threshold": 0.5239999999999999
+        "pred_prob": 0.48887553052597915,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll17",
         "label": 0,
-        "pred_prob": 0.48930893321994084,
-        "threshold": 0.518
+        "pred_prob": 0.45983114199255454,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G7_A_Roll18",
         "label": 0,
-        "pred_prob": 0.4911652634763053,
-        "threshold": 0.5419999999999999
+        "pred_prob": 0.49291185872842735,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll19",
         "label": 0,
-        "pred_prob": 0.49366038620803765,
-        "threshold": 0.5619999999999999
+        "pred_prob": 0.4809455386701554,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll20",
         "label": 0,
-        "pred_prob": 0.4914770619524081,
-        "threshold": 0.5299999999999999
+        "pred_prob": 0.5313665942742493,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll21",
         "label": 0,
-        "pred_prob": 0.5109726082578685,
-        "threshold": 0.5079999999999999
+        "pred_prob": 0.4360629812806341,
+        "threshold": 0.49999999999999994
       },
       {
         "student_id": "G7_A_Roll22",
         "label": 0,
-        "pred_prob": 0.4984369852044773,
-        "threshold": 0.5219999999999999
+        "pred_prob": 0.512200029241861,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll23",
         "label": 0,
-        "pred_prob": 0.5214294632101281,
-        "threshold": 0.51
+        "pred_prob": 0.5384836427136835,
+        "threshold": 0.5199999999999999
       },
       {
         "student_id": "G7_A_Roll24",
         "label": 0,
-        "pred_prob": 0.4935625251501934,
-        "threshold": 0.5159999999999999
+        "pred_prob": 0.4410030450609437,
+        "threshold": 0.5099999999999999
       },
       {
         "student_id": "G7_A_Roll25",
         "label": 0,
-        "pred_prob": 0.5128143499997777,
-        "threshold": 0.5139999999999999
+        "pred_prob": 0.5196411737243757,
+        "threshold": 0.5199999999999999
       }
     ]
   }
