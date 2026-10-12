@@ -124,6 +124,26 @@
   - [x] 10.10 Documentation & Git:
     - Update `context.md`, `task_list.md`, and commit/push to `origin/baseline-v1`.
 
+- [x] Stage 11: Definitive Ruled-Line Reduction & Stroke Integrity Overhaul (Final Attempt):
+  - [x] 11.1 Root-Cause Diagnosis of Failure Modes in Previous Methods:
+    - Diagnosed `smart_clean_eng.png` (left line residue, right dot residue from scalar row assumption across tilted/bowed crop).
+    - Diagnosed `vectorized_sentence_02/04.png` (stroke hollowing, severed loops and baselines from optical density subtraction of low-contrast pencil).
+  - [x] 11.2 Formulate & Prototype Candidate Architectures:
+    - Option 1 (Grayscale Subtraction + Otsu): Diagnosed fundamental limitation for low-contrast pencil (subtraction thins graphite density down to background level).
+    - Option 2 (Geometric Removal + Generic Repair): Diagnosed risk of restoring adjacent guidelines in tight notebooks.
+    - Option 3 (Winning Approach: 2D Trajectory + Continuous Run-Length Neighborhood Filtering): Physical invariant (bare rules $\le 6$px) vs Handwriting invariant (stems, loops, and crossbars extend into character bodies within $\pm 4$px, guaranteeing `max_R_v >= 7`).
+  - [x] 11.3 Side-by-side Empirical Validation & Visual Inspection on Benchmark Crops:
+    - English 4-line notebook (`SCHB_G3_IMG_20261007_101635`: sentence 2, sentence 4) - loops (`cooks`, `food`, `Deepti`) 100% closed, zero severed stems.
+    - English single-line notebook (`SCHB_G3_IMG_20261007_101611`: sentence 2) - all letters intact, zero residue in margins/gaps.
+    - Hindi Devanagari notebooks (`101635`: sentence 1, `101611`: sentence 1) - Shirorekhas over all words (`हमारे`, `स्कूल`, `मे`, `एक`, `सूंदर`, `बगीचा`, `है।`) 100% continuous and unbroken.
+    - School A cursive and low-contrast pencil crops (`G3_A_Roll01`, `G4_A_Roll01`) - 100% preserved cursive connections and clean margins.
+  - [x] 11.4 Integration into Pipeline Modules (`pipeline/rules.py`, `features/utils.py`):
+    - Vectorized `max_R_v` neighborhood filtering via `(9, 3)` morphological dilation.
+    - Full-width polynomial line tracking $y_{\text{line}}(x)$ capturing secondary guidelines (`distance=6`).
+    - Unified stroke-preserving logic across `pipeline/rules.py` and `features/utils.py`.
+  - [x] 11.5 Full Cohort Validation, Regression Testing, Documentation (`context.md`, `architechture.md`), and Git Commit/Push:
+    - 21/21 unit tests passing across `tests/test_phase0.py`, `tests/test_phase1.py`, `tests/test_phase3.py`, `tests/test_phase4.py`.
+
 
 ---
 

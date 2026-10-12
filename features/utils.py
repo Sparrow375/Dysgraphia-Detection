@@ -111,69 +111,16 @@ def load_or_binarize_ink(
     _, bin_ink = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     ink = (bin_ink > 0).astype(np.uint8)
 
-    # Grayscale Line Modeling & Profile Subtraction fallback
+    # Stroke-preserving ruled line removal
     h, w = ink.shape[:2]
     if w >= 60 and h >= 20:
-        vert_k = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 8))
-        vert_support = cv2.morphologyEx(ink, cv2.MORPH_OPEN, vert_k)
-
-        horiz_k = cv2.getStructuringElement(cv2.MORPH_RECT, (min(50, w // 2), 1))
-        opened = cv2.morphologyEx(ink, cv2.MORPH_OPEN, horiz_k)
-        row_proj = opened.sum(axis=1)
-
-        from scipy.signal import find_peaks
-        peaks, _ = find_peaks(row_proj, height=0.15 * w, distance=25)
-
-        if len(peaks) > 0:
-            gray_clean = gray.astype(float).copy()
-            dy_range = range(-5, 6)
-
-            for p in peaks:
-                empty_cols = [
-                    x for x in range(w)
-                    if vert_support[max(0, p - 4) : min(h, p + 5), x].sum() == 0
-                ]
-                if len(empty_cols) < 20:
-                    continue
-
-                profiles = []
-                for x in empty_cols:
-                    p_x = [gray[int(np.clip(p + dy, 0, h - 1)), x] for dy in dy_range]
-                    profiles.append(p_x)
-                profiles = np.array(profiles)
-
-                line_prof = np.percentile(profiles, 80, axis=0)
-                paper_level = max(line_prof[0], line_prof[-1])
-                line_dip = np.maximum(0, paper_level - line_prof)
-
-                max_dip = float(np.max(line_dip))
-                if max_dip >= 15.0:
-                    for dy_idx, dy in enumerate(dy_range):
-                        val = line_dip[dy_idx]
-                        if val > 5.0:
-                            for x in range(w):
-                                yl = int(np.clip(p + dy, 0, h - 1))
-                                gray_clean[yl, x] = min(255.0, gray_clean[yl, x] + val)
-
-            gray_clean = np.clip(gray_clean, 0, 255).astype(np.uint8)
-            _, bin_clean = cv2.threshold(gray_clean, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-            ink_clean = (bin_clean > 0).astype(np.uint8)
-
-            # Zero residual in empty gaps along peaks
-            vert_dilated = cv2.dilate(vert_support, cv2.getStructuringElement(cv2.MORPH_RECT, (15, 5)))
-            for p in peaks:
-                for dy in range(-2, 3):
-                    for x in range(w):
-                        yl = int(np.clip(p + dy, 0, h - 1))
-                        if vert_dilated[yl, x] == 0:
-                            ink_clean[yl, x] = 0
-
-            # Remove residual pepper noise specks (<= 4px)
-            num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(ink_clean, connectivity=8)
-            for lbl in range(1, num_labels):
-                if stats[lbl, cv2.CC_STAT_AREA] <= 4:
-                    ink_clean[labels == lbl] = 0
-
-            return ink_clean
+        from pipeline.rules import remove_rules_and_restore_strokes
+        ink_clean, _ = remove_rules_and_restore_strokes(
+            ink,
+            ruled_lines=[],
+            median_spacing_r=80.0,
+            grayscale_image=gray,
+        )
+        return ink_clean
 
     return ink
