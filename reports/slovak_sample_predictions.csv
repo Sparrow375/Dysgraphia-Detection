@@ -1,0 +1,250 @@
+sample_id,actual_condition,actual_label,model_predicted_risk,model_prediction,outcome,zero_shot_risk,zero_shot_prediction,zero_shot_outcome,stroke_crossings_per_w,pen_lifts_per_w,stroke_smoothness
+LPD (1).jpg,Normal Control,0,35.2%,Normal Control,Correct (True Negative),52.1%,Dysgraphic,False Alarm (False Positive),3.26,1.8,1.037
+LPD (10).jpg,Normal Control,0,45.3%,Normal Control,Correct (True Negative),52.1%,Dysgraphic,False Alarm (False Positive),4.99,2.82,1.049
+LPD (100).jpg,Normal Control,0,37.8%,Normal Control,Correct (True Negative),58.4%,Dysgraphic,False Alarm (False Positive),13.92,4.16,1.115
+LPD (101).jpg,Normal Control,0,15.3%,Normal Control,Correct (True Negative),59.4%,Dysgraphic,False Alarm (False Positive),6.91,4.51,1.145
+LPD (102).jpg,Normal Control,0,57.3%,Dysgraphic,False Alarm (False Positive),62.4%,Dysgraphic,False Alarm (False Positive),25.52,8.73,1.12
+LPD (103).jpg,Normal Control,0,25.6%,Normal Control,Correct (True Negative),43.6%,Normal Control,Correct (True Negative),7.19,2.3,1.098
+LPD (104).jpg,Normal Control,0,23.2%,Normal Control,Correct (True Negative),62.8%,Dysgraphic,False Alarm (False Positive),4.08,4.5,1.108
+LPD (105).jpg,Normal Control,0,52.1%,Dysgraphic,False Alarm (False Positive),57.9%,Dysgraphic,False Alarm (False Positive),18.97,4.72,1.08
+LPD (106).jpg,Normal Control,0,37.4%,Normal Control,Correct (True Negative),42.8%,Normal Control,Correct (True Negative),7.07,1.84,1.064
+LPD (107).jpg,Normal Control,0,42.7%,Normal Control,Correct (True Negative),45.0%,Normal Control,Correct (True Negative),8.94,2.1,1.08
+LPD (108).jpg,Normal Control,0,43.4%,Normal Control,Correct (True Negative),52.6%,Dysgraphic,False Alarm (False Positive),15.9,4.12,1.43
+LPD (109).jpg,Normal Control,0,41.7%,Normal Control,Correct (True Negative),59.5%,Dysgraphic,False Alarm (False Positive),6.11,2.42,1.064
+LPD (11).jpg,Normal Control,0,41.3%,Normal Control,Correct (True Negative),59.1%,Dysgraphic,False Alarm (False Positive),5.36,3.98,1.048
+LPD (110).jpg,Normal Control,0,35.3%,Normal Control,Correct (True Negative),54.6%,Dysgraphic,False Alarm (False Positive),8.83,3.11,1.107
+LPD (111).jpg,Normal Control,0,53.3%,Dysgraphic,False Alarm (False Positive),55.6%,Dysgraphic,False Alarm (False Positive),18.22,5.56,1.585
+LPD (112).jpg,Normal Control,0,36.3%,Normal Control,Correct (True Negative),57.1%,Dysgraphic,False Alarm (False Positive),4.37,2.93,1.063
+LPD (113).jpg,Normal Control,0,29.1%,Normal Control,Correct (True Negative),60.1%,Dysgraphic,False Alarm (False Positive),3.53,2.84,1.134
+LPD (114).jpg,Normal Control,0,28.1%,Normal Control,Correct (True Negative),60.8%,Dysgraphic,False Alarm (False Positive),8.88,5.4,1.44
+LPD (115).jpg,Normal Control,0,46.8%,Normal Control,Correct (True Negative),49.0%,Normal Control,Correct (True Negative),5.7,2.83,1.049
+LPD (116).jpg,Normal Control,0,37.6%,Normal Control,Correct (True Negative),62.5%,Dysgraphic,False Alarm (False Positive),4.97,4.44,1.079
+LPD (117).jpg,Normal Control,0,43.4%,Normal Control,Correct (True Negative),58.8%,Dysgraphic,False Alarm (False Positive),7.98,7.16,1.083
+LPD (118).jpg,Normal Control,0,36.9%,Normal Control,Correct (True Negative),49.4%,Normal Control,Correct (True Negative),3.43,1.46,1.066
+LPD (119).jpg,Normal Control,0,37.4%,Normal Control,Correct (True Negative),52.2%,Dysgraphic,False Alarm (False Positive),6.21,2.45,1.095
+LPD (12).jpg,Normal Control,0,45.7%,Normal Control,Correct (True Negative),61.8%,Dysgraphic,False Alarm (False Positive),9.93,5.19,1.102
+LPD (120).jpg,Normal Control,0,28.5%,Normal Control,Correct (True Negative),60.0%,Dysgraphic,False Alarm (False Positive),12.0,3.73,1.119
+LPD (121).jpg,Normal Control,0,29.8%,Normal Control,Correct (True Negative),50.4%,Dysgraphic,False Alarm (False Positive),2.94,1.8,1.07
+LPD (122).jpg,Normal Control,0,38.1%,Normal Control,Correct (True Negative),57.0%,Dysgraphic,False Alarm (False Positive),2.91,2.83,1.089
+LPD (123).jpg,Normal Control,0,13.7%,Normal Control,Correct (True Negative),57.0%,Dysgraphic,False Alarm (False Positive),3.46,5.25,1.123
+LPD (124).jpg,Normal Control,0,14.3%,Normal Control,Correct (True Negative),44.5%,Normal Control,Correct (True Negative),2.55,1.67,1.073
+LPD (125).jpg,Normal Control,0,27.9%,Normal Control,Correct (True Negative),46.3%,Normal Control,Correct (True Negative),5.96,2.56,1.073
+LPD (126).jpg,Normal Control,0,19.3%,Normal Control,Correct (True Negative),52.7%,Dysgraphic,False Alarm (False Positive),11.74,4.94,1.65
+LPD (127).jpg,Normal Control,0,20.8%,Normal Control,Correct (True Negative),51.9%,Dysgraphic,False Alarm (False Positive),1.25,2.35,1.09
+LPD (128).jpg,Normal Control,0,56.2%,Dysgraphic,False Alarm (False Positive),48.1%,Normal Control,Correct (True Negative),3.94,1.03,1.056
+LPD (129).jpg,Normal Control,0,68.0%,Dysgraphic,False Alarm (False Positive),50.7%,Dysgraphic,False Alarm (False Positive),6.56,1.15,1.068
+LPD (13).jpg,Normal Control,0,52.8%,Dysgraphic,False Alarm (False Positive),50.4%,Dysgraphic,False Alarm (False Positive),3.26,1.86,1.066
+LPD (130).jpg,Normal Control,0,52.8%,Dysgraphic,False Alarm (False Positive),50.0%,Normal Control,Correct (True Negative),5.32,1.56,1.051
+LPD (131).jpg,Normal Control,0,23.4%,Normal Control,Correct (True Negative),50.8%,Dysgraphic,False Alarm (False Positive),4.65,2.33,1.108
+LPD (132).jpg,Normal Control,0,31.6%,Normal Control,Correct (True Negative),60.8%,Dysgraphic,False Alarm (False Positive),8.53,4.88,1.489
+LPD (133).jpg,Normal Control,0,48.6%,Normal Control,Correct (True Negative),60.9%,Dysgraphic,False Alarm (False Positive),4.2,2.55,1.076
+LPD (134).jpg,Normal Control,0,66.4%,Dysgraphic,False Alarm (False Positive),60.1%,Dysgraphic,False Alarm (False Positive),6.22,3.07,1.062
+LPD (135).jpg,Normal Control,0,40.9%,Normal Control,Correct (True Negative),58.5%,Dysgraphic,False Alarm (False Positive),13.22,5.54,1.711
+LPD (14).jpg,Normal Control,0,15.8%,Normal Control,Correct (True Negative),53.7%,Dysgraphic,False Alarm (False Positive),5.28,3.51,1.134
+LPD (15).jpg,Normal Control,0,30.1%,Normal Control,Correct (True Negative),53.7%,Dysgraphic,False Alarm (False Positive),8.68,5.93,1.874
+LPD (16).jpg,Normal Control,0,45.3%,Normal Control,Correct (True Negative),48.3%,Normal Control,Correct (True Negative),7.73,2.44,1.077
+LPD (17).jpg,Normal Control,0,44.2%,Normal Control,Correct (True Negative),53.5%,Dysgraphic,False Alarm (False Positive),10.0,3.17,1.074
+LPD (18).jpg,Normal Control,0,72.6%,Dysgraphic,False Alarm (False Positive),59.6%,Dysgraphic,False Alarm (False Positive),12.92,5.37,1.057
+LPD (19).jpg,Normal Control,0,46.2%,Normal Control,Correct (True Negative),51.2%,Dysgraphic,False Alarm (False Positive),5.86,1.23,1.043
+LPD (2).jpg,Normal Control,0,36.2%,Normal Control,Correct (True Negative),58.3%,Dysgraphic,False Alarm (False Positive),4.12,2.74,1.06
+LPD (20).jpg,Normal Control,0,66.9%,Dysgraphic,False Alarm (False Positive),50.1%,Dysgraphic,False Alarm (False Positive),7.35,2.0,1.059
+LPD (21).jpg,Normal Control,0,45.1%,Normal Control,Correct (True Negative),49.5%,Normal Control,Correct (True Negative),11.76,3.72,1.161
+LPD (22).jpg,Normal Control,0,61.2%,Dysgraphic,False Alarm (False Positive),50.3%,Dysgraphic,False Alarm (False Positive),5.59,2.62,1.058
+LPD (23).jpg,Normal Control,0,59.4%,Dysgraphic,False Alarm (False Positive),50.1%,Dysgraphic,False Alarm (False Positive),8.07,2.19,1.057
+LPD (24).jpg,Normal Control,0,58.6%,Dysgraphic,False Alarm (False Positive),58.2%,Dysgraphic,False Alarm (False Positive),13.42,4.45,1.061
+LPD (25).jpg,Normal Control,0,38.3%,Normal Control,Correct (True Negative),47.1%,Normal Control,Correct (True Negative),4.95,1.69,1.063
+LPD (26).jpg,Normal Control,0,44.3%,Normal Control,Correct (True Negative),51.3%,Dysgraphic,False Alarm (False Positive),5.91,2.58,1.063
+LPD (27).jpg,Normal Control,0,47.2%,Normal Control,Correct (True Negative),62.2%,Dysgraphic,False Alarm (False Positive),11.68,5.29,1.106
+LPD (28).jpg,Normal Control,0,26.2%,Normal Control,Correct (True Negative),48.5%,Normal Control,Correct (True Negative),1.88,1.56,1.169
+LPD (29).jpg,Normal Control,0,19.4%,Normal Control,Correct (True Negative),48.7%,Normal Control,Correct (True Negative),2.14,1.52,1.171
+LPD (3).jpg,Normal Control,0,16.5%,Normal Control,Correct (True Negative),58.8%,Dysgraphic,False Alarm (False Positive),5.93,4.64,1.234
+LPD (30).jpg,Normal Control,0,24.8%,Normal Control,Correct (True Negative),60.3%,Dysgraphic,False Alarm (False Positive),4.71,3.21,1.497
+LPD (31).jpg,Normal Control,0,27.6%,Normal Control,Correct (True Negative),53.8%,Dysgraphic,False Alarm (False Positive),3.71,2.98,1.073
+LPD (32).jpg,Normal Control,0,45.3%,Normal Control,Correct (True Negative),54.3%,Dysgraphic,False Alarm (False Positive),6.73,3.67,1.074
+LPD (33).jpg,Normal Control,0,34.4%,Normal Control,Correct (True Negative),55.0%,Dysgraphic,False Alarm (False Positive),10.38,6.62,1.806
+LPD (34).jpg,Normal Control,0,42.6%,Normal Control,Correct (True Negative),47.3%,Normal Control,Correct (True Negative),4.51,1.27,1.066
+LPD (35).jpg,Normal Control,0,46.1%,Normal Control,Correct (True Negative),50.2%,Dysgraphic,False Alarm (False Positive),7.18,1.74,1.082
+LPD (36).jpg,Normal Control,0,28.5%,Normal Control,Correct (True Negative),47.2%,Normal Control,Correct (True Negative),15.89,4.54,1.154
+LPD (37).jpg,Normal Control,0,40.2%,Normal Control,Correct (True Negative),56.8%,Dysgraphic,False Alarm (False Positive),1.49,2.02,1.081
+LPD (38).jpg,Normal Control,0,20.6%,Normal Control,Correct (True Negative),50.5%,Dysgraphic,False Alarm (False Positive),1.68,2.04,1.13
+LPD (39).jpg,Normal Control,0,20.9%,Normal Control,Correct (True Negative),58.0%,Dysgraphic,False Alarm (False Positive),2.58,2.62,1.094
+LPD (4).jpg,Normal Control,0,32.4%,Normal Control,Correct (True Negative),51.6%,Dysgraphic,False Alarm (False Positive),3.62,2.54,1.072
+LPD (40).jpg,Normal Control,0,28.6%,Normal Control,Correct (True Negative),51.4%,Dysgraphic,False Alarm (False Positive),2.2,1.79,1.079
+LPD (41).jpg,Normal Control,0,12.1%,Normal Control,Correct (True Negative),50.8%,Dysgraphic,False Alarm (False Positive),2.52,2.0,1.119
+LPD (42).jpg,Normal Control,0,19.3%,Normal Control,Correct (True Negative),57.7%,Dysgraphic,False Alarm (False Positive),4.32,3.1,1.428
+LPD (43).jpg,Normal Control,0,45.6%,Normal Control,Correct (True Negative),48.1%,Normal Control,Correct (True Negative),2.65,2.01,1.062
+LPD (44).jpg,Normal Control,0,52.5%,Dysgraphic,False Alarm (False Positive),61.1%,Dysgraphic,False Alarm (False Positive),4.05,3.15,1.066
+LPD (45).jpg,Normal Control,0,33.7%,Normal Control,Correct (True Negative),57.2%,Dysgraphic,False Alarm (False Positive),8.16,6.32,1.71
+LPD (46).jpg,Normal Control,0,53.3%,Dysgraphic,False Alarm (False Positive),45.6%,Normal Control,Correct (True Negative),3.79,0.95,1.066
+LPD (47).jpg,Normal Control,0,46.6%,Normal Control,Correct (True Negative),46.2%,Normal Control,Correct (True Negative),8.43,2.06,1.075
+LPD (48).jpg,Normal Control,0,22.9%,Normal Control,Correct (True Negative),47.6%,Normal Control,Correct (True Negative),15.75,4.16,1.197
+LPD (49).jpg,Normal Control,0,27.8%,Normal Control,Correct (True Negative),47.6%,Normal Control,Correct (True Negative),5.23,2.49,1.078
+LPD (5).jpg,Normal Control,0,23.6%,Normal Control,Correct (True Negative),60.0%,Dysgraphic,False Alarm (False Positive),3.78,4.55,1.078
+LPD (50).jpg,Normal Control,0,15.9%,Normal Control,Correct (True Negative),40.6%,Normal Control,Correct (True Negative),4.12,2.19,1.153
+LPD (51).jpg,Normal Control,0,19.7%,Normal Control,Correct (True Negative),52.6%,Dysgraphic,False Alarm (False Positive),9.37,3.59,1.452
+LPD (52).jpg,Normal Control,0,31.7%,Normal Control,Correct (True Negative),47.2%,Normal Control,Correct (True Negative),2.89,1.87,1.079
+LPD (53).jpg,Normal Control,0,27.2%,Normal Control,Correct (True Negative),52.1%,Dysgraphic,False Alarm (False Positive),3.01,1.82,1.106
+LPD (54).jpg,Normal Control,0,26.0%,Normal Control,Correct (True Negative),60.8%,Dysgraphic,False Alarm (False Positive),4.93,3.56,1.451
+LPD (55).jpg,Normal Control,0,32.9%,Normal Control,Correct (True Negative),43.1%,Normal Control,Correct (True Negative),5.73,2.2,1.112
+LPD (56).jpg,Normal Control,0,26.3%,Normal Control,Correct (True Negative),53.3%,Dysgraphic,False Alarm (False Positive),6.11,5.66,1.135
+LPD (57).jpg,Normal Control,0,43.9%,Normal Control,Correct (True Negative),58.8%,Dysgraphic,False Alarm (False Positive),4.2,9.29,1.393
+LPD (58).jpg,Normal Control,0,36.6%,Normal Control,Correct (True Negative),47.5%,Normal Control,Correct (True Negative),3.68,1.86,1.077
+LPD (59).jpg,Normal Control,0,27.2%,Normal Control,Correct (True Negative),42.4%,Normal Control,Correct (True Negative),5.69,2.33,1.092
+LPD (6).jpg,Normal Control,0,25.9%,Normal Control,Correct (True Negative),63.7%,Dysgraphic,False Alarm (False Positive),5.01,9.85,1.069
+LPD (60).jpg,Normal Control,0,41.1%,Normal Control,Correct (True Negative),57.0%,Dysgraphic,False Alarm (False Positive),20.12,5.23,1.418
+LPD (61).jpg,Normal Control,0,19.3%,Normal Control,Correct (True Negative),45.6%,Normal Control,Correct (True Negative),2.51,1.89,1.081
+LPD (62).jpg,Normal Control,0,49.2%,Normal Control,Correct (True Negative),51.9%,Dysgraphic,False Alarm (False Positive),4.33,1.98,1.077
+LPD (63).jpg,Normal Control,0,26.1%,Normal Control,Correct (True Negative),60.6%,Dysgraphic,False Alarm (False Positive),9.54,4.39,1.124
+LPD (64).jpg,Normal Control,0,27.8%,Normal Control,Correct (True Negative),50.2%,Dysgraphic,False Alarm (False Positive),3.15,2.52,1.069
+LPD (65).jpg,Normal Control,0,36.7%,Normal Control,Correct (True Negative),56.0%,Dysgraphic,False Alarm (False Positive),3.44,2.65,1.079
+LPD (66).jpg,Normal Control,0,22.6%,Normal Control,Correct (True Negative),54.0%,Dysgraphic,False Alarm (False Positive),6.03,4.97,1.855
+LPD (67).jpg,Normal Control,0,45.3%,Normal Control,Correct (True Negative),47.1%,Normal Control,Correct (True Negative),3.3,1.85,1.053
+LPD (68).jpg,Normal Control,0,36.1%,Normal Control,Correct (True Negative),49.9%,Normal Control,Correct (True Negative),4.1,2.08,1.1
+LPD (69).jpg,Normal Control,0,41.7%,Normal Control,Correct (True Negative),60.3%,Dysgraphic,False Alarm (False Positive),8.56,6.52,1.215
+LPD (7).jpg,Normal Control,0,43.1%,Normal Control,Correct (True Negative),52.2%,Dysgraphic,False Alarm (False Positive),5.27,2.84,1.066
+LPD (70).jpg,Normal Control,0,45.8%,Normal Control,Correct (True Negative),51.0%,Dysgraphic,False Alarm (False Positive),3.02,1.77,1.065
+LPD (71).jpg,Normal Control,0,36.4%,Normal Control,Correct (True Negative),49.8%,Normal Control,Correct (True Negative),4.91,1.92,1.08
+LPD (72).jpg,Normal Control,0,29.9%,Normal Control,Correct (True Negative),60.9%,Dysgraphic,False Alarm (False Positive),7.2,3.41,1.484
+LPD (73).jpg,Normal Control,0,34.6%,Normal Control,Correct (True Negative),46.7%,Normal Control,Correct (True Negative),6.5,2.01,1.079
+LPD (74).jpg,Normal Control,0,36.0%,Normal Control,Correct (True Negative),48.0%,Normal Control,Correct (True Negative),6.42,1.87,1.174
+LPD (75).jpg,Normal Control,0,42.9%,Normal Control,Correct (True Negative),58.7%,Dysgraphic,False Alarm (False Positive),11.11,4.82,1.719
+LPD (76).jpg,Normal Control,0,28.1%,Normal Control,Correct (True Negative),42.9%,Normal Control,Correct (True Negative),3.64,1.77,1.072
+LPD (77).jpg,Normal Control,0,30.5%,Normal Control,Correct (True Negative),45.5%,Normal Control,Correct (True Negative),3.49,1.84,1.082
+LPD (78).jpg,Normal Control,0,34.2%,Normal Control,Correct (True Negative),55.3%,Dysgraphic,False Alarm (False Positive),10.11,3.69,2.013
+LPD (79).jpg,Normal Control,0,39.3%,Normal Control,Correct (True Negative),44.6%,Normal Control,Correct (True Negative),3.66,1.93,1.055
+LPD (8).jpg,Normal Control,0,29.5%,Normal Control,Correct (True Negative),58.2%,Dysgraphic,False Alarm (False Positive),4.06,3.55,1.091
+LPD (80).jpg,Normal Control,0,33.3%,Normal Control,Correct (True Negative),45.4%,Normal Control,Correct (True Negative),5.35,2.14,1.08
+LPD (81).jpg,Normal Control,0,27.1%,Normal Control,Correct (True Negative),53.2%,Dysgraphic,False Alarm (False Positive),11.11,5.7,1.445
+LPD (82).jpg,Normal Control,0,56.3%,Dysgraphic,False Alarm (False Positive),51.6%,Dysgraphic,False Alarm (False Positive),4.21,1.21,1.063
+LPD (83).jpg,Normal Control,0,43.9%,Normal Control,Correct (True Negative),48.8%,Normal Control,Correct (True Negative),5.55,1.99,1.074
+LPD (84).jpg,Normal Control,0,72.9%,Dysgraphic,False Alarm (False Positive),50.8%,Dysgraphic,False Alarm (False Positive),12.09,3.54,1.072
+LPD (85).jpg,Normal Control,0,34.9%,Normal Control,Correct (True Negative),43.3%,Normal Control,Correct (True Negative),5.73,2.22,1.073
+LPD (86).jpg,Normal Control,0,32.4%,Normal Control,Correct (True Negative),50.8%,Dysgraphic,False Alarm (False Positive),6.28,1.8,1.12
+LPD (87).jpg,Normal Control,0,50.7%,Dysgraphic,False Alarm (False Positive),59.8%,Dysgraphic,False Alarm (False Positive),12.73,3.99,1.102
+LPD (88).jpg,Normal Control,0,52.7%,Dysgraphic,False Alarm (False Positive),45.6%,Normal Control,Correct (True Negative),9.27,1.85,1.06
+LPD (89).jpg,Normal Control,0,62.5%,Dysgraphic,False Alarm (False Positive),46.9%,Normal Control,Correct (True Negative),18.32,3.56,1.102
+LPD (9).jpg,Normal Control,0,46.9%,Normal Control,Correct (True Negative),61.2%,Dysgraphic,False Alarm (False Positive),7.43,6.19,1.079
+LPD (90).jpg,Normal Control,0,62.9%,Dysgraphic,False Alarm (False Positive),58.0%,Dysgraphic,False Alarm (False Positive),48.3,9.35,1.528
+LPD (91).jpg,Normal Control,0,45.0%,Normal Control,Correct (True Negative),44.1%,Normal Control,Correct (True Negative),9.77,2.75,1.075
+LPD (92).jpg,Normal Control,0,39.9%,Normal Control,Correct (True Negative),42.2%,Normal Control,Correct (True Negative),13.93,2.67,1.089
+LPD (93).jpg,Normal Control,0,27.1%,Normal Control,Correct (True Negative),44.6%,Normal Control,Correct (True Negative),25.88,5.24,1.489
+LPD (94).jpg,Normal Control,0,40.3%,Normal Control,Correct (True Negative),45.3%,Normal Control,Correct (True Negative),4.77,1.66,1.047
+LPD (95).jpg,Normal Control,0,43.0%,Normal Control,Correct (True Negative),49.4%,Normal Control,Correct (True Negative),5.76,2.8,1.094
+LPD (96).jpg,Normal Control,0,57.3%,Dysgraphic,False Alarm (False Positive),54.5%,Dysgraphic,False Alarm (False Positive),16.79,6.28,1.342
+LPD (97).jpg,Normal Control,0,68.3%,Dysgraphic,False Alarm (False Positive),50.9%,Dysgraphic,False Alarm (False Positive),13.22,2.43,1.059
+LPD (98).jpg,Normal Control,0,74.3%,Dysgraphic,False Alarm (False Positive),62.0%,Dysgraphic,False Alarm (False Positive),15.99,5.79,1.077
+LPD (99).jpg,Normal Control,0,65.1%,Dysgraphic,False Alarm (False Positive),57.5%,Dysgraphic,False Alarm (False Positive),34.35,11.52,1.306
+PD (1).jpg,Dysgraphic,1,80.7%,Dysgraphic,Correct (True Positive),49.8%,Normal Control,Missed (False Negative),17.85,3.75,1.075
+PD (10).jpg,Dysgraphic,1,70.5%,Dysgraphic,Correct (True Positive),64.4%,Dysgraphic,Correct (True Positive),7.04,3.9,1.066
+PD (100).jpg,Dysgraphic,1,38.6%,Normal Control,Missed (False Negative),45.0%,Normal Control,Missed (False Negative),2.88,0.84,1.062
+PD (101).jpg,Dysgraphic,1,47.3%,Normal Control,Missed (False Negative),52.9%,Dysgraphic,Correct (True Positive),13.82,4.31,1.077
+PD (102).jpg,Dysgraphic,1,32.6%,Normal Control,Missed (False Negative),54.1%,Dysgraphic,Correct (True Positive),25.48,6.72,1.394
+PD (103).jpg,Dysgraphic,1,66.3%,Dysgraphic,Correct (True Positive),46.7%,Normal Control,Missed (False Negative),10.63,3.08,1.057
+PD (104).jpg,Dysgraphic,1,78.1%,Dysgraphic,Correct (True Positive),60.6%,Dysgraphic,Correct (True Positive),19.4,5.22,1.06
+PD (105).jpg,Dysgraphic,1,76.1%,Dysgraphic,Correct (True Positive),59.5%,Dysgraphic,Correct (True Positive),29.17,7.21,1.078
+PD (106).jpg,Dysgraphic,1,61.1%,Dysgraphic,Correct (True Positive),61.9%,Dysgraphic,Correct (True Positive),6.4,3.29,1.06
+PD (107).jpg,Dysgraphic,1,63.1%,Dysgraphic,Correct (True Positive),64.1%,Dysgraphic,Correct (True Positive),5.48,3.56,1.062
+PD (108).jpg,Dysgraphic,1,69.4%,Dysgraphic,Correct (True Positive),51.8%,Dysgraphic,Correct (True Positive),10.3,2.52,1.06
+PD (109).jpg,Dysgraphic,1,43.1%,Normal Control,Missed (False Negative),50.5%,Dysgraphic,Correct (True Positive),5.82,1.94,1.082
+PD (11).jpg,Dysgraphic,1,62.4%,Dysgraphic,Correct (True Positive),57.8%,Dysgraphic,Correct (True Positive),6.15,3.48,1.082
+PD (110).jpg,Dysgraphic,1,63.3%,Dysgraphic,Correct (True Positive),47.6%,Normal Control,Missed (False Negative),11.31,3.89,1.067
+PD (111).jpg,Dysgraphic,1,54.1%,Dysgraphic,Correct (True Positive),50.8%,Dysgraphic,Correct (True Positive),7.07,1.83,1.073
+PD (112).jpg,Dysgraphic,1,80.9%,Dysgraphic,Correct (True Positive),58.7%,Dysgraphic,Correct (True Positive),10.62,5.0,1.078
+PD (113).jpg,Dysgraphic,1,68.9%,Dysgraphic,Correct (True Positive),53.5%,Dysgraphic,Correct (True Positive),24.97,5.26,1.091
+PD (114).jpg,Dysgraphic,1,61.8%,Dysgraphic,Correct (True Positive),59.3%,Dysgraphic,Correct (True Positive),46.35,10.19,1.263
+PD (12).jpg,Dysgraphic,1,49.1%,Normal Control,Missed (False Negative),57.2%,Dysgraphic,Correct (True Positive),11.41,5.62,1.106
+PD (13).jpg,Dysgraphic,1,51.7%,Dysgraphic,Correct (True Positive),47.0%,Normal Control,Missed (False Negative),6.26,2.18,1.08
+PD (14).jpg,Dysgraphic,1,39.8%,Normal Control,Missed (False Negative),42.8%,Normal Control,Missed (False Negative),6.85,2.02,1.061
+PD (15).jpg,Dysgraphic,1,53.6%,Dysgraphic,Correct (True Positive),46.3%,Normal Control,Missed (False Negative),8.75,3.18,1.088
+PD (16).jpg,Dysgraphic,1,48.3%,Normal Control,Missed (False Negative),48.3%,Normal Control,Missed (False Negative),7.34,2.97,1.075
+PD (17).jpg,Dysgraphic,1,78.6%,Dysgraphic,Correct (True Positive),51.0%,Dysgraphic,Correct (True Positive),17.58,5.03,1.051
+PD (18).jpg,Dysgraphic,1,62.9%,Dysgraphic,Correct (True Positive),47.2%,Normal Control,Missed (False Negative),12.45,3.9,1.065
+PD (19).jpg,Dysgraphic,1,56.0%,Dysgraphic,Correct (True Positive),48.4%,Normal Control,Missed (False Negative),3.7,2.11,1.08
+PD (2).jpg,Dysgraphic,1,65.4%,Dysgraphic,Correct (True Positive),57.4%,Dysgraphic,Correct (True Positive),30.27,7.47,1.055
+PD (20).jpg,Dysgraphic,1,70.1%,Dysgraphic,Correct (True Positive),59.1%,Dysgraphic,Correct (True Positive),8.46,5.4,1.082
+PD (21).jpg,Dysgraphic,1,55.6%,Dysgraphic,Correct (True Positive),58.2%,Dysgraphic,Correct (True Positive),7.22,4.26,1.085
+PD (22).jpg,Dysgraphic,1,50.4%,Dysgraphic,Correct (True Positive),57.4%,Dysgraphic,Correct (True Positive),6.34,3.07,1.065
+PD (23).jpg,Dysgraphic,1,48.2%,Normal Control,Missed (False Negative),43.9%,Normal Control,Missed (False Negative),13.44,3.85,1.068
+PD (24).jpg,Dysgraphic,1,28.0%,Normal Control,Missed (False Negative),56.6%,Dysgraphic,Correct (True Positive),13.49,6.08,1.487
+PD (25).jpg,Dysgraphic,1,40.4%,Normal Control,Missed (False Negative),44.7%,Normal Control,Missed (False Negative),4.63,1.05,1.053
+PD (26).jpg,Dysgraphic,1,63.5%,Dysgraphic,Correct (True Positive),47.8%,Normal Control,Missed (False Negative),10.42,2.02,1.067
+PD (27).jpg,Dysgraphic,1,58.4%,Dysgraphic,Correct (True Positive),49.1%,Normal Control,Missed (False Negative),11.49,3.24,1.095
+PD (28).jpg,Dysgraphic,1,51.7%,Dysgraphic,Correct (True Positive),50.9%,Dysgraphic,Correct (True Positive),2.58,1.39,1.075
+PD (29).jpg,Dysgraphic,1,72.4%,Dysgraphic,Correct (True Positive),57.5%,Dysgraphic,Correct (True Positive),15.56,6.85,1.07
+PD (3).jpg,Dysgraphic,1,75.9%,Dysgraphic,Correct (True Positive),59.2%,Dysgraphic,Correct (True Positive),105.37,18.07,1.053
+PD (30).jpg,Dysgraphic,1,79.9%,Dysgraphic,Correct (True Positive),58.0%,Dysgraphic,Correct (True Positive),23.41,7.91,1.081
+PD (31).jpg,Dysgraphic,1,56.1%,Dysgraphic,Correct (True Positive),57.8%,Dysgraphic,Correct (True Positive),6.14,2.46,1.061
+PD (32).jpg,Dysgraphic,1,79.0%,Dysgraphic,Correct (True Positive),49.3%,Normal Control,Missed (False Negative),17.12,3.31,1.054
+PD (33).jpg,Dysgraphic,1,76.4%,Dysgraphic,Correct (True Positive),50.7%,Dysgraphic,Correct (True Positive),22.72,4.5,1.082
+PD (34).jpg,Dysgraphic,1,56.1%,Dysgraphic,Correct (True Positive),60.4%,Dysgraphic,Correct (True Positive),4.87,4.75,1.059
+PD (35).jpg,Dysgraphic,1,62.7%,Dysgraphic,Correct (True Positive),61.5%,Dysgraphic,Correct (True Positive),6.98,4.31,1.061
+PD (36).jpg,Dysgraphic,1,76.5%,Dysgraphic,Correct (True Positive),61.8%,Dysgraphic,Correct (True Positive),12.77,8.43,1.073
+PD (37).jpg,Dysgraphic,1,43.6%,Normal Control,Missed (False Negative),52.5%,Dysgraphic,Correct (True Positive),4.3,1.74,1.055
+PD (38).jpg,Dysgraphic,1,78.8%,Dysgraphic,Correct (True Positive),52.4%,Dysgraphic,Correct (True Positive),13.29,3.79,1.061
+PD (39).jpg,Dysgraphic,1,45.5%,Normal Control,Missed (False Negative),62.2%,Dysgraphic,Correct (True Positive),25.91,7.84,1.481
+PD (4).jpg,Dysgraphic,1,63.7%,Dysgraphic,Correct (True Positive),60.1%,Dysgraphic,Correct (True Positive),10.28,4.47,1.094
+PD (40).jpg,Dysgraphic,1,63.7%,Dysgraphic,Correct (True Positive),51.1%,Dysgraphic,Correct (True Positive),7.12,2.04,1.055
+PD (41).jpg,Dysgraphic,1,82.5%,Dysgraphic,Correct (True Positive),49.3%,Normal Control,Missed (False Negative),28.06,5.05,1.047
+PD (42).jpg,Dysgraphic,1,78.3%,Dysgraphic,Correct (True Positive),58.8%,Dysgraphic,Correct (True Positive),74.44,14.97,1.087
+PD (43).jpg,Dysgraphic,1,78.5%,Dysgraphic,Correct (True Positive),57.3%,Dysgraphic,Correct (True Positive),11.59,5.13,1.063
+PD (44).jpg,Dysgraphic,1,74.3%,Dysgraphic,Correct (True Positive),55.9%,Dysgraphic,Correct (True Positive),16.92,5.08,1.069
+PD (45).jpg,Dysgraphic,1,70.2%,Dysgraphic,Correct (True Positive),50.0%,Normal Control,Missed (False Negative),18.38,3.96,1.08
+PD (46).jpg,Dysgraphic,1,51.4%,Dysgraphic,Correct (True Positive),48.3%,Normal Control,Missed (False Negative),3.69,2.73,1.081
+PD (47).jpg,Dysgraphic,1,54.9%,Dysgraphic,Correct (True Positive),56.6%,Dysgraphic,Correct (True Positive),12.79,5.56,1.104
+PD (48).jpg,Dysgraphic,1,52.0%,Dysgraphic,Correct (True Positive),54.9%,Dysgraphic,Correct (True Positive),5.49,3.29,1.09
+PD (49).jpg,Dysgraphic,1,49.8%,Normal Control,Missed (False Negative),44.9%,Normal Control,Missed (False Negative),4.43,1.29,1.062
+PD (5).jpg,Dysgraphic,1,75.9%,Dysgraphic,Correct (True Positive),61.4%,Dysgraphic,Correct (True Positive),21.51,5.16,1.088
+PD (50).jpg,Dysgraphic,1,38.5%,Normal Control,Missed (False Negative),47.0%,Normal Control,Missed (False Negative),5.15,2.11,1.08
+PD (51).jpg,Dysgraphic,1,57.9%,Dysgraphic,Correct (True Positive),48.3%,Normal Control,Missed (False Negative),7.46,2.54,1.05
+PD (52).jpg,Dysgraphic,1,63.6%,Dysgraphic,Correct (True Positive),47.8%,Normal Control,Missed (False Negative),12.72,2.05,1.051
+PD (53).jpg,Dysgraphic,1,60.4%,Dysgraphic,Correct (True Positive),52.4%,Dysgraphic,Correct (True Positive),9.74,3.25,1.075
+PD (54).jpg,Dysgraphic,1,70.2%,Dysgraphic,Correct (True Positive),61.2%,Dysgraphic,Correct (True Positive),17.16,6.53,1.072
+PD (55).jpg,Dysgraphic,1,30.4%,Normal Control,Missed (False Negative),53.5%,Dysgraphic,Correct (True Positive),7.96,3.25,1.099
+PD (56).jpg,Dysgraphic,1,28.6%,Normal Control,Missed (False Negative),55.3%,Dysgraphic,Correct (True Positive),11.05,3.53,1.129
+PD (57).jpg,Dysgraphic,1,64.6%,Dysgraphic,Correct (True Positive),53.2%,Dysgraphic,Correct (True Positive),16.0,3.81,1.079
+PD (58).jpg,Dysgraphic,1,31.8%,Normal Control,Missed (False Negative),50.5%,Dysgraphic,Correct (True Positive),2.76,2.26,1.086
+PD (59).jpg,Dysgraphic,1,36.2%,Normal Control,Missed (False Negative),52.5%,Dysgraphic,Correct (True Positive),4.62,2.09,1.075
+PD (6).jpg,Dysgraphic,1,66.5%,Dysgraphic,Correct (True Positive),55.5%,Dysgraphic,Correct (True Positive),13.95,6.36,1.1
+PD (60).jpg,Dysgraphic,1,54.3%,Dysgraphic,Correct (True Positive),52.1%,Dysgraphic,Correct (True Positive),9.43,2.94,1.073
+PD (61).jpg,Dysgraphic,1,59.3%,Dysgraphic,Correct (True Positive),60.8%,Dysgraphic,Correct (True Positive),5.43,3.05,1.056
+PD (62).jpg,Dysgraphic,1,45.4%,Normal Control,Missed (False Negative),60.0%,Dysgraphic,Correct (True Positive),3.98,4.33,1.066
+PD (63).jpg,Dysgraphic,1,64.3%,Dysgraphic,Correct (True Positive),62.1%,Dysgraphic,Correct (True Positive),15.27,9.99,1.433
+PD (64).jpg,Dysgraphic,1,48.8%,Normal Control,Missed (False Negative),59.4%,Dysgraphic,Correct (True Positive),4.64,2.48,1.047
+PD (65).jpg,Dysgraphic,1,75.8%,Dysgraphic,Correct (True Positive),60.4%,Dysgraphic,Correct (True Positive),12.27,5.09,1.079
+PD (66).jpg,Dysgraphic,1,57.3%,Dysgraphic,Correct (True Positive),59.2%,Dysgraphic,Correct (True Positive),24.81,9.07,1.372
+PD (67).jpg,Dysgraphic,1,37.1%,Normal Control,Missed (False Negative),47.9%,Normal Control,Missed (False Negative),2.98,2.15,1.065
+PD (68).jpg,Dysgraphic,1,32.7%,Normal Control,Missed (False Negative),53.5%,Dysgraphic,Correct (True Positive),1.72,2.25,1.074
+PD (69).jpg,Dysgraphic,1,47.7%,Normal Control,Missed (False Negative),60.7%,Dysgraphic,Correct (True Positive),4.53,5.42,1.083
+PD (7).jpg,Dysgraphic,1,54.3%,Dysgraphic,Correct (True Positive),51.4%,Dysgraphic,Correct (True Positive),3.71,0.81,1.064
+PD (70).jpg,Dysgraphic,1,77.0%,Dysgraphic,Correct (True Positive),50.3%,Dysgraphic,Correct (True Positive),10.12,3.17,1.047
+PD (71).jpg,Dysgraphic,1,81.1%,Dysgraphic,Correct (True Positive),61.8%,Dysgraphic,Correct (True Positive),25.76,7.76,1.077
+PD (72).jpg,Dysgraphic,1,79.2%,Dysgraphic,Correct (True Positive),59.3%,Dysgraphic,Correct (True Positive),28.21,9.85,1.082
+PD (73).jpg,Dysgraphic,1,50.6%,Dysgraphic,Correct (True Positive),44.0%,Normal Control,Missed (False Negative),3.05,1.41,1.062
+PD (74).jpg,Dysgraphic,1,56.9%,Dysgraphic,Correct (True Positive),57.3%,Dysgraphic,Correct (True Positive),11.05,4.57,1.08
+PD (75).jpg,Dysgraphic,1,68.1%,Dysgraphic,Correct (True Positive),57.8%,Dysgraphic,Correct (True Positive),21.8,8.96,1.083
+PD (76).jpg,Dysgraphic,1,47.8%,Normal Control,Missed (False Negative),50.2%,Dysgraphic,Correct (True Positive),3.67,1.18,1.064
+PD (77).jpg,Dysgraphic,1,45.9%,Normal Control,Missed (False Negative),45.6%,Normal Control,Missed (False Negative),7.54,2.28,1.055
+PD (78).jpg,Dysgraphic,1,64.4%,Dysgraphic,Correct (True Positive),58.1%,Dysgraphic,Correct (True Positive),15.74,5.14,1.058
+PD (79).jpg,Dysgraphic,1,67.8%,Dysgraphic,Correct (True Positive),48.0%,Normal Control,Missed (False Negative),7.5,2.93,1.049
+PD (8).jpg,Dysgraphic,1,74.4%,Dysgraphic,Correct (True Positive),53.5%,Dysgraphic,Correct (True Positive),15.3,3.77,1.061
+PD (80).jpg,Dysgraphic,1,75.6%,Dysgraphic,Correct (True Positive),59.7%,Dysgraphic,Correct (True Positive),14.28,6.95,1.064
+PD (81).jpg,Dysgraphic,1,67.2%,Dysgraphic,Correct (True Positive),61.3%,Dysgraphic,Correct (True Positive),29.84,14.71,1.345
+PD (82).jpg,Dysgraphic,1,50.5%,Dysgraphic,Correct (True Positive),49.7%,Normal Control,Missed (False Negative),3.07,0.54,1.038
+PD (83).jpg,Dysgraphic,1,77.0%,Dysgraphic,Correct (True Positive),51.0%,Dysgraphic,Correct (True Positive),12.94,3.33,1.042
+PD (84).jpg,Dysgraphic,1,74.6%,Dysgraphic,Correct (True Positive),49.2%,Normal Control,Missed (False Negative),18.73,4.17,1.073
+PD (85).jpg,Dysgraphic,1,56.7%,Dysgraphic,Correct (True Positive),47.3%,Normal Control,Missed (False Negative),8.07,2.26,1.062
+PD (86).jpg,Dysgraphic,1,74.2%,Dysgraphic,Correct (True Positive),58.8%,Dysgraphic,Correct (True Positive),13.9,4.51,1.071
+PD (87).jpg,Dysgraphic,1,43.2%,Normal Control,Missed (False Negative),58.1%,Dysgraphic,Correct (True Positive),29.89,8.64,1.321
+PD (88).jpg,Dysgraphic,1,42.7%,Normal Control,Missed (False Negative),46.4%,Normal Control,Missed (False Negative),3.3,1.37,1.051
+PD (89).jpg,Dysgraphic,1,49.6%,Normal Control,Missed (False Negative),51.6%,Dysgraphic,Correct (True Positive),4.84,1.54,1.048
+PD (9).jpg,Dysgraphic,1,75.1%,Dysgraphic,Correct (True Positive),48.8%,Normal Control,Missed (False Negative),23.79,5.11,1.058
+PD (90).jpg,Dysgraphic,1,69.0%,Dysgraphic,Correct (True Positive),50.1%,Dysgraphic,Correct (True Positive),8.73,2.34,1.055
+PD (91).jpg,Dysgraphic,1,53.0%,Dysgraphic,Correct (True Positive),47.1%,Normal Control,Missed (False Negative),7.93,1.65,1.073
+PD (92).jpg,Dysgraphic,1,72.3%,Dysgraphic,Correct (True Positive),44.4%,Normal Control,Missed (False Negative),17.77,2.25,1.08
+PD (93).jpg,Dysgraphic,1,77.1%,Dysgraphic,Correct (True Positive),51.5%,Dysgraphic,Correct (True Positive),33.39,6.78,1.057
+PD (94).jpg,Dysgraphic,1,61.0%,Dysgraphic,Correct (True Positive),58.9%,Dysgraphic,Correct (True Positive),11.62,4.3,1.082
+PD (95).jpg,Dysgraphic,1,71.5%,Dysgraphic,Correct (True Positive),51.6%,Dysgraphic,Correct (True Positive),19.42,3.95,1.073
+PD (96).jpg,Dysgraphic,1,76.0%,Dysgraphic,Correct (True Positive),62.7%,Dysgraphic,Correct (True Positive),39.61,8.93,1.073
+PD (97).jpg,Dysgraphic,1,34.5%,Normal Control,Missed (False Negative),45.9%,Normal Control,Missed (False Negative),7.71,2.9,1.067
+PD (98).jpg,Dysgraphic,1,56.0%,Dysgraphic,Correct (True Positive),51.0%,Dysgraphic,Correct (True Positive),8.72,2.49,1.08
+PD (99).jpg,Dysgraphic,1,64.3%,Dysgraphic,Correct (True Positive),58.8%,Dysgraphic,Correct (True Positive),31.44,8.26,1.074
