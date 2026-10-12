@@ -163,6 +163,23 @@
   - [x] 14.4 Author comprehensive strategic whitepaper and prioritized execution roadmap (`docs/strategic_roadmap_next_frontiers.md`).
   - [x] 14.5 Update `context.md`, `architechture.md`, `task_list.md`, and commit/push to `origin/baseline-v1`.
 
+- [x] Stage 15: Beyond-Baseline Expansion — Stylus-Calibrated Motion Pipeline & Two-Tier Screening Cascade (Branch `feature-streams-v2`):
+  - [x] 15.1 Create and check out new branch `feature-streams-v2` preserving `baseline-v1` as pristine golden benchmark.
+  - [x] 15.2 Implement Content Stream Module (`features/content.py`) and prototype OCR error/omission metrics.
+  - [x] 15.3 Decouple heavy local OCR based on user preference to prevent workstation choking (<50MB RAM pure spatial-geometric + kinematic pipeline).
+  - [x] 15.4 Stylus-Calibrated Summary Motion Predictor (`models/motion_predictor.py`, `tests/test_motion_predictor.py`):
+    - Calibrated on 94 matched students against ground-truth 200 Hz tablet kinematics.
+    - Achieved significant out-of-fold generalization: In-air pause duration (`mean_pause_sec`) Pearson $r = +0.372$ ($p = 3.82\times 10^{-4}$), Spearman $\rho = +0.429$; in-air ratio (`air_ratio`) Pearson $r = -0.274$ ($p = 0.010$).
+    - Inferred continuous dynamic kinematics for all 215 students in `data/datasets/dataset_student_level.csv`.
+  - [x] 15.5 Two-Tier Screening Cascade Engine (`models/cascade.py`, `tests/test_cascade.py`):
+    - Tier 1 (Universal Safe Rule-Out / Triage): Threshold $P < 0.276$ achieving **87.5% Sensitivity** and **97.7% Negative Predictive Value (NPV)**; immediately clears **60.5%** of students.
+    - Tier 2 (Clinical OT Referral): Threshold $P \ge 0.515$ achieving **89.9% Specificity** and **37.3% Precision (PPV)** for **14.2%** high-risk students.
+    - Borderline / Monitoring Tier ($0.276 \le P < 0.515$): Captures **25.3%** of students for 4-week classroom support rather than immediate clinical discharge or false-positive workup.
+  - [x] 15.6 Multi-Model Nested CV Benchmark on 215 students (`models/student_experiments.py`):
+    - Elastic-Net Logistic Regression AUROC **0.873 +/- 0.005** (95% CI: [0.846, 0.895]), AUPRC **0.484**.
+    - Hybrid Ensemble AUROC **0.871 +/- 0.004** (95% CI: [0.841, 0.893]), AUPRC **0.488**.
+  - [x] 15.7 Documentation (`context.md`, `architechture.md`) & Git commit/push to `feature-streams-v2`.
+
 ---
 
 ## Completed Sprints

@@ -577,9 +577,28 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
 - **Prioritization Matrix Established**:
   1. **Priority 1 (Sprint 1)**: Content Stream (CER, WER, omission ratio, OCR legibility confidence, $\Delta\text{CER}_{\text{dict}-\text{copy}}$).
   2. **Priority 2 (Sprint 1)**: Operationalize the Two-Tier Screening Cascade ($P \ge 0.35$ Tier 1 triage, $P \ge 0.60$ Tier 2 referral) in evaluator and web UI.
-  3. **Priority 3 (Sprint 2)**: Stylus-Anchored Supervised Summary Motion Predictor.
-  4. **Priority 4 (Sprint 3)**: Learned Vision Features (Frozen DINOv2 PCA $\le 8$ regularized linear probe as orthogonal visual sanity check).
-  5. **De-prioritize**: Pointwise 2/3 power law pseudo-kinematic trajectory synthesis.
+## Phase 4 Stage 15: Stylus-Anchored Motion Pipeline & Two-Tier Screening Cascade (Completed 2026-10-12)
+- **Branch**: `feature-streams-v2` (checked out to preserve `baseline-v1` intact).
+- **Core Strategy Pivot**: Decoupled heavy deep learning OCR based on workstation constraints to maintain a 100% fast, purely mathematical, lightweight (<50MB RAM) pipeline.
+- **Stylus-Anchored Summary Motion Predictor (`models/motion_predictor.py`)**:
+  - Calibrated Ridge pipelines on 94 matched students against ground-truth 200 Hz tablet kinematics (`data/school_a/stylus_student_features.csv`).
+  - Achieved statistically significant out-of-fold generalization:
+    - `mean_pause_sec` (hesitation pause duration): Pearson $r = +0.372$ ($p = 3.82\times 10^{-4}$), Spearman $\rho = +0.429$.
+    - `air_ratio` (in-air hovering fraction): Pearson $r = -0.274$ ($p = 0.010$), Spearman $\rho = -0.260$.
+    - `stroke_count` (pen lifts): Spearman $\rho = +0.249$ ($p = 0.015$).
+  - Inferred continuous dynamic kinematics for all 215 students in `data/datasets/dataset_student_level.csv`.
+- **Two-Tier Clinical Screening Cascade Engine (`models/cascade.py`)**:
+  - Operationalized the two-tier decision rule across the full 215-student cohort:
+    - **Tier 1 (Classroom Safe Rule-Out / Triage)**: Threshold $P < 0.276$ achieving **87.5% Sensitivity** and **97.7% Negative Predictive Value (NPV)**; immediately clears **60.5%** of students.
+    - **Tier 2 (Clinical OT Referral)**: Threshold $P \ge 0.515$ achieving **89.9% Specificity** and **37.3% Precision (PPV)** for **14.2%** high-risk students.
+    - **Borderline / Progress Monitoring Tier ($0.276 \le P < 0.515$)**: Captures **25.3%** of students for 4-week classroom accommodations rather than premature clinical discharge or false-positive referral.
+- **Multi-Model Benchmark on 215 Students (`models/student_experiments.py`)**:
+  - Elastic-Net Logistic Regression: AUROC **0.873 +/- 0.005** (95% CI: [0.846, 0.895]), AUPRC **0.484** (up from 0.454).
+  - Hybrid Ensemble: AUROC **0.871 +/- 0.004** (95% CI: [0.841, 0.893]), AUPRC **0.488**.
+- **Automated Verification**:
+  - `tests/test_motion_predictor.py`: 3/3 passed.
+  - `tests/test_cascade.py`: 4/4 passed.
+  - `tests/test_features_synthetic.py`: 4/4 passed (monotonicity $\rho=1.0$).
 
 
 

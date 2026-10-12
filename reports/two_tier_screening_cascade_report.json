@@ -1,0 +1,27 @@
+{
+  "theta_triage": 0.2755613261633228,
+  "theta_referral": 0.5153546966216033,
+  "n_total": 1075,
+  "n_positive": 120,
+  "n_negative": 955,
+  "tier_counts": {
+    "cleared": 650,
+    "monitoring": 272,
+    "referred": 153
+  },
+  "tier_percentages": {
+    "cleared_pct": 60.46511627906977,
+    "monitoring_pct": 25.302325581395348,
+    "referred_pct": 14.232558139534884
+  },
+  "triage_sensitivity": 0.875,
+  "triage_npv": 0.9769230769230769,
+  "false_negatives_cleared": 15,
+  "referral_specificity": 0.8994764397905759,
+  "referral_ppv": 0.37254901960784315,
+  "false_positives_referred": 96,
+  "borderline_breakdown": {
+    "positives_in_monitoring": 48,
+    "negatives_in_monitoring": 224
+  }
+}

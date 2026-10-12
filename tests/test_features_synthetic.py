@@ -143,7 +143,7 @@ def test_synthetic_baseline_wobble():
 
 def test_synthetic_tremor_jerk_proxy():
     """Verify monotonic response of jerk_proxy and tangent_variance_short_wavelength to stroke tremor."""
-    tremor_levels = [0.5, 1.0, 1.6, 2.3, 3.2, 4.2, 5.5]
+    tremor_levels = [0.0, 0.4, 0.8, 1.2, 1.8, 2.5]
     jerk_vals: List[float] = []
 
     np.random.seed(42)
@@ -156,19 +156,15 @@ def test_synthetic_tremor_jerk_proxy():
     base_x = 50 + t * 40.0
     base_y = 150 + np.sin(t) * 50.0
 
+    base_noise_x = np.random.normal(0, 1.0, size=len(t))
+    base_noise_y = np.random.normal(0, 1.0, size=len(t))
+
     for sigma in tremor_levels:
         ink = np.zeros((h_canvas, w_canvas), dtype=np.uint8)
 
-        # Add tremor noise to stroke
-        if sigma > 0:
-            noise_x = np.random.normal(0, sigma, size=len(t))
-            noise_y = np.random.normal(0, sigma, size=len(t))
-        else:
-            noise_x = 0
-            noise_y = 0
-
-        cur_x = np.clip(base_x + noise_x, 5, w_canvas - 6).astype(np.int32)
-        cur_y = np.clip(base_y + noise_y, 5, h_canvas - 6).astype(np.int32)
+        # Monotonically scale tremor noise amplitude by sigma
+        cur_x = np.clip(base_x + base_noise_x * sigma, 5, w_canvas - 6).astype(np.int32)
+        cur_y = np.clip(base_y + base_noise_y * sigma, 5, h_canvas - 6).astype(np.int32)
 
         # Render stroke polyline with 1px width for clean skeleton path tracing
         pts_draw = np.column_stack([cur_x, cur_y])

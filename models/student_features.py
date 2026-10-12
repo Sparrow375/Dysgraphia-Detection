@@ -254,11 +254,30 @@ def build_student_level_dataset(
     folds_path: Path = FOLDS_LOOKUP_PATH,
     output_path: Path = OUTPUT_DATASET_PATH,
 ) -> pd.DataFrame:
-    """Run full student-level feature extraction and persist to CSV."""
+    """Run full student-level feature extraction, infer motion kinematics, and persist to CSV."""
     df_combined = pd.read_csv(combined_path)
     df_folds = pd.read_csv(folds_path)
 
     df_student_raw = extract_student_features(df_combined, df_folds)
+
+    # Infer stylus-anchored motion kinematics if paired tablet data is available
+    stylus_path = WORKSPACE_ROOT / "data" / "school_a" / "stylus_student_features.csv"
+    if stylus_path.exists():
+        try:
+            from models.motion_predictor import StylusMotionPredictor
+            stylus_df = pd.read_csv(stylus_path)
+            stylus_df["student_id"] = stylus_df["student_id"].astype(str)
+            df_student_raw["student_id"] = df_student_raw["student_id"].astype(str)
+
+            merged_calib = pd.merge(df_student_raw, stylus_df, on="student_id", suffixes=("", "_stylus"))
+            if len(merged_calib) >= 20:
+                predictor = StylusMotionPredictor()
+                predictor.fit_cv(merged_calib)
+                df_student_raw = predictor.predict(df_student_raw)
+                print(f"Successfully calibrated and inferred motion kinematics across all {len(df_student_raw)} students.")
+        except Exception as e:
+            print(f"Warning: Stylus motion prediction skipped due to: {e}")
+
     df_student_full = compute_student_robust_z_scores(df_student_raw)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)

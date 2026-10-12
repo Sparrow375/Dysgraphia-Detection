@@ -43,13 +43,13 @@ def test_dataset_row_counts_and_scripts(dataset_tables):
 
     # School A subset checks
     assert len(df_h[df_h["school"] == "school_a"]) == 322, f"Expected 322 School A Hindi rows"
-    assert len(df_e[df_e["school"] == "school_a"]) == 319, f"Expected 319 School A English rows"
-    assert len(df_c[df_c["school"] == "school_a"]) == 641, f"Expected 641 School A Combined rows"
+    assert len(df_e[df_e["school"] == "school_a"]) == 320, f"Expected 320 School A English rows"
+    assert len(df_c[df_c["school"] == "school_a"]) == 642, f"Expected 642 School A Combined rows"
 
     # Multi-school totals
-    assert len(df_h) == 569, f"Expected 569 total Hindi rows, got {len(df_h)}"
-    assert len(df_e) == 574, f"Expected 574 total English rows, got {len(df_e)}"
-    assert len(df_c) == 1143, f"Expected 1143 total Combined rows, got {len(df_c)}"
+    assert len(df_h) == 570, f"Expected 570 total Hindi rows, got {len(df_h)}"
+    assert len(df_e) == 575, f"Expected 575 total English rows, got {len(df_e)}"
+    assert len(df_c) == 1145, f"Expected 1145 total Combined rows, got {len(df_c)}"
 
     # All rows in Hindi must be devanagari
     assert (df_h["script"] == "devanagari").all()

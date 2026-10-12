@@ -123,13 +123,22 @@ def run_student_level_benchmark(
     dataset_path: Path = DATASET_PATH,
     n_repeats: int = 5,
     n_bootstraps: int = 1000,
-) -> pd.DataFrame:
+    feature_set: Optional[List[str]] = None,
+) -> Tuple[pd.DataFrame, List[Dict[str, Any]], Dict[str, Dict[str, np.ndarray]]]:
     """Run nested 5-repeat 5-fold cross-validation across all candidate models."""
     df = pd.read_csv(dataset_path)
     print(f"Loaded student dataset: {len(df)} students ({(df['label']==1).sum()} pos, {(df['label']==0).sum()} neg)")
 
-    z_features = [f"z_{f}" for f in CORE_FEATURES]
-    raw_features = CORE_FEATURES
+    # Use specified features or Clean 15 + Inferred Motion Kinematics
+    if feature_set is None:
+        candidate_feats = CORE_FEATURES + ["motion_pred_mean_pause_sec", "motion_pred_air_ratio"]
+        active_features = [f for f in candidate_feats if f in df.columns]
+    else:
+        active_features = [f for f in feature_set if f in df.columns]
+
+    print(f"Active feature set ({len(active_features)} features): {active_features}")
+    z_features = [f"z_{f}" if f"z_{f}" in df.columns else f for f in active_features]
+    raw_features = active_features
 
     # Candidate models
     model_defs: Dict[str, Dict[str, Any]] = {
@@ -214,6 +223,7 @@ def run_student_level_benchmark(
         # Store pooled predictions across repeats for bootstrap CIs
         pooled_y_true = []
         pooled_y_scores = []
+        pooled_predictions: Dict[str, Dict[str, np.ndarray]] = {}
 
         for rep in range(n_repeats):
             fold_col = f"repeat_{rep}_fold"
@@ -312,6 +322,10 @@ def run_student_level_benchmark(
             )
 
         # Compute bootstrap CIs over pooled out-of-fold predictions
+        pooled_predictions[model_name] = {
+            "y_true": np.array(pooled_y_true),
+            "y_scores": np.array(pooled_y_scores),
+        }
         ci_res = compute_bootstrap_ci(
             np.array(pooled_y_true),
             np.array(pooled_y_scores),
@@ -351,7 +365,7 @@ def run_student_level_benchmark(
         json.dump(results_list, f, indent=2)
 
     print(f"\nSaved student benchmark results to:\n- {OUTPUT_CSV_PATH}\n- {OUTPUT_JSON_PATH}")
-    return res_df
+    return res_df, results_list, pooled_predictions
 
 
 if __name__ == "__main__":

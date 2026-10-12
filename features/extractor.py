@@ -71,6 +71,17 @@ FEATURE_DESCRIPTIONS: Dict[str, str] = {
     "endpoints_per_unit_width": "Skeleton endpoints count divided by (sentence_width / h)",
     "words_written_ratio": "Detected word count divided by expected prompt word count",
     "lines_used": "Number of physical handwritten lines used by sentence",
+    # Content, OCR Legibility & Linguistic Errors
+    "ocr_confidence_mean": "Mean token confidence score from EasyOCR (objective legibility index)",
+    "ocr_confidence_std": "Standard deviation of word recognition confidences",
+    "ocr_low_conf_ratio": "Fraction of recognized words with confidence < 0.40 (illegibility rate)",
+    "ocr_words_recognized": "Total word count recognized by OCR",
+    "ocr_word_completion_ratio": "OCR recognized word count divided by expected prompt word count",
+    "ocr_char_count": "Total non-space character count recognized by OCR",
+    "ocr_char_completion_ratio": "OCR character count divided by expected prompt character count",
+    "ocr_omission_ratio": "Character deficit fraction max(0, (expected - decoded) / expected)",
+    "ocr_cer": "Minimum Character Error Rate (normalized Levenshtein) against prompt candidates",
+    "ocr_wer": "Minimum Word Error Rate against prompt candidates",
 }
 
 
@@ -78,7 +89,7 @@ def extract_sentence_features(
     sentence_json: Dict[str, Any],
     image_crop: Optional[np.ndarray] = None,
 ) -> Dict[str, float]:
-    """Extract all Phase 2 features for a single sentence JSON.
+    """Extract all features (spatial geometric + content/OCR) for a single sentence JSON.
 
     Args:
         sentence_json: Loaded sentence JSON dictionary.

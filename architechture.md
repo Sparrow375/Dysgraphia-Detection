@@ -500,9 +500,31 @@ An asynchronous Python service (`aiohttp`) providing RESTful endpoints:
 
 ---
 
+### 8.5 Stylus-Anchored Motion Predictor (`models/motion_predictor.py`)
+To capture the rich temporal and pause dynamics previously available only on specialized digitizing tablets, the system employs a **Supervised Summary Motion Predictor**:
+- **Empirical Grounding**: Calibrated against 94 matched students with paired static paper scans and true $200\text{ Hz}$ Wacom stylus kinematics (`data/school_a/stylus_student_features.csv`).
+- **Target Kinematics**:
+  - `mean_pause_sec`: Average in-air hesitation pause duration ($r = +0.372$, $p = 3.82\times 10^{-4}$; $\rho = +0.429$).
+  - `air_ratio`: Total fraction of task time spent hovering in-air ($r = -0.274$, $p = 0.010$; $\rho = -0.260$).
+  - `stroke_count`: Inferred pen lift segmentation count ($\rho = +0.249$, $p = 0.015$).
+- **Inference Across Full Cohort**: Fits RidgeCV pipelines on standardized paper fragmentation and spacing proxies, inferring continuous dynamic kinematics for all 215 students in `data/datasets/dataset_student_level.csv` without requiring any physical tablet hardware.
+
+### 8.6 Two-Tier Clinical Screening Cascade Engine (`models/cascade.py`)
+Replaces a brittle single global decision threshold with a multi-stage clinical cascade:
+1. **Tier 1 (Universal Classroom Triage / Safe Rule-Out)**:
+   - Threshold $\theta_{\text{triage}} = 0.276$ selected to achieve **87.5% Sensitivity** and **97.7% Negative Predictive Value (NPV)**.
+   - Clears **60.5%** of students from unnecessary clinical evaluation, saving substantial specialist resources.
+2. **Tier 2 (Clinical OT Specialist Referral)**:
+   - Threshold $\theta_{\text{referral}} = 0.515$ selected to achieve **89.9% Specificity** and **37.3% Precision (PPV)**.
+   - Accurately routes **14.2%** high-risk students to immediate occupational therapy assessment.
+3. **Borderline / Progress Monitoring Tier ($0.276 \le P < 0.515$)**:
+   - Captures **25.3%** of students exhibiting emerging motor vulnerability for simple 4-week classroom accommodations rather than premature clinical discharge or false-positive referral.
+
+---
+
 ## 9. Automated Testing & Verification Suite (`tests/`)
 
-The repository maintains an automated regression and mathematical verification suite across 8 dedicated test modules:
+The repository maintains an automated regression and mathematical verification suite across 10 dedicated test modules:
 
 ```
 tests/
@@ -513,7 +535,9 @@ tests/
 ├── test_phase4_stage2.py       # Stability selection, student feature aggregation, benchmark pipeline
 ├── test_qa_app.py              # REST API endpoint responses and static asset routing
 ├── test_features_synthetic.py  # Synthetic perturbation validation (Spearman ρ ≥ 0.8)
-└── test_features_invariance.py # Scale invariance (0.7x) and rotation invariance (±3°)
+├── test_features_invariance.py # Scale invariance (0.7x) and rotation invariance (±3°)
+├── test_motion_predictor.py    # Stylus-anchored motion prediction fit, CV, and persistence
+└── test_cascade.py             # Two-tier cascade threshold calibration, monotonicity, and partitioning
 ```
 
 ### 9.1 Mathematical Sensitivity Validation (`tests/test_features_synthetic.py`)

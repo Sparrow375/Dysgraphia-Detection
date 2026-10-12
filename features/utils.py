@@ -107,7 +107,10 @@ def load_or_binarize_ink(
     if gray is None:
         return None
 
-    # Binarize with Otsu for initial stroke detection
+    # Binarize: handle both natural paper (bright background) and pre-binarized/synthetic (dark background)
+    if np.mean(gray) < 128:
+        return (gray > 0).astype(np.uint8)
+
     _, bin_ink = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     ink = (bin_ink > 0).astype(np.uint8)
 
