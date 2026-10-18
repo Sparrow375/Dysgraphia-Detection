@@ -21,13 +21,24 @@ import json
 import logging
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 import cv2
 import numpy as np
 
-from features.ocr_engine import DualEngineOCRPipeline, OCRTaskResult, get_trocr_cache, save_trocr_cache
+from features.ocr_engine import (
+    CACHE_FILE_PATH,
+    DualEngineOCRPipeline,
+    OCRTaskResult,
+    get_trocr_cache,
+    save_trocr_cache,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -249,17 +260,26 @@ def compute_content_features(
     }
 
 
-def precompute_ocr_cache(processed_dir: str = "data/processed", batch_save: int = 10) -> None:
+def precompute_ocr_cache(
+    processed_dir: str = "data/processed",
+    school_filter: Optional[str] = None,
+    task_filter: Optional[str] = None,
+    limit: Optional[int] = None,
+    batch_save: int = 5,
+) -> None:
     """Scan all processed sentence crops and populate data/features/trocr_cache.json using TrOCR."""
     import glob
     from tqdm import tqdm
 
-    search_glob = os.path.join(processed_dir, "*", "*", "sentence_*.json")
+    school_glob = "*" if (not school_filter or school_filter.lower() == "all") else school_filter
+    search_glob = os.path.join(processed_dir, school_glob, "*", "sentence_*.json")
     json_paths = sorted(glob.glob(search_glob))
-    print(f"Found {len(json_paths)} sentence JSON files to inspect for TrOCR caching.")
+    print(f"Found {len(json_paths)} sentence JSON files to inspect for TrOCR caching (school={school_filter}).")
 
     cache = get_trocr_cache()
     pipeline = get_ocr_pipeline()
+
+    allowed_tasks = [t.strip().lower() for t in task_filter.split(",")] if task_filter else None
 
     unprocessed: List[Tuple[str, str, Path]] = []
     for jp in json_paths:
@@ -269,6 +289,12 @@ def precompute_ocr_cache(processed_dir: str = "data/processed", batch_save: int 
                 sj = json.load(f)
             sid = str(sj.get("student_id", p.parent.name))
             tid = str(sj.get("task_id", p.stem))
+            tname = str(sj.get("task_name", "")).lower()
+
+            if allowed_tasks:
+                if not any(at in tname for at in allowed_tasks):
+                    continue
+
             key = f"{sid}_{tid}"
             if key not in cache:
                 crop_p = p.parent / sj.get("crop_filename", f"{tid}.png")
@@ -277,9 +303,12 @@ def precompute_ocr_cache(processed_dir: str = "data/processed", batch_save: int 
         except Exception:
             continue
 
+    if limit is not None and limit > 0:
+        unprocessed = unprocessed[:limit]
+
     print(f"Already cached in trocr_cache.json: {len(cache)}. Remaining tasks to OCR: {len(unprocessed)}")
     if not unprocessed:
-        print("All crops already cached in trocr_cache.json!")
+        print("All target crops already cached in trocr_cache.json!")
         return
 
     count = 0
@@ -309,6 +338,16 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Precompute TrOCR results cache.")
     parser.add_argument("--processed-dir", default="data/processed")
-    parser.add_argument("--batch-save", type=int, default=10)
+    parser.add_argument("--school", default=None, help="Filter by school (e.g. school_a, school_b, or all)")
+    parser.add_argument("--tasks", default=None, help="Comma-separated task filter (e.g. copy,dictated)")
+    parser.add_argument("--limit", type=int, default=None, help="Maximum number of crops to process")
+    parser.add_argument("--batch-save", type=int, default=5)
     args = parser.parse_args()
-    precompute_ocr_cache(processed_dir=args.processed_dir, batch_save=args.batch_save)
+
+    precompute_ocr_cache(
+        processed_dir=args.processed_dir,
+        school_filter=args.school,
+        task_filter=args.tasks,
+        limit=args.limit,
+        batch_save=args.batch_save,
+    )

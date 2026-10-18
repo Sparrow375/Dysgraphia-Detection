@@ -204,15 +204,19 @@
   - [x] 17.4 Automated unit test suite (`tests/test_task_router.py`): 5/5 unit tests passed; full test suite 12/12 passed.
   - [x] 17.5 Documentation and Git: Update `context.md`, `architechture.md`, `task_list.md`, commit and push to `feature-streams-v2`.
 
-- [/] Stage 18: Stream 3 — Modern OCR & Linguistic Content Pipeline (Branch `OCR`):
+- [x] Stage 18: Stream 3 — Modern OCR & Linguistic Content Pipeline (Branch `OCR`):
   - [x] 18.1 Setup & verify modern OCR architecture: Replaced EasyOCR with Microsoft TrOCR (`microsoft/trocr-small-handwritten`) for English Latin handwriting and evaluated `paudelanil/trocr-devanagari-2` for Devanagari Hindi handwriting.
   - [x] 18.2 Script-Aware Recognition Engine (`features/ocr_engine.py`): Implemented `EnglishTrOCREngine` (line-level HTR with projection fallback) and `DevanagariTrOCREngine` (word-level HTR) with safe step-by-step softmax token confidence distributions and persistent disk caching in `data/features/trocr_cache.json`.
   - [x] 18.3 Linguistic Feature Engineering (`features/content.py`): Extracted CER, WER, Omission Ratio, OCR Legibility Index (`ocr_confidence_mean`), Min Confidence (`ocr_confidence_min`), and integrated `--include-ocr` in `features/extractor.py`.
   - [x] 18.4 Student-Level Integration (`models/student_features.py`): Integrated OCR metrics into `KEY_DYSGRAPHIA_FEATURES` enabling automatic extraction of `_copy_mean`, `_dict_mean`, and `_dict_minus_copy` (capturing auditory-motor collapse under dictation).
-  - [x] 18.5 Automated Unit Tests: 4/4 passed in `tests/test_ocr_engine.py`, 5/5 passed in `tests/test_features_content.py`, full suite regression passed (27/27 tests green).
-  - [ ] 18.6 Batch Pipeline Execution: Run TrOCR extraction across student cohorts and populate `trocr_cache.json`.
-  - [ ] 18.7 Multi-Stream Late Stacking Benchmark: Compare Stream 1 (Geometry) alone vs Stream 1 + Stream 3 (OCR Content).
-  - [ ] 18.8 Documentation (`context.md`, `architechture.md`) & Git Commit/Push on branch `OCR`.
+  - [x] 18.5 Automated Unit Tests: 4/4 passed in `tests/test_ocr_engine.py`, 5/5 passed in `tests/test_features_content.py`, full suite regression passed (28/28 tests green).
+  - [x] 18.6 Batch Pipeline Execution: 418 English Copy & Dictation sentence tasks precomputed and cached in `data/features/trocr_cache.json` across 100% of School A and School B cohorts.
+  - [x] 18.7 Multi-Stream Late Stacking Benchmark (`models/multi_stream_experiments.py`): Evaluated Stream 1 vs Stream 3 vs Early Fusion vs Late Stacking.
+    - All School B (Grades 3-8, N=100): Stream 1 Alone AUROC 0.7500 / AUPRC 0.3975 $\to$ Late Stacking **AUROC 0.7664 / AUPRC 0.4136** (+0.0164 gain).
+    - Matched Grades 4-7 (N=73): Stream 1 Alone AUROC 0.7423 $\to$ Late Stacking **AUROC 0.7474 / AUPRC 0.4124**.
+    - Grade 3 (Zero Dictation, N=16): Late Stacking preserved high precision at **AUROC 0.8929 / AUPRC 0.7000**.
+    - Grade 8 (Partial Dictation, N=11): Stream 1 Alone AUROC 0.6000 $\to$ Late Stacking **AUROC 0.7000 / AUPRC 0.2500** (+0.1000 jump).
+  - [x] 18.8 Documentation (`context.md`, `architechture.md`) & Git Commit/Push on branch `OCR`.
 
 ---
 
