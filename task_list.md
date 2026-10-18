@@ -189,6 +189,21 @@
   - [x] 16.6 Unit testing (`tests/test_slovak_validation.py`: 2/2 passed; full regression suite 47/47 passed).
   - [x] 16.7 Update `context.md`, `architechture.md`, `task_list.md`, and commit/push to `feature-streams-v2`.
 
+- [x] Stage 17: Workstream A System Fixes — Motion Predictor Resolution & Task-Aware Routing:
+  - [x] 17.1 Mathematical analysis and refactoring of Stage 15 Motion Predictor (`models/motion_predictor.py`): Document linear subspace equivalence ($X \beta_{ridge} \in \text{span}(X)$), clarify stylus role as supervision target for upcoming image-level features, and decouple redundant linear feature feeding.
+  - [x] 17.2 Design and implement Task-Aware Router (`models/task_router.py`):
+    - Sub-Model 1: Full Protocol (`full_protocol`) leveraging dictation fragmentation and cognitive load drop.
+    - Sub-Model 2: No-Dictation (`no_dictation` / Copy + Free-Write) using spatial alignment, rule offset, copy fragmentation, letter size jitter, and script constraints.
+    - Sub-Model 3: Copy-Only (`copy_only`) minimal fallback.
+    - Dynamic router assigning incoming sheets to sub-models without median dilution.
+  - [x] 17.3 Empirical evaluation on School B external cohort (`models/evaluate_routing.py` & `reports/task_routing_evaluation.csv`):
+    - Compared flat median imputation baseline vs Task-Aware Routing.
+    - Grade 3 AUROC surged from **0.5357 $\to$ 0.8929** (+0.3571 gain; AUPRC jumped from 0.321 to 0.700).
+    - Overall School B AUROC increased from **0.7254 $\to$ 0.7500** (AUPRC 0.3975).
+    - Matched Grades 4–7 AUROC preserved at **0.7423**.
+  - [x] 17.4 Automated unit test suite (`tests/test_task_router.py`): 5/5 unit tests passed; full test suite 12/12 passed.
+  - [x] 17.5 Documentation and Git: Update `context.md`, `architechture.md`, `task_list.md`, commit and push to `feature-streams-v2`.
+
 ---
 
 ## Completed Sprints

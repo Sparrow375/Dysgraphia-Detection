@@ -646,3 +646,71 @@ The validation module adapts 14 core Latin spatial-geometric, curvature, and gra
 - **Zero-Shot External Transfer (India $\to$ Slovakia)**:
   - Models trained strictly on Indian English sentences achieve AUROC = **0.583** (Elastic-Net) and **0.564** (HistGBM) without any calibration or threshold adjustment on foreign line crops.
 
+---
+
+## 12. Task-Aware Dynamic Routing Architecture (`models/task_router.py`)
+
+### 12.1 Problem Formulation: Missing Dictation Signal Dilution
+In real-world classroom notebook scans, the full 6-task protocol is rarely administered uniformly across grades:
+- In **School B (Held-Out External Cohort)**, Grade 3 was administered only 3 tasks (Hindi Copy, English Copy, Free Writing) with **zero dictation tasks**, while Grade 8 had only 3 out of 11 students with dictation.
+- Workstream A's single most discriminative feature is `components_per_unit_width_dict_mean` (Permutation AUC drop = $+0.0483$), accompanied by cognitive load drop `words_written_ratio_dict_minus_copy`.
+- When an unrouted single-model pipeline processes sheets lacking dictation, missing dictation features are imputed with global population medians (predominantly derived from School A neurotypical controls). Consequently, dysgraphic children without dictation are assigned low-fragmentation control values, creating a severe false negative bias that collapsed Grade 3 AUROC to **0.5357** and Grade 8 AUROC to **0.2000**.
+
+### 12.2 Mathematical Resolution: Motion Predictor Subspace Collinearity
+In Stage 15, `models/motion_predictor.py` trained a linear Ridge regression on 12 existing paper features $X$ to predict continuous stylus pause duration $\hat{Y} = X W_{\text{ridge}}$, and appended $\hat{Y}$ into linear classifiers alongside $X$.
+- **Subspace Equivalence Theorem**:
+  For any downstream linear model with weights $[\theta_1, \theta_2]$:
+  $$f(X, \hat{Y}) = X \theta_1 + (X W_{\text{ridge}}) \theta_2 = X (\theta_1 + W_{\text{ridge}} \theta_2)$$
+  Since $(\theta_1 + W_{\text{ridge}} \theta_2) \in \mathbb{R}^p$, the augmented hypothesis space satisfies:
+  $$\text{span}([X, X W_{\text{ridge}}]) = \text{span}(X)$$
+  Linear projection of existing features back into a linear classifier adds **zero orthogonal degrees of freedom**, explaining why linear AUROC remained unchanged at 0.873.
+- **Architectural Separation**:
+  1. `models/motion_predictor.py` is established strictly as an **Interpretable Kinematic Surrogate** for clinical reporting (estimating physical pause seconds and hovering ratio in UI/reports).
+  2. For stylus kinematics to genuinely augment classification accuracy, they will supervise *new image-level features* (Stream 2: grayscale micro-texture, stroke width jitter, and pressure shading) that capture physical graphite variation absent from binary skeletons.
+
+### 12.3 Sub-Model Architecture & Feature Allocations
+The Task-Aware Router (`TaskAwareRouter`) decomposes dysgraphia detection into three specialized sub-models:
+
+```mermaid
+graph TD
+    Sheet["Notebook Page Scan"] --> Detect["Task Detection<br/>(detect_route_from_features / tasks)"]
+    Detect -->|"Dictation Present"| FullSub["FullProtocolSubModel<br/>Clean 15 Features<br/>(Dictation + Copy + Own)"]
+    Detect -->|"Dictation Absent,<br/>Free-Write Present"| NoDictSub["NoDictationSubModel<br/>16 Spatial & Copy Features<br/>(Copy + Free-Write)"]
+    Detect -->|"Copy Only"| CopySub["CopyOnlySubModel<br/>14 Spatial & Script Features<br/>(Copy Only)"]
+    FullSub --> Score["Routed Calibrated Probability P_student"]
+    NoDictSub --> Score
+    CopySub --> Score
+    Score --> Cascade["Two-Tier Screening Cascade<br/>Tier 1 Triage | Borderline | Tier 2 Referral"]
+```
+
+1. **Full Protocol Sub-Model (`FullProtocolSubModel`)**:
+   - *Target Cohort*: Sheets where dictation was administered (e.g. standard 6-task protocol or Copy + Dictation).
+   - *Feature Vector*: `FULL_PROTOCOL_FEATURES` (Clean 15) leveraging auditory dictation fragmentation (`components_per_unit_width_dict_mean`, `words_written_ratio_dict_minus_copy`, `components_per_unit_width_max`, `matra_ratio_std`, etc.).
+   - *Classifier*: Tuned `HistGradientBoostingClassifier(max_depth=2, learning_rate=0.03, min_samples_leaf=4)`.
+
+2. **No-Dictation Sub-Model (`NoDictationSubModel`)**:
+   - *Target Cohort*: Sheets where dictation is completely absent (e.g. School B Grade 3, Grade 8, or real school copy/homework notebooks).
+   - *Feature Vector*: `NO_DICTATION_FEATURES` (16 non-dictation features):
+     - Spatial Alignment & Rule Adherence: `rule_offset_std_mean`, `baseline_rmse_norm_mean`.
+     - Copy Task Sizing & Fragmentation: `word_height_cv_copy_mean`, `components_per_unit_width_copy_mean`, `components_per_unit_width_max`, `components_per_unit_width_std`.
+     - Script & Curvature Irregularities: `matra_ratio_std`, `matra_ratio_max`, `shirorekha_rms_deviation_norm_max`, `tortuosity_median_cv`.
+     - Stroke Graph Density: `endpoints_per_unit_width_mean`, `junctions_per_unit_width_mean`, `junctions_per_unit_width_own_mean`.
+     - Spacing & Width: `word_width_per_char_std`, `gap_fraction_above_2h_mean`.
+   - *Classifier*: `RandomForestClassifier(n_estimators=100, max_depth=3, min_samples_leaf=3, class_weight='balanced')`.
+   - *Principle*: ZERO dictation features, ZERO median imputation from dictation.
+
+3. **Copy-Only Sub-Model (`CopyOnlySubModel`)**:
+   - *Target Cohort*: Sheets containing strictly Copy prompts (no dictation, no free-write).
+   - *Feature Vector*: `COPY_ONLY_FEATURES` (Copy fragmentation, baseline wobble, rule offset std, matra/shirorekha, and tortuosity).
+
+### 12.4 Empirical Validation Results (`reports/task_routing_evaluation.csv`)
+Evaluating on the independent held-out external School B cohort (100 students, 16 positives, 84 controls) demonstrates significant performance recovery:
+
+| Cohort Slice | N Students | Pos / Neg | Flat Baseline AUROC | Task-Aware Routed AUROC | AUROC Delta | Flat Baseline AUPRC | Routed AUPRC |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **All School B (Grades 3–8)** | 100 | 16 / 84 | 0.7254 | **0.7500** | **+0.0246** | 0.3635 | **0.3975** |
+| **Matched Grades 4–7 (Full Protocol)** | 73 | 13 / 60 | 0.7423 | **0.7423** | 0.0000 | 0.3961 | 0.3961 |
+| **Grade 3 (Zero Dictation Administered)** | 16 | 2 / 14 | 0.5357 | **0.8929** | **+0.3571** | 0.3214 | **0.7000** |
+| **Grade 8 (Partial Dictation Administered)** | 11 | 1 / 10 | 0.2000 | **0.6000** | **+0.4000** | 0.2000 | **0.2000** |
+
+

@@ -129,9 +129,9 @@ def run_student_level_benchmark(
     df = pd.read_csv(dataset_path)
     print(f"Loaded student dataset: {len(df)} students ({(df['label']==1).sum()} pos, {(df['label']==0).sum()} neg)")
 
-    # Use specified features or Clean 15 + Inferred Motion Kinematics
+    # Use specified features or Clean 15 multi-phenotype set
     if feature_set is None:
-        candidate_feats = CORE_FEATURES + ["motion_pred_mean_pause_sec", "motion_pred_air_ratio"]
+        candidate_feats = CORE_FEATURES
         active_features = [f for f in candidate_feats if f in df.columns]
     else:
         active_features = [f for f in feature_set if f in df.columns]

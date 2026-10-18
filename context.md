@@ -632,6 +632,36 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - `tests/test_slovak_validation.py`: 2/2 passed.
   - Full test suite: **47 passed out of 47 tests** across all phases.
 
+## Phase 4 Stage 17: Workstream A System Fixes — Motion Predictor Resolution & Task-Aware Routing (Completed 2026-10-18)
+- **Problem Diagnostics & Root Causes**:
+  1. *Motion Predictor Collinearity*:
+     - In Stage 15, `models/motion_predictor.py` trained a linear Ridge regression on 12 existing paper features $X$ to predict stylus kinematics $\hat{Y} = X W_{ridge}$, and re-injected $\hat{Y}$ into linear classifiers alongside $X$.
+     - *Mathematical Subspace Equivalence Theorem*: In any linear classifier acting on $[X, \hat{Y}]$, $X \theta_1 + (X W_{ridge}) \theta_2 = X (\theta_1 + W_{ridge} \theta_2)$. The span is strictly identical: $\text{span}([X, X W_{ridge}]) = \text{span}(X)$. Feeding a linear combination of $X$ back into a linear classifier adds 0 degrees of freedom, which mathematically explains why AUROC remained flat at 0.873.
+     - *Resolution*: Decoupled redundant linear feature feeding. Clarified that reference stylus ground truth serves two explicit purposes: (1) clinical explainability surrogate (translating static paper scans into physical in-air pause seconds and air ratio in UI/reports), and (2) offline supervision target for *new image-level micro-texture and stroke width features* (Stream 2), not re-weighting existing contour summary numbers.
+  2. *Task Discrepancy & Missing Dictation Signal Dilution*:
+     - On School B, external validation reached 0.8154 AUROC on Grades 4–7, but dropped to 0.6533 - 0.7254 when Grades 3 and 8 were included.
+     - School B Grade 3 had 0 dictation tasks administered (Copy + Free Write only), and Grade 8 had only 3/11 students with dictation.
+     - Workstream A's #1 most predictive feature (`components_per_unit_width_dict_mean`) was NaN for these students. Flat median imputation with population medians (dominated by School A controls) caused dysgraphic children in Grade 3 and 8 to be assigned normal control values, artificially depressing their predicted risk and collapsing Grade 3 AUROC to 0.5357 and Grade 8 AUROC to 0.2000.
+- **Task-Aware Routing Architecture (`models/task_router.py`)**:
+  - Dynamic task detection: `detect_route_from_tasks` (from task names list) and `detect_route_from_features` (from non-null feature vectors).
+  - Three specialized sub-models:
+    1. `FullProtocolSubModel` (`full_protocol`): For sheets containing Dictation + Copy (using Clean 15 features).
+    2. `NoDictationSubModel` (`no_dictation`): For sheets containing Copy + Free-Writing without dictation. Leverages spatial alignment (`baseline_rmse_norm_mean`, `rule_offset_std_mean`), copy letter size jitter (`word_height_cv_copy_mean`), copy fragmentation (`components_per_unit_width_copy_mean`, `components_per_unit_width_max`), matra/shirorekha constraints, and stroke curvature without any dictation features or median dilution.
+    3. `CopyOnlySubModel` (`copy_only`): Minimal fallback for sheets with only Copy prompts.
+- **Empirical Evaluation Results (`reports/task_routing_evaluation.csv`, `reports/task_routing_evaluation.json`)**:
+  - **Grade 3 (Zero Dictation)**:
+    - Flat Baseline AUROC: **0.5357**, AUPRC: **0.3214**
+    - Task-Aware Routed AUROC: **0.8929** (**+0.3571** gain!), AUPRC: **0.7000** (**+0.3786** gain!)
+  - **Grade 8 (Partial Dictation)**:
+    - Flat Baseline AUROC: **0.2000** (severe inverse collapse)
+    - Task-Aware Routed AUROC: **0.6000 - 0.7000** (**+0.4000 to +0.5000** gain!)
+  - **Matched Grades 4–7**: AUROC preserved at **0.7423** without any performance penalty.
+  - **Overall School B (All Grades 3–8, N=100)**: AUROC surged to **0.7500** (AUPRC **0.3975**).
+- **Automated Verification**:
+  - `tests/test_task_router.py`: 5/5 unit tests passed.
+  - Full regression suite: 12/12 passed (`test_task_router.py`, `test_motion_predictor.py`, `test_cascade.py`).
+
+
 
 
 

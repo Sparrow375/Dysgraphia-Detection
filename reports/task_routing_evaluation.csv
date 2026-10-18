@@ -1,0 +1,5 @@
+cohort_slice,n_students,positives,controls,flat_baseline_auroc,routed_auroc,auroc_delta,flat_baseline_auprc,routed_auprc
+All School B (Grades 3-8),100,16,84,0.7254464285714286,0.75,0.024553571428571397,0.3635295885998133,0.39747752376141365
+Matched Grades 4-7 (Full Protocol),73,13,60,0.7423076923076923,0.7423076923076923,0.0,0.396094834591047,0.396094834591047
+Grade 3 (Zero Dictation Administered),16,2,14,0.5357142857142858,0.8928571428571428,0.357142857142857,0.3214285714285714,0.7
+Grade 8 (Partial Dictation Administered),11,1,10,0.6,0.6,0.0,0.2,0.2

@@ -1,0 +1,100 @@
+{
+  "comparison_table": [
+    {
+      "cohort_slice": "All School B (Grades 3-8)",
+      "n_students": 100,
+      "positives": 16,
+      "controls": 84,
+      "flat_baseline_auroc": 0.7254464285714286,
+      "routed_auroc": 0.75,
+      "auroc_delta": 0.024553571428571397,
+      "flat_baseline_auprc": 0.3635295885998133,
+      "routed_auprc": 0.39747752376141365
+    },
+    {
+      "cohort_slice": "Matched Grades 4-7 (Full Protocol)",
+      "n_students": 73,
+      "positives": 13,
+      "controls": 60,
+      "flat_baseline_auroc": 0.7423076923076923,
+      "routed_auroc": 0.7423076923076923,
+      "auroc_delta": 0.0,
+      "flat_baseline_auprc": 0.396094834591047,
+      "routed_auprc": 0.396094834591047
+    },
+    {
+      "cohort_slice": "Grade 3 (Zero Dictation Administered)",
+      "n_students": 16,
+      "positives": 2,
+      "controls": 14,
+      "flat_baseline_auroc": 0.5357142857142858,
+      "routed_auroc": 0.8928571428571428,
+      "auroc_delta": 0.357142857142857,
+      "flat_baseline_auprc": 0.3214285714285714,
+      "routed_auprc": 0.7
+    },
+    {
+      "cohort_slice": "Grade 8 (Partial Dictation Administered)",
+      "n_students": 11,
+      "positives": 1,
+      "controls": 10,
+      "flat_baseline_auroc": 0.6,
+      "routed_auroc": 0.6,
+      "auroc_delta": 0.0,
+      "flat_baseline_auprc": 0.2,
+      "routed_auprc": 0.2
+    }
+  ],
+  "route_breakdown": {
+    "full_protocol": {
+      "count": 78,
+      "positives": 14,
+      "controls": 64,
+      "auroc": 0.7611607142857143
+    },
+    "no_dictation": {
+      "count": 22,
+      "positives": 2,
+      "controls": 20,
+      "auroc": 0.7
+    }
+  },
+  "grade_breakdown": {
+    "Grade_3": {
+      "count": 16,
+      "positives": 2,
+      "controls": 14,
+      "auroc": 0.8928571428571428
+    },
+    "Grade_4": {
+      "count": 27,
+      "positives": 5,
+      "controls": 22,
+      "auroc": 0.8727272727272727
+    },
+    "Grade_5": {
+      "count": 17,
+      "positives": 4,
+      "controls": 13,
+      "auroc": 0.7692307692307692
+    },
+    "Grade_6": {
+      "count": 12,
+      "positives": 1,
+      "controls": 11,
+      "auroc": 0.9090909090909091
+    },
+    "Grade_7": {
+      "count": 17,
+      "positives": 3,
+      "controls": 14,
+      "auroc": 0.45238095238095233
+    },
+    "Grade_8": {
+      "count": 11,
+      "positives": 1,
+      "controls": 10,
+      "auroc": 0.6
+    }
+  }
+}

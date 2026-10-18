@@ -1,14 +1,29 @@
-"""Stylus-Anchored Motion Predictor.
+"""Stylus-Anchored Motion Predictor & Kinematic Surrogate Engine.
 
-Calibrates static paper handwriting metrics against 200 Hz digital stylus
-ground-truth kinematics from 94 matched students:
-- In-air hesitation ratio (air_ratio)
-- Total stroke fragmentation count (stroke_count)
-- Mean in-air pause duration (mean_pause_sec)
-- Velocity dysfluency / coefficient of variation (cv_vel)
+MATHEMATICAL ANALYSIS & ARCHITECTURAL CONTRACT:
+------------------------------------------------
+In Stage 15, linear Ridge regression was trained on 12 static paper features X
+to predict stylus targets Y_stylus (e.g., mean_pause_sec, air_ratio).
+The predicted values Y_hat = X * W_ridge were then fed back into downstream
+linear classifiers alongside X.
 
-Infers calibrated continuous kinematic surrogates for the full 215-student cohort
-without requiring specialized hardware.
+Mathematical Subspace Equivalence Theorem:
+For any linear classifier with weights [theta_1, theta_2] acting on augmented [X, Y_hat]:
+    f(X, Y_hat) = X * theta_1 + Y_hat * theta_2
+                = X * theta_1 + (X * W_ridge) * theta_2
+                = X * (theta_1 + W_ridge * theta_2)
+Since (theta_1 + W_ridge * theta_2) in R^p, span([X, X * W_ridge]) = span(X).
+Feeding a linear combination of X back into a linear model adds ZERO orthogonal
+information or degrees of freedom (explaining why linear AUROC remained flat at 0.873).
+
+CORRECT ROLE OF STYLUS REFERENCE DATA:
+1. Clinical Explainability Surrogate: Translates 2D static paper metrics into
+   clinically meaningful physical kinematic units (estimated in-air pause seconds,
+   in-air ratio) for screening reports and the Two-Tier Cascade.
+2. Supervision Target for New Image Streams (Stream 2): Reference stylus ground-truth
+   must supervise *new image-level features* (e.g. grayscale shading variance,
+   stroke-width jitter, erasure halo optical density) rather than re-weighting
+   existing contour/skeleton summary metrics.
 """
 
 from __future__ import annotations
