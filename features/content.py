@@ -1,9 +1,10 @@
 """Content and OCR-derived linguistic and legibility features.
 
 Extracts objective legibility, transcription accuracy, and task omission metrics
-using cached deep-learning OCR (EasyOCR):
-- ocr_confidence_mean: Mean confidence score of words decoded by OCR (legibility index).
+using modern Handwritten Text Recognition (Microsoft TrOCR + Devanagari TrOCR):
+- ocr_confidence_mean: Mean confidence score of tokens decoded by OCR (legibility index).
 - ocr_confidence_std: Standard deviation of word recognition confidences.
+- ocr_confidence_min: Minimum token confidence (worst local legibility).
 - ocr_low_conf_ratio: Fraction of recognized tokens with confidence < 0.40 (illegibility fraction).
 - ocr_words_recognized: Total count of words recognized by OCR.
 - ocr_word_completion_ratio: Recognized words divided by expected prompt word count.
@@ -16,54 +17,30 @@ using cached deep-learning OCR (EasyOCR):
 
 from __future__ import annotations
 
-import re
 import json
+import logging
 import os
+import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
 
-# Cache global OCR readers and OCR result disk cache
-_OCR_READER = None
-_OCR_CACHE = None
-CACHE_FILE_PATH = Path(__file__).resolve().parent.parent / "data" / "features" / "ocr_cache.json"
+from features.ocr_engine import DualEngineOCRPipeline, OCRTaskResult, get_trocr_cache, save_trocr_cache
+
+logger = logging.getLogger(__name__)
+
+# Global dual engine pipeline instance
+_DUAL_PIPELINE: Optional[DualEngineOCRPipeline] = None
 
 
-def get_ocr_cache() -> Dict[str, List[Tuple[str, float]]]:
-    """Load or return cached OCR results from data/features/ocr_cache.json."""
-    global _OCR_CACHE
-    if _OCR_CACHE is None:
-        if CACHE_FILE_PATH.exists():
-            try:
-                with open(CACHE_FILE_PATH, "r", encoding="utf-8") as f:
-                    _OCR_CACHE = json.load(f)
-            except Exception:
-                _OCR_CACHE = {}
-        else:
-            _OCR_CACHE = {}
-    return _OCR_CACHE
-
-
-def save_ocr_cache(cache_dict: Dict[str, Any]) -> None:
-    """Save in-memory OCR cache to disk."""
-    CACHE_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(CACHE_FILE_PATH, "w", encoding="utf-8") as f:
-        json.dump(cache_dict, f, indent=2)
-
-
-def get_ocr_reader():
-    """Lazily initialize and cache EasyOCR reader."""
-    global _OCR_READER
-    if _OCR_READER is None:
-        try:
-            import easyocr
-            # Load bilingual reader (Hindi + English)
-            _OCR_READER = easyocr.Reader(["hi", "en"], gpu=False, verbose=False)
-        except Exception:
-            _OCR_READER = False
-    return _OCR_READER if _OCR_READER is not False else None
+def get_ocr_pipeline() -> DualEngineOCRPipeline:
+    """Lazily initialize global DualEngineOCRPipeline."""
+    global _DUAL_PIPELINE
+    if _DUAL_PIPELINE is None:
+        _DUAL_PIPELINE = DualEngineOCRPipeline()
+    return _DUAL_PIPELINE
 
 
 # Standardized prompt word counts
@@ -88,6 +65,7 @@ CANDIDATE_PROMPTS: Dict[str, List[str]] = {
         "हमारे स्कूल मे एक सूंदर बगीचा है",
         "हमारे स्कूल में एक सुंदर बगीचा है",
         "हमारे स्कूल मे एक सुंदर बगीचा है",
+        "हमारे स्कूल में एक बगीचा है",
     ],
     "copy_english": [
         "on sundays we play cricket in the park with four friends after game we eat snacks together",
@@ -150,7 +128,7 @@ def word_levenshtein_distance(tokens1: List[str], tokens2: List[str]) -> int:
 
 
 def clean_text(text: str) -> str:
-    """Normalize text: lowercase, remove punctuation, collapse whitespace."""
+    """Normalize text: lowercase, remove non-alphanumeric punctuation, collapse whitespace."""
     text = text.lower()
     text = re.sub(r"[^\w\s\u0900-\u097F]", "", text)
     return " ".join(text.split())
@@ -159,13 +137,15 @@ def clean_text(text: str) -> str:
 def compute_content_features(
     sentence_json: Dict[str, Any],
     image_crop: Optional[np.ndarray] = None,
+    use_cache: bool = True,
 ) -> Dict[str, float]:
-    """Extract content, OCR legibility, omission, and error rate features.
+    """Extract content, OCR legibility, omission, and error rate features using TrOCR.
 
     Returns:
         dict with keys:
             - ocr_confidence_mean: float | NaN
             - ocr_confidence_std: float | NaN
+            - ocr_confidence_min: float | NaN
             - ocr_low_conf_ratio: float | NaN
             - ocr_words_recognized: float
             - ocr_word_completion_ratio: float | NaN
@@ -178,6 +158,7 @@ def compute_content_features(
     empty_result = {
         "ocr_confidence_mean": np.nan,
         "ocr_confidence_std": np.nan,
+        "ocr_confidence_min": np.nan,
         "ocr_low_conf_ratio": np.nan,
         "ocr_words_recognized": 0.0,
         "ocr_word_completion_ratio": np.nan,
@@ -191,51 +172,23 @@ def compute_content_features(
     if image_crop is None or image_crop.size == 0:
         return empty_result
 
-    # Look up in persistent disk cache first
-    sid = str(sentence_json.get("student_id", ""))
-    tid = str(sentence_json.get("task_id", ""))
-    cache_key = f"{sid}_{tid}" if (sid and tid) else ""
+    pipeline = get_ocr_pipeline()
+    task_res: OCRTaskResult = pipeline.transcribe_task(
+        image_crop=image_crop,
+        sentence_json=sentence_json,
+        use_cache=use_cache,
+    )
 
-    cache = get_ocr_cache()
-    if cache_key and cache_key in cache:
-        cached_entries = cache[cache_key]
-        results = [([], entry[0], float(entry[1])) for entry in cached_entries]
-    else:
-        reader = get_ocr_reader()
-        if reader is None:
-            return empty_result
+    task_name = str(sentence_json.get("task_name", "")).lower()
 
-        # Format image for EasyOCR
-        if len(image_crop.shape) == 2:
-            img_ocr = cv2.cvtColor(image_crop, cv2.COLOR_GRAY2RGB)
-        elif len(image_crop.shape) == 3 and image_crop.shape[2] == 3:
-            img_ocr = cv2.cvtColor(image_crop, cv2.COLOR_BGR2RGB)
-        else:
-            return empty_result
-
-        # Downsample large crops to max height 96px for high-throughput CPU inference
-        if img_ocr.shape[0] > 96:
-            scale = 96.0 / img_ocr.shape[0]
-            new_w = max(16, int(img_ocr.shape[1] * scale))
-            img_ocr = cv2.resize(img_ocr, (new_w, 96), interpolation=cv2.INTER_AREA)
-
-        try:
-            results = reader.readtext(img_ocr)
-            if cache_key:
-                cache[cache_key] = [[str(r[1]), float(r[2])] for r in results]
-        except Exception:
-            return empty_result
-
-    task_name = str(sentence_json.get("task_name", ""))
-    script = str(sentence_json.get("script", "latin"))
-
-    if not results:
-        # Zero words recognized by OCR (severe illegibility or empty crop)
+    if not task_res.text.strip():
+        # Zero words recognized by OCR (severe illegibility or blank crop)
         exp_words = EXPECTED_WORD_COUNTS.get(task_name)
         exp_chars = EXPECTED_CHAR_COUNTS.get(task_name)
         return {
             "ocr_confidence_mean": 0.0,
             "ocr_confidence_std": 0.0,
+            "ocr_confidence_min": 0.0,
             "ocr_low_conf_ratio": 1.0,
             "ocr_words_recognized": 0.0,
             "ocr_word_completion_ratio": 0.0 if exp_words else np.nan,
@@ -246,18 +199,10 @@ def compute_content_features(
             "ocr_wer": 1.0 if task_name in CANDIDATE_PROMPTS else np.nan,
         }
 
-    raw_tokens = [str(r[1]) for r in results]
-    confs = [float(r[2]) for r in results]
-
-    conf_mean = float(np.mean(confs))
-    conf_std = float(np.std(confs)) if len(confs) > 1 else 0.0
-    low_conf_ratio = float(np.mean([1.0 if c < 0.40 else 0.0 for c in confs]))
-
-    recognized_words_count = float(len(raw_tokens))
-    combined_raw_text = " ".join(raw_tokens)
-    cleaned_ocr_text = clean_text(combined_raw_text)
+    cleaned_ocr_text = clean_text(task_res.text)
     ocr_tokens = cleaned_ocr_text.split()
     total_chars = float(len(cleaned_ocr_text.replace(" ", "")))
+    recognized_words_count = float(len(ocr_tokens))
 
     exp_words = EXPECTED_WORD_COUNTS.get(task_name)
     word_comp_ratio = (recognized_words_count / exp_words) if exp_words else np.nan
@@ -290,9 +235,10 @@ def compute_content_features(
         wer = float(min(wer_scores))
 
     return {
-        "ocr_confidence_mean": conf_mean,
-        "ocr_confidence_std": conf_std,
-        "ocr_low_conf_ratio": low_conf_ratio,
+        "ocr_confidence_mean": task_res.mean_confidence,
+        "ocr_confidence_std": task_res.std_confidence,
+        "ocr_confidence_min": task_res.min_confidence,
+        "ocr_low_conf_ratio": task_res.low_conf_ratio,
         "ocr_words_recognized": recognized_words_count,
         "ocr_word_completion_ratio": word_comp_ratio,
         "ocr_char_count": total_chars,
@@ -303,79 +249,66 @@ def compute_content_features(
     }
 
 
-def _worker_ocr_task(task_tuple: Tuple[str, str, str]) -> Tuple[str, List[List[Any]]]:
-    """Worker function to perform OCR on a single image crop."""
-    cache_key, crop_path_str, _ = task_tuple
-    reader = get_ocr_reader()
-    if reader is None or not os.path.exists(crop_path_str):
-        return cache_key, []
-    try:
-        img = cv2.imread(crop_path_str)
-        if img is None:
-            return cache_key, []
-        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        if img_rgb.shape[0] > 96:
-            scale = 96.0 / img_rgb.shape[0]
-            new_w = max(16, int(img_rgb.shape[1] * scale))
-            img_rgb = cv2.resize(img_rgb, (new_w, 96), interpolation=cv2.INTER_AREA)
-        res = reader.readtext(img_rgb)
-        return cache_key, [[str(r[1]), float(r[2])] for r in res]
-    except Exception:
-        return cache_key, []
-
-
-def precompute_ocr_cache(processed_dir: str = "data/processed", workers: int = 4) -> None:
-    """Scan all processed sentence crops and populate data/features/ocr_cache.json."""
+def precompute_ocr_cache(processed_dir: str = "data/processed", batch_save: int = 10) -> None:
+    """Scan all processed sentence crops and populate data/features/trocr_cache.json using TrOCR."""
     import glob
-    from concurrent.futures import ProcessPoolExecutor
     from tqdm import tqdm
 
     search_glob = os.path.join(processed_dir, "*", "*", "sentence_*.json")
     json_paths = sorted(glob.glob(search_glob))
-    print(f"Found {len(json_paths)} sentence JSON files to inspect for OCR caching.")
+    print(f"Found {len(json_paths)} sentence JSON files to inspect for TrOCR caching.")
 
-    cache = get_ocr_cache()
-    tasks_to_run = []
+    cache = get_trocr_cache()
+    pipeline = get_ocr_pipeline()
 
+    unprocessed: List[Tuple[str, str, Path]] = []
     for jp in json_paths:
+        p = Path(jp)
         try:
-            with open(jp, "r", encoding="utf-8") as f:
+            with open(p, "r", encoding="utf-8") as f:
                 sj = json.load(f)
-            sid = str(sj.get("student_id", Path(jp).parent.name))
-            tid = str(sj.get("task_id", Path(jp).stem))
+            sid = str(sj.get("student_id", p.parent.name))
+            tid = str(sj.get("task_id", p.stem))
             key = f"{sid}_{tid}"
             if key not in cache:
-                crop_p = Path(jp).parent / sj.get("crop_filename", f"{tid}.png")
+                crop_p = p.parent / sj.get("crop_filename", f"{tid}.png")
                 if crop_p.exists():
-                    tasks_to_run.append((key, str(crop_p), str(jp)))
+                    unprocessed.append((key, str(crop_p), p))
         except Exception:
             continue
 
-    print(f"Already cached: {len(cache)}. Remaining tasks to OCR: {len(tasks_to_run)}")
-    if not tasks_to_run:
-        print("All crops already cached in data/features/ocr_cache.json!")
+    print(f"Already cached in trocr_cache.json: {len(cache)}. Remaining tasks to OCR: {len(unprocessed)}")
+    if not unprocessed:
+        print("All crops already cached in trocr_cache.json!")
         return
 
-    if workers > 1:
-        with ProcessPoolExecutor(max_workers=workers) as executor:
-            results = list(tqdm(executor.map(_worker_ocr_task, tasks_to_run), total=len(tasks_to_run), desc=f"OCR Caching ({workers} workers)"))
-    else:
-        results = [
-            _worker_ocr_task(t)
-            for t in tqdm(tasks_to_run, desc="OCR Caching (1 worker)")
-        ]
+    count = 0
+    for key, crop_path, json_path in tqdm(unprocessed, desc="TrOCR Feature Extraction"):
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                sj = json.load(f)
+            img = cv2.imread(crop_path)
+            if img is None:
+                continue
 
-    for k, entries in results:
-        cache[k] = entries
+            res = pipeline.transcribe_task(img, sj, use_cache=False)
+            cache[key] = res.to_dict()
+            count += 1
 
-    save_ocr_cache(cache)
-    print(f"Successfully saved {len(cache)} entries to {CACHE_FILE_PATH}!")
+            if count % batch_save == 0:
+                pipeline.persist_cache()
+        except Exception as e:
+            logger.error("Error processing %s: %s", key, e)
+            continue
+
+    pipeline.persist_cache()
+    print(f"Successfully finished caching {len(cache)} entries to {CACHE_FILE_PATH}!")
 
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Precompute EasyOCR results cache.")
+    parser = argparse.ArgumentParser(description="Precompute TrOCR results cache.")
     parser.add_argument("--processed-dir", default="data/processed")
-    parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--batch-save", type=int, default=10)
     args = parser.parse_args()
-    precompute_ocr_cache(processed_dir=args.processed_dir, workers=args.workers)
+    precompute_ocr_cache(processed_dir=args.processed_dir, batch_save=args.batch_save)

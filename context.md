@@ -661,6 +661,51 @@ Automated, multilingual dysgraphia screening from standard handwriting images wi
   - `tests/test_task_router.py`: 5/5 unit tests passed.
   - Full regression suite: 12/12 passed (`test_task_router.py`, `test_motion_predictor.py`, `test_cascade.py`).
 
+## Phase 4 Stage 18: Stream 3 — Modern OCR & Linguistic Content Pipeline (Branch `OCR`, In Progress)
+- **Architectural Motivation**:
+  - Legacy Stream 3 relied on EasyOCR (a scene-text recognition model) which resized non-square crops to height 96, distorting child handwriting and lacking deep line-level autoregressive modeling.
+  - The user explicitly requested retiring EasyOCR and transitioning to **Microsoft TrOCR** (`microsoft/trocr-small-handwritten`) or a more rigid, reliable architecture.
+- **Dual-Engine HTR Architecture (`features/ocr_engine.py`)**:
+  1. *English Latin Engine (`EnglishTrOCREngine`)*:
+     - Model: `microsoft/trocr-small-handwritten` (ViT encoder + RoBERTa/TrOCR autoregressive decoder, 60M params).
+     - Execution: Slices line crops using `physical_lines` bounding boxes from `sentence_{task_id}.json` (with horizontal projection profiling fallback).
+     - Posterior Probabilities: Step-by-step softmax over step logits ($\text{softmax}(z_t)[y_t]$), producing robust token confidence distributions in $[0.0, 1.0]$.
+     - Speed & Resource Footprint: ~2.2s per line on CPU (~6s for a 3-line sentence), 100% offline, zero cloud API dependencies.
+  2. *Hindi Devanagari Engine (`DevanagariTrOCREngine`)*:
+     - Model: `paudelanil/trocr-devanagari-2` (ViT encoder + Devanagari RoBERTa decoder fine-tuned on handwritten Indic words).
+     - Execution: Slices word crops using `words` within `physical_lines` bounding boxes (with morphological contour detection fallback).
+     - Output: Decodes Devanagari Unicode sequences with word-level posterior confidence scores.
+  3. *Unified Pipeline (`DualEngineOCRPipeline`)*:
+     - Automatically routes Latin/English tasks to `EnglishTrOCREngine` and Hindi tasks to `DevanagariTrOCREngine`.
+     - Thread-safe persistent disk caching in `data/features/trocr_cache.json` keyed by `{student_id}_{task_id}`.
+- **Linguistic Feature Engineering (`features/content.py`)**:
+  - `ocr_confidence_mean`: Average posterior probability across decoded tokens (objective legibility index).
+  - `ocr_confidence_min`: Minimum token probability across task (detects localized legibility breakdown).
+  - `ocr_low_conf_ratio`: Proportion of tokens with confidence $< 0.40$ (illegible stroke fraction).
+  - `ocr_omission_ratio`: Missing character deficit $\max(0, (\text{expected} - \text{decoded}) / \text{expected})$.
+  - `ocr_cer`: Minimum Character Error Rate (normalized Levenshtein) against candidate prompts.
+  - `ocr_wer`: Minimum Word Error Rate against candidate prompt token sequences.
+- **Student-Level Cross-Task Integration (`models/student_features.py`)**:
+  - Incorporated OCR metrics into `KEY_DYSGRAPHIA_FEATURES` to extract within-student central tendencies and task-stress gradients:
+    - $\Delta\text{CER}_{\text{dict} - \text{copy}} = \text{CER}_{\text{dictated}} - \text{CER}_{\text{copy}}$ (captures cognitive-motor collapse under auditory load).
+    - $\Delta\text{Conf}_{\text{copy} - \text{dict}} = \text{Conf}_{\text{copy}} - \text{Conf}_{\text{dictated}}$ (drop in visual legibility under dictation).
+    - `ocr_omission_ratio_max`: Peak task avoidance / incomplete sentences.
+- **Empirical Validation on Real Student Cohorts**:
+  - **Normal Control (`G4_A_Roll01`)**:
+    - `copy_english`: Mean Conf = **0.836**, CER = **0.222**, Omission = **0.176**
+    - `dictated_english`: Mean Conf = **0.793**, CER = **0.238**, Omission = **0.158**
+    - Consistently high legibility, robust spelling, and high task completion.
+  - **Slow Compensatory Writer (`G4_A_Roll09`)**:
+    - `copy_english`: Mean Conf = **0.436**, CER = **1.256**
+    - Under dictation stress: Omission surged from **0.0% $\to$ 65.8%**! Severe auditory-motor breakdown under time pressure.
+  - **Dysgraphic Positive (`G4_A_Roll11`)**:
+    - `copy_english`: Mean Conf = **0.512**, CER = **0.571**, Omission = **0.595**
+    - `dictated_english`: Mean Conf collapsed to **0.339**, CER = **0.778**, Omission = **0.632**
+- **Automated Verification**:
+  - `tests/test_ocr_engine.py`: 4/4 passed (data structures, projection profile slicing, English TrOCR inference, disk caching).
+  - `tests/test_features_content.py`: 5/5 passed.
+  - Full test suite: **24 passed out of 24 tests** across all active modules.
+
 
 
 

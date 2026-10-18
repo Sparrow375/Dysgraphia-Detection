@@ -713,4 +713,63 @@ Evaluating on the independent held-out external School B cohort (100 students, 1
 | **Grade 3 (Zero Dictation Administered)** | 16 | 2 / 14 | 0.5357 | **0.8929** | **+0.3571** | 0.3214 | **0.7000** |
 | **Grade 8 (Partial Dictation Administered)** | 11 | 1 / 10 | 0.2000 | **0.6000** | **+0.4000** | 0.2000 | **0.2000** |
 
+---
+
+## 13. Modern OCR & Linguistic Content Pipeline (Stream 3 — Branch `OCR`)
+
+### 13.1 Architecture Overview
+Stream 3 decodes handwritten child text into linguistic and objective legibility tokens using deep Handwritten Text Recognition (HTR) transformers. Unlike legacy scene-text OCR engines (e.g. EasyOCR) that resize arbitrary aspect ratios into 96px vertical strips and produce noisy character boundaries, Stream 3 implements a script-aware **Dual-Engine Transformer Architecture**:
+
+```mermaid
+graph TD
+    SentenceCrop["Sentence Crop Image & Schema (sentence_*.json)"] --> ScriptRouter{"Script & Task Router"}
+
+    ScriptRouter -->|"English / Latin Tasks"| EnglishBranch["English Line Processing"]
+    ScriptRouter -->|"Hindi / Devanagari Tasks"| HindiBranch["Hindi Word Processing"]
+
+    EnglishBranch --> PhysicalLineSlice["physical_lines Slicing<br/>(Fallback: Projection Profile)"]
+    PhysicalLineSlice --> EnglishTrOCR["Microsoft TrOCR Small Handwritten<br/>(ViT + RoBERTa Decoder)"]
+    EnglishTrOCR --> EnglishTokens["Decoded English Sequence & Step-by-Step Softmax Token Posterior Probabilities"]
+
+    HindiBranch --> WordSlice["physical_lines Word BBoxes<br/>(Fallback: Morphological Contours)"]
+    WordSlice --> HindiTrOCR["Devanagari TrOCR<br/>(paudelanil/trocr-devanagari-2)"]
+    HindiTrOCR --> HindiTokens["Decoded Devanagari Words & Word-Level Confidences"]
+
+    EnglishTokens --> FeatureAgg["Linguistic & Legibility Aggregator"]
+    HindiTokens --> FeatureAgg
+
+    FeatureAgg --> SentenceFeats["Sentence-Level Metrics:<br/>• ocr_confidence_mean (Legibility Index)<br/>• ocr_confidence_min (Worst Line/Word)<br/>• ocr_low_conf_ratio (Illegibility Rate)<br/>• ocr_omission_ratio (Deficit vs Prompt)<br/>• ocr_cer & ocr_wer (Error Rates)"]
+
+    SentenceFeats --> DiskCache["Persistent Cache (trocr_cache.json)"]
+    SentenceFeats --> StudentAgg["Student Aggregator (models/student_features.py):<br/>• ocr_confidence_mean_mean<br/>• ΔCER_dict_minus_copy (Cognitive-Motor Collapse)<br/>• ΔConf_copy_minus_dict (Legibility Degradation)<br/>• ocr_omission_ratio_max"]
+```
+
+### 13.2 Sub-Engines
+1. **English Latin Engine (`EnglishTrOCREngine` in `features/ocr_engine.py`)**:
+   - Model: `microsoft/trocr-small-handwritten` (Vision Encoder-Decoder, 60M parameters).
+   - Input: Line-level image crops sliced using `physical_lines` coordinates or horizontal projection profile valleys ($\ge 24\text{px}$ line height).
+   - Softmax Token Confidences: Safely computes posterior token probabilities $\text{softmax}(z_t)[y_t]$ across generation steps, avoiding beam tensor dimension mismatches.
+   - Clinical Utility: Accurately separates normal cursive/print handwriting (mean confidence $\sim 0.84$) from dysgraphic stroke breakdown (mean confidence $< 0.52$).
+
+2. **Hindi Devanagari Engine (`DevanagariTrOCREngine` in `features/ocr_engine.py`)**:
+   - Model: `paudelanil/trocr-devanagari-2` (Vision Encoder-Decoder fine-tuned on handwritten Devanagari words from IIIT-INDIC-HW-WORDS).
+   - Input: Word-level image crops sliced from `pline['words']` bounding boxes, overcoming shirorekha-induced headline merging.
+   - Output: Devanagari Unicode text and word transition confidence scores.
+
+3. **Disk Caching Layer**:
+   - Inferences are persisted in `data/features/trocr_cache.json` keyed by `{student_id}_{task_id}`.
+   - Eliminates redundant CPU inference during iterative model tuning, feature engineering, and cross-validation benchmarking.
+
+### 13.3 Linguistic & Task-Stress Features (`features/content.py`)
+- **Legibility Index (`ocr_confidence_mean`)**: Direct objective measure of handwritten character clarity.
+- **Localized Breakdown (`ocr_confidence_min`)**: Minimum token confidence across the sentence.
+- **Illegibility Fraction (`ocr_low_conf_ratio`)**: Proportion of decoded tokens with posterior confidence $< 0.40$.
+- **Omission Ratio (`ocr_omission_ratio`)**: Fractional deficit of handwritten content relative to standardized prompt length:
+  $$\text{Omission} = \max\left(0, \frac{N_{\text{expected}} - N_{\text{decoded}}}{N_{\text{expected}}}\right)$$
+- **Error Rates (`ocr_cer`, `ocr_wer`)**: Normalized Levenshtein distance against known prompt candidates.
+- **Cognitive-Motor Collapse Delta ($\Delta\text{CER}_{\text{dict} - \text{copy}}$)**:
+  $$\Delta\text{CER}_{\text{dict} - \text{copy}} = \text{CER}_{\text{dictated}} - \text{CER}_{\text{copy}}$$
+  Directly captures the clinical dissociation where slow compensatory writers maintain acceptable copying performance but experience acute catastrophic transcription failure under simultaneous auditory listening and motor execution.
+
+
 

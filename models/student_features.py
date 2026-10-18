@@ -27,6 +27,10 @@ KEY_DYSGRAPHIA_FEATURES = [
     "word_height_cv",
     "jerk_proxy",
     "words_written_ratio",
+    "ocr_confidence_mean",
+    "ocr_low_conf_ratio",
+    "ocr_omission_ratio",
+    "ocr_cer",
 ]
 
 
