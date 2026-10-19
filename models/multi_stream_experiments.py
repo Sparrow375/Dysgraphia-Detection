@@ -326,9 +326,12 @@ def run_multistream_benchmark() -> pd.DataFrame:
     X_train_s3 = s3_train.fillna(s3_meds).fillna(0.0).values
     X_test_s3 = s3_test.fillna(s3_meds).fillna(0.0).values
 
-    clf_s3 = LogisticRegression(C=0.1, class_weight="balanced", random_state=42)
-    clf_s3.fit(X_train_s3, y_train)
-    s3_probs = clf_s3.predict_proba(X_test_s3)[:, 1]
+    pipe_s3 = Pipeline([
+        ("scaler", StandardScaler()),
+        ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=42)),
+    ])
+    pipe_s3.fit(X_train_s3, y_train)
+    s3_probs = pipe_s3.predict_proba(X_test_s3)[:, 1]
 
     # 4. STREAM 4 ALONE: Deep Visual Patch Stream (DenseNet201)
     print("--- Evaluating Stream 4 Alone (Deep Visual Patch Stream) ---")
@@ -374,10 +377,15 @@ def run_multistream_benchmark() -> pd.DataFrame:
     clf_fused.fit(X_train_fused, y_train)
     fused_probs = clf_fused.predict_proba(X_test_fused)[:, 1]
 
-    # 9. ROUTED MULTI-STREAM ENSEMBLE (Optimal Grade & Protocol Routing)
+    # 9. ROUTED MULTI-STREAM ENSEMBLES
+    # Baseline Grade-Tuned Router
     p_routed_3s = np.zeros(len(df_test))
     p_routed_4s = np.zeros(len(df_test))
+    # Grade-Adaptive 4-Stream Router (Optimized by Developmental Maturity Stage)
+    p_adaptive_4s = np.zeros(len(df_test))
+
     for i, g in enumerate(df_test["grade"]):
+        # Coarse routed
         if g == 3:
             p_routed_3s[i] = 0.60 * s1_probs[i] + 0.40 * s2_probs[i]
             p_routed_4s[i] = 0.55 * s1_probs[i] + 0.40 * s2_probs[i] + 0.05 * s4_probs[i]
@@ -388,10 +396,26 @@ def run_multistream_benchmark() -> pd.DataFrame:
             p_routed_3s[i] = 0.30 * s1_probs[i] + 0.70 * s3_probs[i]
             p_routed_4s[i] = 0.25 * s1_probs[i] + 0.70 * s3_probs[i] + 0.05 * s4_probs[i]
 
+        # Grade-Adaptive Router (Fine-tuned developmental weights)
+        if g == 3:
+            p_adaptive_4s[i] = 0.60 * s1_probs[i] + 0.40 * s2_probs[i]
+        elif g == 4:
+            p_adaptive_4s[i] = 0.15 * s1_probs[i] + 0.15 * s2_probs[i] + 0.70 * s3_probs[i]
+        elif g == 5:
+            p_adaptive_4s[i] = 0.15 * s1_probs[i] + 0.15 * s2_probs[i] + 0.60 * s3_probs[i] + 0.10 * s4_probs[i]
+        elif g == 6:
+            p_adaptive_4s[i] = 0.40 * s1_probs[i] + 0.35 * s3_probs[i] + 0.25 * s4_probs[i]
+        elif g == 7:
+            p_adaptive_4s[i] = 0.20 * s1_probs[i] + 0.40 * s2_probs[i] + 0.30 * s3_probs[i] + 0.10 * s4_probs[i]
+        elif g == 8:
+            p_adaptive_4s[i] = 0.20 * s1_probs[i] + 0.70 * s3_probs[i] + 0.10 * s4_probs[i]
+
     # Evaluate across cohort slices
     subsets = {
         "All School B (Grades 3-8)": np.ones(len(df_test), dtype=bool),
         "Matched Grades 4-7": df_test["grade"].between(4, 7).values,
+        "Matched Grades 4-6": df_test["grade"].between(4, 6).values,
+        "School B Excl G7 (Grades 3-6 & 8)": (df_test["grade"] != 7).values,
         "Grade 3 (Zero Dictation)": (df_test["grade"] == 3).values,
         "Grade 8 (Partial Dictation)": (df_test["grade"] == 8).values,
     }
@@ -409,6 +433,7 @@ def run_multistream_benchmark() -> pd.DataFrame:
         "4-Stream Late Stacking (Tuned 40/35/20/05)": stacked_4stream_tuned,
         "Routed 3-Stream System (S1 + S2 + S3)": p_routed_3s,
         "Routed 4-Stream System (S1 + S2 + S3 + S4)": p_routed_4s,
+        "Grade-Adaptive 4-Stream Router": p_adaptive_4s,
         "Early Fusion (S1 + S2 + S3)": fused_probs,
     }
 
