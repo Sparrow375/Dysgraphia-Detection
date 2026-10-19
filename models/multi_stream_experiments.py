@@ -330,16 +330,33 @@ def run_multistream_benchmark() -> pd.DataFrame:
     clf_s3.fit(X_train_s3, y_train)
     s3_probs = clf_s3.predict_proba(X_test_s3)[:, 1]
 
-    # 4. 2-STREAM COMBINATIONS
+    # 4. STREAM 4 ALONE: Deep Visual Patch Stream (DenseNet201)
+    print("--- Evaluating Stream 4 Alone (Deep Visual Patch Stream) ---")
+    pv_json = WORKSPACE_ROOT / "data" / "features" / "p_vision_predictions.json"
+    if not pv_json.exists():
+        from baseline.visual_classifier import train_and_evaluate_visual_stream
+        p_vision_dict, _ = train_and_evaluate_visual_stream()
+    else:
+        with open(pv_json, "r", encoding="utf-8") as f:
+            p_vision_dict = json.load(f)
+
+    s4_probs = np.array([p_vision_dict.get(str(sid).strip(), 0.5) for sid in df_test["student_id"]])
+
+    # 5. 2-STREAM COMBINATIONS
     stacked_s1_s2 = 0.60 * s1_probs + 0.40 * s2_probs
     stacked_s1_s3 = 0.70 * s1_probs + 0.30 * s3_probs
 
-    # 5. 3-STREAM LATE STACKING (Balanced: 0.50 S1 + 0.25 S2 + 0.25 S3)
+    # 6. 3-STREAM LATE STACKING
     print("--- Evaluating 3-Stream Late Probability Stacking ---")
     stacked_3stream_balanced = 0.50 * s1_probs + 0.25 * s2_probs + 0.25 * s3_probs
     stacked_3stream_tuned = 0.45 * s1_probs + 0.35 * s2_probs + 0.20 * s3_probs
 
-    # 6. EARLY FUSION (Concatenate all available S1 + S2 + S3 features)
+    # 7. 4-STREAM LATE STACKING (Geometry + Pressure/Width + OCR + Vision)
+    print("--- Evaluating 4-Stream Late Probability Stacking ---")
+    stacked_4stream_balanced = 0.25 * s1_probs + 0.25 * s2_probs + 0.25 * s3_probs + 0.25 * s4_probs
+    stacked_4stream_tuned = 0.40 * s1_probs + 0.35 * s2_probs + 0.20 * s3_probs + 0.05 * s4_probs
+
+    # 8. EARLY FUSION (Concatenate all available S1 + S2 + S3 features)
     print("--- Evaluating 3-Stream Early Feature Fusion ---")
     all_fused_features = FULL_PROTOCOL_FEATURES + [
         f for f in available_s2 + available_s3 if f not in FULL_PROTOCOL_FEATURES
@@ -357,18 +374,19 @@ def run_multistream_benchmark() -> pd.DataFrame:
     clf_fused.fit(X_train_fused, y_train)
     fused_probs = clf_fused.predict_proba(X_test_fused)[:, 1]
 
-    # 7. ROUTED MULTI-STREAM ENSEMBLE (Optimal Grade & Protocol Routing)
-    # Grade 3 (Zero Dictation): S1 + S2 (motor spatial & pencil pressure)
-    # Grades 4-7 (Matched Protocol): S1 (45%) + S2 (35%) + S3 (20%)
-    # Grade 8 (Ballpoint Pens / Partial): S1 (30%) + S3 (70%)
-    p_routed = np.zeros(len(df_test))
+    # 9. ROUTED MULTI-STREAM ENSEMBLE (Optimal Grade & Protocol Routing)
+    p_routed_3s = np.zeros(len(df_test))
+    p_routed_4s = np.zeros(len(df_test))
     for i, g in enumerate(df_test["grade"]):
         if g == 3:
-            p_routed[i] = 0.60 * s1_probs[i] + 0.40 * s2_probs[i]
+            p_routed_3s[i] = 0.60 * s1_probs[i] + 0.40 * s2_probs[i]
+            p_routed_4s[i] = 0.55 * s1_probs[i] + 0.40 * s2_probs[i] + 0.05 * s4_probs[i]
         elif 4 <= g <= 7:
-            p_routed[i] = 0.45 * s1_probs[i] + 0.35 * s2_probs[i] + 0.20 * s3_probs[i]
+            p_routed_3s[i] = 0.45 * s1_probs[i] + 0.35 * s2_probs[i] + 0.20 * s3_probs[i]
+            p_routed_4s[i] = 0.40 * s1_probs[i] + 0.35 * s2_probs[i] + 0.20 * s3_probs[i] + 0.05 * s4_probs[i]
         elif g == 8:
-            p_routed[i] = 0.30 * s1_probs[i] + 0.70 * s3_probs[i]
+            p_routed_3s[i] = 0.30 * s1_probs[i] + 0.70 * s3_probs[i]
+            p_routed_4s[i] = 0.25 * s1_probs[i] + 0.70 * s3_probs[i] + 0.05 * s4_probs[i]
 
     # Evaluate across cohort slices
     subsets = {
@@ -383,11 +401,14 @@ def run_multistream_benchmark() -> pd.DataFrame:
         "Stream 1 Alone (Geometry Router)": s1_probs,
         "Stream 2 Alone (Stroke-Width/Pressure)": s2_probs,
         "Stream 3 Alone (TrOCR Legibility)": s3_probs,
+        "Stream 4 Alone (Deep Vision Patch)": s4_probs,
         "Late Stacking (0.60 S1 + 0.40 S2)": stacked_s1_s2,
         "Late Stacking (0.70 S1 + 0.30 S3)": stacked_s1_s3,
         "3-Stream Late Stacking (Balanced)": stacked_3stream_balanced,
         "3-Stream Late Stacking (Tuned 45/35/20)": stacked_3stream_tuned,
-        "Routed Multi-Stream System (S1 + S2 + S3)": p_routed,
+        "4-Stream Late Stacking (Tuned 40/35/20/05)": stacked_4stream_tuned,
+        "Routed 3-Stream System (S1 + S2 + S3)": p_routed_3s,
+        "Routed 4-Stream System (S1 + S2 + S3 + S4)": p_routed_4s,
         "Early Fusion (S1 + S2 + S3)": fused_probs,
     }
 

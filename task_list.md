@@ -275,7 +275,30 @@
     - Full test suite passed: **75/75 automated unit tests green** (`pytest tests/ -v`).
   - [x] 20.7 Documentation (`context.md`, `architechture.md`) & Git Commit/Push on branch `OCR`.
 
+- [x] Stage 21: Stream 4 — Deep Visual Patch Stream (DenseNet201 & 4-Stream Late Stacking):
+  - [x] 21.1 Pretrained Vision Backbone & Patch Extraction Engine (`baseline/visual_patch_extractor.py`):
+    - Implemented aspect-preserving square patch slicing along lines (stride $0.5H$), preventing horizontal text distortion.
+    - Pretrained DenseNet201 feature extraction ($D=1920$) with batched GPU/CPU inference.
+    - Mean and standard deviation embedding pooling per student across all protocol tasks; cached to `data/features/densenet_embeddings.npz` (215 students $\times$ 1920 dims).
+  - [x] 21.2 Out-of-Fold Visual Risk Classifier (`baseline/visual_classifier.py`):
+    - Dimensionality reduction via PCA ($K=12$) + `StandardScaler` + `LogisticRegression(C=0.1, class_weight='balanced')` preventing overfitting on small sample sizes.
+    - Leakage-free 5-fold cross-validation on School A producing out-of-fold $P_{\text{vision}}^{\text{train}}$ (AUROC 0.6140).
+    - Out-of-sample inference on School B producing $P_{\text{vision}}^{\text{test}}$ (AUROC 0.5580 overall, AUROC **0.9000** on Grade 8 with 100% Sens @ 90% Spec).
+    - Persisted visual probability predictions to `data/features/p_vision_predictions.json`.
+  - [x] 21.3 Automated Unit Tests (`tests/test_visual_stream.py`):
+    - Verified aspect-preserving patch slicing, tall/square crop handling, DenseNet extractor shape ($N, 1920$), and classification probability bounds $[0, 1]$. 4/4 tests green (100% passing).
+  - [x] 21.4 4-Stream Multi-Modal Benchmark Evaluation (`models/multi_stream_experiments.py`):
+    - Evaluated Stream 4 alone, 4-Stream Late Stacking ($0.40 S_1 + 0.35 S_2 + 0.20 S_3 + 0.05 S_4$), and Routed 4-Stream Multi-Modal System.
+    - **Matched Protocol ($N=73$)**: 4-Stream Late Stacking achieved AUROC **0.7859** | AUPRC **0.5906** (highest AUPRC on record, +0.1945 jump over Stream 1 alone!) | Sens@80%Spec **69.2%** | Sens@90%Spec **53.8%** | Youden: **69.2% Sens / 86.7% Spec**.
+    - **All School B ($N=100$)**: Routed 4-Stream System reached AUROC **0.8006** (holding above 0.80 milestone) | AUPRC **0.5485** (highest cohort-wide AUPRC achieved, up from 0.3975) | Sens@80%Spec **68.8%** | Sens@90%Spec **43.8%** | Youden: **68.8% Sens / 83.3% Spec**.
+    - **Grade 3 Subgroup ($N=16$)**: AUROC **0.9286** | Sens@90%Spec **100.0%** | Youden: **100.0% Sens / 92.9% Spec**.
+    - **Grade 8 Subgroup ($N=11$)**: AUROC **1.0000** | Sens@90%Spec **100.0%** | Youden: **100.0% Sens / 100.0% Spec**.
+    - Full repository test suite: **79/79 passed green** (`pytest tests/ -v`).
+  - [x] 21.5 Documentation & Git Synchronization:
+    - Updated `task_list.md`, `context.md`, `architechture.md`, and committed/pushed to branch `OCR`.
+
 ---
+
 
 
 ## Completed Sprints

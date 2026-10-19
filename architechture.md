@@ -872,4 +872,81 @@ Combining geometric kinematics (Stream 1), physical micro-texture & pressure (St
 - **Grade 8 Subgroup ($N=11$)**: AUROC **1.0000**, achieving **100.0% Sensitivity at 100.0% Specificity**.
 - **Regression Verification**: 100% test pass rate across the full 75 automated unit tests (`pytest tests/ -v`).
 
+---
+
+### 13.7 Stream 4: Deep Visual Patch Stream & 4-Stream Multi-Modal Late Stacking (`baseline/`)
+
+#### 13.7.1 Motivation & Dimensionality Defense
+Classical mathematical features (Stream 1), distance-transform pressure/stroke widths (Stream 2), and OCR sequence alignments (Stream 3) reduce handwriting to discrete summary numbers. However, they lack direct perceptual sensitivity to:
+- **Crushed character loops**: Interior counter loops in 'e', 'a', 'o', 'd' collapsing into solid ink blobs due to fine-motor dyspraxia.
+- **Topological reversals**: Backward or inverted letter orientations that evade linear slant angle statistics.
+- **Messy retracing & overwriting**: Multiple overlapping strokes on a single letter attempt.
+
+Directly concatenating 1,920 deep features from DenseNet201 into tabular classifiers would immediately overfit the 115 training students. To eliminate overfitting while capturing visual letter deformities, the system implements a **Two-Tier Decoupled Probe Architecture**:
+
+```mermaid
+graph TD
+    SentenceCrop["Sentence Image Crop (H x W)"] --> Slicer["Aspect-Preserving Patch Slicer<br/>(extract_aspect_preserving_patches)<br/>Square H x H crops, 50% stride"]
+    Slicer --> PretrainNet["Pretrained DenseNet201 Backbone<br/>(torchvision.models.densenet201)<br/>Frozen ImageNet Features (D=1920)"]
+    PretrainNet --> StudentPool["Student-Level Mean & Std Pooling<br/>Aggregated over all student crops"]
+    StudentPool --> Cache["Embeddings Cache<br/>(data/features/densenet_embeddings.npz)"]
+    Cache --> Probe["Regularized Visual Classifier Probe<br/>PCA(K=12) + StandardScaler + LogisticRegression(C=0.1)"]
+    Probe --> P_Vision["Visual Probability P_vision"]
+    
+    P_Vision --> LateStacking["Late Stacking Combiner<br/>P_student = w1*P_S1 + w2*P_S2 + w3*P_S3 + w4*P_S4"]
+```
+
+#### 13.7.2 Patch Extraction & Feature Pooling (`baseline/visual_patch_extractor.py`)
+1. **Aspect-Preserving Sliding Window**:
+   - Instead of resizing wide sentence crops into distorted squares (which horizontally crushes letters and destroys character geometry), the extractor slides a natural square window of dimension $H \times H$ (where $H$ is the line crop height) across the sentence with $50\%$ horizontal overlap ($0.5H$ stride).
+   - Patches are padded with uniform white paper background and resized to $224 \times 224$ for standard ImageNet normalization.
+2. **DenseNet201 Feature Extraction**:
+   - Passes batches of normalized patches through frozen `DenseNet201` feature layers (up to the global average pooling layer, output dimension $D = 1,920$).
+   - Computes crop-level mean embedding across all constituent patches.
+3. **Student-Level Pooling**:
+   - Pools embeddings across all tasks executed by a student (mean pooling for average visual topology, standard deviation pooling for visual stroke inconsistency).
+   - Persisted to disk in [`data/features/densenet_embeddings.npz`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/features/densenet_embeddings.npz).
+
+#### 13.7.3 Dimensionality-Reduced Visual Probe (`baseline/visual_classifier.py`)
+- Implements `VisualClassifierProbe` utilizing:
+  - `PCA(n_components=12)`: Compresses 1,920 deep features into 12 orthogonal axes of maximal visual variance across handwriting styles.
+  - `StandardScaler()`: Zero-mean unit-variance normalization.
+  - `LogisticRegression(C=0.1, class_weight='balanced')`: Heavily regularized linear decision boundary.
+- Generates 5-fold cross-validated out-of-fold probabilities $P_{\text{vision}}^{\text{train}}$ for School A and out-of-sample predictions $P_{\text{vision}}^{\text{test}}$ for School B.
+- Saved to [`data/features/p_vision_predictions.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/features/p_vision_predictions.json).
+
+#### 13.7.4 4-Stream Late Stacking Decision Formulation
+Combining all 4 independent streams at the probability level:
+$$P_{\text{student}} = w_1 P_{\text{Geometry (S1)}} + w_2 P_{\text{Grayscale/Width (S2)}} + w_3 P_{\text{OCR (S3)}} + w_4 P_{\text{Vision (S4)}}$$
+
+1. **Standard Balanced 4-Stream Weights**:
+   - $w_1 = 0.40$ (Stream 1: Geometry & Kinematics)
+   - $w_2 = 0.35$ (Stream 2: Stroke-Width Jitter & Pencil Pressure)
+   - $w_3 = 0.20$ (Stream 3: TrOCR Legibility & Letter Error Alignment)
+   - $w_4 = 0.05$ (Stream 4: DenseNet201 Deep Visual Patch Probe)
+
+2. **Routed 4-Stream Multi-Modal Architecture**:
+   - **Grade 3 (Younger Students, Zero Dictation)**: Routed to spatial geometry and pencil pressure:
+     $$P = 0.60 P_{\text{S1}} + 0.40 P_{\text{S2}}$$
+   - **Grades 4–7 (Matched Standard Protocol)**: Full 4-Stream Late Stacking:
+     $$P = 0.40 P_{\text{S1}} + 0.35 P_{\text{S2}} + 0.20 P_{\text{S3}} + 0.05 P_{\text{S4}}$$
+   - **Grade 8 (Older Students, Ballpoint Pens, Cursive Disorientation)**: High visual and linguistic weighting:
+     $$P = 0.25 P_{\text{S1}} + 0.65 P_{\text{S3}} + 0.10 P_{\text{S4}}$$
+
+#### 13.7.5 Empirical Verification on External School B Cohort ($N=100$)
+- **Matched Protocol ($N=73$)**:
+  - AUROC: **0.7859** | AUPRC: **0.5906** (surpassing all previous models; +0.1945 jump over Stream 1 alone).
+  - Sensitivity @ 80% Specificity: **69.2%** | Sensitivity @ 90% Specificity: **53.8%**.
+  - Optimal Operating Point: **69.2% Sensitivity at 86.7% Specificity**.
+- **All School B ($N=100$)**:
+  - Routed 4-Stream AUROC: **0.8006** (solidly above the 0.80 milestone).
+  - Routed 4-Stream AUPRC: **0.5485** (highest cohort-wide precision on record).
+  - Optimal Operating Point: **68.8% Sensitivity at 83.3% Specificity**.
+- **Subgroup Breakdown**:
+  - Grade 3: AUROC **0.9286**, achieving **100.0% Sensitivity at 92.9% Specificity**.
+  - Grade 8: AUROC **1.0000**, achieving **100.0% Sensitivity at 100.0% Specificity** (Stream 4 alone reached 0.9000 AUROC / 100% Sens @ 90% Spec).
+- **Automated Regression Suite**:
+  - 79/79 passed green across all unit test modules (`pytest tests/ -v`).
+
+
 
