@@ -3,7 +3,15 @@
 import numpy as np
 import pytest
 
-from models.multi_stream_experiments import STREAM3_CORE_FEATURES, compute_metrics
+from models.multi_stream_experiments import STREAM2_CORE_FEATURES, STREAM3_CORE_FEATURES, compute_metrics
+
+
+def test_stream2_core_features_list():
+    assert len(STREAM2_CORE_FEATURES) >= 10
+    assert "stroke_width_cv_mean" in STREAM2_CORE_FEATURES
+    assert "pressure_intensity_cv_mean" in STREAM2_CORE_FEATURES
+    assert "smudge_halo_darkness_max" in STREAM2_CORE_FEATURES
+    assert "background_roughness_std_mean" in STREAM2_CORE_FEATURES
 
 
 def test_stream3_core_features_list():
@@ -24,6 +32,10 @@ def test_compute_metrics_calculation():
     assert 0.0 <= met["brier"] <= 1.0
     assert met["n_pos"] == 2
     assert met["n_neg"] == 3
+    assert met["sens_at_80_spec"] == 1.0
+    assert met["sens_at_90_spec"] == 1.0
+    assert met["youden_sens"] == 1.0
+    assert met["youden_spec"] == 1.0
 
 
 def test_compute_metrics_single_class():

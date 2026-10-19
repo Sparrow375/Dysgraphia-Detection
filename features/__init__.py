@@ -14,6 +14,7 @@ from features.gaps import compute_gap_features
 from features.size import compute_size_features
 from features.hindi import compute_hindi_features
 from features.fragmentation import compute_fragmentation_features
+from features.stroke_width_texture import compute_stroke_width_texture_features
 from features.extractor import extract_sentence_features, extract_dataset_features
 
 __all__ = [
@@ -25,6 +26,7 @@ __all__ = [
     "compute_size_features",
     "compute_hindi_features",
     "compute_fragmentation_features",
+    "compute_stroke_width_texture_features",
     "extract_sentence_features",
     "extract_dataset_features",
 ]

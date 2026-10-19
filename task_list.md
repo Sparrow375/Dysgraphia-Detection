@@ -245,9 +245,38 @@
     - Matched Grades 4-7 ($N=73$): Late Stacking AUROC reached **0.7564** (+0.0141 gain over S1 alone), Early Fusion AUPRC reached **0.4807** (+0.0846 gain).
     - Grade 8 Partial Dictation ($N=11$): Stream 3 Alone AUROC hit **1.0000** | AUPRC **1.0000**; Early Fusion AUROC hit **1.0000** | AUPRC **1.0000**; Late Stacking AUROC reached **0.8000** (+0.2000 jump).
     - Brier calibration error dropped to **0.1317**.
-  - [x] 19.6 Documentation (`context.md`, `architechture.md`) & Git Commit/Push to `origin/OCR`.
+- [x] Stage 20: Stream 2 — Stroke-Width & Grayscale Shading Substream (Branch `OCR`):
+  - [x] 20.1 Core Mathematical Feature Module (`features/stroke_width_texture.py`):
+    - Euclidean distance transform on clean ink mask sampled along skeleton centerline.
+    - Thickness stability metrics: mean, CV, local step jitter, pinch rate (<50%), bloat rate (>150%), entropy.
+    - Grayscale pencil pressure / optical density along skeleton: mean, CV, local gradient, faint rate, heavy digging rate.
+    - Erasure and smudge halo detection: non-ink boundary dilation, smudge halo darkness, paper roughness standard deviation, erasure patch ratio.
+    - Mechanical coupling: Spearman correlation between local stroke thickness and optical density.
+  - [x] 20.2 Automated Unit Test Suite (`tests/test_stroke_width_texture.py`, `tests/test_multi_stream.py`):
+    - Verified synthetic steady vs jittery stroke thickness, light vs heavy/uneven pressure, clean paper vs smudged/erasure halo, empty input robustness, and Sens@Spec metric bounds. 10/10 tests green (100% passing).
+  - [x] 20.3 Feature Extractor Integration (`features/extractor.py`):
+    - Connected `compute_stroke_width_texture_features` into `extract_sentence_features` and updated `FEATURE_DESCRIPTIONS`.
+    - Executed batch cohort extraction: 1,145 sentence tasks extracted into `data/features/features_raw.csv` (1,145 rows × 51 cols) with 99.8% valid non-null coverage.
+  - [x] 20.4 Student-Level Feature Aggregation (`models/student_features.py`):
+    - Added all 14 Stream 2 features to `KEY_DYSGRAPHIA_FEATURES` and extreme worst-case tracking.
+    - Extracted central tendencies, within-student volatility, extreme rates, and dictation vs copy cognitive-motor stress gradients ($\Delta\text{PressureCV}_{\text{dict} - \text{copy}}$, $\Delta\text{WidthJitter}_{\text{dict} - \text{copy}}$).
+  - [x] 20.5 Multi-Stream Benchmark Re-Evaluation (`models/multi_stream_experiments.py`):
+    - **Stream 2 Alone on Matched Protocol ($N=73$)**: AUROC **0.7705** | AUPRC **0.5504** (outperformed Stream 1 Geometry Alone 0.7423 / 0.3961).
+    - **3-Stream Late Stacking on Matched Protocol ($N=73$)**: AUROC jumped to **0.7936** | AUPRC jumped to **0.5841** (+0.1880 surge) | Sens@80%Spec **69.2%** | Youden: **69.2% Sensitivity at 85.0% Specificity**.
+    - **Grade 3 ($N=16$, Zero Dictation)**: AUROC reached **0.9286** | Sens@80%Spec **100.0%** | Sens@90%Spec **100.0%** | Youden: **100.0% Sensitivity and 92.9% Specificity**.
+    - **Grade 8 ($N=11$, Partial Dictation)**: Stream 3 Alone AUROC **1.0000** | AUPRC **1.0000** | Sens@90%Spec **100.0%**.
+    - **Overall Routed Multi-Stream on All School B ($N=100$)**:
+      - AUROC surged across 0.80 milestone to **0.8051** (+0.0551 over S1 alone).
+      - AUPRC surged to **0.5417** (+0.1442 over S1 alone).
+      - Sens @ 80% Specificity reached **68.8%** (up from 50.0%).
+      - Sens @ 90% Specificity reached **50.0%** (up from 37.5%).
+      - Optimal Youden Operating Point: **75.0% Sensitivity and 77.4% Specificity**.
+  - [x] 20.6 Regression Testing & Verification:
+    - Full test suite passed: **75/75 automated unit tests green** (`pytest tests/ -v`).
+  - [x] 20.7 Documentation (`context.md`, `architechture.md`) & Git Commit/Push on branch `OCR`.
 
 ---
+
 
 ## Completed Sprints
 

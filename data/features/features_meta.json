@@ -1,6 +1,6 @@
 {
   "num_rows": 1145,
-  "num_features": 29,
+  "num_features": 43,
   "feature_names": [
     "baseline_rmse_norm",
     "baseline_slope_mean",
@@ -30,7 +30,21 @@
     "junctions_per_unit_width",
     "endpoints_per_unit_width",
     "words_written_ratio",
-    "lines_used"
+    "lines_used",
+    "stroke_width_mean_norm",
+    "stroke_width_cv",
+    "stroke_width_jitter",
+    "stroke_width_pinch_rate",
+    "stroke_width_bloat_rate",
+    "pressure_intensity_mean",
+    "pressure_intensity_cv",
+    "pressure_gradient_mean",
+    "pressure_faint_rate",
+    "pressure_heavy_rate",
+    "pressure_width_corr",
+    "smudge_halo_darkness",
+    "background_roughness_std",
+    "erasure_patch_ratio"
   ],
   "feature_descriptions": {
     "baseline_rmse_norm": "RANSAC word-baseline residual RMSE normalized by x-height h",
@@ -61,7 +75,22 @@
     "junctions_per_unit_width": "Skeleton branch junctions count divided by (sentence_width / h)",
     "endpoints_per_unit_width": "Skeleton endpoints count divided by (sentence_width / h)",
     "words_written_ratio": "Detected word count divided by expected prompt word count",
-    "lines_used": "Number of physical handwritten lines used by sentence"
+    "lines_used": "Number of physical handwritten lines used by sentence",
+    "stroke_width_mean_norm": "Mean stroke thickness normalized by x-height h",
+    "stroke_width_cv": "Coefficient of variation of stroke thickness along skeleton centerline",
+    "stroke_width_jitter": "Mean normalized step difference |w_{k+1} - w_k| / mean(w) along stroke paths",
+    "stroke_width_pinch_rate": "Fraction of skeleton points with thickness < 0.5 * mean(w) (stroke pinching)",
+    "stroke_width_bloat_rate": "Fraction of skeleton points with thickness > 1.5 * mean(w) (hesitation bloats)",
+    "pressure_intensity_mean": "Mean optical density along skeleton (0.0=white paper, 1.0=black ink)",
+    "pressure_intensity_cv": "Coefficient of variation of pencil pressure along skeleton centerline",
+    "pressure_gradient_mean": "Mean normalized local pressure step difference along stroke paths",
+    "pressure_faint_rate": "Fraction of stroke points with faint pressure (<0.75 * mean)",
+    "pressure_heavy_rate": "Fraction of stroke points with heavy digging pressure (>1.25 * mean)",
+    "pressure_width_corr": "Spearman rank correlation between local thickness and optical density",
+    "smudge_halo_darkness": "Mean optical density of graphite smearing in the non-ink halo ring surrounding words",
+    "background_roughness_std": "Grayscale standard deviation in non-ink halo ring (paper abrasion/texture)",
+    "erasure_patch_ratio": "Fraction of halo pixels significantly darker than clean background paper"
   },
-  "school_filter": "all"
+  "school_filter": "all",
+  "include_ocr": false
 }

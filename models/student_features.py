@@ -46,6 +46,21 @@ KEY_DYSGRAPHIA_FEATURES = [
     "conf_consistency_cv",
     "forced_mean_logprob",
     "forced_low_prob_ratio",
+    # Stream 2: Stroke-Width & Grayscale Shading Micro-Texture
+    "stroke_width_mean_norm",
+    "stroke_width_cv",
+    "stroke_width_jitter",
+    "stroke_width_pinch_rate",
+    "stroke_width_bloat_rate",
+    "pressure_intensity_mean",
+    "pressure_intensity_cv",
+    "pressure_gradient_mean",
+    "pressure_faint_rate",
+    "pressure_heavy_rate",
+    "pressure_width_corr",
+    "smudge_halo_darkness",
+    "background_roughness_std",
+    "erasure_patch_ratio",
 ]
 
 
@@ -122,6 +137,18 @@ def extract_student_features(df_combined: pd.DataFrame, df_folds: pd.DataFrame) 
             "raw_word_coda_errors",
             "raw_fatigue_error_ratio",
             "raw_conf_consistency_cv",
+            # Stream 2 extremes
+            "raw_stroke_width_cv",
+            "raw_stroke_width_jitter",
+            "raw_stroke_width_pinch_rate",
+            "raw_stroke_width_bloat_rate",
+            "raw_pressure_intensity_cv",
+            "raw_pressure_gradient_mean",
+            "raw_pressure_faint_rate",
+            "raw_pressure_heavy_rate",
+            "raw_smudge_halo_darkness",
+            "raw_background_roughness_std",
+            "raw_erasure_patch_ratio",
         ]:
             if col in sdf.columns:
                 fname = col.replace("raw_", "")

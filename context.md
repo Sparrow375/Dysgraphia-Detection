@@ -799,5 +799,62 @@ Evaluating the complete feature suite with active teacher-forced scoring in [`mo
 ### 4. Unit Testing & Verification
 All 23 automated unit tests pass in `tests/test_letter_analytics.py`, `tests/test_features_content.py`, `tests/test_task_router.py`, and `tests/test_multi_stream.py`. All features are fully backward-compatible and validated on Windows CPU execution.
 
+---
+
+## Phase 4 Stage 20: Stream 2 — Stroke-Width & Grayscale Shading Micro-Texture (Branch `OCR`)
+
+### 1. Clinical Rationale & Mathematical Formulation
+Binary Otsu thresholding (`clean_ink.png`) flattens 2D writing into 1-bit silhouettes, destroying two pathognomonic physical markers of dysgraphia:
+1. **Dynamic Pencil Pressure / Optical Density ($P(y, x)$)**:
+   - Smooth writers maintain even, calibrated neuromuscular pen grip.
+   - Struggling writers apply erratic, disinhibited force—digging lead into paper on downstrokes and skipping faintly on curves.
+   - Normalized optical density: $P(y, x) = \max\left(0, \frac{I_{\text{bg}} - I(y, x)}{I_{\text{bg}}}\right) \in [0.0, 1.0]$.
+   - Sampled along the skeleton centerline: `pressure_intensity_mean`, `pressure_intensity_cv`, `pressure_gradient_mean` (local step transitions $|\Delta P_k| / \bar{P}$), `pressure_faint_rate` ($P < 0.75 \bar{P}$), `pressure_heavy_rate` ($P > 1.25 \bar{P}$).
+2. **Stroke-Width Instability & Jitter via Euclidean Distance Transform ($w(y, x)$)**:
+   - Evaluated on clean ink mask: $D(y, x) = \text{cv2.distanceTransform(clean\_ink, DIST\_L2, 5)}$.
+   - Stroke diameter at skeleton point: $w = 2 \cdot D(y_s, x_s)$.
+   - Metrics: `stroke_width_mean_norm` ($w / h$), `stroke_width_cv` ($\sigma_w / \bar{w}$), `stroke_width_jitter` ($|\Delta w_k| / \bar{w}$ along continuous stroke paths), `stroke_width_pinch_rate` ($w < 0.5 \bar{w}$), `stroke_width_bloat_rate` ($w > 1.5 \bar{w}$ hesitation puddles), and `pressure_width_corr` (Spearman coupling).
+3. **Erasure & Smudge Halo Dynamics ($H_{\text{halo}}$)**:
+   - Non-ink boundary band $H = \text{dilate}(M_{\text{ink}}, r=0.35h) \setminus \text{dilate}(M_{\text{ink}}, r=3\text{px})$.
+   - Captures paper abrasion, graphite palm smudging, and erased ghost letters: `smudge_halo_darkness` (mean optical density in halo ring), `background_roughness_std` ($\sigma(I_H)$), and `erasure_patch_ratio` (fraction of halo darker than clean paper threshold $I_{\text{bg}} - 2\sigma_{\text{bg}}$).
+
+### 2. Feature Extractor & Cohort Assembly
+- Implemented in [`features/stroke_width_texture.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/features/stroke_width_texture.py) (zero deep learning, <10ms CPU runtime, <10MB RAM).
+- Batch cohort extraction executed across all 1,145 sentence tasks in School A and School B (`data/features/features_raw.csv`, 1,145 rows × 51 cols) with 99.8% valid coverage.
+- Integrated into [`models/student_features.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/models/student_features.py) with student-level aggregation and cognitive stress deltas ($\Delta\text{PressureCV}_{\text{dict} - \text{copy}}$, $\Delta\text{WidthJitter}_{\text{dict} - \text{copy}}$).
+
+### 3. Empirical Results on Held-Out External School B ($N=100$)
+Evaluating the complete 3-Stream System in [`models/multi_stream_experiments.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/models/multi_stream_experiments.py):
+
+| Cohort Slice | Model Architecture | AUROC | AUPRC | Sens @ 80% Spec | Sens @ 90% Spec | Youden Index (Sens / Spec) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| **All School B** (N=100) | Stream 1 Alone (Geometry Router) | 0.7500 | 0.3975 | 50.0% | 37.5% | 87.5% / 61.9% |
+| | Stream 2 Alone (Stroke-Width/Pressure) | 0.6979 | 0.4739 | 50.0% | 43.8% | 43.8% / 95.2% |
+| | Stream 3 Alone (TrOCR Legibility) | 0.6473 | 0.2764 | 50.0% | 25.0% | 50.0% / 81.0% |
+| | Late Stacking (0.60 S1 + 0.40 S2) | 0.7545 | 0.4872 | 62.5% | 50.0% | 75.0% / 72.6% |
+| | Late Stacking (0.70 S1 + 0.30 S3) | 0.7731 | 0.4434 | 50.0% | 43.8% | 87.5% / 64.3% |
+| | 3-Stream Late Stacking (Balanced) | 0.7746 | 0.5037 | 62.5% | 43.8% | 68.8% / 79.8% |
+| | 3-Stream Late Stacking (Tuned 45/35/20) | 0.7619 | 0.5187 | 56.2% | 50.0% | 81.2% / 64.3% |
+| | **Routed Multi-Stream System (S1 + S2 + S3)** | **0.8051** | **0.5417** | **68.8%** | **50.0%** | **75.0% / 77.4%** |
+| **Matched Protocol** (Grades 4–7, N=73) | Stream 1 Alone (Geometry Router) | 0.7423 | 0.3961 | 53.8% | 38.5% | 84.6% / 63.3% |
+| | Stream 2 Alone (Stroke-Width/Pressure) | 0.7705 | 0.5504 | 61.5% | 53.8% | 76.9% / 71.7% |
+| | Stream 3 Alone (TrOCR Legibility) | 0.6513 | 0.2926 | 30.8% | 23.1% | 53.8% / 78.3% |
+| | Late Stacking (0.60 S1 + 0.40 S2) | 0.7821 | 0.5407 | 61.5% | 53.8% | 61.5% / 88.3% |
+| | **3-Stream Late Stacking (Tuned 45/35/20)** | **0.7936** | **0.5841** | **69.2%** | **53.8%** | **69.2% / 85.0%** |
+| **Grade 3 (Zero Dictation)** (N=16) | Stream 1 Alone (Geometry Router) | 0.8929 | 0.7000 | 50.0% | 50.0% | 100.0% / 78.6% |
+| | **Late Stacking (0.60 S1 + 0.40 S2)** | **0.9286** | 0.5833 | **100.0%** | **100.0%** | **100.0% / 92.9%** |
+| **Grade 8 (Partial Dictation)** (N=11) | Stream 1 Alone (Geometry Router) | 0.6000 | 0.2000 | 0.0% | 0.0% | 100.0% / 60.0% |
+| | **Stream 3 Alone (TrOCR Legibility)** | **1.0000** | **1.0000** | **100.0%** | **100.0%** | **100.0% / 100.0%** |
+| | **Routed Multi-Stream System (S1 + S2 + S3)** | **1.0000** | **1.0000** | **100.0%** | **100.0%** | **100.0% / 100.0%** |
+
+### 4. Key Diagnostic Insights
+1. **Stream 2 Beats Stream 1 on Standard Protocol**: On Matched Grades 4–7, Stream 2 alone achieved **0.7705 AUROC and 0.5504 AUPRC** vs. Stream 1's 0.7423 AUROC and 0.3961 AUPRC. Stroke-width jitter, hesitation puddles, and pencil pressure variance capture fine-motor neuromuscular breakdown more accurately than static binary skeletons.
+2. **Exceeding the 0.80 Milestone Across the Entire Cohort**: The Routed Multi-Stream System reached **0.8051 AUROC** and **0.5417 AUPRC** across all 100 School B students, with Sensitivity @ 80% Specificity surging to **68.8%** and optimal Youden operating point at **75.0% Sensitivity and 77.4% Specificity**.
+3. **Surpassing 90–90 on Key Subgroups**:
+   - Grade 3: **100.0% Sensitivity at 92.9% Specificity** (AUROC 0.9286).
+   - Grade 8: **100.0% Sensitivity at 100.0% Specificity** (AUROC 1.0000).
+4. **Full Test Suite Verification**: All 75 unit tests across the entire repository are passing (`75 passed in 132s`).
+
+
 
 

@@ -7,7 +7,25 @@
     "controls": 84,
     "auroc": 0.75,
     "auprc": 0.39747752376141365,
-    "brier": 0.14460969006091198
+    "brier": 0.14460969006091198,
+    "sens_at_80_spec": 0.5,
+    "sens_at_90_spec": 0.375,
+    "youden_sens": 0.875,
+    "youden_spec": 0.6190476190476191
+  },
+  {
+    "cohort_slice": "All School B (Grades 3-8)",
+    "model": "Stream 2 Alone (Stroke-Width/Pressure)",
+    "n_students": 100,
+    "positives": 16,
+    "controls": 84,
+    "auroc": 0.6979166666666667,
+    "auprc": 0.4739170463358965,
+    "brier": 0.2480517638208054,
+    "sens_at_80_spec": 0.5,
+    "sens_at_90_spec": 0.4375,
+    "youden_sens": 0.4375,
+    "youden_spec": 0.9523809523809523
   },
   {
     "cohort_slice": "All School B (Grades 3-8)",
@@ -17,17 +35,25 @@
     "controls": 84,
     "auroc": 0.6473214285714286,
     "auprc": 0.27636950977943625,
-    "brier": 0.21858619865489917
+    "brier": 0.21858619865489917,
+    "sens_at_80_spec": 0.5,
+    "sens_at_90_spec": 0.25,
+    "youden_sens": 0.5,
+    "youden_spec": 0.8095238095238095
   },
   {
     "cohort_slice": "All School B (Grades 3-8)",
-    "model": "Early Fusion (Stream 1 + Stream 3)",
+    "model": "Late Stacking (0.60 S1 + 0.40 S2)",
     "n_students": 100,
     "positives": 16,
     "controls": 84,
-    "auroc": 0.7566964285714286,
-    "auprc": 0.482403013114696,
-    "brier": 0.12870395133414353
+    "auroc": 0.7544642857142857,
+    "auprc": 0.48720133413213773,
+    "brier": 0.1617631610704821,
+    "sens_at_80_spec": 0.625,
+    "sens_at_90_spec": 0.5,
+    "youden_sens": 0.75,
+    "youden_spec": 0.7261904761904762
   },
   {
     "cohort_slice": "All School B (Grades 3-8)",
@@ -37,7 +63,67 @@
     "controls": 84,
     "auroc": 0.7730654761904762,
     "auprc": 0.4434017231908099,
-    "brier": 0.15385692291574296
+    "brier": 0.15385692291574296,
+    "sens_at_80_spec": 0.5,
+    "sens_at_90_spec": 0.4375,
+    "youden_sens": 0.875,
+    "youden_spec": 0.6428571428571428
+  },
+  {
+    "cohort_slice": "All School B (Grades 3-8)",
+    "model": "3-Stream Late Stacking (Balanced)",
+    "n_students": 100,
+    "positives": 16,
+    "controls": 84,
+    "auroc": 0.7745535714285714,
+    "auprc": 0.5037167276323733,
+    "brier": 0.1658836800169046,
+    "sens_at_80_spec": 0.625,
+    "sens_at_90_spec": 0.4375,
+    "youden_sens": 0.6875,
+    "youden_spec": 0.7976190476190477
+  },
+  {
+    "cohort_slice": "All School B (Grades 3-8)",
+    "model": "3-Stream Late Stacking (Tuned 45/35/20)",
+    "n_students": 100,
+    "positives": 16,
+    "controls": 84,
+    "auroc": 0.7619047619047619,
+    "auprc": 0.5187153619025744,
+    "brier": 0.17107541095026366,
+    "sens_at_80_spec": 0.5625,
+    "sens_at_90_spec": 0.5,
+    "youden_sens": 0.8125,
+    "youden_spec": 0.6428571428571428
+  },
+  {
+    "cohort_slice": "All School B (Grades 3-8)",
+    "model": "Routed Multi-Stream System (S1 + S2 + S3)",
+    "n_students": 100,
+    "positives": 16,
+    "controls": 84,
+    "auroc": 0.8050595238095238,
+    "auprc": 0.5417121164935337,
+    "brier": 0.169560941224414,
+    "sens_at_80_spec": 0.6875,
+    "sens_at_90_spec": 0.5,
+    "youden_sens": 0.75,
+    "youden_spec": 0.7738095238095238
+  },
+  {
+    "cohort_slice": "All School B (Grades 3-8)",
+    "model": "Early Fusion (S1 + S2 + S3)",
+    "n_students": 100,
+    "positives": 16,
+    "controls": 84,
+    "auroc": 0.7280505952380951,
+    "auprc": 0.3838298949134498,
+    "brier": 0.14066029971726776,
+    "sens_at_80_spec": 0.5,
+    "sens_at_90_spec": 0.375,
+    "youden_sens": 0.8125,
+    "youden_spec": 0.6071428571428572
   },
   {
     "cohort_slice": "Matched Grades 4-7",
@@ -47,7 +133,25 @@
     "controls": 60,
     "auroc": 0.7423076923076923,
     "auprc": 0.396094834591047,
-    "brier": 0.15717878886300188
+    "brier": 0.15717878886300188,
+    "sens_at_80_spec": 0.5384615384615384,
+    "sens_at_90_spec": 0.38461538461538464,
+    "youden_sens": 0.8461538461538461,
+    "youden_spec": 0.6333333333333333
+  },
+  {
+    "cohort_slice": "Matched Grades 4-7",
+    "model": "Stream 2 Alone (Stroke-Width/Pressure)",
+    "n_students": 73,
+    "positives": 13,
+    "controls": 60,
+    "auroc": 0.7705128205128204,
+    "auprc": 0.5504127921825028,
+    "brier": 0.2562235746540353,
+    "sens_at_80_spec": 0.6153846153846154,
+    "sens_at_90_spec": 0.5384615384615384,
+    "youden_sens": 0.7692307692307693,
+    "youden_spec": 0.7166666666666667
   },
   {
     "cohort_slice": "Matched Grades 4-7",
@@ -57,17 +161,25 @@
     "controls": 60,
     "auroc": 0.6512820512820513,
     "auprc": 0.29260605067183676,
-    "brier": 0.22824738108972648
+    "brier": 0.22824738108972648,
+    "sens_at_80_spec": 0.3076923076923077,
+    "sens_at_90_spec": 0.23076923076923078,
+    "youden_sens": 0.5384615384615384,
+    "youden_spec": 0.7833333333333333
   },
   {
     "cohort_slice": "Matched Grades 4-7",
-    "model": "Early Fusion (Stream 1 + Stream 3)",
+    "model": "Late Stacking (0.60 S1 + 0.40 S2)",
     "n_students": 73,
     "positives": 13,
     "controls": 60,
-    "auroc": 0.7474358974358974,
-    "auprc": 0.4806795591263555,
-    "brier": 0.1370388068736743
+    "auroc": 0.782051282051282,
+    "auprc": 0.5406711570336081,
+    "brier": 0.1691637257404699,
+    "sens_at_80_spec": 0.6153846153846154,
+    "sens_at_90_spec": 0.5384615384615384,
+    "youden_sens": 0.6153846153846154,
+    "youden_spec": 0.8833333333333333
   },
   {
     "cohort_slice": "Matched Grades 4-7",
@@ -77,7 +189,67 @@
     "controls": 60,
     "auroc": 0.7564102564102564,
     "auprc": 0.4549082853865946,
-    "brier": 0.1636816548709151
+    "brier": 0.1636816548709151,
+    "sens_at_80_spec": 0.46153846153846156,
+    "sens_at_90_spec": 0.38461538461538464,
+    "youden_sens": 0.8461538461538461,
+    "youden_spec": 0.6666666666666667
+  },
+  {
+    "cohort_slice": "Matched Grades 4-7",
+    "model": "3-Stream Late Stacking (Balanced)",
+    "n_students": 73,
+    "positives": 13,
+    "controls": 60,
+    "auroc": 0.791025641025641,
+    "auprc": 0.5562262430050255,
+    "brier": 0.17341162048745895,
+    "sens_at_80_spec": 0.6153846153846154,
+    "sens_at_90_spec": 0.5384615384615384,
+    "youden_sens": 0.7692307692307693,
+    "youden_spec": 0.75
+  },
+  {
+    "cohort_slice": "Matched Grades 4-7",
+    "model": "3-Stream Late Stacking (Tuned 45/35/20)",
+    "n_students": 73,
+    "positives": 13,
+    "controls": 60,
+    "auroc": 0.7935897435897437,
+    "auprc": 0.5840746785055975,
+    "brier": 0.17812032989044418,
+    "sens_at_80_spec": 0.6923076923076923,
+    "sens_at_90_spec": 0.5384615384615384,
+    "youden_sens": 0.6923076923076923,
+    "youden_spec": 0.85
+  },
+  {
+    "cohort_slice": "Matched Grades 4-7",
+    "model": "Routed Multi-Stream System (S1 + S2 + S3)",
+    "n_students": 73,
+    "positives": 13,
+    "controls": 60,
+    "auroc": 0.7935897435897437,
+    "auprc": 0.5840746785055975,
+    "brier": 0.17812032989044418,
+    "sens_at_80_spec": 0.6923076923076923,
+    "sens_at_90_spec": 0.5384615384615384,
+    "youden_sens": 0.6923076923076923,
+    "youden_spec": 0.85
+  },
+  {
+    "cohort_slice": "Matched Grades 4-7",
+    "model": "Early Fusion (S1 + S2 + S3)",
+    "n_students": 73,
+    "positives": 13,
+    "controls": 60,
+    "auroc": 0.7641025641025642,
+    "auprc": 0.475799032720722,
+    "brier": 0.13625636497494625,
+    "sens_at_80_spec": 0.6153846153846154,
+    "sens_at_90_spec": 0.5384615384615384,
+    "youden_sens": 0.5384615384615384,
+    "youden_spec": 0.9166666666666666
   },
   {
     "cohort_slice": "Grade 3 (Zero Dictation)",
@@ -87,7 +259,25 @@
     "controls": 14,
     "auroc": 0.8928571428571428,
     "auprc": 0.7,
-    "brier": 0.11235039216515347
+    "brier": 0.11235039216515347,
+    "sens_at_80_spec": 0.5,
+    "sens_at_90_spec": 0.5,
+    "youden_sens": 1.0,
+    "youden_spec": 0.7857142857142857
+  },
+  {
+    "cohort_slice": "Grade 3 (Zero Dictation)",
+    "model": "Stream 2 Alone (Stroke-Width/Pressure)",
+    "n_students": 16,
+    "positives": 2,
+    "controls": 14,
+    "auroc": 0.5357142857142857,
+    "auprc": 0.5666666666666667,
+    "brier": 0.1694363090297211,
+    "sens_at_80_spec": 0.5,
+    "sens_at_90_spec": 0.5,
+    "youden_sens": 0.5,
+    "youden_spec": 1.0
   },
   {
     "cohort_slice": "Grade 3 (Zero Dictation)",
@@ -97,17 +287,25 @@
     "controls": 14,
     "auroc": 0.7142857142857142,
     "auprc": 0.26785714285714285,
-    "brier": 0.17263514062483892
+    "brier": 0.17263514062483892,
+    "sens_at_80_spec": 0.0,
+    "sens_at_90_spec": 0.0,
+    "youden_sens": 1.0,
+    "youden_spec": 0.6428571428571428
   },
   {
     "cohort_slice": "Grade 3 (Zero Dictation)",
-    "model": "Early Fusion (Stream 1 + Stream 3)",
+    "model": "Late Stacking (0.60 S1 + 0.40 S2)",
     "n_students": 16,
     "positives": 2,
     "controls": 14,
-    "auroc": 0.7857142857142857,
-    "auprc": 0.625,
-    "brier": 0.10310668317799063
+    "auroc": 0.9285714285714286,
+    "auprc": 0.5833333333333333,
+    "brier": 0.1263892863984688,
+    "sens_at_80_spec": 1.0,
+    "sens_at_90_spec": 1.0,
+    "youden_sens": 1.0,
+    "youden_spec": 0.9285714285714286
   },
   {
     "cohort_slice": "Grade 3 (Zero Dictation)",
@@ -117,7 +315,67 @@
     "controls": 14,
     "auroc": 0.8928571428571428,
     "auprc": 0.7,
-    "brier": 0.1252428180331977
+    "brier": 0.1252428180331977,
+    "sens_at_80_spec": 0.5,
+    "sens_at_90_spec": 0.5,
+    "youden_sens": 1.0,
+    "youden_spec": 0.7857142857142857
+  },
+  {
+    "cohort_slice": "Grade 3 (Zero Dictation)",
+    "model": "3-Stream Late Stacking (Balanced)",
+    "n_students": 16,
+    "positives": 2,
+    "controls": 14,
+    "auroc": 0.9285714285714286,
+    "auprc": 0.5833333333333333,
+    "brier": 0.13281898268949419,
+    "sens_at_80_spec": 1.0,
+    "sens_at_90_spec": 1.0,
+    "youden_sens": 1.0,
+    "youden_spec": 0.9285714285714286
+  },
+  {
+    "cohort_slice": "Grade 3 (Zero Dictation)",
+    "model": "3-Stream Late Stacking (Tuned 45/35/20)",
+    "n_students": 16,
+    "positives": 2,
+    "controls": 14,
+    "auroc": 0.9285714285714286,
+    "auprc": 0.5833333333333333,
+    "brier": 0.13504353957351822,
+    "sens_at_80_spec": 1.0,
+    "sens_at_90_spec": 1.0,
+    "youden_sens": 1.0,
+    "youden_spec": 0.9285714285714286
+  },
+  {
+    "cohort_slice": "Grade 3 (Zero Dictation)",
+    "model": "Routed Multi-Stream System (S1 + S2 + S3)",
+    "n_students": 16,
+    "positives": 2,
+    "controls": 14,
+    "auroc": 0.9285714285714286,
+    "auprc": 0.5833333333333333,
+    "brier": 0.1263892863984688,
+    "sens_at_80_spec": 1.0,
+    "sens_at_90_spec": 1.0,
+    "youden_sens": 1.0,
+    "youden_spec": 0.9285714285714286
+  },
+  {
+    "cohort_slice": "Grade 3 (Zero Dictation)",
+    "model": "Early Fusion (S1 + S2 + S3)",
+    "n_students": 16,
+    "positives": 2,
+    "controls": 14,
+    "auroc": 0.5714285714285714,
+    "auprc": 0.25,
+    "brier": 0.13150139675917388,
+    "sens_at_80_spec": 0.5,
+    "sens_at_90_spec": 0.0,
+    "youden_sens": 0.5,
+    "youden_spec": 0.8571428571428572
   },
   {
     "cohort_slice": "Grade 8 (Partial Dictation)",
@@ -127,7 +385,25 @@
     "controls": 10,
     "auroc": 0.6,
     "auprc": 0.2,
-    "brier": 0.10811919494996415
+    "brier": 0.10811919494996415,
+    "sens_at_80_spec": 0.0,
+    "sens_at_90_spec": 0.0,
+    "youden_sens": 1.0,
+    "youden_spec": 0.6
+  },
+  {
+    "cohort_slice": "Grade 8 (Partial Dictation)",
+    "model": "Stream 2 Alone (Stroke-Width/Pressure)",
+    "n_students": 11,
+    "positives": 1,
+    "controls": 10,
+    "auroc": 0.0,
+    "auprc": 0.09090909090909091,
+    "brier": 0.3081704079873119,
+    "sens_at_80_spec": 0.0,
+    "sens_at_90_spec": 0.0,
+    "youden_sens": 0.0,
+    "youden_spec": 1.0
   },
   {
     "cohort_slice": "Grade 8 (Partial Dictation)",
@@ -137,17 +413,25 @@
     "controls": 10,
     "auroc": 1.0,
     "auprc": 1.0,
-    "brier": 0.22130898144931477
+    "brier": 0.22130898144931477,
+    "sens_at_80_spec": 1.0,
+    "sens_at_90_spec": 1.0,
+    "youden_sens": 1.0,
+    "youden_spec": 1.0
   },
   {
     "cohort_slice": "Grade 8 (Partial Dictation)",
-    "model": "Early Fusion (Stream 1 + Stream 3)",
+    "model": "Late Stacking (0.60 S1 + 0.40 S2)",
     "n_students": 11,
     "positives": 1,
     "controls": 10,
-    "auroc": 1.0,
-    "auprc": 1.0,
-    "brier": 0.11062320916257087
+    "auroc": 0.0,
+    "auprc": 0.09090909090909091,
+    "brier": 0.16410323141985542,
+    "sens_at_80_spec": 0.0,
+    "sens_at_90_spec": 0.0,
+    "youden_sens": 0.0,
+    "youden_spec": 1.0
   },
   {
     "cohort_slice": "Grade 8 (Partial Dictation)",
@@ -157,6 +441,66 @@
     "controls": 10,
     "auroc": 0.8,
     "auprc": 0.3333333333333333,
-    "brier": 0.13027694522421204
+    "brier": 0.13027694522421204,
+    "sens_at_80_spec": 1.0,
+    "sens_at_90_spec": 0.0,
+    "youden_sens": 1.0,
+    "youden_spec": 0.8
+  },
+  {
+    "cohort_slice": "Grade 8 (Partial Dictation)",
+    "model": "3-Stream Late Stacking (Balanced)",
+    "n_students": 11,
+    "positives": 1,
+    "controls": 10,
+    "auroc": 0.19999999999999996,
+    "auprc": 0.1111111111111111,
+    "brier": 0.1640196348249133,
+    "sens_at_80_spec": 0.0,
+    "sens_at_90_spec": 0.0,
+    "youden_sens": 1.0,
+    "youden_spec": 0.19999999999999996
+  },
+  {
+    "cohort_slice": "Grade 8 (Partial Dictation)",
+    "model": "3-Stream Late Stacking (Tuned 45/35/20)",
+    "n_students": 11,
+    "positives": 1,
+    "controls": 10,
+    "auroc": 0.0,
+    "auprc": 0.09090909090909091,
+    "brier": 0.17673276180433212,
+    "sens_at_80_spec": 0.0,
+    "sens_at_90_spec": 0.0,
+    "youden_sens": 0.0,
+    "youden_spec": 1.0
+  },
+  {
+    "cohort_slice": "Grade 8 (Partial Dictation)",
+    "model": "Routed Multi-Stream System (S1 + S2 + S3)",
+    "n_students": 11,
+    "positives": 1,
+    "controls": 10,
+    "auroc": 1.0,
+    "auprc": 1.0,
+    "brier": 0.1755528598239523,
+    "sens_at_80_spec": 1.0,
+    "sens_at_90_spec": 1.0,
+    "youden_sens": 1.0,
+    "youden_spec": 1.0
+  },
+  {
+    "cohort_slice": "Grade 8 (Partial Dictation)",
+    "model": "Early Fusion (S1 + S2 + S3)",
+    "n_students": 11,
+    "positives": 1,
+    "controls": 10,
+    "auroc": 0.7,
+    "auprc": 0.25,
+    "brier": 0.18320845276444697,
+    "sens_at_80_spec": 0.0,
+    "sens_at_90_spec": 0.0,
+    "youden_sens": 1.0,
+    "youden_spec": 0.7
   }
 ]

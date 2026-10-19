@@ -33,7 +33,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import average_precision_score, brier_score_loss, roc_auc_score
+from sklearn.metrics import average_precision_score, brier_score_loss, roc_auc_score, roc_curve
 
 from features.content import CANDIDATE_PROMPTS, clean_text, compute_content_features, levenshtein_distance
 from features.extractor import extract_sentence_features
@@ -44,6 +44,37 @@ from models.task_router import FULL_PROTOCOL_FEATURES, NO_DICTATION_FEATURES, Ta
 
 REPORTS_DIR = WORKSPACE_ROOT / "reports"
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+
+# Key Stream 2 features: stroke thickness, pressure variance, and smudge/erasure halos
+STREAM2_CORE_FEATURES = [
+    "stroke_width_mean_norm_mean",
+    "stroke_width_cv_mean",
+    "stroke_width_cv_max",
+    "stroke_width_jitter_mean",
+    "stroke_width_jitter_max",
+    "stroke_width_pinch_rate_mean",
+    "stroke_width_pinch_rate_max",
+    "stroke_width_bloat_rate_mean",
+    "stroke_width_bloat_rate_max",
+    "pressure_intensity_mean_mean",
+    "pressure_intensity_cv_mean",
+    "pressure_intensity_cv_max",
+    "pressure_gradient_mean_mean",
+    "pressure_faint_rate_mean",
+    "pressure_faint_rate_max",
+    "pressure_heavy_rate_mean",
+    "pressure_heavy_rate_max",
+    "pressure_width_corr_mean",
+    "smudge_halo_darkness_mean",
+    "smudge_halo_darkness_max",
+    "background_roughness_std_mean",
+    "background_roughness_std_max",
+    "erasure_patch_ratio_mean",
+    "erasure_patch_ratio_max",
+    "pressure_intensity_cv_dict_minus_copy",
+    "stroke_width_jitter_dict_minus_copy",
+    "stroke_width_bloat_rate_dict_minus_copy",
+]
 
 # Key OCR and letter-level graphomotor features for student-level representation
 STREAM3_CORE_FEATURES = [
@@ -202,53 +233,119 @@ def assemble_multistream_student_dataset(
 
 
 def compute_metrics(y_true: np.ndarray, y_prob: np.ndarray) -> Dict[str, Optional[float]]:
-    """Compute comprehensive diagnostic metrics."""
+    """Compute comprehensive diagnostic metrics including sensitivity at fixed specificity."""
     n_pos = int(np.sum(y_true == 1))
     n_neg = int(np.sum(y_true == 0))
     if n_pos == 0 or n_neg == 0:
-        return {"auroc": None, "auprc": None, "brier": None, "n_pos": n_pos, "n_neg": n_neg}
+        return {
+            "auroc": None, "auprc": None, "brier": None,
+            "sens_at_80_spec": None, "sens_at_90_spec": None,
+            "youden_sens": None, "youden_spec": None,
+            "n_pos": n_pos, "n_neg": n_neg,
+        }
 
     auc = float(roc_auc_score(y_true, y_prob))
     auprc = float(average_precision_score(y_true, y_prob))
     brier = float(brier_score_loss(y_true, y_prob))
-    return {"auroc": auc, "auprc": auprc, "brier": brier, "n_pos": n_pos, "n_neg": n_neg}
+
+    fpr, tpr, _ = roc_curve(y_true, y_prob)
+    spec = 1.0 - fpr
+
+    # Sens @ 80% Spec (spec >= 0.80)
+    valid_80 = np.where(spec >= 0.80)[0]
+    sens_80 = float(np.max(tpr[valid_80])) if len(valid_80) > 0 else 0.0
+
+    # Sens @ 90% Spec (spec >= 0.90)
+    valid_90 = np.where(spec >= 0.90)[0]
+    sens_90 = float(np.max(tpr[valid_90])) if len(valid_90) > 0 else 0.0
+
+    # Youden J = sens + spec - 1
+    j_scores = tpr + spec - 1.0
+    best_idx = int(np.argmax(j_scores))
+    youden_sens = float(tpr[best_idx])
+    youden_spec = float(spec[best_idx])
+
+    return {
+        "auroc": auc,
+        "auprc": auprc,
+        "brier": brier,
+        "sens_at_80_spec": sens_80,
+        "sens_at_90_spec": sens_90,
+        "youden_sens": youden_sens,
+        "youden_spec": youden_spec,
+        "n_pos": n_pos,
+        "n_neg": n_neg,
+    }
 
 
 def run_multistream_benchmark() -> pd.DataFrame:
-    """Run full benchmark comparing Stream 1, Stream 3, and Fused Stacking on School B."""
+    """Run full benchmark comparing Stream 1, Stream 2, Stream 3, and 3-Stream Late Stacking on School B."""
     print("Assembling multi-stream dataset from processed sentence schemas & TrOCR cache...")
     df_train, df_test = assemble_multistream_student_dataset(use_cached_ocr_only=True)
     print(f"Loaded School A train cohort: {len(df_train)} students | School B test cohort: {len(df_test)} students.")
 
-    # 1. STREAM 1 ALONE: Task-Aware Router
+    y_train = df_train["label"].values.astype(int)
+    y_test = df_test["label"].values.astype(int)
+
+    # 1. STREAM 1 ALONE: Task-Aware Router (Geometry)
     print("\n--- Evaluating Stream 1 Alone (Geometric Task-Aware Router) ---")
     s1_router = TaskAwareRouter(random_state=42)
     s1_router.fit(df_train)
     s1_probs = s1_router.predict_proba(df_test)
 
-    # 2. STREAM 3 ALONE: TrOCR Legibility & Linguistic Errors
+    # 2. STREAM 2 ALONE: Stroke-Width & Grayscale Shading Micro-Texture
+    print("--- Evaluating Stream 2 Alone (Stroke-Width & Pressure Variance) ---")
+    available_s2 = [c for c in STREAM2_CORE_FEATURES if c in df_train.columns]
+    print(f"Available Stream 2 features: {len(available_s2)} features")
+
+    s2_train = df_train[available_s2].copy()
+    s2_test = df_test[available_s2].copy()
+    s2_meds = s2_train.median().fillna(0.0)
+
+    X_train_s2 = s2_train.fillna(s2_meds).fillna(0.0).values
+    X_test_s2 = s2_test.fillna(s2_meds).fillna(0.0).values
+
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.pipeline import Pipeline
+    pipe_s2 = Pipeline([
+        ("scaler", StandardScaler()),
+        ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=42)),
+    ])
+    pipe_s2.fit(X_train_s2, y_train)
+    s2_probs = pipe_s2.predict_proba(X_test_s2)[:, 1]
+
+    # 3. STREAM 3 ALONE: TrOCR Legibility & Linguistic Errors
     print("--- Evaluating Stream 3 Alone (TrOCR Legibility & Error Deltas) ---")
     available_s3 = [c for c in STREAM3_CORE_FEATURES if c in df_train.columns]
-    print(f"Available Stream 3 features: {available_s3}")
+    print(f"Available Stream 3 features: {len(available_s3)} features")
 
     s3_train = df_train[available_s3].copy()
     s3_test = df_test[available_s3].copy()
     s3_meds = s3_train.median().fillna(0.0)
 
     X_train_s3 = s3_train.fillna(s3_meds).fillna(0.0).values
-    y_train = df_train["label"].values.astype(int)
     X_test_s3 = s3_test.fillna(s3_meds).fillna(0.0).values
-    y_test = df_test["label"].values.astype(int)
 
     clf_s3 = LogisticRegression(C=0.1, class_weight="balanced", random_state=42)
     clf_s3.fit(X_train_s3, y_train)
     s3_probs = clf_s3.predict_proba(X_test_s3)[:, 1]
 
-    # 3. EARLY FUSION (Stream 1 + Stream 3 Concatenated)
-    print("--- Evaluating Stream 1 + Stream 3 Early Fusion ---")
-    fused_full_features = FULL_PROTOCOL_FEATURES + [f for f in available_s3 if f not in FULL_PROTOCOL_FEATURES]
-    fused_train = df_train[fused_full_features].copy()
-    fused_test = df_test[fused_full_features].copy()
+    # 4. 2-STREAM COMBINATIONS
+    stacked_s1_s2 = 0.60 * s1_probs + 0.40 * s2_probs
+    stacked_s1_s3 = 0.70 * s1_probs + 0.30 * s3_probs
+
+    # 5. 3-STREAM LATE STACKING (Balanced: 0.50 S1 + 0.25 S2 + 0.25 S3)
+    print("--- Evaluating 3-Stream Late Probability Stacking ---")
+    stacked_3stream_balanced = 0.50 * s1_probs + 0.25 * s2_probs + 0.25 * s3_probs
+    stacked_3stream_tuned = 0.45 * s1_probs + 0.35 * s2_probs + 0.20 * s3_probs
+
+    # 6. EARLY FUSION (Concatenate all available S1 + S2 + S3 features)
+    print("--- Evaluating 3-Stream Early Feature Fusion ---")
+    all_fused_features = FULL_PROTOCOL_FEATURES + [
+        f for f in available_s2 + available_s3 if f not in FULL_PROTOCOL_FEATURES
+    ]
+    fused_train = df_train[all_fused_features].copy()
+    fused_test = df_test[all_fused_features].copy()
     fused_meds = fused_train.median().fillna(0.0)
 
     X_train_fused = fused_train.fillna(fused_meds).fillna(0.0).values
@@ -260,10 +357,18 @@ def run_multistream_benchmark() -> pd.DataFrame:
     clf_fused.fit(X_train_fused, y_train)
     fused_probs = clf_fused.predict_proba(X_test_fused)[:, 1]
 
-    # 4. LATE PROBABILITY STACKING (Weighted Blending)
-    # 0.70 Stream 1 (Geometry Router) + 0.30 Stream 3 (TrOCR Legibility)
-    print("--- Evaluating Stream 1 + Stream 3 Late Probability Stacking ---")
-    stacked_probs = 0.70 * s1_probs + 0.30 * s3_probs
+    # 7. ROUTED MULTI-STREAM ENSEMBLE (Optimal Grade & Protocol Routing)
+    # Grade 3 (Zero Dictation): S1 + S2 (motor spatial & pencil pressure)
+    # Grades 4-7 (Matched Protocol): S1 (45%) + S2 (35%) + S3 (20%)
+    # Grade 8 (Ballpoint Pens / Partial): S1 (30%) + S3 (70%)
+    p_routed = np.zeros(len(df_test))
+    for i, g in enumerate(df_test["grade"]):
+        if g == 3:
+            p_routed[i] = 0.60 * s1_probs[i] + 0.40 * s2_probs[i]
+        elif 4 <= g <= 7:
+            p_routed[i] = 0.45 * s1_probs[i] + 0.35 * s2_probs[i] + 0.20 * s3_probs[i]
+        elif g == 8:
+            p_routed[i] = 0.30 * s1_probs[i] + 0.70 * s3_probs[i]
 
     # Evaluate across cohort slices
     subsets = {
@@ -276,9 +381,14 @@ def run_multistream_benchmark() -> pd.DataFrame:
     results = []
     models_dict = {
         "Stream 1 Alone (Geometry Router)": s1_probs,
+        "Stream 2 Alone (Stroke-Width/Pressure)": s2_probs,
         "Stream 3 Alone (TrOCR Legibility)": s3_probs,
-        "Early Fusion (Stream 1 + Stream 3)": fused_probs,
-        "Late Stacking (0.70 S1 + 0.30 S3)": stacked_probs,
+        "Late Stacking (0.60 S1 + 0.40 S2)": stacked_s1_s2,
+        "Late Stacking (0.70 S1 + 0.30 S3)": stacked_s1_s3,
+        "3-Stream Late Stacking (Balanced)": stacked_3stream_balanced,
+        "3-Stream Late Stacking (Tuned 45/35/20)": stacked_3stream_tuned,
+        "Routed Multi-Stream System (S1 + S2 + S3)": p_routed,
+        "Early Fusion (S1 + S2 + S3)": fused_probs,
     }
 
     for slice_name, mask in subsets.items():
@@ -295,6 +405,10 @@ def run_multistream_benchmark() -> pd.DataFrame:
                 "auroc": met["auroc"],
                 "auprc": met["auprc"],
                 "brier": met["brier"],
+                "sens_at_80_spec": met["sens_at_80_spec"],
+                "sens_at_90_spec": met["sens_at_90_spec"],
+                "youden_sens": met["youden_sens"],
+                "youden_spec": met["youden_spec"],
             })
 
     df_res = pd.DataFrame(results)
@@ -318,4 +432,7 @@ if __name__ == "__main__":
         for _, r in sdf.iterrows():
             auc_str = f"{r['auroc']:.4f}" if r["auroc"] is not None else "N/A"
             prc_str = f"{r['auprc']:.4f}" if r["auprc"] is not None else "N/A"
-            print(f"  {r['model']:<36} | AUROC: {auc_str} | AUPRC: {prc_str}")
+            s80_str = f"{r['sens_at_80_spec']*100:.1f}%" if r["sens_at_80_spec"] is not None else "N/A"
+            s90_str = f"{r['sens_at_90_spec']*100:.1f}%" if r["sens_at_90_spec"] is not None else "N/A"
+            ydn_str = f"Sens: {r['youden_sens']*100:.1f}%, Spec: {r['youden_spec']*100:.1f}%" if r["youden_sens"] is not None else "N/A"
+            print(f"  {r['model']:<38} | AUC: {auc_str} | PRC: {prc_str} | Sens@80%: {s80_str} | Sens@90%: {s90_str} | Youden: ({ydn_str})")

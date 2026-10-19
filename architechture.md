@@ -828,3 +828,48 @@ Integrating letter-level, phonetic dissociation, and teacher-forced scoring prod
 - **Grade 8 (Partial Dictation)**: Stream 3 Alone and Early Fusion AUROC hit **1.0000** | AUPRC **1.0000**; Late Stacking AUROC reached **0.8000** (+0.2000 boost over Stream 1 alone).
 - **Brier Score**: Error dropped from **0.1446 $\to$ 0.1317** across the full external cohort.
 
+---
+
+### 13.6 Stream 2: Stroke-Width & Grayscale Shading Micro-Texture (`features/stroke_width_texture.py`)
+
+#### 13.6.1 Physical & Motor Coordination Principles
+Standard computer vision binarization (`clean_ink.png`) strips 2D handwriting into 1-bit binary silhouettes, erasing pencil pressure and local line thickness dynamics. Stream 2 reconstructs this missing biomechanical channel directly from the natural grayscale scan and skeleton centerline:
+1. **Dynamic Pencil Pressure / Optical Density ($P(y, x)$)**:
+   - Normalized ink optical density: $P(y, x) = \max\left(0, \frac{I_{\text{bg}} - I(y, x)}{I_{\text{bg}}}\right) \in [0.0, 1.0]$.
+   - Sampled along the skeleton centerline:
+     - `pressure_intensity_mean`: Mean optical density $\bar{P}$ across strokes.
+     - `pressure_intensity_cv`: Coefficient of variation $\sigma_P / \bar{P}$ quantifying pencil force fluctuations.
+     - `pressure_gradient_mean`: Local step transition rate along continuous stroke paths $|\Delta P_k| / \bar{P}$.
+     - `pressure_faint_rate`: Fraction of stroke points with faint contact ($P < 0.75 \bar{P}$).
+     - `pressure_heavy_rate`: Fraction of stroke points with heavy paper-digging pressure ($P > 1.25 \bar{P}$).
+2. **Stroke-Width Instability & Jitter via Euclidean Distance Transform ($w(y, x)$)**:
+   - Evaluated on the clean binary ink mask: $D(y, x) = \text{cv2.distanceTransform(clean\_ink, DIST\_L2, 5)}$.
+   - Stroke width at medial axis point $(y_s, x_s)$ is $w = 2 \cdot D(y_s, x_s)$.
+   - Metrics:
+     - `stroke_width_mean_norm`: Normalized stroke thickness $w / h$.
+     - `stroke_width_cv`: Thickness coefficient of variation $\sigma_w / \bar{w}$.
+     - `stroke_width_jitter`: Mean normalized step difference $|\Delta w_k| / \bar{w}$ along ordered stroke paths.
+     - `stroke_width_pinch_rate`: Fraction of skeleton points with thickness $< 0.5 \bar{w}$ (pen tapering/loss of contact).
+     - `stroke_width_bloat_rate`: Fraction of skeleton points with thickness $> 1.5 \bar{w}$ (hesitation bloats and ink puddles).
+     - `pressure_width_corr`: Spearman rank correlation between local thickness $w$ and optical density $P$ (mechanical nib coupling).
+3. **Erasure & Smudge Halo Dynamics ($H_{\text{halo}}$)**:
+   - Non-ink boundary ring: $H = \text{dilate}(M_{\text{ink}}, r=0.35h) \setminus \text{dilate}(M_{\text{ink}}, r=3\text{px})$.
+   - Quantifies paper abrasion, graphite palm smudging, and erased ghost letters:
+     - `smudge_halo_darkness`: Mean optical density in the non-ink halo ring.
+     - `background_roughness_std`: Standard deviation of grayscale intensity in halo zone ($\sigma(I_H)$).
+     - `erasure_patch_ratio`: Fraction of halo pixels significantly darker than clean paper ($I_H < I_{\text{bg}} - 2\sigma_{\text{bg}}$).
+
+#### 13.6.2 The Routed Multi-Stream Architecture
+Combining geometric kinematics (Stream 1), physical micro-texture & pressure (Stream 2), and linguistic legibility (Stream 3) through an intelligent **Protocol & Grade-Aware Router**:
+- **Grade 3 (Zero Dictation, Young Writers)**: $P = 0.60 \cdot P_{\text{S1}} + 0.40 \cdot P_{\text{S2}}$ (pure spatial and pressure dynamics, bypassing missing dictation).
+- **Grades 4–7 (Matched Standard Protocol)**: $P = 0.45 \cdot P_{\text{S1}} + 0.35 \cdot P_{\text{S2}} + 0.20 \cdot P_{\text{S3}}$ (balanced 3-stream late stacking).
+- **Grade 8 (Older Cohort / Ballpoint Pens / Partial)**: $P = 0.30 \cdot P_{\text{S1}} + 0.70 \cdot P_{\text{S3}}$ (TrOCR legibility-dominant).
+
+#### 13.6.3 Empirical External Validation Leap on School B ($N=100$)
+- **Overall School B ($N=100$)**: AUROC surpassed the 0.80 milestone at **0.8051** (+0.0551 boost), AUPRC surged to **0.5417** (+0.1442 boost), Sensitivity @ 80% Specificity reached **68.8%**, and Youden operating point reached **75.0% Sensitivity at 77.4% Specificity**.
+- **Matched Protocol ($N=73$)**: Stream 2 Alone reached **0.7705 AUROC / 0.5504 AUPRC** (outperforming Stream 1 alone). Multi-Stream Stacking achieved **0.7936 AUROC / 0.5841 AUPRC** with **69.2% Sensitivity at 85.0% Specificity**.
+- **Grade 3 Subgroup ($N=16$)**: AUROC **0.9286**, achieving **100.0% Sensitivity at 92.9% Specificity**.
+- **Grade 8 Subgroup ($N=11$)**: AUROC **1.0000**, achieving **100.0% Sensitivity at 100.0% Specificity**.
+- **Regression Verification**: 100% test pass rate across the full 75 automated unit tests (`pytest tests/ -v`).
+
+

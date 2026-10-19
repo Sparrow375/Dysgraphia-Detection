@@ -33,6 +33,7 @@ from features.rule_offset import compute_rule_offset_features
 from features.size import compute_size_features
 from features.slant import compute_slant_features
 from features.content import compute_content_features
+from features.stroke_width_texture import compute_stroke_width_texture_features
 
 FEATURE_DESCRIPTIONS: Dict[str, str] = {
     # Baseline
@@ -83,6 +84,21 @@ FEATURE_DESCRIPTIONS: Dict[str, str] = {
     "ocr_omission_ratio": "Character deficit fraction max(0, (expected - decoded) / expected)",
     "ocr_cer": "Minimum Character Error Rate (normalized Levenshtein) against prompt candidates",
     "ocr_wer": "Minimum Word Error Rate against prompt candidates",
+    # Stream 2: Stroke-Width & Grayscale Shading Micro-Texture
+    "stroke_width_mean_norm": "Mean stroke thickness normalized by x-height h",
+    "stroke_width_cv": "Coefficient of variation of stroke thickness along skeleton centerline",
+    "stroke_width_jitter": "Mean normalized step difference |w_{k+1} - w_k| / mean(w) along stroke paths",
+    "stroke_width_pinch_rate": "Fraction of skeleton points with thickness < 0.5 * mean(w) (stroke pinching)",
+    "stroke_width_bloat_rate": "Fraction of skeleton points with thickness > 1.5 * mean(w) (hesitation bloats)",
+    "pressure_intensity_mean": "Mean optical density along skeleton (0.0=white paper, 1.0=black ink)",
+    "pressure_intensity_cv": "Coefficient of variation of pencil pressure along skeleton centerline",
+    "pressure_gradient_mean": "Mean normalized local pressure step difference along stroke paths",
+    "pressure_faint_rate": "Fraction of stroke points with faint pressure (<0.75 * mean)",
+    "pressure_heavy_rate": "Fraction of stroke points with heavy digging pressure (>1.25 * mean)",
+    "pressure_width_corr": "Spearman rank correlation between local thickness and optical density",
+    "smudge_halo_darkness": "Mean optical density of graphite smearing in the non-ink halo ring surrounding words",
+    "background_roughness_std": "Grayscale standard deviation in non-ink halo ring (paper abrasion/texture)",
+    "erasure_patch_ratio": "Fraction of halo pixels significantly darker than clean background paper",
 }
 
 
@@ -91,7 +107,7 @@ def extract_sentence_features(
     image_crop: Optional[np.ndarray] = None,
     include_ocr: bool = False,
 ) -> Dict[str, float]:
-    """Extract all features (spatial geometric + content/OCR) for a single sentence JSON.
+    """Extract all features (spatial geometric + stroke-width/pressure + content/OCR) for a single sentence JSON.
 
     Args:
         sentence_json: Loaded sentence JSON dictionary.
@@ -127,7 +143,10 @@ def extract_sentence_features(
     # 8. Fragmentation and completion
     feats.update(compute_fragmentation_features(sentence_json, image_crop))
 
-    # 9. Content, OCR legibility, and linguistic errors (TrOCR)
+    # 9. Stroke-width & grayscale shading micro-texture (Stream 2)
+    feats.update(compute_stroke_width_texture_features(sentence_json, image_crop))
+
+    # 10. Content, OCR legibility, and linguistic errors (TrOCR) (Stream 3)
     if include_ocr:
         feats.update(compute_content_features(sentence_json, image_crop, use_cache=True))
 
