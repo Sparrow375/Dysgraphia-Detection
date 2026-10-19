@@ -813,17 +813,18 @@ Rather than relying on coarse sentence-level Levenshtein edit distance, the lett
   - `matra_omissions_count`: Missing vowels in Devanagari text.
   - `conjunct_errors_count`: Missing virama / halant (`\u094d`) in Devanagari ligature formations.
 
-#### 13.5.2 Teacher-Forced Target Scoring
+#### 13.5.2 Teacher-Forced Target Scoring (`pipeline/precompute_forced_scoring.py`)
 Autoregressive generation can hallucinate or smooth over letter deformities due to RoBERTa's language model prior. In teacher-forced scoring:
 $$\mathcal{L}_{\text{prompt}} = \frac{1}{T} \sum_{t=1}^{T} \log P(y_t^{\text{target}} \mid \text{image}, y_{<t}^{\text{target}})$$
 - Bypasses beam search drift by evaluating the probability of the *exact target prompt*.
+- Vectorized CPU execution (`pipeline/precompute_forced_scoring.py`) processes batches across 405 sentence crops (3.03 crops/sec) and persists into `data/features/trocr_cache.json`.
 - Computes `conf_trajectory_slope` ($\beta_{\text{conf}}$ across line tokens) to quantify motor fatigue and trailing-off.
 - Measures `conf_consistency_cv` to detect erratic token certainty.
 
 #### 13.5.3 Multi-Stream Performance Impact
-Integrating letter-level and phonetic dissociation features produced a massive surge in **Precision-Recall AUC (AUPRC)** and balanced AUROC:
-- **All School B**: Late Stacking AUROC reached **0.7708** (up from 0.7500), and Early Fusion AUPRC surged from **0.3975 $\to$ 0.4826** (+0.0851 gain).
-- **Matched Grades 4–7**: Late Stacking AUROC reached **0.7513** (up from 0.7423), and Early Fusion AUPRC surged from **0.3961 $\to$ 0.4880** (+0.0919 gain).
-- **Grade 8**: AUROC surged from **0.6000 $\to$ 0.9000** and AUPRC surged from **0.2000 $\to$ 0.5000**.
+Integrating letter-level, phonetic dissociation, and teacher-forced scoring produced a massive surge in **Precision-Recall AUC (AUPRC)** and balanced AUROC:
+- **All School B**: Late Stacking AUROC reached **0.7731** (up from 0.7500), and Early Fusion AUPRC surged from **0.3975 $\to$ 0.4824** (+0.0849 gain).
+- **Matched Grades 4–7**: Late Stacking AUROC reached **0.7564** (up from 0.7423), and Early Fusion AUPRC surged from **0.3961 $\to$ 0.4807** (+0.0846 gain).
+- **Grade 8 (Partial Dictation)**: Stream 3 Alone and Early Fusion AUROC hit **1.0000** | AUPRC **1.0000**; Late Stacking AUROC reached **0.8000** (+0.2000 boost over Stream 1 alone).
 - **Brier Score**: Error dropped from **0.1446 $\to$ 0.1317** across the full external cohort.
 

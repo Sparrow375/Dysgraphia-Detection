@@ -71,6 +71,10 @@ STREAM3_CORE_FEATURES = [
     "confusable_rate_dict_minus_copy",
     "motor_error_rate_dict_minus_copy",
     "ocr_confidence_mean_dict_minus_copy",
+    "forced_mean_logprob_mean",
+    "forced_mean_logprob_min",
+    "forced_low_prob_ratio_mean",
+    "forced_mean_logprob_dict_minus_copy",
 ]
 
 
@@ -102,7 +106,16 @@ def assemble_multistream_student_dataset(
                 c = trocr_cache[k]
                 decoded = c.get("text", "")
                 confs = c.get("token_confidences", [])
-                candidates = CANDIDATE_PROMPTS.get(task_name, [])
+                cat = None
+                if "copy" in task_name and "english" in task_name:
+                    cat = "copy_english"
+                elif "dict" in task_name and "english" in task_name:
+                    cat = "dictated_english"
+                elif "copy" in task_name and "hindi" in task_name:
+                    cat = "copy_hindi"
+                elif "dict" in task_name and "hindi" in task_name:
+                    cat = "dictated_hindi"
+                candidates = CANDIDATE_PROMPTS.get(cat, []) if cat else []
                 best_cand = ""
                 if candidates:
                     cl = clean_text(decoded)
@@ -114,6 +127,9 @@ def assemble_multistream_student_dataset(
                 row_dict["raw_ocr_low_conf_ratio"] = c.get("low_conf_ratio", np.nan)
                 row_dict["raw_ocr_omission_ratio"] = c.get("omission_ratio", np.nan)
                 row_dict["raw_ocr_cer"] = c.get("cer", np.nan)
+                forced = c.get("forced_metrics", {})
+                for fk in ["forced_mean_prob", "forced_min_prob", "forced_low_prob_ratio", "forced_mean_logprob", "forced_min_logprob"]:
+                    row_dict[f"raw_{fk}"] = float(forced.get(fk, np.nan))
                 letter_rows.append(row_dict)
             else:
                 letter_rows.append({})

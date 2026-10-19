@@ -269,7 +269,14 @@
           136
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0048296586610376835,
+      "forced_min_prob": 3.8120651080220114e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.463555335998535,
+      "forced_min_logprob": -21.687679290771484
+    }
   },
   "G4_A_Roll01_sentence_03_dictated_hindi": {
     "text": "नेगि लालूयाल ४५ संवाददात त्व्य टैक्पै जूनून",
@@ -452,7 +459,14 @@
           140
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.08469096571207047,
+      "forced_min_prob": 8.291875866484055e-12,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.884455680847168,
+      "forced_min_logprob": -25.515745162963867
+    }
   },
   "G4_A_Roll01_sentence_05_own_hindi": {
     "text": "पेपेड कहूंगे नावे लालू प्रेगा",
@@ -816,7 +830,14 @@
           117
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.00775232445448637,
+      "forced_min_prob": 1.5967511757253305e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -11.106025695800781,
+      "forced_min_logprob": -20.255294799804688
+    }
   },
   "G4_A_Roll09_sentence_03_dictated_hindi": {
     "text": "युगो भौगोलिक",
@@ -916,7 +937,14 @@
           115
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.005724048707634211,
+      "forced_min_prob": 5.4489166650961707e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.247749328613281,
+      "forced_min_logprob": -23.633018493652344
+    }
   },
   "G4_A_Roll09_sentence_06_own_english": {
     "text": "acushnath Vavis",
@@ -1167,7 +1195,14 @@
           106
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.00864106323570013,
+      "forced_min_prob": 1.1524060178347284e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.587425231933594,
+      "forced_min_logprob": -22.88399887084961
+    }
   },
   "G4_A_Roll11_sentence_03_dictated_hindi": {
     "text": "शैत्रीयों रिंगों",
@@ -1254,7 +1289,14 @@
           114
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11865263432264328,
+      "forced_min_prob": 7.81653675119287e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -10.949296951293945,
+      "forced_min_logprob": -18.667024612426758
+    }
   },
   "G4_A_Roll11_sentence_05_own_hindi": {
     "text": "रौदेगी मण्डी देख हैहै रेले",
@@ -1485,7 +1527,14 @@
           141
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010441435500979424,
+      "forced_min_prob": 1.0875095268758628e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.441070556640625,
+      "forced_min_logprob": -22.94196128845215
+    }
   },
   "G3_A_Roll02_sentence_02_copy_english": {
     "text": "MVP another cools food in the Kitchen . The flood smell next good .",
@@ -1552,7 +1601,14 @@
           102
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.09295280277729034,
+      "forced_min_prob": 1.065053911730729e-08,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -10.402450561523438,
+      "forced_min_logprob": -18.357654571533203
+    }
   },
   "G3_A_Roll03_sentence_02_copy_english": {
     "text": "smalls very good .",
@@ -1588,7 +1644,14 @@
           137
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.004342764616012573,
+      "forced_min_prob": 7.883638741823518e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.288335800170898,
+      "forced_min_logprob": -20.961061477661133
+    }
   },
   "G3_A_Roll04_sentence_02_copy_english": {
     "text": "the smaller seats . Pad in kitchen . The food is",
@@ -1637,7 +1700,14 @@
           87
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.014421042986214161,
+      "forced_min_prob": 2.2674433441949304e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.11454963684082,
+      "forced_min_logprob": -19.904613494873047
+    }
   },
   "G3_A_Roll05_sentence_02_copy_english": {
     "text": "r cooks food in the kitchen . He fool am",
@@ -1684,7 +1754,14 @@
           116
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01999678835272789,
+      "forced_min_prob": 1.3410469956731674e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -14.070344924926758,
+      "forced_min_logprob": -22.73240089416504
+    }
   },
   "G3_A_Roll06_sentence_02_copy_english": {
     "text": "My brother cries and in the kitchen . She had smells very good .",
@@ -1739,7 +1816,14 @@
           106
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.004414344672113657,
+      "forced_min_prob": 4.253193353065399e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -9.630760192871094,
+      "forced_min_logprob": -19.275596618652344
+    }
   },
   "G3_A_Roll07_sentence_02_copy_english": {
     "text": "Mr Mather cooky food in fill kitchen",
@@ -1781,7 +1865,14 @@
           113
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0033850327599793673,
+      "forced_min_prob": 2.4128516074028994e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.13357925415039,
+      "forced_min_logprob": -17.539871215820312
+    }
   },
   "G3_A_Roll08_sentence_02_copy_english": {
     "text": "ONE Mather coaches Road in the Kitchen . The",
@@ -1826,7 +1917,14 @@
           110
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.050574664026498795,
+      "forced_min_prob": 1.3036317580983336e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -9.977635383605957,
+      "forced_min_logprob": -20.458112716674805
+    }
   },
   "G3_A_Roll09_sentence_02_copy_english": {
     "text": "mother took food in the kitchen The food",
@@ -1869,7 +1967,14 @@
           109
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05044126510620117,
+      "forced_min_prob": 1.1872295369030894e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.068961143493652,
+      "forced_min_logprob": -20.55164337158203
+    }
   },
   "G3_A_Roll10_sentence_02_copy_english": {
     "text": "My mother cooks food in the kitchen . The",
@@ -1914,7 +2019,14 @@
           105
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.005580726079642773,
+      "forced_min_prob": 3.882706600677466e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.654234886169434,
+      "forced_min_logprob": -19.36673355102539
+    }
   },
   "G3_A_Roll01_sentence_04_dictated_english": {
     "text": "Not logged inTalkContributionsCreate accountLog in",
@@ -1957,7 +2069,14 @@
           83
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010550661012530327,
+      "forced_min_prob": 1.0642654535431006e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.535453796386719,
+      "forced_min_logprob": -20.660980224609375
+    }
   },
   "G3_A_Roll02_sentence_04_dictated_english": {
     "text": "The big dog ran down road",
@@ -1996,7 +2115,14 @@
           122
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12473184615373611,
+      "forced_min_prob": 1.2967951157349944e-08,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.847271919250488,
+      "forced_min_logprob": -18.160785675048828
+    }
   },
   "G3_A_Roll03_sentence_04_dictated_english": {
     "text": "the big dog ran seven road .",
@@ -2037,7 +2163,14 @@
           117
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.007132811937481165,
+      "forced_min_prob": 5.024320404167781e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.85415267944336,
+      "forced_min_logprob": -21.41156005859375
+    }
   },
   "G3_A_Roll04_sentence_04_dictated_english": {
     "text": "the big dog was done as road",
@@ -2078,7 +2211,14 @@
           127
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12319207936525345,
+      "forced_min_prob": 2.199129989222115e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.38147258758545,
+      "forced_min_logprob": -19.935203552246094
+    }
   },
   "G3_A_Roll05_sentence_04_dictated_english": {
     "text": "is safeguard",
@@ -2109,7 +2249,14 @@
           81
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.10100594162940979,
+      "forced_min_prob": 1.3101141860261123e-07,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -10.663061141967773,
+      "forced_min_logprob": -15.847981452941895
+    }
   },
   "G3_A_Roll06_sentence_04_dictated_english": {
     "text": "free big boy man drawn good",
@@ -2148,7 +2295,14 @@
           140
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06441012024879456,
+      "forced_min_prob": 4.812728882086503e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -12.796608924865723,
+      "forced_min_logprob": -19.152002334594727
+    }
   },
   "G3_A_Roll07_sentence_04_dictated_english": {
     "text": "The big dog can down road .",
@@ -2189,7 +2343,14 @@
           130
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.053764160722494125,
+      "forced_min_prob": 4.443359902239763e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.600119590759277,
+      "forced_min_logprob": -19.231855392456055
+    }
   },
   "G3_A_Roll08_sentence_04_dictated_english": {
     "text": "The Big Dog Random Road .",
@@ -2228,7 +2389,14 @@
           148
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.003046126803383231,
+      "forced_min_prob": 4.258248267885456e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -16.235254287719727,
+      "forced_min_logprob": -23.87957763671875
+    }
   },
   "G3_A_Roll09_sentence_04_dictated_english": {
     "text": "The Big Dog Ransom Down Rodeo .",
@@ -2269,7 +2437,14 @@
           164
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0004930662689730525,
+      "forced_min_prob": 1.1112084585818138e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.503966331481934,
+      "forced_min_logprob": -18.31523323059082
+    }
   },
   "G3_A_Roll10_sentence_04_dictated_english": {
     "text": "The Whig day Main down road",
@@ -2308,7 +2483,14 @@
           127
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.04184925556182861,
+      "forced_min_prob": 1.342303268536682e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.384956359863281,
+      "forced_min_logprob": -20.428878784179688
+    }
   },
   "G3_A_Roll12_sentence_02_copy_english": {
     "text": "any matches , on oaths Food in the Kitchen The Food smells",
@@ -2360,7 +2542,14 @@
           138
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01658048667013645,
+      "forced_min_prob": 2.675934647478062e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.275318145751953,
+      "forced_min_logprob": -24.34413719177246
+    }
   },
   "G3_A_Roll12_sentence_04_dictated_english": {
     "text": "The Dry Day Ambrose on",
@@ -2397,7 +2586,14 @@
           113
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.062236081808805466,
+      "forced_min_prob": 6.222836690383815e-10,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -13.150777816772461,
+      "forced_min_logprob": -21.19762420654297
+    }
   },
   "G3_A_Roll13_sentence_02_copy_english": {
     "text": "entire foot smells weekly",
@@ -2432,7 +2628,14 @@
           127
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0054055554792284966,
+      "forced_min_prob": 2.446626234942073e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.867426872253418,
+      "forced_min_logprob": -19.828556060791016
+    }
   },
   "G3_A_Roll13_sentence_04_dictated_english": {
     "text": ". street",
@@ -2463,7 +2666,14 @@
           142
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0069321212358772755,
+      "forced_min_prob": 1.9395860917370555e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.91600513458252,
+      "forced_min_logprob": -17.75820541381836
+    }
   },
   "G3_A_Roll14_sentence_02_copy_english": {
     "text": "NY-matched waste-leading the kitchen .",
@@ -2504,7 +2714,14 @@
           91
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009910719469189644,
+      "forced_min_prob": 4.777409134959498e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.644768714904785,
+      "forced_min_logprob": -19.159366607666016
+    }
   },
   "G3_A_Roll14_sentence_04_dictated_english": {
     "text": "The high boge walls down blood .",
@@ -2546,7 +2763,14 @@
           121
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.032701585441827774,
+      "forced_min_prob": 1.2749769240372189e-08,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.143412590026855,
+      "forced_min_logprob": -18.177753448486328
+    }
   },
   "G3_A_Roll14_sentence_05_own_hindi": {
     "text": "गुरा",
@@ -2625,7 +2849,14 @@
           141
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02635761722922325,
+      "forced_min_prob": 1.8786177058416342e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -9.891899108886719,
+      "forced_min_logprob": -20.092729568481445
+    }
   },
   "G3_A_Roll15_sentence_04_dictated_english": {
     "text": "the Big Day Ron grand down road",
@@ -2666,7 +2897,14 @@
           147
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.041880521923303604,
+      "forced_min_prob": 9.455542902478409e-13,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -13.977566719055176,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G3_A_Roll16_sentence_02_copy_english": {
     "text": "Asks Food in the ' Bit",
@@ -2706,7 +2944,14 @@
           138
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.006599680054932833,
+      "forced_min_prob": 4.564190803080237e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.825468063354492,
+      "forced_min_logprob": -16.90243911743164
+    }
   },
   "G3_A_Roll16_sentence_04_dictated_english": {
     "text": "The dig-Dogs Road-Grand Agend Ag",
@@ -2749,7 +2994,14 @@
           132
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1352778971195221,
+      "forced_min_prob": 4.197345138123865e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.32763957977295,
+      "forced_min_logprob": -19.288814544677734
+    }
   },
   "G3_A_Roll17_sentence_02_copy_english": {
     "text": "My-mother-cocks food in the Kitchen The food smells",
@@ -2797,7 +3049,14 @@
           111
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010924715548753738,
+      "forced_min_prob": 1.238959195654088e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.723791122436523,
+      "forced_min_logprob": -25.114164352416992
+    }
   },
   "G3_A_Roll17_sentence_04_dictated_english": {
     "text": "e Big Dog hand-down road",
@@ -2836,7 +3095,14 @@
           144
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12601472437381744,
+      "forced_min_prob": 3.0634594860856623e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -12.585728645324707,
+      "forced_min_logprob": -19.603721618652344
+    }
   },
   "G3_A_Roll19_sentence_02_copy_english": {
     "text": "# years from in which a look-reve",
@@ -2880,7 +3146,14 @@
           157
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009569668211042881,
+      "forced_min_prob": 1.2263335902318317e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.068887710571289,
+      "forced_min_logprob": -20.519237518310547
+    }
   },
   "G3_A_Roll19_sentence_04_dictated_english": {
     "text": "He big leg stupiders would",
@@ -2918,7 +3191,14 @@
           141
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1185120940208435,
+      "forced_min_prob": 1.899013030159935e-10,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.059334754943848,
+      "forced_min_logprob": -22.384517669677734
+    }
   },
   "G3_A_Roll20_sentence_02_copy_english": {
     "text": "matter-cap",
@@ -2949,7 +3229,14 @@
           89
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.08712700009346008,
+      "forced_min_prob": 1.7250605388596796e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.581340789794922,
+      "forced_min_logprob": -20.178003311157227
+    }
   },
   "G3_A_Roll20_sentence_04_dictated_english": {
     "text": "big dog random road :",
@@ -2986,7 +3273,14 @@
           94
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11266148090362549,
+      "forced_min_prob": 1.1806999822283615e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -13.139291763305664,
+      "forced_min_logprob": -20.557157516479492
+    }
   },
   "G3_A_Roll21_sentence_02_copy_english": {
     "text": "fifty matter costs - food in the kitchen . The",
@@ -3033,7 +3327,14 @@
           108
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.07034411281347275,
+      "forced_min_prob": 3.814728088968877e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.236894607543945,
+      "forced_min_logprob": -19.384395599365234
+    }
   },
   "G3_A_Roll21_sentence_04_dictated_english": {
     "text": "The Whig dog rain down was",
@@ -3072,7 +3373,14 @@
           132
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010660243220627308,
+      "forced_min_prob": 3.2079636724802185e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.985241889953613,
+      "forced_min_logprob": -17.25504493713379
+    }
   },
   "G3_A_Roll22_sentence_02_copy_english": {
     "text": "for another Septa food . in the hit",
@@ -3116,7 +3424,14 @@
           160
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11953740566968918,
+      "forced_min_prob": 1.9210100177247114e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.422334671020508,
+      "forced_min_logprob": -17.76782989501953
+    }
   },
   "G3_A_Roll22_sentence_04_dictated_english": {
     "text": "the Big dog again down road .",
@@ -3157,7 +3472,14 @@
           139
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.017431123182177544,
+      "forced_min_prob": 5.145873505085774e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.246153831481934,
+      "forced_min_logprob": -19.085071563720703
+    }
   },
   "G3_A_Roll23_sentence_02_copy_english": {
     "text": "me smoke",
@@ -3188,7 +3510,14 @@
           93
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.2021525800228119,
+      "forced_min_prob": 9.044853754858195e-11,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -12.055292129516602,
+      "forced_min_logprob": -23.126239776611328
+    }
   },
   "G3_A_Roll23_sentence_04_dictated_english": {
     "text": "The big dog would have",
@@ -3225,7 +3554,14 @@
           95
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.07736103981733322,
+      "forced_min_prob": 2.5821003668546894e-10,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.791857719421387,
+      "forced_min_logprob": -22.077247619628906
+    }
   },
   "G4_A_Roll02_sentence_02_copy_english": {
     "text": "was a successful in the time of the time of the time of the time of the PO. Sundays , We play sucked with our founders # \" ex gone . We will After the game' we eat faults together . .",
@@ -3372,7 +3708,14 @@
           121
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.013378262519836426,
+      "forced_min_prob": 9.299006009655386e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -9.96361255645752,
+      "forced_min_logprob": -18.493358612060547
+    }
   },
   "G4_A_Roll02_sentence_04_dictated_english": {
     "text": "my Bride place follow we is friend .",
@@ -3415,7 +3758,14 @@
           125
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12470748275518417,
+      "forced_min_prob": 2.0180225546173602e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.187164306640625,
+      "forced_min_logprob": -22.323732376098633
+    }
   },
   "G4_A_Roll03_sentence_02_copy_english": {
     "text": "# Microsofts we play out with a friends . \" \" ' After the game we eat how its f-eographer . \" ' '",
@@ -3527,7 +3877,14 @@
           112
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.011630048975348473,
+      "forced_min_prob": 5.920744450271798e-10,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.71843433380127,
+      "forced_min_logprob": -21.24738883972168
+    }
   },
   "G4_A_Roll03_sentence_04_dictated_english": {
     "text": "Mr. Bride Place Fallball . We is friend",
@@ -3572,7 +3929,14 @@
           101
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 1.4962529348849785e-05,
+      "forced_min_prob": 2.314735382535904e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.834037780761719,
+      "forced_min_logprob": -24.4891414642334
+    }
   },
   "G4_A_Roll04_sentence_02_copy_english": {
     "text": "on Sundays the play - critic . bil our friends . After the year the bat tourists tory then .",
@@ -3663,7 +4027,14 @@
           162
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.008014525286853313,
+      "forced_min_prob": 3.929887970599566e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.15331745147705,
+      "forced_min_logprob": -19.35465431213379
+    }
   },
   "G4_A_Roll04_sentence_04_dictated_english": {
     "text": "my brother plays food bell with is for",
@@ -3706,7 +4077,14 @@
           128
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1243438869714737,
+      "forced_min_prob": 5.787265805468067e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -9.59718132019043,
+      "forced_min_logprob": -23.572776794433594
+    }
   },
   "G4_A_Roll05_sentence_02_copy_english": {
     "text": "in Sundays we may ticket with in Sundays we . Play ticket will our friends After the game we eat knives together",
@@ -3812,7 +4190,14 @@
           111
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.005869129206985235,
+      "forced_min_prob": 4.116089968864145e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.780258178710938,
+      "forced_min_logprob": -21.610946655273438
+    }
   },
   "G4_A_Roll05_sentence_04_dictated_english": {
     "text": "It Brother Play food ball wetherend",
@@ -3853,7 +4238,14 @@
           114
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06977419555187225,
+      "forced_min_prob": 3.42025609223473e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.412578582763672,
+      "forced_min_logprob": -24.09872055053711
+    }
   },
   "G4_A_Roll06_sentence_02_copy_english": {
     "text": "on Sundays We Play picket with Our Erie After the game we eat fruits together .",
@@ -3924,7 +4316,14 @@
           140
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010627339594066143,
+      "forced_min_prob": 4.423942989717489e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.432868957519531,
+      "forced_min_logprob": -19.236234664916992
+    }
   },
   "G4_A_Roll06_sentence_04_dictated_english": {
     "text": "Mr. Brother Place Football with his friend '",
@@ -3968,7 +4367,14 @@
           106
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0001609666069271043,
+      "forced_min_prob": 9.397184636342204e-13,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -15.258442878723145,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G4_A_Roll07_sentence_02_copy_english": {
     "text": "a b c d e f g Andrews ( 0 2nd from Sundays . We only market effect business \" After \" Have I gave we eat a together , when it was",
@@ -4096,7 +4502,14 @@
           114
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.008760050870478153,
+      "forced_min_prob": 1.7474385272109316e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -11.198343276977539,
+      "forced_min_logprob": -20.165115356445312
+    }
   },
   "G4_A_Roll07_sentence_04_dictated_english": {
     "text": "my brother Plays football with his friends",
@@ -4138,7 +4551,14 @@
           124
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12655757367610931,
+      "forced_min_prob": 1.0255156966676449e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -14.448563575744629,
+      "forced_min_logprob": -25.303239822387695
+    }
   },
   "G4_A_Roll08_sentence_02_copy_english": {
     "text": "of Sundays . We , Play crack . \" What with our own friends After the game we eat faults bogrether .",
@@ -4234,7 +4654,14 @@
           120
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010688045993447304,
+      "forced_min_prob": 1.6109996670010673e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.338383674621582,
+      "forced_min_logprob": -20.246410369873047
+    }
   },
   "G4_A_Roll08_sentence_04_dictated_english": {
     "text": "yr brother plays football with his , Frien",
@@ -4278,7 +4705,14 @@
           143
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11778178811073303,
+      "forced_min_prob": 2.5329790348527226e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.462204933166504,
+      "forced_min_logprob": -24.39904022216797
+    }
   },
   "G4_A_Roll12_sentence_02_copy_english": {
     "text": "all employers we play cricket wit our friends . After the game we eat fruits to get",
@@ -4361,7 +4795,14 @@
           145
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.007837065495550632,
+      "forced_min_prob": 9.260168187807949e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.061727523803711,
+      "forced_min_logprob": -20.800128936767578
+    }
   },
   "G4_A_Roll12_sentence_04_dictated_english": {
     "text": "my brother plays football with his friend",
@@ -4402,7 +4843,14 @@
           133
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.07192210853099823,
+      "forced_min_prob": 1.8611703161714593e-13,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.948537826538086,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G4_A_Roll13_sentence_02_copy_english": {
     "text": "illness slow-strength-men for cricket with all",
@@ -4456,7 +4904,14 @@
           172
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.011190853081643581,
+      "forced_min_prob": 9.583990490114047e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.396350860595703,
+      "forced_min_logprob": -18.463171005249023
+    }
   },
   "G4_A_Roll13_sentence_04_dictated_english": {
     "text": "together .",
@@ -4487,7 +4942,14 @@
           88
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.018004529178142548,
+      "forced_min_prob": 2.432154200260328e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.438209533691406,
+      "forced_min_logprob": -22.137073516845703
+    }
   },
   "G4_A_Roll14_sentence_02_copy_english": {
     "text": "After the game we eat your his coglitter",
@@ -4532,7 +4994,14 @@
           118
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.004222556483000517,
+      "forced_min_prob": 3.5141858867326903e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.917905807495117,
+      "forced_min_logprob": -21.76904296875
+    }
   },
   "G4_A_Roll14_sentence_04_dictated_english": {
     "text": "My Baker Plays Food Each with is friends",
@@ -4576,7 +5045,14 @@
           110
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.00396362692117691,
+      "forced_min_prob": 5.474483713574507e-13,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.973461151123047,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G4_A_Roll15_sentence_02_copy_english": {
     "text": "IFIER THE GAME WE eat Fruit'S . so getting a",
@@ -4639,7 +5115,14 @@
           131
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06353075057268143,
+      "forced_min_prob": 1.7625587100944529e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.296014785766602,
+      "forced_min_logprob": -22.459083557128906
+    }
   },
   "G4_A_Roll15_sentence_04_dictated_english": {
     "text": "friends .",
@@ -4670,7 +5153,14 @@
           104
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01897595264017582,
+      "forced_min_prob": 1.6990806006068893e-13,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.804848670959473,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G4_A_Roll16_sentence_02_copy_english": {
     "text": "20 Sunday We Play cricket with our friends . After the game we eat fruits . a b c d e f g h. What is a successful community of the United States",
@@ -4797,7 +5287,14 @@
           14
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.015087996609508991,
+      "forced_min_prob": 9.331157180270111e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -10.00159740447998,
+      "forced_min_logprob": -18.489906311035156
+    }
   },
   "G4_A_Roll16_sentence_04_dictated_english": {
     "text": "Failends .",
@@ -4830,7 +5327,14 @@
           70
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0015015802346169949,
+      "forced_min_prob": 4.962349975379254e-12,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.506702423095703,
+      "forced_min_logprob": -26.029142379760742
+    }
   },
   "G4_A_Roll17_sentence_02_copy_english": {
     "text": "on Sundays . The play ought when",
@@ -4872,7 +5376,14 @@
           144
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0780821219086647,
+      "forced_min_prob": 1.542007521670996e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.703533172607422,
+      "forced_min_logprob": -20.290180206298828
+    }
   },
   "G4_A_Roll17_sentence_04_dictated_english": {
     "text": "parts took two F.M.C.M.",
@@ -4914,7 +5425,14 @@
           99
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.013280131854116917,
+      "forced_min_prob": 1.9241885862442132e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.00362777709961,
+      "forced_min_logprob": -22.371347427368164
+    }
   },
   "G4_A_Roll18_sentence_02_copy_english": {
     "text": "on Sunday We Play cricket with our friends After the game we eat fruits to get the",
@@ -4997,7 +5515,14 @@
           126
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.006865854375064373,
+      "forced_min_prob": 3.0483027213534797e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.247065544128418,
+      "forced_min_logprob": -21.911266326904297
+    }
   },
   "G4_A_Roll18_sentence_04_dictated_english": {
     "text": "my brother Play Football with his friends",
@@ -5038,7 +5563,14 @@
           118
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12509207427501678,
+      "forced_min_prob": 1.531962195988612e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.625375747680664,
+      "forced_min_logprob": -22.599302291870117
+    }
   },
   "G4_A_Roll19_sentence_02_copy_english": {
     "text": "on Sunday we play , cricket with our friends . After the game we eat faults together",
@@ -5121,7 +5653,14 @@
           99
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.004206367768347263,
+      "forced_min_prob": 2.6545970976954436e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.341551780700684,
+      "forced_min_logprob": -22.049558639526367
+    }
   },
   "G4_A_Roll19_sentence_04_dictated_english": {
     "text": "my brother play football with his friends",
@@ -5162,7 +5701,14 @@
           115
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12371625751256943,
+      "forced_min_prob": 1.2154637296646342e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.448053359985352,
+      "forced_min_logprob": -20.528141021728516
+    }
   },
   "G4_A_Roll20_sentence_02_copy_english": {
     "text": "on on Sundays his Play cricket with our friends . After the game we eat rivits' together . a b c d e f g h i j k l h i j",
@@ -5314,7 +5860,14 @@
           24
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010690230876207352,
+      "forced_min_prob": 7.147893388292914e-10,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.11052417755127,
+      "forced_min_logprob": -21.059032440185547
+    }
   },
   "G4_A_Roll20_sentence_04_dictated_english": {
     "text": "his friends",
@@ -5345,7 +5898,14 @@
           83
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.21992313861846924,
+      "forced_min_prob": 7.791931162792753e-13,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -11.700615882873535,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G4_A_Roll22_sentence_02_copy_english": {
     "text": "on sixmath the Plattsettist with",
@@ -5386,7 +5946,14 @@
           110
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11787279695272446,
+      "forced_min_prob": 7.578377508865586e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -14.946075439453125,
+      "forced_min_logprob": -23.303136825561523
+    }
   },
   "G4_A_Roll22_sentence_04_dictated_english": {
     "text": "MPS , Biographical Rights Food (all with",
@@ -5431,7 +5998,14 @@
           181
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.028928546234965324,
+      "forced_min_prob": 8.208889568095401e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -11.082600593566895,
+      "forced_min_logprob": -18.6180477142334
+    }
   },
   "G4_A_Roll23_sentence_02_copy_english": {
     "text": "in Sundays we play bucket with our life .",
@@ -5477,7 +6051,14 @@
           93
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.021501457318663597,
+      "forced_min_prob": 2.7059918750182987e-09,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -11.517967224121094,
+      "forced_min_logprob": -19.72779655456543
+    }
   },
   "G4_A_Roll23_sentence_04_dictated_english": {
     "text": "by Brody Place . A",
@@ -5514,7 +6095,14 @@
           119
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.09245940297842026,
+      "forced_min_prob": 3.491927016638363e-12,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -12.352937698364258,
+      "forced_min_logprob": -26.38056755065918
+    }
   },
   "G4_A_Roll24_sentence_02_copy_english": {
     "text": "on Sunday vice play cricket with our free After the game we eat fruits together .",
@@ -5584,7 +6172,14 @@
           106
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.015018503181636333,
+      "forced_min_prob": 1.0111341097740478e-08,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -9.750654220581055,
+      "forced_min_logprob": -18.409608840942383
+    }
   },
   "G4_A_Roll24_sentence_04_dictated_english": {
     "text": "Mr. Brother place football with his friend",
@@ -5626,7 +6221,14 @@
           123
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0019175889901816845,
+      "forced_min_prob": 1.29780436397553e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.169636726379395,
+      "forced_min_logprob": -22.76517677307129
+    }
   },
   "G4_A_Roll25_sentence_02_copy_english": {
     "text": "On Sundays we play cricket with our friends flex the game we eat bouts together",
@@ -5706,7 +6308,14 @@
           110
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009874463081359863,
+      "forced_min_prob": 7.257195400178773e-10,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.851324081420898,
+      "forced_min_logprob": -21.04385757446289
+    }
   },
   "G4_A_Roll25_sentence_04_dictated_english": {
     "text": "My bother Plays Football with his frier",
@@ -5749,7 +6358,14 @@
           117
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0031634499318897724,
+      "forced_min_prob": 2.1018280865758854e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.352128982543945,
+      "forced_min_logprob": -24.585628509521484
+    }
   },
   "G4_A_Roll26_sentence_02_copy_english": {
     "text": "in Sundays ' he play cricket whit our friend After the game we eat fruits together .",
@@ -5823,7 +6439,14 @@
           93
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03924870491027832,
+      "forced_min_prob": 7.818529823566678e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.2659273147583,
+      "forced_min_logprob": -18.66676902770996
+    }
   },
   "G4_A_Roll26_sentence_04_dictated_english": {
     "text": "y brother Plays football which his friends .",
@@ -5867,7 +6490,14 @@
           100
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0032934295013546944,
+      "forced_min_prob": 1.0167900728200521e-13,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.484947204589844,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G5_A_Roll01_sentence_02_copy_english": {
     "text": "went to the market to buy the",
@@ -5908,7 +6538,14 @@
           135
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0020802507642656565,
+      "forced_min_prob": 9.864797103102327e-14,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.878101348876953,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G5_A_Roll01_sentence_04_dictated_english": {
     "text": "torys teach us good thing .",
@@ -5949,7 +6586,14 @@
           113
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.004477106500416994,
+      "forced_min_prob": 5.070327838141431e-13,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -19.283708572387695,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G5_A_Roll02_sentence_02_copy_english": {
     "text": "We went to the market to buy fresh vegetables .",
@@ -5996,7 +6640,14 @@
           148
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12430407851934433,
+      "forced_min_prob": 8.148685719244764e-12,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -14.384969711303711,
+      "forced_min_logprob": -25.533164978027344
+    }
   },
   "G5_A_Roll02_sentence_04_dictated_english": {
     "text": "Members tells us a new story or every day The story teach us good things",
@@ -6064,7 +6715,14 @@
           137
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0010631633922457695,
+      "forced_min_prob": 2.9263223788600357e-13,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.38018798828125,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G5_A_Roll03_sentence_02_copy_english": {
     "text": "We went to the market to buy fresh vegetable",
@@ -6109,7 +6767,14 @@
           149
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11918601393699646,
+      "forced_min_prob": 3.09047065716328e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.40985107421875,
+      "forced_min_logprob": -21.89752769470215
+    }
   },
   "G5_A_Roll03_sentence_04_dictated_english": {
     "text": "aux Teacher tells us finew-story . The Story Teachs vs good things .",
@@ -6177,7 +6842,14 @@
           158
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009290368296205997,
+      "forced_min_prob": 7.123799328212499e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.681387901306152,
+      "forced_min_logprob": -21.062410354614258
+    }
   },
   "G5_A_Roll04_sentence_02_copy_english": {
     "text": "Idle Hart to the market to bury fresh . vegetable",
@@ -6236,7 +6908,14 @@
           105
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0580979585647583,
+      "forced_min_prob": 1.445654568277277e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.713750839233398,
+      "forced_min_logprob": -22.657289505004883
+    }
   },
   "G5_A_Roll04_sentence_04_dictated_english": {
     "text": "own teacher tale us a new story everyday the story's trash we good thing .",
@@ -6306,7 +6985,14 @@
           114
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12492476403713226,
+      "forced_min_prob": 1.0455040999612919e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.662972450256348,
+      "forced_min_logprob": -22.981351852416992
+    }
   },
   "G5_A_Roll05_sentence_02_copy_english": {
     "text": "We went to the market to buy",
@@ -6347,7 +7033,14 @@
           93
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0014895281055942178,
+      "forced_min_prob": 2.7734163854375993e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.39141845703125,
+      "forced_min_logprob": -19.70318603515625
+    }
   },
   "G5_A_Roll05_sentence_04_dictated_english": {
     "text": "teacher is immediately . The Packers' gund Their reading mindi . '",
@@ -6423,7 +7116,14 @@
           123
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.007378293666988611,
+      "forced_min_prob": 1.5610405329491428e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.196677207946777,
+      "forced_min_logprob": -24.88308334350586
+    }
   },
   "G5_A_Roll06_sentence_02_copy_english": {
     "text": "We went to the market to buy fresh vegetables .",
@@ -6470,7 +7170,14 @@
           110
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11962049454450607,
+      "forced_min_prob": 3.3156785650412246e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -14.13980770111084,
+      "forced_min_logprob": -21.82718849182129
+    }
   },
   "G5_A_Roll06_sentence_04_dictated_english": {
     "text": "thinks . .",
@@ -6503,7 +7210,14 @@
           82
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05948546156287193,
+      "forced_min_prob": 1.3860371739227162e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -11.805718421936035,
+      "forced_min_logprob": -20.39681625366211
+    }
   },
   "G5_A_Roll07_sentence_02_copy_english": {
     "text": "We went to the market to buy Fresh vegetables . manager of",
@@ -6565,7 +7279,14 @@
           89
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11603567004203796,
+      "forced_min_prob": 8.609847557128347e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.59425163269043,
+      "forced_min_logprob": -23.17552947998047
+    }
   },
   "G5_A_Roll07_sentence_04_dictated_english": {
     "text": "Our Teacher Tells a Story every day The Stony Trail",
@@ -6613,7 +7334,14 @@
           113
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0005294592119753361,
+      "forced_min_prob": 1.3992869363210758e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.491897583007812,
+      "forced_min_logprob": -22.68988800048828
+    }
   },
   "G5_A_Roll08_sentence_02_copy_english": {
     "text": "We went to the moment to buy fresh Vegetables .",
@@ -6661,7 +7389,14 @@
           139
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11939559876918793,
+      "forced_min_prob": 4.278278176172989e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.858024597167969,
+      "forced_min_logprob": -19.26971435546875
+    }
   },
   "G5_A_Roll08_sentence_04_dictated_english": {
     "text": "The Story teaches us good things",
@@ -6700,7 +7435,14 @@
           100
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06441257148981094,
+      "forced_min_prob": 3.578570328954811e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -11.90800952911377,
+      "forced_min_logprob": -19.44830322265625
+    }
   },
   "G5_A_Roll09_sentence_02_copy_english": {
     "text": "they went to the market to buy fresh vegetables .",
@@ -6758,7 +7500,14 @@
           107
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.006047209724783897,
+      "forced_min_prob": 7.352297615170755e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.709675788879395,
+      "forced_min_logprob": -16.425668716430664
+    }
   },
   "G5_A_Roll09_sentence_04_dictated_english": {
     "text": "us good things",
@@ -6791,7 +7540,14 @@
           118
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.09407861530780792,
+      "forced_min_prob": 2.0153093083230544e-10,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -10.238322257995605,
+      "forced_min_logprob": -22.3250789642334
+    }
   },
   "G5_A_Roll10_sentence_02_copy_english": {
     "text": "All WEDF to the market to buy fresh vegetables",
@@ -6837,7 +7593,14 @@
           93
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.10062430799007416,
+      "forced_min_prob": 3.5849266263876522e-12,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.363525390625,
+      "forced_min_logprob": -26.35428237915039
+    }
   },
   "G5_A_Roll10_sentence_04_dictated_english": {
     "text": "stories teach us good things",
@@ -6874,7 +7637,14 @@
           97
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.014227007515728474,
+      "forced_min_prob": 2.9039521898255316e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.659981727600098,
+      "forced_min_logprob": -19.657194137573242
+    }
   },
   "G5_A_Roll11_sentence_02_copy_english": {
     "text": "we went to the market to buy fresh vegetables",
@@ -6919,7 +7689,14 @@
           97
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12319528311491013,
+      "forced_min_prob": 2.0813420973687935e-13,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -14.763541221618652,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G5_A_Roll11_sentence_04_dictated_english": {
     "text": "The story teach us good things",
@@ -6958,7 +7735,14 @@
           108
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0013399802846834064,
+      "forced_min_prob": 3.891668853839292e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.320976257324219,
+      "forced_min_logprob": -17.06184196472168
+    }
   },
   "G5_A_Roll12_sentence_02_copy_english": {
     "text": "We went to the market to buy fresh vegetables .",
@@ -7016,7 +7800,14 @@
           87
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0011386312544345856,
+      "forced_min_prob": 1.572792035497983e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -15.20488452911377,
+      "forced_min_logprob": -22.572998046875
+    }
   },
   "G5_A_Roll12_sentence_04_dictated_english": {
     "text": "every day . The storys teach us good thin",
@@ -7062,7 +7853,14 @@
           98
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05890067294239998,
+      "forced_min_prob": 1.9404486906182683e-08,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.095044136047363,
+      "forced_min_logprob": -17.757761001586914
+    }
   },
   "G5_A_Roll13_sentence_02_copy_english": {
     "text": "We went to the market to buy fresh vegetables a b c d e f g h",
@@ -7134,7 +7932,14 @@
           24
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1208120733499527,
+      "forced_min_prob": 1.7552179154556313e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.248517036437988,
+      "forced_min_logprob": -22.463258743286133
+    }
   },
   "G5_A_Roll13_sentence_04_dictated_english": {
     "text": "The Story-reach us good things",
@@ -7173,7 +7978,14 @@
           89
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12385527044534683,
+      "forced_min_prob": 4.413699272731719e-08,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -11.183144569396973,
+      "forced_min_logprob": -16.93596839904785
+    }
   },
   "G5_A_Roll14_sentence_02_copy_english": {
     "text": "Specialist to the market to buy fresh",
@@ -7214,7 +8026,14 @@
           163
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.001868979656137526,
+      "forced_min_prob": 2.298339740747224e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.6709623336792,
+      "forced_min_logprob": -19.89107894897461
+    }
   },
   "G5_A_Roll14_sentence_04_dictated_english": {
     "text": "Stacy Teach us good thinks .",
@@ -7253,7 +8072,14 @@
           105
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0005037907394580543,
+      "forced_min_prob": 5.852907603021151e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.73696231842041,
+      "forced_min_logprob": -21.258913040161133
+    }
   },
   "G5_A_Roll15_sentence_02_copy_english": {
     "text": "We Want to the market to buy fresh vegetable",
@@ -7298,7 +8124,14 @@
           108
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.054793719202280045,
+      "forced_min_prob": 4.7567318139929426e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -15.135807037353516,
+      "forced_min_logprob": -23.768875122070312
+    }
   },
   "G5_A_Roll15_sentence_04_dictated_english": {
     "text": "The strokes teach as good thing",
@@ -7337,7 +8170,14 @@
           100
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.006526118144392967,
+      "forced_min_prob": 1.0036525388557038e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.234135627746582,
+      "forced_min_logprob": -18.417034149169922
+    }
   },
   "G5_A_Roll16_sentence_02_copy_english": {
     "text": "We went to the market to buy fresh wage tables .",
@@ -7386,7 +8226,14 @@
           99
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12479185312986374,
+      "forced_min_prob": 2.0012065615748753e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -14.948904991149902,
+      "forced_min_logprob": -22.33209991455078
+    }
   },
   "G5_A_Roll16_sentence_04_dictated_english": {
     "text": "The stories teach us good things",
@@ -7425,7 +8272,14 @@
           110
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.00789023656398058,
+      "forced_min_prob": 2.07596273504862e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.321487426757812,
+      "forced_min_logprob": -19.992841720581055
+    }
   },
   "G6_A_Roll01_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fills the vine takes . 11 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 farmers are happy because the fields turn ... grandchildren enjoy playing on the puddles .",
@@ -7612,7 +8466,14 @@
           131
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.011053059250116348,
+      "forced_min_prob": 9.57422252589879e-10,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -11.134182929992676,
+      "forced_min_logprob": -20.76677703857422
+    }
   },
   "G6_A_Roll01_sentence_04_dictated_english": {
     "text": "Did you finish your homework before dinner ?",
@@ -7655,7 +8516,14 @@
           110
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.07601819187402725,
+      "forced_min_prob": 1.5489730808768143e-12,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -15.853801727294922,
+      "forced_min_logprob": -27.193429946899414
+    }
   },
   "G6_A_Roll02_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fills the rivers and lakes . farmers are happy because the fiddles turn green children enjoy playing paddlers .",
@@ -7756,7 +8624,14 @@
           98
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.012206733226776123,
+      "forced_min_prob": 7.569116000638587e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -9.651589393615723,
+      "forced_min_logprob": -18.699190139770508
+    }
   },
   "G6_A_Roll02_sentence_04_dictated_english": {
     "text": "Did you finish your Homeweek before dinner ?",
@@ -7800,7 +8675,14 @@
           130
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.04556715115904808,
+      "forced_min_prob": 6.322081747001107e-12,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -15.732312202453613,
+      "forced_min_logprob": -25.786972045898438
+    }
   },
   "G6_A_Roll03_sentence_02_copy_english": {
     "text": "Paintall from the clouds and fifty the viruses an engineers are half , belabe , they fields burn one children enjoy playing in the Pulitzer",
@@ -7902,7 +8784,14 @@
           146
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.018780279904603958,
+      "forced_min_prob": 1.6248068446245156e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -10.405149459838867,
+      "forced_min_logprob": -20.237876892089844
+    }
   },
   "G6_A_Roll03_sentence_04_dictated_english": {
     "text": "Tanner )",
@@ -7933,7 +8822,14 @@
           107
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0007012463756836951,
+      "forced_min_prob": 5.419427751007788e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.965679168701172,
+      "forced_min_logprob": -16.730690002441406
+    }
   },
   "G6_A_Roll04_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fells the scissors If and takes . Farmers are happy because the fields",
@@ -8010,7 +8906,14 @@
           101
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.050265420228242874,
+      "forced_min_prob": 1.1303645797156037e-09,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -9.62950611114502,
+      "forced_min_logprob": -20.600725173950195
+    }
   },
   "G6_A_Roll04_sentence_04_dictated_english": {
     "text": "( Did you finish your homework before dinner ?",
@@ -8055,7 +8958,14 @@
           95
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05634629353880882,
+      "forced_min_prob": 5.877108522067687e-11,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.632002830505371,
+      "forced_min_logprob": -23.557371139526367
+    }
   },
   "G6_A_Roll05_sentence_02_copy_english": {
     "text": "Iain Hallo Nixon the clouds and fills the Rain falls from the clouds and fills the rivers \" and ' takes . ___ Farmers are happy because the finals . turn green children enjoy playing in the puddles",
@@ -8214,7 +9124,14 @@
           106
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01803312636911869,
+      "forced_min_prob": 1.293981255479082e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -9.985613822937012,
+      "forced_min_logprob": -20.46554183959961
+    }
   },
   "G6_A_Roll05_sentence_04_dictated_english": {
     "text": "( Dramafor a finish your homework before",
@@ -8256,7 +9173,14 @@
           146
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.10015774518251419,
+      "forced_min_prob": 7.353422731837256e-11,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.652083396911621,
+      "forced_min_logprob": -23.333271026611328
+    }
   },
   "G6_A_Roll07_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fills the rivers and lakes . Farmers . are happy because the fiddles two green children enjoy playing puddles .",
@@ -8369,7 +9293,14 @@
           111
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02402210608124733,
+      "forced_min_prob": 3.608751297790036e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -9.823994636535645,
+      "forced_min_logprob": -19.439903259277344
+    }
   },
   "G6_A_Roll07_sentence_04_dictated_english": {
     "text": "Did you lines you have worth before dinner ?",
@@ -8414,7 +9345,14 @@
           133
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.10713409632444382,
+      "forced_min_prob": 6.813946629158352e-11,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.174962043762207,
+      "forced_min_logprob": -23.40946388244629
+    }
   },
   "G6_A_Roll08_sentence_02_copy_english": {
     "text": "loophole from the clouds and fills the river and frightful from the clouds and fills the river and idies farmers are happy because the field turn green children enjoys \" playing the puddles a b c d e f g h. After the first time the first time the",
@@ -8596,7 +9534,14 @@
           30
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01978589966893196,
+      "forced_min_prob": 3.943720017218766e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -10.086992263793945,
+      "forced_min_logprob": -19.35114097595215
+    }
   },
   "G6_A_Roll08_sentence_04_dictated_english": {
     "text": "led you finish your houseett before dinner",
@@ -8638,7 +9583,14 @@
           132
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11097949743270874,
+      "forced_min_prob": 6.9448051753795426e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.312347412109375,
+      "forced_min_logprob": -18.7852725982666
+    }
   },
   "G6_A_Roll09_sentence_02_copy_english": {
     "text": "in falls from the flood begin falls from the floods . and ills \" the Drivers and Takes . Farmers are happy because the fields . \" Trump Greenwich \" I children enjoy playing in in the I puddles . The company was established in 1961 when the main time of the time of the United States was also",
@@ -8851,7 +9803,14 @@
           14
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0205396618694067,
+      "forced_min_prob": 3.2581755071703355e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.655919075012207,
+      "forced_min_logprob": -19.542098999023438
+    }
   },
   "G6_A_Roll09_sentence_04_dictated_english": {
     "text": "Did you finish your homework , before dinner",
@@ -8894,7 +9853,14 @@
           171
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.016718285158276558,
+      "forced_min_prob": 6.089623250105092e-11,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.531250953674316,
+      "forced_min_logprob": -23.5218505859375
+    }
   },
   "G6_A_Roll10_sentence_02_copy_english": {
     "text": "Iain full from the clouds and fills the river an lakes women's care happy because the folds turn green . children enjoy playing in the puddles",
@@ -9008,7 +9974,14 @@
           104
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.021468359977006912,
+      "forced_min_prob": 4.35285496536153e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -9.864824295043945,
+      "forced_min_logprob": -19.25243377685547
+    }
   },
   "G6_A_Roll10_sentence_04_dictated_english": {
     "text": "did you finish four homework before dinner ?",
@@ -9051,7 +10024,14 @@
           115
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11923747509717941,
+      "forced_min_prob": 7.667609900957259e-15,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -15.55819034576416,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G6_A_Roll11_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fills it river and lakes Farmers . are happy because the fields tyon green . ' Children enjoy playing in the guidances The first time of the most successful time of the Senate was the first time of the Senate of",
@@ -9229,7 +10209,14 @@
           24
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.017379488795995712,
+      "forced_min_prob": 2.794105169456884e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -9.996011734008789,
+      "forced_min_logprob": -19.69575309753418
+    }
   },
   "G6_A_Roll11_sentence_04_dictated_english": {
     "text": "In the most successful time the most successful time of the time of the most successful political",
@@ -9290,7 +10277,14 @@
           20
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.004692425485700369,
+      "forced_min_prob": 1.6395728524853936e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -16.114351272583008,
+      "forced_min_logprob": -24.833999633789062
+    }
   },
   "G6_A_Roll12_sentence_02_copy_english": {
     "text": "rain falls from rain falls from the clouds and fell the silvers ' and lakers . Farmers's on diffusionfactor does not refer to the BDS children enjoy playing in the Bud \" les .",
@@ -9445,7 +10439,14 @@
           90
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.011689365841448307,
+      "forced_min_prob": 6.219310066946093e-10,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.382911682128906,
+      "forced_min_logprob": -21.198192596435547
+    }
   },
   "G6_A_Roll12_sentence_04_dictated_english": {
     "text": "dinner",
@@ -9474,7 +10475,14 @@
           95
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.00026060378877446055,
+      "forced_min_prob": 3.1725281957051266e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.007349967956543,
+      "forced_min_logprob": -17.266151428222656
+    }
   },
   "G6_A_Roll13_sentence_02_copy_english": {
     "text": "Rainfalls from the Cladds and fills the five and takes families all happy because the fields turn green . children enjoy praying in the qualities . a b c d e f g h. What is the most successful and the most successful",
@@ -9636,7 +10644,14 @@
           14
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.011145994998514652,
+      "forced_min_prob": 9.904046471831407e-10,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -11.406312942504883,
+      "forced_min_logprob": -20.732908248901367
+    }
   },
   "G6_A_Roll13_sentence_04_dictated_english": {
     "text": "Did Did you finish your homework before it Dinne",
@@ -9682,7 +10697,14 @@
           137
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02530151791870594,
+      "forced_min_prob": 4.572776619166108e-12,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.838797569274902,
+      "forced_min_logprob": -26.11090087890625
+    }
   },
   "G6_A_Roll14_sentence_02_copy_english": {
     "text": "children ranging playing in middle-",
@@ -9720,7 +10742,14 @@
           207
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 6.052480966900475e-05,
+      "forced_min_prob": 6.650612786179844e-12,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.602335929870605,
+      "forced_min_logprob": -25.736312866210938
+    }
   },
   "G6_A_Roll14_sentence_04_dictated_english": {
     "text": "the youngest year to remove Before I amner ?",
@@ -9777,7 +10806,14 @@
           108
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0132697569206357,
+      "forced_min_prob": 4.251469176708156e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.513794898986816,
+      "forced_min_logprob": -21.57858657836914
+    }
   },
   "G6_A_Roll15_sentence_02_copy_english": {
     "text": "Rain Falls from the clouds and fills the takes and rivers . Farmers are happy because the fields . Our press . Children' enjoy playing in the pudd",
@@ -9895,7 +10931,14 @@
           123
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.011602469719946384,
+      "forced_min_prob": 4.69437044792187e-10,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.760140419006348,
+      "forced_min_logprob": -21.4794864654541
+    }
   },
   "G6_A_Roll15_sentence_04_dictated_english": {
     "text": "Did you finish your homemade before dinner",
@@ -9936,7 +10979,14 @@
           116
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02782461605966091,
+      "forced_min_prob": 5.0391961924859535e-14,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -17.370166778564453,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G6_A_Roll16_sentence_02_copy_english": {
     "text": "Rain falls from the Clouds and fills the rivers and taxes . Footers \" are happy # be cause the fields . ' In a \" when \" child on soy flavoring in the pH-edlos .",
@@ -10074,7 +11124,14 @@
           119
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009805480018258095,
+      "forced_min_prob": 1.8371053289722994e-10,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -11.063668251037598,
+      "forced_min_logprob": -22.417659759521484
+    }
   },
   "G6_A_Roll16_sentence_04_dictated_english": {
     "text": "bid you fishlish . You have work before",
@@ -10118,7 +11175,14 @@
           104
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06820317357778549,
+      "forced_min_prob": 1.7950194824457866e-13,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -18.61210060119629,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G6_A_Roll17_sentence_02_copy_english": {
     "text": "rain fall from the clouds and fills the divers and lakes and four-oceanes driven between these childish energy playing les",
@@ -10232,7 +11296,14 @@
           62
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01774035021662712,
+      "forced_min_prob": 6.003992414349568e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -10.191835403442383,
+      "forced_min_logprob": -18.93084144592285
+    }
   },
   "G6_A_Roll17_sentence_04_dictated_english": {
     "text": "if you . Fineask your Home work declare",
@@ -10276,7 +11347,14 @@
           150
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1335783153772354,
+      "forced_min_prob": 2.8089966463973326e-10,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.20227336883545,
+      "forced_min_logprob": -21.993022918701172
+    }
   },
   "G6_A_Roll18_sentence_02_copy_english": {
     "text": "Born falls from the clouds and bills the sisters and lakes farmers as happy because the field turn green off is enjoy in the puddles",
@@ -10386,7 +11464,14 @@
           99
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02053486928343773,
+      "forced_min_prob": 1.7327590029481144e-08,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -9.84541130065918,
+      "forced_min_logprob": -17.8709659576416
+    }
   },
   "G6_A_Roll18_sentence_04_dictated_english": {
     "text": "dannes",
@@ -10416,7 +11501,14 @@
           71
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03223966434597969,
+      "forced_min_prob": 7.148482500385356e-11,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -12.398268699645996,
+      "forced_min_logprob": -23.361536026000977
+    }
   },
   "G6_A_Roll19_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fills the Rain falls from the clouds and fills the divers and takes . Farmers are happy because the fields turn green children enjoy playing in the puddle",
@@ -10555,7 +11647,14 @@
           114
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.011651393957436085,
+      "forced_min_prob": 1.9411530161050905e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.551692008972168,
+      "forced_min_logprob": -20.05998420715332
+    }
   },
   "G6_A_Roll19_sentence_04_dictated_english": {
     "text": "I did you finish your Homework before launched a man",
@@ -10614,7 +11713,14 @@
           46
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1329842507839203,
+      "forced_min_prob": 1.9487715607890976e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -11.316587448120117,
+      "forced_min_logprob": -22.358652114868164
+    }
   },
   "G6_A_Roll20_sentence_02_copy_english": {
     "text": "Rain falls ' for a five from the clouds and fill the rivers and lakes : Savage was happy . Because the fields . From green children enjoy ' playing in the puddles .",
@@ -10742,7 +11848,14 @@
           135
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.006547821220010519,
+      "forced_min_prob": 2.603754545305037e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.004365921020508,
+      "forced_min_logprob": -19.766311645507812
+    }
   },
   "G6_A_Roll20_sentence_04_dictated_english": {
     "text": "Did you finish your homework before dinner ?",
@@ -10786,7 +11899,14 @@
           139
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11251705884933472,
+      "forced_min_prob": 1.063215921554006e-12,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -15.94949722290039,
+      "forced_min_logprob": -27.56972312927246
+    }
   },
   "G6_A_Roll21_sentence_02_copy_english": {
     "text": "Bain Falls from the clouds . join Falls from the . Rain Falls from the clouds and falls the river and lakes . farmers : are happy because the friends - even forced children enjoy playing in the puddles .",
@@ -10970,7 +12090,14 @@
           123
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02373042143881321,
+      "forced_min_prob": 1.0876234135537288e-08,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.076520919799805,
+      "forced_min_logprob": -18.336685180664062
+    }
   },
   "G6_A_Roll21_sentence_04_dictated_english": {
     "text": "Primary finish your homework before",
@@ -11007,7 +12134,14 @@
           170
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.08963096886873245,
+      "forced_min_prob": 8.54889971933472e-16,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -16.175945281982422,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G6_A_Roll22_sentence_02_copy_english": {
     "text": "Rain falls . Poor Rain falls from the clouds and fill the rivers and lakes . farmers are hurry because the fields # turn off green children enjoy playing in the muddles .",
@@ -11156,7 +12290,14 @@
           142
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.016393352299928665,
+      "forced_min_prob": 3.6089962129892683e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.30586051940918,
+      "forced_min_logprob": -19.439836502075195
+    }
   },
   "G6_A_Roll22_sentence_04_dictated_english": {
     "text": "before \" denies ?",
@@ -11191,7 +12332,14 @@
           88
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.04526125267148018,
+      "forced_min_prob": 6.685254017035902e-10,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -12.875844955444336,
+      "forced_min_logprob": -21.125946044921875
+    }
   },
   "G6_A_Roll23_sentence_02_copy_english": {
     "text": "jrog Plain falls from the clouds and fills the rivers and lakes . Farmers are happy because . He fields turn green children enjoy playing in the puddles .",
@@ -11332,7 +12480,14 @@
           84
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.022085929289460182,
+      "forced_min_prob": 3.5470313353158645e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -10.08157730102539,
+      "forced_min_logprob": -19.457155227661133
+    }
   },
   "G6_A_Roll23_sentence_04_dictated_english": {
     "text": "dinner ,",
@@ -11363,7 +12518,14 @@
           104
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.005283355247229338,
+      "forced_min_prob": 1.8631670428703728e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.189581871032715,
+      "forced_min_logprob": -17.798402786254883
+    }
   },
   "G6_A_Roll24_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fins the rivers and lakes ... . Farmers are happy because the fields to Queen - Children enjoy playing in the puddles What links hereRelated changesUpload fileSpecial pagesPermanent linkPage informationCite this pageWikidata item",
@@ -11527,7 +12689,14 @@
           14
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010569470934569836,
+      "forced_min_prob": 7.08647718283828e-09,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -10.725932121276855,
+      "forced_min_logprob": -18.765077590942383
+    }
   },
   "G6_A_Roll24_sentence_04_dictated_english": {
     "text": "before dinner ?",
@@ -11560,7 +12729,14 @@
           104
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.005639269948005676,
+      "forced_min_prob": 2.331858972581813e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.45759105682373,
+      "forced_min_logprob": -17.57401466369629
+    }
   },
   "G6_A_Roll25_sentence_02_copy_english": {
     "text": "# town falls from the clouds . an his two lakes and Rivers . winners are happy because the it is turn . green children en laying in the Riddle a b c d e f. The Government of the United States Senate was the Senate of the",
@@ -11750,7 +12926,14 @@
           15
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.013589593581855297,
+      "forced_min_prob": 7.883184105494934e-10,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -10.709059715270996,
+      "forced_min_logprob": -20.961118698120117
+    }
   },
   "G6_A_Roll25_sentence_04_dictated_english": {
     "text": "before other ?",
@@ -11783,7 +12966,14 @@
           100
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 6.665242835879326e-05,
+      "forced_min_prob": 5.281671100476615e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.67086410522461,
+      "forced_min_logprob": -19.059022903442383
+    }
   },
   "G6_A_Roll26_sentence_02_copy_english": {
     "text": "Rain talks from the cloud . and - fills the rivers and lakes runners are happy because the fields . Funny green children enjoy playing in the publishes",
@@ -11899,7 +13089,14 @@
           123
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.018412377685308456,
+      "forced_min_prob": 8.409195118019852e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -9.804861068725586,
+      "forced_min_logprob": -18.59394073486328
+    }
   },
   "G6_A_Roll26_sentence_04_dictated_english": {
     "text": "Did you finish your homework before dinner",
@@ -11940,7 +13137,14 @@
           136
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.08386706560850143,
+      "forced_min_prob": 2.2255791654046675e-10,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.470366477966309,
+      "forced_min_logprob": -22.225833892822266
+    }
   },
   "G6_A_Roll27_sentence_02_copy_english": {
     "text": "sinful from the clouds and fins the troops \" \" and \" talked sector affiliated to the Phillip Church rear children enjoy playing in the riddling a b c d e f g h. What you can be too more than the most successful",
@@ -12112,7 +13316,14 @@
           18
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.018791014328598976,
+      "forced_min_prob": 1.1028332025375676e-08,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -10.399713516235352,
+      "forced_min_logprob": -18.322797775268555
+    }
   },
   "G6_A_Roll27_sentence_04_dictated_english": {
     "text": "knner p",
@@ -12144,7 +13355,14 @@
           85
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.008466347120702267,
+      "forced_min_prob": 1.5311380607840874e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.135600090026855,
+      "forced_min_logprob": -17.99466896057129
+    }
   },
   "G6_A_Roll28_sentence_02_copy_english": {
     "text": "Born full from the floods and the fibers an rakes Farmers are happy",
@@ -12220,7 +13438,14 @@
           124
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.006347214337438345,
+      "forced_min_prob": 1.0511236325783102e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.533210754394531,
+      "forced_min_logprob": -18.370820999145508
+    }
   },
   "G6_A_Roll28_sentence_04_dictated_english": {
     "text": "did you have finish your economy alike below illness",
@@ -12265,7 +13490,14 @@
           117
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.000504380208440125,
+      "forced_min_prob": 1.0186002838722882e-13,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -15.16574764251709,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G6_A_Roll29_sentence_02_copy_english": {
     "text": "Main Falls from the roads and five reviewers and losses . Farmers are angry because the fields to green-children enjoy playing in the guardrer .",
@@ -12389,7 +13621,14 @@
           98
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01577983796596527,
+      "forced_min_prob": 3.866051034862039e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -9.982253074645996,
+      "forced_min_logprob": -19.37103271484375
+    }
   },
   "G6_A_Roll29_sentence_04_dictated_english": {
     "text": "display think your someone been",
@@ -12426,7 +13665,14 @@
           166
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.005505537148565054,
+      "forced_min_prob": 2.2805658403401985e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.129979133605957,
+      "forced_min_logprob": -24.504013061523438
+    }
   },
   "G6_A_Roll30_sentence_02_copy_english": {
     "text": "Rainfalls from the clouds and fill the rivers and halves . farmers are happy because the field turn green-children playing in the puddles . In the time the first time of the time of the time of the most important person",
@@ -12594,7 +13840,14 @@
           13
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.013565672561526299,
+      "forced_min_prob": 3.244159385573653e-09,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -10.509536743164062,
+      "forced_min_logprob": -19.546409606933594
+    }
   },
   "G6_A_Roll30_sentence_04_dictated_english": {
     "text": "hid you finish your dinner Home",
@@ -12633,7 +13886,14 @@
           125
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05264587327837944,
+      "forced_min_prob": 5.927254242976687e-10,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.383502006530762,
+      "forced_min_logprob": -21.24629020690918
+    }
   },
   "G7_A_Roll01_sentence_02_copy_english": {
     "text": "jumps over the Nazi",
@@ -12668,7 +13928,14 @@
           136
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.016859082505106926,
+      "forced_min_prob": 4.57822046939782e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.331733703613281,
+      "forced_min_logprob": -19.201955795288086
+    }
   },
   "G7_A_Roll01_sentence_04_dictated_english": {
     "text": "\" to school .",
@@ -12703,7 +13970,14 @@
           111
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03280114009976387,
+      "forced_min_prob": 1.402736260480708e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -13.28685188293457,
+      "forced_min_logprob": -20.384841918945312
+    }
   },
   "G7_A_Roll02_sentence_02_copy_english": {
     "text": "he quick brown fox jumps over . He",
@@ -12746,7 +14020,14 @@
           164
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.13810838758945465,
+      "forced_min_prob": 1.5237547335011925e-11,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -14.06932258605957,
+      "forced_min_logprob": -24.907258987426758
+    }
   },
   "G7_A_Roll02_sentence_04_dictated_english": {
     "text": "though it was joining the children",
@@ -12785,7 +14066,14 @@
           144
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009819040074944496,
+      "forced_min_prob": 1.692847251266727e-12,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -15.925917625427246,
+      "forced_min_logprob": -27.1046085357666
+    }
   },
   "G7_A_Roll03_sentence_02_copy_english": {
     "text": "crumbling",
@@ -12814,7 +14102,14 @@
           47
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02530687116086483,
+      "forced_min_prob": 2.7562970572603263e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.120506286621094,
+      "forced_min_logprob": -17.40679359436035
+    }
   },
   "G7_A_Roll03_sentence_04_dictated_english": {
     "text": "though it was raining , the children make to",
@@ -12859,7 +14154,14 @@
           144
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.09781265258789062,
+      "forced_min_prob": 1.303310757927445e-13,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -15.655763626098633,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G7_A_Roll04_sentence_02_copy_english": {
     "text": "the quick brown gun jumps over the lazy six",
@@ -12904,7 +14206,14 @@
           149
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.011123884469270706,
+      "forced_min_prob": 2.0462276317800843e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.091361999511719,
+      "forced_min_logprob": -22.309852600097656
+    }
   },
   "G7_A_Roll04_sentence_04_dictated_english": {
     "text": "all through it was raining the children walked into school .",
@@ -12964,7 +14273,14 @@
           75
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.028539493680000305,
+      "forced_min_prob": 6.074132863354009e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.289692878723145,
+      "forced_min_logprob": -21.221811294555664
+    }
   },
   "G7_A_Roll05_sentence_02_copy_english": {
     "text": "He quick , Exxon for jumps over The Easy dog . a b c d e f g h i j k l h i j k l ht o f",
@@ -13065,7 +14381,14 @@
           30
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05588077753782272,
+      "forced_min_prob": 6.860335650255012e-12,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -15.013815879821777,
+      "forced_min_logprob": -25.705265045166016
+    }
   },
   "G7_A_Roll05_sentence_04_dictated_english": {
     "text": "finals . .",
@@ -13098,7 +14421,14 @@
           87
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.00024813736672513187,
+      "forced_min_prob": 1.8136992352424386e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.383060455322266,
+      "forced_min_logprob": -17.8253116607666
+    }
   },
   "G7_A_Roll06_sentence_02_copy_english": {
     "text": "written by unlikely known fast image over lagg nogi . a man",
@@ -13184,7 +14514,14 @@
           93
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.037700969725847244,
+      "forced_min_prob": 2.6550511122991338e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.024131774902344,
+      "forced_min_logprob": -17.444217681884766
+    }
   },
   "G7_A_Roll06_sentence_04_dictated_english": {
     "text": "though its was raining the children",
@@ -13223,7 +14560,14 @@
           106
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05080872029066086,
+      "forced_min_prob": 6.320464984721497e-11,
+      "forced_low_prob_ratio": 0.7142857142857143,
+      "forced_mean_logprob": -13.484993934631348,
+      "forced_min_logprob": -23.484643936157227
+    }
   },
   "G7_A_Roll07_sentence_02_copy_english": {
     "text": "The quick brown fox j The Chief Brown Fox jumps over the lazy dog . In the 1960s the most successful community was the first time of the American States and the",
@@ -13348,7 +14692,14 @@
           11
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.012348385527729988,
+      "forced_min_prob": 1.3584114302161998e-12,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -12.389678001403809,
+      "forced_min_logprob": -27.324705123901367
+    }
   },
   "G7_A_Roll07_sentence_04_dictated_english": {
     "text": "wake to school",
@@ -13381,7 +14732,14 @@
           95
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.08159198611974716,
+      "forced_min_prob": 3.090134814698331e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.44377613067627,
+      "forced_min_logprob": -19.595050811767578
+    }
   },
   "G7_A_Roll08_sentence_02_copy_english": {
     "text": "Grown-too jump . off myself Grown the jumps over a b c d. O. O. O. O. O.",
@@ -13474,7 +14832,14 @@
           44
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02851155772805214,
+      "forced_min_prob": 1.4188465940340178e-12,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -13.200663566589355,
+      "forced_min_logprob": -27.281177520751953
+    }
   },
   "G7_A_Roll08_sentence_04_dictated_english": {
     "text": "Walked to search",
@@ -13508,7 +14873,14 @@
           103
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11802207678556442,
+      "forced_min_prob": 9.265956002479925e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.663768768310547,
+      "forced_min_logprob": -18.496919631958008
+    }
   },
   "G7_A_Roll09_sentence_02_copy_english": {
     "text": "brown . the quick brown fox jumps over the lazy dog",
@@ -13579,7 +14951,14 @@
           107
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009398979134857655,
+      "forced_min_prob": 6.031730226396803e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.578807830810547,
+      "forced_min_logprob": -18.926231384277344
+    }
   },
   "G7_A_Roll09_sentence_04_dictated_english": {
     "text": "walked to school .",
@@ -13614,7 +14993,14 @@
           90
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.13082356750965118,
+      "forced_min_prob": 2.078700579721815e-11,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.374516487121582,
+      "forced_min_logprob": -24.59669303894043
+    }
   },
   "G7_A_Roll10_sentence_02_copy_english": {
     "text": "the quick man The quick brown fox jumps over the lazy a b c d e f g h i j k l h i j k l ht o",
@@ -13724,7 +15110,14 @@
           18
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0064311278983950615,
+      "forced_min_prob": 3.1870295291724915e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.754963874816895,
+      "forced_min_logprob": -21.866762161254883
+    }
   },
   "G7_A_Roll10_sentence_04_dictated_english": {
     "text": "to school .",
@@ -13757,7 +15150,14 @@
           85
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0016167329158633947,
+      "forced_min_prob": 9.19186428360863e-12,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.642641067504883,
+      "forced_min_logprob": -25.412702560424805
+    }
   },
   "G7_A_Roll11_sentence_02_copy_english": {
     "text": "the quick blow The quick boom for Tunis over the",
@@ -13815,7 +15215,14 @@
           104
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.115287646651268,
+      "forced_min_prob": 2.2586695180848437e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.311444282531738,
+      "forced_min_logprob": -17.605905532836914
+    }
   },
   "G7_A_Roll11_sentence_04_dictated_english": {
     "text": "Although it was being the cebont wake",
@@ -13858,7 +15265,14 @@
           113
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1071026548743248,
+      "forced_min_prob": 2.6308285411280607e-11,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -13.325617790222168,
+      "forced_min_logprob": -24.36113739013672
+    }
   },
   "G7_A_Roll12_sentence_02_copy_english": {
     "text": "The arquick brown for jumps over the",
@@ -13902,7 +15316,14 @@
           85
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12420827895402908,
+      "forced_min_prob": 9.998384342679856e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.24229621887207,
+      "forced_min_logprob": -18.42084312438965
+    }
   },
   "G7_A_Roll12_sentence_04_dictated_english": {
     "text": "Although it was saying the cejadnits make to",
@@ -13949,7 +15370,14 @@
           88
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.13412176072597504,
+      "forced_min_prob": 6.406934173735362e-14,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -16.7219181060791,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G7_A_Roll13_sentence_02_copy_english": {
     "text": "The advice from her The quick known for jumps over it happy dog .",
@@ -14026,7 +15454,14 @@
           116
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1234612911939621,
+      "forced_min_prob": 3.461192576992289e-08,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -9.470396041870117,
+      "forced_min_logprob": -17.179067611694336
+    }
   },
   "G7_A_Roll13_sentence_04_dictated_english": {
     "text": "children walked to School",
@@ -14061,7 +15496,14 @@
           79
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05375972390174866,
+      "forced_min_prob": 3.210737897774152e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.83179759979248,
+      "forced_min_logprob": -19.556764602661133
+    }
   },
   "G7_A_Roll14_sentence_02_copy_english": {
     "text": "a matter of education . What is most more e quick known for jumps over the lazy dog",
@@ -14135,7 +15577,14 @@
           95
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.016415566205978394,
+      "forced_min_prob": 1.117793524407773e-09,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -12.53087329864502,
+      "forced_min_logprob": -20.611909866333008
+    }
   },
   "G7_A_Roll14_sentence_04_dictated_english": {
     "text": "school .",
@@ -14166,7 +15615,14 @@
           74
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 6.410722562577575e-05,
+      "forced_min_prob": 1.1672058519707207e-07,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.243816375732422,
+      "forced_min_logprob": -15.963482856750488
+    }
   },
   "G7_A_Roll15_sentence_02_copy_english": {
     "text": "the ayrick known for The quick brown fox jumps over the hazy dog",
@@ -14243,7 +15699,14 @@
           142
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11185764521360397,
+      "forced_min_prob": 1.9095562631132879e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.448796272277832,
+      "forced_min_logprob": -22.37898063659668
+    }
   },
   "G7_A_Roll15_sentence_04_dictated_english": {
     "text": "Although it was rain on the child are",
@@ -14286,7 +15749,14 @@
           103
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.018898066133260727,
+      "forced_min_prob": 8.085467018137393e-11,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -12.063496589660645,
+      "forced_min_logprob": -23.238367080688477
+    }
   },
   "G7_A_Roll16_sentence_02_copy_english": {
     "text": "The quick show for Tampa over the Larry dog . .",
@@ -14346,7 +15816,14 @@
           135
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11382994055747986,
+      "forced_min_prob": 4.425590560686032e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -11.45931625366211,
+      "forced_min_logprob": -19.235862731933594
+    }
   },
   "G7_A_Roll16_sentence_04_dictated_english": {
     "text": "( Jill though it was rain . . ' the Chalicke 'Qualling to School .",
@@ -14418,7 +15895,14 @@
           112
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.026262464001774788,
+      "forced_min_prob": 1.7722543432796556e-09,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -11.010008811950684,
+      "forced_min_logprob": -20.15101432800293
+    }
   },
   "G7_A_Roll17_sentence_02_copy_english": {
     "text": "tribe outside the three quick brown for jumps over the lazy dog What links hereRelated changesUpload fileSpecial pagesPermanent linkPage informationCite this pageWikidata item",
@@ -14528,7 +16012,14 @@
           22
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03539680689573288,
+      "forced_min_prob": 2.8583619846034303e-11,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -14.352755546569824,
+      "forced_min_logprob": -24.278186798095703
+    }
   },
   "G7_A_Roll17_sentence_04_dictated_english": {
     "text": "Although it was rainy the children realize",
@@ -14569,7 +16060,14 @@
           131
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06947549432516098,
+      "forced_min_prob": 2.444209279417464e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -13.964493751525879,
+      "forced_min_logprob": -22.132129669189453
+    }
   },
   "G7_A_Roll18_sentence_02_copy_english": {
     "text": "The quick Brown Sox jumps over the lazy dog",
@@ -14614,7 +16112,14 @@
           160
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.008205689489841461,
+      "forced_min_prob": 6.128093588131378e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.264435768127441,
+      "forced_min_logprob": -21.212966918945312
+    }
   },
   "G7_A_Roll18_sentence_04_dictated_english": {
     "text": "tomorrow .",
@@ -14645,7 +16150,14 @@
           99
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 5.760148633271456e-05,
+      "forced_min_prob": 4.258133401435771e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.01707935333252,
+      "forced_min_logprob": -19.27443504333496
+    }
   },
   "G7_A_Roll19_sentence_02_copy_english": {
     "text": "The quick brown for jumps over to",
@@ -14686,7 +16198,14 @@
           127
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1689690798521042,
+      "forced_min_prob": 2.5144659687725834e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -11.73029613494873,
+      "forced_min_logprob": -19.801204681396484
+    }
   },
   "G7_A_Roll19_sentence_04_dictated_english": {
     "text": "a b c d e f g h i j k l h i k l h",
@@ -14747,7 +16266,14 @@
           26
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03005649708211422,
+      "forced_min_prob": 5.489298349203864e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.091069221496582,
+      "forced_min_logprob": -19.020465850830078
+    }
   },
   "G7_A_Roll20_sentence_02_copy_english": {
     "text": "The quick . I The quick brown for \" jumps over the lazy dog .",
@@ -14826,7 +16352,14 @@
           113
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11297262459993362,
+      "forced_min_prob": 3.684305127649168e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.058130264282227,
+      "forced_min_logprob": -17.11659812927246
+    }
   },
   "G7_A_Roll20_sentence_04_dictated_english": {
     "text": "walking to school",
@@ -14859,7 +16392,14 @@
           97
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.026338165625929832,
+      "forced_min_prob": 9.884330687270904e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.889663696289062,
+      "forced_min_logprob": -18.432315826416016
+    }
   },
   "G7_A_Roll21_sentence_02_copy_english": {
     "text": "The attack brown fox jumps over the sixty dog .",
@@ -14917,7 +16457,14 @@
           113
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03994274139404297,
+      "forced_min_prob": 5.154822966049744e-13,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -15.210369110107422,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G7_A_Roll21_sentence_04_dictated_english": {
     "text": "Although it was aiming the citizen woke to set",
@@ -14962,7 +16509,14 @@
           139
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.10024406015872955,
+      "forced_min_prob": 1.7204967105947239e-15,
+      "forced_low_prob_ratio": 0.7142857142857143,
+      "forced_mean_logprob": -14.85344409942627,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G7_A_Roll22_sentence_02_copy_english": {
     "text": "The quick Brown for jumps over the logyd",
@@ -15007,7 +16561,14 @@
           113
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0048414855264127254,
+      "forced_min_prob": 8.91841244273937e-15,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -15.551872253417969,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "G7_A_Roll22_sentence_04_dictated_english": {
     "text": "to schools",
@@ -15038,7 +16599,14 @@
           82
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.006591859273612499,
+      "forced_min_prob": 2.396096376866552e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.961000442504883,
+      "forced_min_logprob": -22.152009963989258
+    }
   },
   "G7_A_Roll23_sentence_02_copy_english": {
     "text": "my The packet known for images over the Lazyriggs",
@@ -15107,7 +16675,14 @@
           125
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1231665387749672,
+      "forced_min_prob": 1.115982506405544e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.877546310424805,
+      "forced_min_logprob": -18.310945510864258
+    }
   },
   "G7_A_Roll23_sentence_04_dictated_english": {
     "text": "men disliked to school .",
@@ -15144,7 +16719,14 @@
           88
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03845779225230217,
+      "forced_min_prob": 2.4148467669959928e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.501141548156738,
+      "forced_min_logprob": -19.841630935668945
+    }
   },
   "G7_A_Roll24_sentence_02_copy_english": {
     "text": "thechick was the quick brown fox jumps . even the hagy dogo In the most successful time the most successful time of the most successful",
@@ -15257,7 +16839,14 @@
           26
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.028861070051789284,
+      "forced_min_prob": 5.7592832412856065e-12,
+      "forced_low_prob_ratio": 0.9,
+      "forced_mean_logprob": -12.03896713256836,
+      "forced_min_logprob": -25.88020896911621
+    }
   },
   "G7_A_Roll24_sentence_04_dictated_english": {
     "text": "walked \" to school",
@@ -15292,7 +16881,14 @@
           81
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.15841515362262726,
+      "forced_min_prob": 1.260677534586918e-10,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.115673065185547,
+      "forced_min_logprob": -22.794200897216797
+    }
   },
   "G7_A_Roll25_sentence_02_copy_english": {
     "text": "The quick brown face burned The quick brown face jump . ' ' over the lot dog- a b c d e f g h i j k l h i j k l /",
@@ -15423,7 +17019,14 @@
           41
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03340830281376839,
+      "forced_min_prob": 7.893888320786857e-10,
+      "forced_low_prob_ratio": 0.85,
+      "forced_mean_logprob": -10.61253547668457,
+      "forced_min_logprob": -20.959762573242188
+    }
   },
   "G7_A_Roll25_sentence_04_dictated_english": {
     "text": "walking to school",
@@ -15456,7 +17059,14 @@
           105
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02851572073996067,
+      "forced_min_prob": 8.562573761139447e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.745551109313965,
+      "forced_min_logprob": -18.575864791870117
+    }
   },
   "SCHB_G3_IMG_20261007_101611_sentence_02_copy_english": {
     "text": "any mother cooks food in the kitchen",
@@ -15497,7 +17107,14 @@
           106
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12936080992221832,
+      "forced_min_prob": 5.440726091876513e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -9.718223571777344,
+      "forced_min_logprob": -19.029354095458984
+    }
   },
   "SCHB_G3_IMG_20261007_101621_sentence_02_copy_english": {
     "text": "My mother cooks food in the Kitchen",
@@ -15539,7 +17156,14 @@
           148
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.022875851020216942,
+      "forced_min_prob": 1.9413405605295253e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.703609466552734,
+      "forced_min_logprob": -22.362472534179688
+    }
   },
   "SCHB_G3_IMG_20261007_101635_sentence_02_copy_english": {
     "text": "my mother cooks good in the",
@@ -15578,7 +17202,14 @@
           160
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12778978049755096,
+      "forced_min_prob": 2.2482202766127557e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -8.200763702392578,
+      "forced_min_logprob": -19.913127899169922
+    }
   },
   "SCHB_G3_IMG_20261007_101635_sentence_04_dictated_english": {
     "text": "My name is Deepti .",
@@ -15616,7 +17247,14 @@
           139
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.09268465638160706,
+      "forced_min_prob": 5.1669544198773565e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -10.86214828491211,
+      "forced_min_logprob": -19.080982208251953
+    }
   },
   "SCHB_G3_IMG_20261007_101645_sentence_02_copy_english": {
     "text": "My monthly Cooler Food is",
@@ -15654,7 +17292,14 @@
           144
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.024652082473039627,
+      "forced_min_prob": 1.6619107201520933e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -9.543907165527344,
+      "forced_min_logprob": -20.21529769897461
+    }
   },
   "SCHB_G3_IMG_20261007_101651_sentence_02_copy_english": {
     "text": "NY makes cooks food in the kitchen",
@@ -15695,7 +17340,14 @@
           120
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11732417345046997,
+      "forced_min_prob": 9.27343268841696e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -9.626760482788086,
+      "forced_min_logprob": -18.496112823486328
+    }
   },
   "SCHB_G3_IMG_20261007_101659_sentence_02_copy_english": {
     "text": "intervention costs . Food in",
@@ -15732,7 +17384,14 @@
           179
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05263952165842056,
+      "forced_min_prob": 1.637732971460082e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -9.493452072143555,
+      "forced_min_logprob": -17.9273681640625
+    }
   },
   "SCHB_G3_IMG_20261007_101705_sentence_02_copy_english": {
     "text": "Mr. mother cooks . Food in the",
@@ -15774,7 +17433,14 @@
           99
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12123727798461914,
+      "forced_min_prob": 2.5809598014348012e-08,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -8.4340181350708,
+      "forced_min_logprob": -17.472518920898438
+    }
   },
   "SCHB_G3_IMG_20261007_101710_sentence_02_copy_english": {
     "text": "my mother cooks food in the kitchen",
@@ -15815,7 +17481,14 @@
           126
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12617483735084534,
+      "forced_min_prob": 4.834486977411956e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.322221755981445,
+      "forced_min_logprob": -23.752660751342773
+    }
   },
   "SCHB_G3_IMG_20261007_101721_sentence_02_copy_english": {
     "text": "my mother cooks food in the",
@@ -15854,7 +17527,14 @@
           111
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02960648015141487,
+      "forced_min_prob": 9.227838937420074e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -9.397850036621094,
+      "forced_min_logprob": -18.501041412353516
+    }
   },
   "SCHB_G3_IMG_20261007_101728_sentence_02_copy_english": {
     "text": "My mother looks food in the kitchen",
@@ -15895,7 +17575,14 @@
           99
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0462707094848156,
+      "forced_min_prob": 1.926585557754379e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.201927185058594,
+      "forced_min_logprob": -22.370101928710938
+    }
   },
   "SCHB_G3_IMG_20261007_101737_sentence_02_copy_english": {
     "text": "Mr Madison Cooke took in other kitchens",
@@ -15937,7 +17624,14 @@
           102
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.021184440702199936,
+      "forced_min_prob": 2.5327025809929182e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.343645095825195,
+      "forced_min_logprob": -17.49139404296875
+    }
   },
   "SCHB_G3_IMG_20261007_101746_sentence_02_copy_english": {
     "text": "My mother cocks food in the Kitchen",
@@ -15979,7 +17673,14 @@
           134
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010881636291742325,
+      "forced_min_prob": 1.8454586747651547e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.034465789794922,
+      "forced_min_logprob": -20.110538482666016
+    }
   },
   "SCHB_G3_IMG_20261007_101757_sentence_02_copy_english": {
     "text": "my mother cooks food on the Kitchen",
@@ -16020,7 +17721,14 @@
           112
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11890306323766708,
+      "forced_min_prob": 9.52284828770189e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.594300270080566,
+      "forced_min_logprob": -18.469572067260742
+    }
   },
   "SCHB_G3_IMG_20261007_101826_sentence_02_copy_english": {
     "text": "1Y. Smooth",
@@ -16053,7 +17761,14 @@
           99
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11118049919605255,
+      "forced_min_prob": 4.166242906222806e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.905533790588379,
+      "forced_min_logprob": -19.29625129699707
+    }
   },
   "SCHB_G3_IMG_20261007_101850_sentence_02_copy_english": {
     "text": "my mother cook food in the Kitchen",
@@ -16094,7 +17809,14 @@
           134
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.047696541994810104,
+      "forced_min_prob": 6.751723339486551e-14,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.786725997924805,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G3_IMG_20261007_101857_sentence_02_copy_english": {
     "text": "My Mother cooks food in the kitchen",
@@ -16135,7 +17857,14 @@
           106
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.002921021543443203,
+      "forced_min_prob": 1.6992036222518436e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -9.476798057556152,
+      "forced_min_logprob": -17.890522003173828
+    }
   },
   "SCHB_G4_IMG_20261007_100013_sentence_02_copy_english": {
     "text": ". On Sunday - on slide",
@@ -16185,7 +17914,14 @@
           78
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.00015263480599969625,
+      "forced_min_prob": 9.050797333820526e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.64155101776123,
+      "forced_min_logprob": -20.822998046875
+    }
   },
   "SCHB_G4_IMG_20261007_100013_sentence_04_dictated_english": {
     "text": "My By My Broder press eat ball-",
@@ -16239,7 +17975,14 @@
           89
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01028515212237835,
+      "forced_min_prob": 2.2254321996317827e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.25402545928955,
+      "forced_min_logprob": -22.225900650024414
+    }
   },
   "SCHB_G4_IMG_20261007_100035_sentence_02_copy_english": {
     "text": "On Sundays , we play cricket with our friends .",
@@ -16287,7 +18030,14 @@
           112
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05019848421216011,
+      "forced_min_prob": 4.384866691964362e-09,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -9.774518966674805,
+      "forced_min_logprob": -19.245105743408203
+    }
   },
   "SCHB_G4_IMG_20261007_100035_sentence_04_dictated_english": {
     "text": "My Disaster Chair - Play Fordham",
@@ -16326,7 +18076,14 @@
           94
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03740418329834938,
+      "forced_min_prob": 1.4356991290265242e-11,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.398518562316895,
+      "forced_min_logprob": -24.96678352355957
+    }
   },
   "SCHB_G4_IMG_20261007_100048_sentence_02_copy_english": {
     "text": "in Sunday , we play cricket with our friends",
@@ -16371,7 +18128,14 @@
           89
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.07521679252386093,
+      "forced_min_prob": 4.474292936151869e-09,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -9.060025215148926,
+      "forced_min_logprob": -19.224918365478516
+    }
   },
   "SCHB_G4_IMG_20261007_100048_sentence_04_dictated_english": {
     "text": "Mr. brother play for poor ball",
@@ -16411,7 +18175,14 @@
           87
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03993001952767372,
+      "forced_min_prob": 7.74361477717811e-12,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.820545196533203,
+      "forced_min_logprob": -25.584152221679688
+    }
   },
   "SCHB_G4_IMG_20261007_100107_sentence_02_copy_english": {
     "text": "disciples .",
@@ -16442,7 +18213,14 @@
           72
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.041079964488744736,
+      "forced_min_prob": 2.0348082756509872e-14,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -14.979272842407227,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G4_IMG_20261007_100107_sentence_04_dictated_english": {
     "text": "My blonder Press Korball",
@@ -16479,7 +18257,14 @@
           119
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.012162558734416962,
+      "forced_min_prob": 2.5130692665742416e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.876056671142578,
+      "forced_min_logprob": -24.406930923461914
+    }
   },
   "SCHB_G4_IMG_20261007_100135_sentence_02_copy_english": {
     "text": "in Sunday , we play cricket switch over friends .",
@@ -16526,7 +18311,14 @@
           118
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06166709214448929,
+      "forced_min_prob": 1.1565398416735206e-08,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -10.658495903015137,
+      "forced_min_logprob": -18.27524757385254
+    }
   },
   "SCHB_G4_IMG_20261007_100135_sentence_04_dictated_english": {
     "text": "by brother place . Football",
@@ -16563,7 +18355,14 @@
           117
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12872745096683502,
+      "forced_min_prob": 4.584719409672644e-11,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.697930335998535,
+      "forced_min_logprob": -23.805707931518555
+    }
   },
   "SCHB_G4_IMG_20261007_100148_sentence_02_copy_english": {
     "text": "on Sundays we play cricket with our fr",
@@ -16607,7 +18406,14 @@
           115
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.07124192267656326,
+      "forced_min_prob": 6.266250629494152e-09,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -9.981165885925293,
+      "forced_min_logprob": -18.88808822631836
+    }
   },
   "SCHB_G4_IMG_20261007_100148_sentence_04_dictated_english": {
     "text": "MRD DRIVED PLUS Post . Paul",
@@ -16648,7 +18454,14 @@
           99
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06061740592122078,
+      "forced_min_prob": 9.193796765560869e-12,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.216849327087402,
+      "forced_min_logprob": -25.412492752075195
+    }
   },
   "SCHB_G4_IMG_20261007_100214_sentence_02_copy_english": {
     "text": "on sunded . or black cricket with our finishers",
@@ -16694,7 +18507,14 @@
           91
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.07170753180980682,
+      "forced_min_prob": 1.6662927981858644e-10,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -10.399909019470215,
+      "forced_min_logprob": -22.515249252319336
+    }
   },
   "SCHB_G4_IMG_20261007_100214_sentence_04_dictated_english": {
     "text": "my brothers they feel excellent",
@@ -16731,7 +18551,14 @@
           86
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.24768884479999542,
+      "forced_min_prob": 6.291350079790092e-11,
+      "forced_low_prob_ratio": 0.6666666666666666,
+      "forced_mean_logprob": -12.378327369689941,
+      "forced_min_logprob": -23.489259719848633
+    }
   },
   "SCHB_G4_IMG_20261007_100229_sentence_02_copy_english": {
     "text": "job sundax-sweet play critic",
@@ -16770,7 +18597,14 @@
           140
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.012853763997554779,
+      "forced_min_prob": 2.9910414145462028e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.606148719787598,
+      "forced_min_logprob": -19.627643585205078
+    }
   },
   "SCHB_G4_IMG_20261007_100229_sentence_04_dictated_english": {
     "text": "my grader press but ball .",
@@ -16809,7 +18643,14 @@
           106
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.007058043032884598,
+      "forced_min_prob": 1.9321653652037973e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.439160346984863,
+      "forced_min_logprob": -24.6697940826416
+    }
   },
   "SCHB_G4_IMG_20261007_100303_sentence_02_copy_english": {
     "text": "In Sundays . we play concrete with our driver",
@@ -16855,7 +18696,14 @@
           125
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009734303690493107,
+      "forced_min_prob": 2.0853443416513073e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.3147611618042,
+      "forced_min_logprob": -17.685747146606445
+    }
   },
   "SCHB_G4_IMG_20261007_100303_sentence_04_dictated_english": {
     "text": "vl brother Play Reef Bow",
@@ -16893,7 +18741,14 @@
           88
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.028629692271351814,
+      "forced_min_prob": 1.1314787995431175e-10,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -15.07300090789795,
+      "forced_min_logprob": -22.902324676513672
+    }
   },
   "SCHB_G4_IMG_20261007_100314_sentence_02_copy_english": {
     "text": "a b Sunday's face many college's assistant to over the Soviet",
@@ -16946,7 +18801,14 @@
           129
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.029658332467079163,
+      "forced_min_prob": 6.053099799174788e-09,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -9.567692756652832,
+      "forced_min_logprob": -18.92269515991211
+    }
   },
   "SCHB_G4_IMG_20261007_100314_sentence_04_dictated_english": {
     "text": "14 brothers Pierre Falde ball",
@@ -16984,7 +18846,14 @@
           127
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.163044273853302,
+      "forced_min_prob": 5.71239544555624e-09,
+      "forced_low_prob_ratio": 0.6666666666666666,
+      "forced_mean_logprob": -10.237284660339355,
+      "forced_min_logprob": -18.980627059936523
+    }
   },
   "SCHB_G4_IMG_20261007_100325_sentence_02_copy_english": {
     "text": "on Sundays . We Play , cricket with our #",
@@ -17032,7 +18901,14 @@
           105
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.012752428650856018,
+      "forced_min_prob": 5.966623195519105e-09,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -10.263734817504883,
+      "forced_min_logprob": -18.937084197998047
+    }
   },
   "SCHB_G4_IMG_20261007_100325_sentence_04_dictated_english": {
     "text": "Ims bootwear plan",
@@ -17068,7 +18944,14 @@
           84
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.2307308167219162,
+      "forced_min_prob": 6.931246132602098e-10,
+      "forced_low_prob_ratio": 0.5,
+      "forced_mean_logprob": -8.205602645874023,
+      "forced_min_logprob": -21.089811325073242
+    }
   },
   "SCHB_G4_IMG_20261007_100335_sentence_02_copy_english": {
     "text": "of subdivys inll place . Office of Polish court friends",
@@ -17130,7 +19013,14 @@
           79
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.023267408832907677,
+      "forced_min_prob": 7.341761421031379e-09,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -10.143157005310059,
+      "forced_min_logprob": -18.729686737060547
+    }
   },
   "SCHB_G4_IMG_20261007_100335_sentence_04_dictated_english": {
     "text": "My so when place for that",
@@ -17169,7 +19059,14 @@
           79
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06347635388374329,
+      "forced_min_prob": 4.4538407684147074e-11,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -11.837775230407715,
+      "forced_min_logprob": -23.83466911315918
+    }
   },
   "SCHB_G4_IMG_20261007_100350_sentence_02_copy_english": {
     "text": "on sundatas she said cricket with our",
@@ -17213,7 +19110,14 @@
           117
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.035106949508190155,
+      "forced_min_prob": 2.807330368170824e-09,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -10.364068984985352,
+      "forced_min_logprob": -19.69103240966797
+    }
   },
   "SCHB_G4_IMG_20261007_100350_sentence_04_dictated_english": {
     "text": "that reader offers far ball",
@@ -17250,7 +19154,14 @@
           100
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.027606315910816193,
+      "forced_min_prob": 1.0198361044544413e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.03658390045166,
+      "forced_min_logprob": -20.703624725341797
+    }
   },
   "SCHB_G4_IMG_20261007_100402_sentence_02_copy_english": {
     "text": "n , Sundays , we play cricket with our friends",
@@ -17298,7 +19209,14 @@
           109
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0811491459608078,
+      "forced_min_prob": 4.2701567976033417e-11,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -10.601365089416504,
+      "forced_min_logprob": -23.876785278320312
+    }
   },
   "SCHB_G4_IMG_20261007_100402_sentence_04_dictated_english": {
     "text": "My Brothers Plays Football",
@@ -17334,7 +19252,14 @@
           124
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11931943893432617,
+      "forced_min_prob": 8.64508020725907e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -11.26041030883789,
+      "forced_min_logprob": -18.566274642944336
+    }
   },
   "SCHB_G4_IMG_20261007_100411_sentence_02_copy_english": {
     "text": "on Sundays We play cricket with our friends",
@@ -17378,7 +19303,14 @@
           116
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03914645314216614,
+      "forced_min_prob": 1.1706365654617912e-08,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -10.102677345275879,
+      "forced_min_logprob": -18.263134002685547
+    }
   },
   "SCHB_G4_IMG_20261007_100411_sentence_04_dictated_english": {
     "text": "My brother place footballball",
@@ -17414,7 +19346,14 @@
           106
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12709175050258636,
+      "forced_min_prob": 2.9023110581505307e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -9.111913681030273,
+      "forced_min_logprob": -19.657758712768555
+    }
   },
   "SCHB_G4_IMG_20261007_100422_sentence_02_copy_english": {
     "text": "0 000",
@@ -17445,7 +19384,14 @@
           63
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.004432515241205692,
+      "forced_min_prob": 1.1446443098916959e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.273941993713379,
+      "forced_min_logprob": -22.890756607055664
+    }
   },
   "SCHB_G4_IMG_20261007_100422_sentence_04_dictated_english": {
     "text": "Mr. Boothen Place Football",
@@ -17482,7 +19428,14 @@
           93
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02333972416818142,
+      "forced_min_prob": 2.8180185615567233e-11,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.157713890075684,
+      "forced_min_logprob": -24.292402267456055
+    }
   },
   "SCHB_G4_IMG_20261007_100433_sentence_02_copy_english": {
     "text": "an sundlays we play cricket with our friend",
@@ -17528,7 +19481,14 @@
           126
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.015475928783416748,
+      "forced_min_prob": 5.881993225820281e-10,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -10.133597373962402,
+      "forced_min_logprob": -21.253955841064453
+    }
   },
   "SCHB_G4_IMG_20261007_100433_sentence_04_dictated_english": {
     "text": "my book , therefore you feel",
@@ -17567,7 +19527,14 @@
           112
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1344252973794937,
+      "forced_min_prob": 9.66360238358055e-12,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.198548316955566,
+      "forced_min_logprob": -25.362655639648438
+    }
   },
   "SCHB_G4_IMG_20261007_100446_sentence_02_copy_english": {
     "text": "on Sunday , we play cricket , which our",
@@ -17612,7 +19579,14 @@
           112
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02906176634132862,
+      "forced_min_prob": 3.6332029051955317e-10,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -10.730024337768555,
+      "forced_min_logprob": -21.735736846923828
+    }
   },
   "SCHB_G4_IMG_20261007_100446_sentence_04_dictated_english": {
     "text": "my brother Play Boats Bill",
@@ -17650,7 +19624,14 @@
           94
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.21264927089214325,
+      "forced_min_prob": 1.6828050064532363e-10,
+      "forced_low_prob_ratio": 0.6666666666666666,
+      "forced_mean_logprob": -11.843029022216797,
+      "forced_min_logprob": -22.505388259887695
+    }
   },
   "SCHB_G4_IMG_20261007_100502_sentence_02_copy_english": {
     "text": "on Sundays were play cricket with our free",
@@ -17694,7 +19675,14 @@
           100
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.07899703830480576,
+      "forced_min_prob": 6.928318474486161e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -9.112866401672363,
+      "forced_min_logprob": -21.090234756469727
+    }
   },
   "SCHB_G4_IMG_20261007_100502_sentence_04_dictated_english": {
     "text": "my brother' place ( May ) / Football",
@@ -17738,7 +19726,14 @@
           148
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1660590022802353,
+      "forced_min_prob": 2.6546310722547206e-12,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -13.329630851745605,
+      "forced_min_logprob": -26.654714584350586
+    }
   },
   "SCHB_G4_IMG_20261007_100514_sentence_02_copy_english": {
     "text": "on sundal's , the Play cricket with our friends",
@@ -17786,7 +19781,14 @@
           93
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.09893687814474106,
+      "forced_min_prob": 7.194854845238297e-08,
+      "forced_low_prob_ratio": 0.7857142857142857,
+      "forced_mean_logprob": -8.368147850036621,
+      "forced_min_logprob": -16.447315216064453
+    }
   },
   "SCHB_G4_IMG_20261007_100514_sentence_04_dictated_english": {
     "text": "my brother plays . Food Hall",
@@ -17825,7 +19827,14 @@
           76
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.25691840052604675,
+      "forced_min_prob": 2.3802751436541314e-10,
+      "forced_low_prob_ratio": 0.6666666666666666,
+      "forced_mean_logprob": -11.088412284851074,
+      "forced_min_logprob": -22.158634185791016
+    }
   },
   "SCHB_G4_IMG_20261007_100526_sentence_02_copy_english": {
     "text": "in Sunday . We play cricket with ' and friends",
@@ -17872,7 +19881,14 @@
           122
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.015477130189538002,
+      "forced_min_prob": 4.798351938006817e-09,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -9.895654678344727,
+      "forced_min_logprob": -19.154993057250977
+    }
   },
   "SCHB_G4_IMG_20261007_100526_sentence_04_dictated_english": {
     "text": "in Bother place . Food . Ball",
@@ -17914,7 +19930,14 @@
           116
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.018700843676924706,
+      "forced_min_prob": 5.755966536735713e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.241944313049316,
+      "forced_min_logprob": -23.57819938659668
+    }
   },
   "SCHB_G4_IMG_20261007_100552_sentence_02_copy_english": {
     "text": "On Sundays , we play cricket \" with our friends",
@@ -17962,7 +19985,14 @@
           121
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02057965286076069,
+      "forced_min_prob": 9.632397102166124e-09,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -9.185247421264648,
+      "forced_min_logprob": -18.458133697509766
+    }
   },
   "SCHB_G4_IMG_20261007_100552_sentence_04_dictated_english": {
     "text": "my brother Plays . Good ball",
@@ -18002,7 +20032,14 @@
           100
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.21575911343097687,
+      "forced_min_prob": 8.171572862814003e-10,
+      "forced_low_prob_ratio": 0.6666666666666666,
+      "forced_mean_logprob": -10.797168731689453,
+      "forced_min_logprob": -20.925189971923828
+    }
   },
   "SCHB_G4_IMG_20261007_100602_sentence_02_copy_english": {
     "text": "in Sunday's we Plays cricket with our friends",
@@ -18048,7 +20085,14 @@
           103
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.08134669810533524,
+      "forced_min_prob": 3.3463882775919274e-09,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -9.205747604370117,
+      "forced_min_logprob": -19.515384674072266
+    }
   },
   "SCHB_G4_IMG_20261007_100602_sentence_04_dictated_english": {
     "text": "my brother Place Football",
@@ -18083,7 +20127,14 @@
           88
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.17037411034107208,
+      "forced_min_prob": 2.2441839497844285e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -11.580103874206543,
+      "forced_min_logprob": -19.91492462158203
+    }
   },
   "SCHB_G4_IMG_20261007_100613_sentence_02_copy_english": {
     "text": "on subways we play cricket with",
@@ -18123,7 +20174,14 @@
           143
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11523156613111496,
+      "forced_min_prob": 3.5889574645509015e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -11.094758033752441,
+      "forced_min_logprob": -21.747989654541016
+    }
   },
   "SCHB_G4_IMG_20261007_100613_sentence_04_dictated_english": {
     "text": "now brother Play Four Ball",
@@ -18160,7 +20218,14 @@
           121
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009035767056047916,
+      "forced_min_prob": 1.5828487825997328e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -16.65010643005371,
+      "forced_min_logprob": -24.86920928955078
+    }
   },
   "SCHB_G4_IMG_20261007_100621_sentence_02_copy_english": {
     "text": "# us involved . ' . '",
@@ -18203,7 +20268,14 @@
           83
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.13014912605285645,
+      "forced_min_prob": 1.1460660864770489e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.476787567138672,
+      "forced_min_logprob": -18.284345626831055
+    }
   },
   "SCHB_G4_IMG_20261007_100621_sentence_04_dictated_english": {
     "text": "Mr. Poors ? then Godus's ' About Ball",
@@ -18251,7 +20323,14 @@
           153
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.061821550130844116,
+      "forced_min_prob": 7.153704295603802e-10,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.278403282165527,
+      "forced_min_logprob": -21.05821990966797
+    }
   },
   "SCHB_G4_IMG_20261007_100632_sentence_02_copy_english": {
     "text": "on Sundays . We Play ticket - with our",
@@ -18297,7 +20376,14 @@
           109
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.07639794051647186,
+      "forced_min_prob": 3.156402783588419e-08,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -9.15540599822998,
+      "forced_min_logprob": -17.27124786376953
+    }
   },
   "SCHB_G4_IMG_20261007_100632_sentence_04_dictated_english": {
     "text": "my doctor place ( P.P. Haskell",
@@ -18339,7 +20425,14 @@
           101
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.15140266716480255,
+      "forced_min_prob": 1.5682376230952144e-10,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -11.468880653381348,
+      "forced_min_logprob": -22.575899124145508
+    }
   },
   "SCHB_G4_IMG_20261007_100650_sentence_02_copy_english": {
     "text": "tobacco and more Ion sundos are play cricket with our friends )",
@@ -18403,7 +20496,14 @@
           81
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.00819377787411213,
+      "forced_min_prob": 2.7189572815444762e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.868368148803711,
+      "forced_min_logprob": -19.7230167388916
+    }
   },
   "SCHB_G4_IMG_20261007_100650_sentence_04_dictated_english": {
     "text": "free brothers places . Football",
@@ -18440,7 +20540,14 @@
           77
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.003954875282943249,
+      "forced_min_prob": 8.14296616247212e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.312905311584473,
+      "forced_min_logprob": -23.231281280517578
+    }
   },
   "SCHB_G5_IMG_20261007_100918_sentence_02_copy_english": {
     "text": "Such teach him tersers was on new story entirely",
@@ -18486,7 +20593,14 @@
           119
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.13880428671836853,
+      "forced_min_prob": 1.6213830278388741e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -10.580638885498047,
+      "forced_min_logprob": -20.239986419677734
+    }
   },
   "SCHB_G5_IMG_20261007_100918_sentence_04_dictated_english": {
     "text": "we want at the master to be like fresh wag .",
@@ -18535,7 +20649,14 @@
           90
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05549675598740578,
+      "forced_min_prob": 1.1767029191311895e-11,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -12.154654502868652,
+      "forced_min_logprob": -25.165719985961914
+    }
   },
   "SCHB_G5_IMG_20261007_100926_sentence_02_copy_english": {
     "text": "a quit teacher . tells you , a new story .",
@@ -18584,7 +20705,14 @@
           147
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03361468017101288,
+      "forced_min_prob": 3.422569519462293e-11,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -10.831587791442871,
+      "forced_min_logprob": -24.098045349121094
+    }
   },
   "SCHB_G5_IMG_20261007_100926_sentence_04_dictated_english": {
     "text": "went to the men",
@@ -18619,7 +20747,14 @@
           132
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0026987195014953613,
+      "forced_min_prob": 1.6745130672693453e-12,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -16.03972625732422,
+      "forced_min_logprob": -27.11549949645996
+    }
   },
   "SCHB_G5_IMG_20261007_100934_sentence_02_copy_english": {
     "text": "things",
@@ -18648,7 +20783,14 @@
           88
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12054283916950226,
+      "forced_min_prob": 4.7694914684370815e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -9.940074920654297,
+      "forced_min_logprob": -19.161026000976562
+    }
   },
   "SCHB_G5_IMG_20261007_100934_sentence_04_dictated_english": {
     "text": "vegetables",
@@ -18677,7 +20819,14 @@
           85
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.007536171469837427,
+      "forced_min_prob": 2.275035271281922e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.880453109741211,
+      "forced_min_logprob": -19.901269912719727
+    }
   },
   "SCHB_G5_IMG_20261007_100940_sentence_02_copy_english": {
     "text": "we listen custody the shares teach ' was good things .",
@@ -18726,7 +20875,14 @@
           105
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.007362098433077335,
+      "forced_min_prob": 1.76168573062796e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.050244331359863,
+      "forced_min_logprob": -17.85441017150879
+    }
   },
   "SCHB_G5_IMG_20261007_100940_sentence_04_dictated_english": {
     "text": "we went to the market to buy to fill",
@@ -18771,7 +20927,14 @@
           99
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.003158383537083864,
+      "forced_min_prob": 3.6644944023667136e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.026450157165527,
+      "forced_min_logprob": -24.02974510192871
+    }
   },
   "SCHB_G5_IMG_20261007_100947_sentence_02_copy_english": {
     "text": "own teacher tells us a new story every day we isten carefully the stories teach us good things \"",
@@ -18848,7 +21011,14 @@
           113
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.016727406531572342,
+      "forced_min_prob": 1.71392908754342e-08,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -10.204339027404785,
+      "forced_min_logprob": -17.881893157958984
+    }
   },
   "SCHB_G5_IMG_20261007_100947_sentence_04_dictated_english": {
     "text": "is bent to the market to buy fresh vegetation",
@@ -18893,7 +21063,14 @@
           126
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03880390524864197,
+      "forced_min_prob": 2.8558010990720195e-12,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -16.57115364074707,
+      "forced_min_logprob": -26.581668853759766
+    }
   },
   "SCHB_G5_IMG_20261007_100954_sentence_02_copy_english": {
     "text": "such teacher take up a new strong energy drag , in sister lawfully the stories teach us good things",
@@ -18969,7 +21146,14 @@
           130
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06324509531259537,
+      "forced_min_prob": 1.4624419009123812e-08,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -10.65452766418457,
+      "forced_min_logprob": -18.040573120117188
+    }
   },
   "SCHB_G5_IMG_20261007_100954_sentence_04_dictated_english": {
     "text": "we went to the market to belle fresh vegetable",
@@ -19015,7 +21199,14 @@
           124
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.04918934032320976,
+      "forced_min_prob": 6.154778987491451e-15,
+      "forced_low_prob_ratio": 0.7142857142857143,
+      "forced_mean_logprob": -11.201194763183594,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G5_IMG_20261007_101001_sentence_02_copy_english": {
     "text": "Over teacher tells us a new story sympathy ,",
@@ -19060,7 +21251,14 @@
           140
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.003472639713436365,
+      "forced_min_prob": 1.6616334974628444e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.065567016601562,
+      "forced_min_logprob": -17.912879943847656
+    }
   },
   "SCHB_G5_IMG_20261007_101001_sentence_04_dictated_english": {
     "text": "we we",
@@ -19091,7 +21289,14 @@
           129
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02604592591524124,
+      "forced_min_prob": 3.708333553426035e-12,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -13.663707733154297,
+      "forced_min_logprob": -26.320438385009766
+    }
   },
   "SCHB_G5_IMG_20261007_101010_sentence_02_copy_english": {
     "text": "industry over teacher tells us a new strong everyday .",
@@ -19149,7 +21354,14 @@
           157
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009713448584079742,
+      "forced_min_prob": 5.817836212784755e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.221033096313477,
+      "forced_min_logprob": -21.264923095703125
+    }
   },
   "SCHB_G5_IMG_20261007_101010_sentence_04_dictated_english": {
     "text": "I've went to the Market to bike fresh Vegetables .",
@@ -19210,7 +21422,14 @@
           128
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.04471573978662491,
+      "forced_min_prob": 2.780096153287559e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -14.36217975616455,
+      "forced_min_logprob": -22.00336456298828
+    }
   },
   "SCHB_G5_IMG_20261007_101020_sentence_04_dictated_english": {
     "text": "we listen careboard .",
@@ -19246,7 +21465,14 @@
           191
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02025759033858776,
+      "forced_min_prob": 2.8419203101925916e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.536529541015625,
+      "forced_min_logprob": -21.98137092590332
+    }
   },
   "SCHB_G5_IMG_20261007_101020_sentence_06_own_english": {
     "text": "we won to be interested . A joke re",
@@ -19340,7 +21566,14 @@
           161
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.006926343776285648,
+      "forced_min_prob": 1.796454096592015e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.10057258605957,
+      "forced_min_logprob": -20.137451171875
+    }
   },
   "SCHB_G5_IMG_20261007_101031_sentence_04_dictated_english": {
     "text": "I went to the Market to by fresh vegetables .",
@@ -19387,7 +21620,14 @@
           138
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009686178527772427,
+      "forced_min_prob": 9.032717065635132e-13,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.369584083557129,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G5_IMG_20261007_101047_sentence_02_copy_english": {
     "text": "our teacher tells us a new esteem",
@@ -19428,7 +21668,14 @@
           136
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0050598373636603355,
+      "forced_min_prob": 3.93253013486472e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.667614936828613,
+      "forced_min_logprob": -21.65656852722168
+    }
   },
   "SCHB_G5_IMG_20261007_101047_sentence_04_dictated_english": {
     "text": "We went to the Market to bike fresh vegetable .",
@@ -19486,7 +21733,14 @@
           144
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.027408210560679436,
+      "forced_min_prob": 3.31973927514273e-11,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -12.951546669006348,
+      "forced_min_logprob": -24.128549575805664
+    }
   },
   "SCHB_G5_IMG_20261007_101126_sentence_02_copy_english": {
     "text": "sleepy knowledge . Completely the book teach its good things .",
@@ -19546,7 +21800,14 @@
           134
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.000886075256858021,
+      "forced_min_prob": 1.1460639104399206e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.672821044921875,
+      "forced_min_logprob": -20.586933135986328
+    }
   },
   "SCHB_G5_IMG_20261007_101126_sentence_04_dictated_english": {
     "text": "went to the market . to , bike fest vegetables",
@@ -19593,7 +21854,14 @@
           143
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06874006241559982,
+      "forced_min_prob": 8.253681071934693e-11,
+      "forced_low_prob_ratio": 0.7142857142857143,
+      "forced_mean_logprob": -11.046628952026367,
+      "forced_min_logprob": -23.217777252197266
+    }
   },
   "SCHB_G5_IMG_20261007_101145_sentence_02_copy_english": {
     "text": "Our teacher tells us a new story 100th carefully . The starvation is good things \" \"",
@@ -19677,7 +21945,14 @@
           145
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.028767306357622147,
+      "forced_min_prob": 1.01719967084829e-12,
+      "forced_low_prob_ratio": 0.9285714285714286,
+      "forced_mean_logprob": -11.818016052246094,
+      "forced_min_logprob": -27.613967895507812
+    }
   },
   "SCHB_G5_IMG_20261007_101145_sentence_04_dictated_english": {
     "text": "We went to thed Market to bike fresh vegetable .",
@@ -19736,7 +22011,14 @@
           122
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.15006646513938904,
+      "forced_min_prob": 8.525719019658595e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -11.744759559631348,
+      "forced_min_logprob": -20.882762908935547
+    }
   },
   "SCHB_G5_IMG_20261007_101152_sentence_02_copy_english": {
     "text": "Jump to navigation own teacher tells us a new six everyday we were carefully , The stories teach us good things .",
@@ -19840,7 +22122,14 @@
           130
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02234954945743084,
+      "forced_min_prob": 1.546419936548915e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -10.976469039916992,
+      "forced_min_logprob": -22.589908599853516
+    }
   },
   "SCHB_G5_IMG_20261007_101152_sentence_04_dictated_english": {
     "text": "We went to be marked . Fall-buy # vegetables . _______",
@@ -19904,7 +22193,14 @@
           123
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.002301773289218545,
+      "forced_min_prob": 1.9211607305003042e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.067666053771973,
+      "forced_min_logprob": -22.372920989990234
+    }
   },
   "SCHB_G5_IMG_20261007_101207_sentence_02_copy_english": {
     "text": "Burn teacher tells us a new",
@@ -19943,7 +22239,14 @@
           85
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.07272003591060638,
+      "forced_min_prob": 1.2159043549786475e-08,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -9.259370803833008,
+      "forced_min_logprob": -18.22519302368164
+    }
   },
   "SCHB_G5_IMG_20261007_101207_sentence_04_dictated_english": {
     "text": "re violent to the",
@@ -19978,7 +22281,14 @@
           133
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0006889417418278754,
+      "forced_min_prob": 8.005191176607696e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.158257484436035,
+      "forced_min_logprob": -18.64317512512207
+    }
   },
   "SCHB_G5_IMG_20261007_101218_sentence_02_copy_english": {
     "text": "we later carefully the activities teach us good",
@@ -20021,7 +22331,14 @@
           166
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010071667842566967,
+      "forced_min_prob": 1.965015261617964e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.712350845336914,
+      "forced_min_logprob": -20.047765731811523
+    }
   },
   "SCHB_G5_IMG_20261007_101218_sentence_04_dictated_english": {
     "text": "we went to the United to buy fresh vegetables .",
@@ -20068,7 +22385,14 @@
           152
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.14689429104328156,
+      "forced_min_prob": 3.246978685922386e-09,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -10.357864379882812,
+      "forced_min_logprob": -19.545541763305664
+    }
   },
   "SCHB_G5_IMG_20261007_101229_sentence_02_copy_english": {
     "text": "his teacher tells us a NEW story everybody",
@@ -20111,7 +22435,14 @@
           139
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.002754191868007183,
+      "forced_min_prob": 8.723612054950536e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -9.973066329956055,
+      "forced_min_logprob": -18.557231903076172
+    }
   },
   "SCHB_G5_IMG_20261007_101229_sentence_04_dictated_english": {
     "text": "we went to be unliket to buy fresh",
@@ -20155,7 +22486,14 @@
           131
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.011693893000483513,
+      "forced_min_prob": 2.0768121944403362e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.99305534362793,
+      "forced_min_logprob": -22.29501724243164
+    }
   },
   "SCHB_G6_IMG_20261007_102027_sentence_02_copy_english": {
     "text": "a b c d e f g h. In addition to the most of them",
@@ -20213,7 +22551,14 @@
           109
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02328016236424446,
+      "forced_min_prob": 1.261327739303375e-12,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.656221389770508,
+      "forced_min_logprob": -27.39885711669922
+    }
   },
   "SCHB_G6_IMG_20261007_102027_sentence_04_dictated_english": {
     "text": "usual assigns off man injury , and app !",
@@ -20259,7 +22604,14 @@
           63
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06975014507770538,
+      "forced_min_prob": 1.1612022454698945e-09,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -10.37756061553955,
+      "forced_min_logprob": -20.573810577392578
+    }
   },
   "SCHB_G6_IMG_20261007_102039_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fifty tiers",
@@ -20302,7 +22654,14 @@
           98
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06977476179599762,
+      "forced_min_prob": 1.308891744988827e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -9.763354301452637,
+      "forced_min_logprob": -22.756669998168945
+    }
   },
   "SCHB_G6_IMG_20261007_102039_sentence_04_dictated_english": {
     "text": "Did you better finish your hombook I",
@@ -20344,7 +22703,14 @@
           125
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.029619388282299042,
+      "forced_min_prob": 6.866937685146013e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.625262260437012,
+      "forced_min_logprob": -18.796546936035156
+    }
   },
   "SCHB_G6_IMG_20261007_102049_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fills the six",
@@ -20389,7 +22755,14 @@
           126
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.09302967041730881,
+      "forced_min_prob": 3.54040186056892e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.645906448364258,
+      "forced_min_logprob": -21.76161003112793
+    }
   },
   "SCHB_G6_IMG_20261007_102049_sentence_04_dictated_english": {
     "text": "Did you finish your home work before",
@@ -20430,7 +22803,14 @@
           140
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12010575085878372,
+      "forced_min_prob": 8.368631308763863e-12,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.560989379882812,
+      "forced_min_logprob": -25.50653076171875
+    }
   },
   "SCHB_G6_IMG_20261007_102112_sentence_02_copy_english": {
     "text": "Rain Falls , from the charts and Bills the xiveuxs and ladies",
@@ -20495,7 +22875,14 @@
           98
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.08947180211544037,
+      "forced_min_prob": 2.0058416039248073e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.059873580932617,
+      "forced_min_logprob": -22.329788208007812
+    }
   },
   "SCHB_G6_IMG_20261007_102112_sentence_04_dictated_english": {
     "text": "De you finish your the before denies",
@@ -20536,7 +22923,14 @@
           114
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.023810522630810738,
+      "forced_min_prob": 9.009139961824175e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.980619430541992,
+      "forced_min_logprob": -23.13019561767578
+    }
   },
   "SCHB_G6_IMG_20261007_102126_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fill the ruined and",
@@ -20583,7 +22977,14 @@
           129
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.008655238896608353,
+      "forced_min_prob": 8.568343257131517e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.979249000549316,
+      "forced_min_logprob": -23.180360794067383
+    }
   },
   "SCHB_G6_IMG_20261007_102126_sentence_04_dictated_english": {
     "text": "is a connection",
@@ -20616,7 +23017,14 @@
           129
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01668473705649376,
+      "forced_min_prob": 1.250576170397366e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.767498016357422,
+      "forced_min_logprob": -22.80224609375
+    }
   },
   "SCHB_G6_IMG_20261007_102134_sentence_02_copy_english": {
     "text": "Rain fall from",
@@ -20649,7 +23057,14 @@
           112
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.08414065837860107,
+      "forced_min_prob": 6.212447001274768e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.628982543945312,
+      "forced_min_logprob": -18.896711349487305
+    }
   },
   "SCHB_G6_IMG_20261007_102134_sentence_04_dictated_english": {
     "text": "dead Van linenes waves Home waste . That",
@@ -20693,7 +23108,14 @@
           108
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010752525180578232,
+      "forced_min_prob": 2.841035628975419e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.875632286071777,
+      "forced_min_logprob": -19.67909812927246
+    }
   },
   "SCHB_G6_IMG_20261007_102141_sentence_02_copy_english": {
     "text": "rain telling from the clouts and killed the silker and talks",
@@ -20755,7 +23177,14 @@
           97
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.00023765450168866664,
+      "forced_min_prob": 3.3097838358919773e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.211104393005371,
+      "forced_min_logprob": -21.828968048095703
+    }
   },
   "SCHB_G6_IMG_20261007_102141_sentence_04_dictated_english": {
     "text": "did you finish your home worth before dinner",
@@ -20798,7 +23227,14 @@
           132
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.008414337411522865,
+      "forced_min_prob": 3.180639432387444e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -16.350811004638672,
+      "forced_min_logprob": -24.171354293823242
+    }
   },
   "SCHB_G6_IMG_20261007_102151_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and fills the rivers",
@@ -20843,7 +23279,14 @@
           138
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.021025488153100014,
+      "forced_min_prob": 1.4606265086314352e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.770733833312988,
+      "forced_min_logprob": -20.34440040588379
+    }
   },
   "SCHB_G6_IMG_20261007_102203_sentence_02_copy_english": {
     "text": "Rain falls from the clouds and thus the viewers and",
@@ -20890,7 +23333,14 @@
           85
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010819680988788605,
+      "forced_min_prob": 2.2914254937944634e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.559368133544922,
+      "forced_min_logprob": -19.894092559814453
+    }
   },
   "SCHB_G6_IMG_20261007_102203_sentence_04_dictated_english": {
     "text": "Did you finish against bare wealth before Britain as a",
@@ -20937,7 +23387,14 @@
           124
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03380756825208664,
+      "forced_min_prob": 3.635967828902187e-12,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.820457458496094,
+      "forced_min_logprob": -26.340145111083984
+    }
   },
   "SCHB_G6_IMG_20261007_102218_sentence_02_copy_english": {
     "text": "Rain kills dreams the clouds and kills the silvers and lakes",
@@ -20998,7 +23455,14 @@
           82
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.11579453200101852,
+      "forced_min_prob": 7.762679388179095e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.97646713256836,
+      "forced_min_logprob": -18.673938751220703
+    }
   },
   "SCHB_G6_IMG_20261007_102218_sentence_04_dictated_english": {
     "text": "did you diminish your home work before him",
@@ -21041,7 +23505,14 @@
           104
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.09884950518608093,
+      "forced_min_prob": 2.2473636721118823e-13,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -14.43030834197998,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G6_IMG_20261007_102228_sentence_02_copy_english": {
     "text": "Rain falls from the islands and five the union and",
@@ -21088,7 +23559,14 @@
           102
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.02811768837273121,
+      "forced_min_prob": 1.1881966521798404e-09,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -10.125850677490234,
+      "forced_min_logprob": -20.55082893371582
+    }
   },
   "SCHB_G6_IMG_20261007_102228_sentence_04_dictated_english": {
     "text": "did you finish your Newsweek before dinner .",
@@ -21131,7 +23609,14 @@
           112
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0004573505138978362,
+      "forced_min_prob": 3.465520093115515e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -15.511683464050293,
+      "forced_min_logprob": -21.782987594604492
+    }
   },
   "SCHB_G6_IMG_20261007_102238_sentence_02_copy_english": {
     "text": "Rain Falls from the clouds and Fills",
@@ -21173,7 +23658,14 @@
           91
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.10790620744228363,
+      "forced_min_prob": 2.86286128137192e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.717260360717773,
+      "forced_min_logprob": -19.671443939208984
+    }
   },
   "SCHB_G6_IMG_20261007_102238_sentence_04_dictated_english": {
     "text": "did you finish your homework for",
@@ -21213,7 +23705,14 @@
           155
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03369717299938202,
+      "forced_min_prob": 9.379144325343675e-14,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -17.098615646362305,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G7_IMG_20261007_105302_sentence_02_copy_english": {
     "text": "in war such idly become for jungle or the farce does \"",
@@ -21286,7 +23785,14 @@
           73
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.035151682794094086,
+      "forced_min_prob": 9.471217143897093e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.83376693725586,
+      "forced_min_logprob": -20.7775936126709
+    }
   },
   "SCHB_G7_IMG_20261007_105302_sentence_04_dictated_english": {
     "text": "# Though it was acquiring the",
@@ -21325,7 +23831,14 @@
           151
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06964131444692612,
+      "forced_min_prob": 5.532731495172527e-10,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.633418083190918,
+      "forced_min_logprob": -21.315170288085938
+    }
   },
   "SCHB_G7_IMG_20261007_105315_sentence_02_copy_english": {
     "text": "he quick brown fox jumps over the lazy dog .",
@@ -21372,7 +23885,14 @@
           139
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.007026601582765579,
+      "forced_min_prob": 8.715344526795399e-13,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.83346939086914,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G7_IMG_20261007_105315_sentence_04_dictated_english": {
     "text": "Though it was raining the children walked to school",
@@ -21417,7 +23937,14 @@
           141
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.04680165648460388,
+      "forced_min_prob": 1.2792189089757167e-15,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -15.38556957244873,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G7_IMG_20261007_105327_sentence_02_copy_english": {
     "text": "he quick brown fox fumes over the lazy",
@@ -21460,7 +23987,14 @@
           109
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.09782572090625763,
+      "forced_min_prob": 2.390008191355264e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.122937202453613,
+      "forced_min_logprob": -17.54938316345215
+    }
   },
   "SCHB_G7_IMG_20261007_105327_sentence_04_dictated_english": {
     "text": "# de if , though it was raining the children week to school",
@@ -21535,7 +24069,14 @@
           110
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03160505369305611,
+      "forced_min_prob": 5.991478979616716e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -11.161101341247559,
+      "forced_min_logprob": -21.235511779785156
+    }
   },
   "SCHB_G7_IMG_20261007_105344_sentence_02_copy_english": {
     "text": "he quick brown for damps over the lazy hog",
@@ -21581,7 +24122,14 @@
           111
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.013275817036628723,
+      "forced_min_prob": 4.2449474491057515e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.127516746520996,
+      "forced_min_logprob": -23.882705688476562
+    }
   },
   "SCHB_G7_IMG_20261007_105344_sentence_04_dictated_english": {
     "text": "till the thought . It was too 11 thought it was raising the Dresden walked to school",
@@ -21653,7 +24201,14 @@
           104
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.10981550812721252,
+      "forced_min_prob": 7.896636704345626e-16,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.696467399597168,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G7_IMG_20261007_105355_sentence_02_copy_english": {
     "text": "The quick brown fox jumps over the lazy A COVIDUCATION OF STATEMENT OF THE UNITED States Government of the United States Department of Representatives 7 000",
@@ -21759,7 +24314,14 @@
           28
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01687212474644184,
+      "forced_min_prob": 9.8236349610481e-11,
+      "forced_low_prob_ratio": 0.95,
+      "forced_mean_logprob": -11.452198028564453,
+      "forced_min_logprob": -23.043643951416016
+    }
   },
   "SCHB_G7_IMG_20261007_105355_sentence_04_dictated_english": {
     "text": "All though it was 11 though it was saying the children were unable to school",
@@ -21838,7 +24400,14 @@
           84
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.1031351163983345,
+      "forced_min_prob": 4.120857978852713e-14,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.082143783569336,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G7_IMG_20261007_105407_sentence_02_copy_english": {
     "text": "The quick brown for sumas over the lacey dog",
@@ -21885,7 +24454,14 @@
           61
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.007190190255641937,
+      "forced_min_prob": 2.635004159312615e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.722198486328125,
+      "forced_min_logprob": -22.05696678161621
+    }
   },
   "SCHB_G7_IMG_20261007_105407_sentence_04_dictated_english": {
     "text": "I'll through it was raising the children walked to school",
@@ -21934,7 +24510,14 @@
           107
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12497075647115707,
+      "forced_min_prob": 3.3983377419382276e-16,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -15.686631202697754,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G7_IMG_20261007_105422_sentence_02_copy_english": {
     "text": "dog .",
@@ -21965,7 +24548,14 @@
           84
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.12403654307126999,
+      "forced_min_prob": 1.845537785094553e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.716774940490723,
+      "forced_min_logprob": -24.715665817260742
+    }
   },
   "SCHB_G7_IMG_20261007_105422_sentence_04_dictated_english": {
     "text": "old , We down with raising the children walk school .",
@@ -22036,7 +24626,14 @@
           72
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03087574802339077,
+      "forced_min_prob": 3.7277683717640286e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -12.71171760559082,
+      "forced_min_logprob": -21.710041046142578
+    }
   },
   "SCHB_G7_IMG_20261007_105436_sentence_02_copy_english": {
     "text": "The quick hook buildings over the lay dog",
@@ -22090,7 +24687,14 @@
           109
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.04424840956926346,
+      "forced_min_prob": 3.1149951951192634e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.077564239501953,
+      "forced_min_logprob": -17.284452438354492
+    }
   },
   "SCHB_G7_IMG_20261007_105436_sentence_04_dictated_english": {
     "text": "I Attidiician it was rains the children",
@@ -22134,7 +24738,14 @@
           98
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.024786928668618202,
+      "forced_min_prob": 3.5849601065507386e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -12.697358131408691,
+      "forced_min_logprob": -21.749103546142578
+    }
   },
   "SCHB_G7_IMG_20261007_105451_sentence_02_copy_english": {
     "text": "0 0",
@@ -22165,7 +24776,14 @@
           48
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0024491199292242527,
+      "forced_min_prob": 1.8003858404114226e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.197408676147461,
+      "forced_min_logprob": -20.135265350341797
+    }
   },
   "SCHB_G7_IMG_20261007_105451_sentence_04_dictated_english": {
     "text": "to school",
@@ -22196,7 +24814,14 @@
           103
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.017888866364955902,
+      "forced_min_prob": 1.5183597712464802e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.424524307250977,
+      "forced_min_logprob": -20.305635452270508
+    }
   },
   "SCHB_G7_IMG_20261007_105502_sentence_02_copy_english": {
     "text": "he quick brown fox fumes over the lazy dog .",
@@ -22243,7 +24868,14 @@
           125
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.021518424153327942,
+      "forced_min_prob": 6.147111708543207e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.459726333618164,
+      "forced_min_logprob": -21.209869384765625
+    }
   },
   "SCHB_G7_IMG_20261007_105502_sentence_04_dictated_english": {
     "text": "All foreign fit , was raining the civilian walk to school .",
@@ -22294,7 +24926,14 @@
           133
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05688715726137161,
+      "forced_min_prob": 1.2386235093142517e-10,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -12.13049602508545,
+      "forced_min_logprob": -22.81184959411621
+    }
   },
   "SCHB_G7_IMG_20261007_105512_sentence_02_copy_english": {
     "text": "re # Brown for dumbs over the last dog",
@@ -22340,7 +24979,14 @@
           161
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0046384031884372234,
+      "forced_min_prob": 1.115355918734906e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.34511661529541,
+      "forced_min_logprob": -20.614091873168945
+    }
   },
   "SCHB_G7_IMG_20261007_105512_sentence_04_dictated_english": {
     "text": "Hahnsha it was Rain the children walk to",
@@ -22384,7 +25030,14 @@
           100
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.012524887919425964,
+      "forced_min_prob": 6.402104540947917e-12,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -15.178030967712402,
+      "forced_min_logprob": -25.774394989013672
+    }
   },
   "SCHB_G7_IMG_20261007_105529_sentence_02_copy_english": {
     "text": "The quick beacon for Europe . over the law Adam . . ' ' '",
@@ -22452,7 +25105,14 @@
           80
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.008590077050030231,
+      "forced_min_prob": 1.075594724397888e-08,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.908710479736328,
+      "forced_min_logprob": -18.347806930541992
+    }
   },
   "SCHB_G7_IMG_20261007_105529_sentence_04_dictated_english": {
     "text": "U the 1nd was Gainesville . \" What to solve",
@@ -22500,7 +25160,14 @@
           179
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.01803881861269474,
+      "forced_min_prob": 5.584162909855195e-09,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -11.933362007141113,
+      "forced_min_logprob": -19.003332138061523
+    }
   },
   "SCHB_G7_IMG_20261007_105547_sentence_02_copy_english": {
     "text": "e quick brown fox jumps over the lazy dog",
@@ -22545,7 +25212,14 @@
           128
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0017423979006707668,
+      "forced_min_prob": 6.235846561342129e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -15.266525268554688,
+      "forced_min_logprob": -23.49812126159668
+    }
   },
   "SCHB_G7_IMG_20261007_105547_sentence_04_dictated_english": {
     "text": "dinguh ' it raining the children , # 10016 to",
@@ -22594,7 +25268,14 @@
           130
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.059199556708335876,
+      "forced_min_prob": 5.397987834498963e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.457378387451172,
+      "forced_min_logprob": -19.03723907470703
+    }
   },
   "SCHB_G7_IMG_20261007_105613_sentence_02_copy_english": {
     "text": "# Adamstown Americans . he Quick known for James over the lazy clay",
@@ -22659,7 +25340,14 @@
           132
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.007096078246831894,
+      "forced_min_prob": 9.681531132343935e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.32376480102539,
+      "forced_min_logprob": -20.755630493164062
+    }
   },
   "SCHB_G7_IMG_20261007_105613_sentence_04_dictated_english": {
     "text": "if year , raining children worked also school",
@@ -22713,7 +25401,14 @@
           98
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.029152022674679756,
+      "forced_min_prob": 5.812833325791189e-09,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -10.684674263000488,
+      "forced_min_logprob": -18.963197708129883
+    }
   },
   "SCHB_G7_IMG_20261007_105625_sentence_02_copy_english": {
     "text": "The quick frown for similar over the losing dogs .",
@@ -22771,7 +25466,14 @@
           164
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.10120876878499985,
+      "forced_min_prob": 2.3222732181693573e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -10.535024642944336,
+      "forced_min_logprob": -17.578134536743164
+    }
   },
   "SCHB_G7_IMG_20261007_105625_sentence_04_dictated_english": {
     "text": "Ill thought . It was All , ' the fingers' yet was seeing the childless walk to school",
@@ -22858,7 +25560,14 @@
           98
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 6.14069213042967e-05,
+      "forced_min_prob": 7.9003444411474e-12,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -17.129180908203125,
+      "forced_min_logprob": -25.564115524291992
+    }
   },
   "SCHB_G7_IMG_20261007_105637_sentence_02_copy_english": {
     "text": "The quick brown store jumps over . She lazy dog",
@@ -22905,7 +25614,14 @@
           133
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.0074872588738799095,
+      "forced_min_prob": 2.0148617496662524e-10,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.688591003417969,
+      "forced_min_logprob": -22.325300216674805
+    }
   },
   "SCHB_G7_IMG_20261007_105637_sentence_04_dictated_english": {
     "text": "apify thought as raining the children walk to so",
@@ -22963,7 +25679,14 @@
           117
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.025698648765683174,
+      "forced_min_prob": 5.151618368004485e-11,
+      "forced_low_prob_ratio": 0.8571428571428571,
+      "forced_mean_logprob": -12.172026634216309,
+      "forced_min_logprob": -23.689125061035156
+    }
   },
   "SCHB_G7_IMG_20261007_105649_sentence_02_copy_english": {
     "text": "he would brown flax jumps . over . The egg dog",
@@ -23024,7 +25747,14 @@
           100
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.08523783087730408,
+      "forced_min_prob": 1.0194226796045314e-08,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -9.532634735107422,
+      "forced_min_logprob": -18.401443481445312
+    }
   },
   "SCHB_G7_IMG_20261007_105649_sentence_04_dictated_english": {
     "text": "last years L. Ahoun sit raining The children walk a school",
@@ -23097,7 +25827,14 @@
           77
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.013227294199168682,
+      "forced_min_prob": 4.279958679132001e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -13.372739791870117,
+      "forced_min_logprob": -23.874492645263672
+    }
   },
   "SCHB_G8_IMG_20261007_104642_sentence_02_copy_english": {
     "text": "today are soot one biology exam is vary",
@@ -23140,7 +25877,14 @@
           168
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.009563690982758999,
+      "forced_min_prob": 9.761501096371486e-14,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -14.830326080322266,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G8_IMG_20261007_104642_sentence_04_dictated_english": {
     "text": "14 Separate festival is Diwali",
@@ -23177,7 +25921,14 @@
           138
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.006734415423125029,
+      "forced_min_prob": 8.352642882902828e-11,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -12.107303619384766,
+      "forced_min_logprob": -23.20585823059082
+    }
   },
   "SCHB_G8_IMG_20261007_104901_sentence_02_copy_english": {
     "text": "Today he made \"biology exam , early",
@@ -23219,7 +25970,14 @@
           108
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.018011970445513725,
+      "forced_min_prob": 2.833892932398532e-15,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -13.135733604431152,
+      "forced_min_logprob": -27.63102149963379
+    }
   },
   "SCHB_G8_IMG_20261007_104911_sentence_02_copy_english": {
     "text": "he quick brown hair guests over a",
@@ -23260,7 +26018,14 @@
           168
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.014725379645824432,
+      "forced_min_prob": 1.2804196591886807e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.006980895996094,
+      "forced_min_logprob": -20.476078033447266
+    }
   },
   "SCHB_G8_IMG_20261007_104911_sentence_04_dictated_english": {
     "text": "a Midnight it was said the children walk to",
@@ -23305,7 +26070,14 @@
           135
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03920992836356163,
+      "forced_min_prob": 1.790254833267113e-09,
+      "forced_low_prob_ratio": 0.8333333333333334,
+      "forced_mean_logprob": -12.327826499938965,
+      "forced_min_logprob": -20.140907287597656
+    }
   },
   "SCHB_G8_IMG_20261007_104920_sentence_02_copy_english": {
     "text": "in which reasons soon is",
@@ -23342,7 +26114,14 @@
           126
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.008015796542167664,
+      "forced_min_prob": 1.9877073320628824e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -11.130112648010254,
+      "forced_min_logprob": -20.036283493041992
+    }
   },
   "SCHB_G8_IMG_20261007_104920_sentence_04_dictated_english": {
     "text": "odied",
@@ -23372,7 +26151,14 @@
           68
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.003906548954546452,
+      "forced_min_prob": 6.478702907486422e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.140626907348633,
+      "forced_min_logprob": -18.854745864868164
+    }
   },
   "SCHB_G8_IMG_20261007_104933_sentence_02_copy_english": {
     "text": "Today we not our biology exam our exam was easy",
@@ -23419,7 +26205,14 @@
           125
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.04706253111362457,
+      "forced_min_prob": 1.0042406489718658e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.359489440917969,
+      "forced_min_logprob": -23.02161979675293
+    }
   },
   "SCHB_G8_IMG_20261007_104955_sentence_02_copy_english": {
     "text": "earth was easy",
@@ -23452,7 +26245,14 @@
           92
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.06598442047834396,
+      "forced_min_prob": 4.628351590874047e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.69269847869873,
+      "forced_min_logprob": -21.493650436401367
+    }
   },
   "SCHB_G8_IMG_20261007_105009_sentence_02_copy_english": {
     "text": "gay exam over dawn was",
@@ -23489,7 +26289,14 @@
           80
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.03217810392379761,
+      "forced_min_prob": 5.1964953173833095e-11,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.698864936828613,
+      "forced_min_logprob": -23.680452346801758
+    }
   },
   "SCHB_G8_IMG_20261007_105028_sentence_02_copy_english": {
     "text": "along We Wishwise Ending from Very hard and fully",
@@ -23535,7 +26342,14 @@
           136
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.05082959309220314,
+      "forced_min_prob": 4.3109063541102444e-10,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -12.703514099121094,
+      "forced_min_logprob": -21.5647029876709
+    }
   },
   "SCHB_G8_IMG_20261007_105048_sentence_02_copy_english": {
     "text": "today we must disobey from and hang hard and to",
@@ -23582,7 +26396,14 @@
           110
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.029402075335383415,
+      "forced_min_prob": 1.997914944595891e-09,
+      "forced_low_prob_ratio": 0.875,
+      "forced_mean_logprob": -11.542110443115234,
+      "forced_min_logprob": -20.03116226196289
+    }
   },
   "SCHB_G8_IMG_20261007_105106_sentence_02_copy_english": {
     "text": "Today was a monopoly because Vice",
@@ -23621,7 +26442,14 @@
           142
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.010974313132464886,
+      "forced_min_prob": 2.9549049873622835e-09,
+      "forced_low_prob_ratio": 1.0,
+      "forced_mean_logprob": -10.58650016784668,
+      "forced_min_logprob": -19.639799118041992
+    }
   },
   "SCHB_G8_IMG_20261007_105120_sentence_02_copy_english": {
     "text": "stay we would biology exam our exam is",
@@ -23664,6 +26492,13 @@
           118
         ]
       }
-    ]
+    ],
+    "forced_metrics": {
+      "forced_mean_prob": 0.24023008346557617,
+      "forced_min_prob": 1.1814603517734668e-08,
+      "forced_low_prob_ratio": 0.75,
+      "forced_mean_logprob": -11.262372970581055,
+      "forced_min_logprob": -18.253929138183594
+    }
   }
 }

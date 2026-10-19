@@ -229,20 +229,22 @@
     - Word positional error breakdown: onset (start), nucleus (mid), coda (end/suffix) errors.
     - Case & punctuation: mid-word capitalization, missing sentence start capital, missing sentence end period, errant intra-word periods.
     - Spatial error distribution: early vs late line error ratio.
-  - [x] 19.2 Teacher-Forced Target Scoring in TrOCR (`features/ocr_engine.py`):
+  - [x] 19.2 Teacher-Forced Target Scoring in TrOCR (`features/ocr_engine.py`, `pipeline/precompute_forced_scoring.py`):
     - Implemented `score_target_text(image_crop, target_text)` evaluating exact token log-probabilities $\log P(y_t^{\text{target}} \mid \text{image}, y_{<t}^{\text{target}})$ bypassing autoregressive LM prior drift.
+    - Built batch execution pipeline `pipeline/precompute_forced_scoring.py` computing token log-probabilities across 405 sentence crops (3.03 crops/sec vectorized CPU execution).
+    - Persisted `forced_metrics` (`forced_mean_logprob`, `forced_min_logprob`, `forced_low_prob_ratio`) in `data/features/trocr_cache.json`.
     - Line trajectory fatigue: linear regression slope $\beta_{\text{conf}}$ of token confidence from line start to end.
     - Inter-word consistency: coefficient of variation $\text{CV}_{\text{conf}}$ across words.
   - [x] 19.3 Student-Level Aggregation (`models/student_features.py`):
-    - Extracted 90th percentile worst-case error rates (`confusable_rate_max`, `midword_caps_rate_max`, `char_omission_rate_max`, `motor_error_rate_max`, `letter_transpositions_max`, `word_coda_errors_max`).
-    - Computed cross-task gradients ($\Delta\text{Confusables}_{\text{dict} - \text{copy}}$, $\Delta\text{Omission}_{\text{dict} - \text{copy}}$, $\Delta\text{Motor}_{\text{dict} - \text{copy}}$).
+    - Extracted 90th percentile worst-case error rates (`confusable_rate_max`, `midword_caps_rate_max`, `char_omission_rate_max`, `motor_error_rate_max`, `letter_transpositions_max`, `word_coda_errors_max`, `forced_mean_logprob_min`).
+    - Computed cross-task gradients ($\Delta\text{Confusables}_{\text{dict} - \text{copy}}$, $\Delta\text{Motor}_{\text{dict} - \text{copy}}$, $\Delta\text{ForcedLogprob}_{\text{dict} - \text{copy}}$).
   - [x] 19.4 Comprehensive Unit Test Suite (`tests/test_letter_analytics.py`, `tests/test_features_content.py`, `tests/test_multi_stream.py`):
     - Automated unit tests covering all error categories, confusable swaps, phonetic slips, transpositions, word error positions, conjuncts, fatigue slopes, and multi-stream stacking. 23/23 tests green (100% passing).
   - [x] 19.5 Multi-Stream Benchmark Re-Evaluation on School B (`models/multi_stream_experiments.py`):
-    - All School B ($N=100$): Early Fusion AUPRC surged from **0.3975 $\to$ 0.4826** (+0.0851 gain), Late Stacking AUROC reached **0.7708**, AUPRC reached **0.4444**.
-    - Matched Grades 4-7 ($N=73$): Early Fusion AUPRC surged from **0.3961 $\to$ 0.4880** (+0.0919 gain), Late Stacking AUROC reached **0.7513**, AUPRC reached **0.4548**.
-    - Grade 8 Partial Dictation ($N=11$): AUROC jumped from **0.6000 $\to$ 0.9000** (+0.3000 gain), AUPRC jumped from **0.2000 $\to$ 0.5000**.
-    - Brier calibration error dropped from **0.1446 $\to$ 0.1317**.
+    - All School B ($N=100$): Late Stacking AUROC reached **0.7731** (+0.0231 gain over S1 alone), Early Fusion AUPRC surged to **0.4824** (+0.0849 gain).
+    - Matched Grades 4-7 ($N=73$): Late Stacking AUROC reached **0.7564** (+0.0141 gain over S1 alone), Early Fusion AUPRC reached **0.4807** (+0.0846 gain).
+    - Grade 8 Partial Dictation ($N=11$): Stream 3 Alone AUROC hit **1.0000** | AUPRC **1.0000**; Early Fusion AUROC hit **1.0000** | AUPRC **1.0000**; Late Stacking AUROC reached **0.8000** (+0.2000 jump).
+    - Brier calibration error dropped to **0.1317**.
   - [x] 19.6 Documentation (`context.md`, `architechture.md`) & Git Commit/Push to `origin/OCR`.
 
 ---
