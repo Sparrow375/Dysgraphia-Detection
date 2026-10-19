@@ -61,6 +61,7 @@ class OCRTaskResult:
     word_count: int
     line_count: int
     lines: List[Dict[str, Any]] = field(default_factory=list)
+    forced_metrics: Dict[str, float] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -160,8 +161,55 @@ class EnglishTrOCREngine:
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.processor = TrOCRProcessor.from_pretrained(model_name)
         self.model = VisionEncoderDecoderModel.from_pretrained(model_name)
+        if hasattr(self.model.config, "decoder"):
+            self.model.config.pad_token_id = getattr(self.model.config.decoder, "pad_token_id", None)
+            self.model.config.decoder_start_token_id = getattr(self.model.config.decoder, "decoder_start_token_id", None)
+            self.model.config.eos_token_id = getattr(self.model.config.decoder, "eos_token_id", None)
         self.model.to(self.device)
         self.model.eval()
+
+    def score_target_text(self, image_crop: np.ndarray, target_text: str) -> Dict[str, float]:
+        """Compute teacher-forced token log-probabilities for a target prompt given the ink image."""
+        empty_res = {
+            "forced_mean_prob": 0.0,
+            "forced_min_prob": 0.0,
+            "forced_low_prob_ratio": 1.0,
+            "forced_mean_logprob": -20.0,
+            "forced_min_logprob": -20.0,
+        }
+        if image_crop is None or image_crop.size == 0 or not target_text.strip():
+            return empty_res
+
+        if len(image_crop.shape) == 2:
+            rgb = cv2.cvtColor(image_crop, cv2.COLOR_GRAY2RGB)
+        elif image_crop.shape[2] == 3:
+            rgb = cv2.cvtColor(image_crop, cv2.COLOR_BGR2RGB)
+        else:
+            return empty_res
+
+        pil_img = Image.fromarray(rgb)
+        pixel_values = self.processor(pil_img, return_tensors="pt").pixel_values.to(self.device)
+        labels = self.processor.tokenizer(target_text, return_tensors="pt").input_ids.to(self.device)
+
+        with torch.no_grad():
+            outputs = self.model(pixel_values=pixel_values, labels=labels)
+            logits = outputs.logits  # [1, seq_len, vocab_size]
+            pred_logits = logits[:, :-1, :]
+            pred_probs = torch.softmax(pred_logits, dim=-1)
+            target_ids = labels[:, 1:]
+            token_probs = torch.gather(pred_probs, -1, target_ids.unsqueeze(-1)).squeeze(-1)[0].cpu().numpy()
+
+        if len(token_probs) == 0:
+            return empty_res
+
+        log_probs = np.log(np.maximum(token_probs, 1e-12))
+        return {
+            "forced_mean_prob": float(np.mean(token_probs)),
+            "forced_min_prob": float(np.min(token_probs)),
+            "forced_low_prob_ratio": float(np.mean(token_probs < 0.10)),
+            "forced_mean_logprob": float(np.mean(log_probs)),
+            "forced_min_logprob": float(np.min(log_probs)),
+        }
 
     def transcribe_line(self, line_img: np.ndarray, max_new_tokens: int = 40) -> OCRLineResult:
         """Transcribe a single horizontal line crop with posterior token probabilities."""
@@ -304,8 +352,55 @@ class DevanagariTrOCREngine:
         )
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = VisionEncoderDecoderModel.from_pretrained(model_name)
+        if hasattr(self.model.config, "decoder"):
+            self.model.config.pad_token_id = getattr(self.model.config.decoder, "pad_token_id", None)
+            self.model.config.decoder_start_token_id = getattr(self.model.config.decoder, "decoder_start_token_id", None)
+            self.model.config.eos_token_id = getattr(self.model.config.decoder, "eos_token_id", None)
         self.model.to(self.device)
         self.model.eval()
+
+    def score_target_text(self, word_img: np.ndarray, target_text: str) -> Dict[str, float]:
+        """Compute teacher-forced token log-probabilities for a Devanagari word."""
+        empty_res = {
+            "forced_mean_prob": 0.0,
+            "forced_min_prob": 0.0,
+            "forced_low_prob_ratio": 1.0,
+            "forced_mean_logprob": -20.0,
+            "forced_min_logprob": -20.0,
+        }
+        if word_img is None or word_img.size == 0 or not target_text.strip():
+            return empty_res
+
+        if len(word_img.shape) == 2:
+            rgb = cv2.cvtColor(word_img, cv2.COLOR_GRAY2RGB)
+        elif word_img.shape[2] == 3:
+            rgb = cv2.cvtColor(word_img, cv2.COLOR_BGR2RGB)
+        else:
+            return empty_res
+
+        pil_img = Image.fromarray(rgb)
+        pixel_values = self.image_processor(pil_img, return_tensors="pt").pixel_values.to(self.device)
+        labels = self.tokenizer(target_text, return_tensors="pt").input_ids.to(self.device)
+
+        with torch.no_grad():
+            outputs = self.model(pixel_values=pixel_values, labels=labels)
+            logits = outputs.logits
+            pred_logits = logits[:, :-1, :]
+            pred_probs = torch.softmax(pred_logits, dim=-1)
+            target_ids = labels[:, 1:]
+            token_probs = torch.gather(pred_probs, -1, target_ids.unsqueeze(-1)).squeeze(-1)[0].cpu().numpy()
+
+        if len(token_probs) == 0:
+            return empty_res
+
+        log_probs = np.log(np.maximum(token_probs, 1e-12))
+        return {
+            "forced_mean_prob": float(np.mean(token_probs)),
+            "forced_min_prob": float(np.min(token_probs)),
+            "forced_low_prob_ratio": float(np.mean(token_probs < 0.10)),
+            "forced_mean_logprob": float(np.mean(log_probs)),
+            "forced_min_logprob": float(np.min(log_probs)),
+        }
 
     def transcribe_word(self, word_img: np.ndarray, max_new_tokens: int = 20) -> OCRLineResult:
         """Transcribe an individual Devanagari word crop."""
@@ -505,6 +600,7 @@ class DualEngineOCRPipeline:
                 word_count=int(cached.get("word_count", 0)),
                 line_count=int(cached.get("line_count", 0)),
                 lines=cached.get("lines", []),
+                forced_metrics=cached.get("forced_metrics", {}),
             )
 
         script = str(sentence_json.get("script", "latin")).lower()
@@ -525,6 +621,17 @@ class DualEngineOCRPipeline:
             self.cache[cache_key] = result.to_dict()
 
         return result
+
+    def score_target_text(
+        self,
+        image_crop: np.ndarray,
+        target_text: str,
+        script: str = "latin",
+    ) -> Dict[str, float]:
+        """Compute teacher-forced token log-probabilities given target text."""
+        if script == "devanagari":
+            return get_devanagari_engine().score_target_text(image_crop, target_text)
+        return get_english_engine().score_target_text(image_crop, target_text)
 
     def persist_cache(self) -> None:
         """Persist in-memory results to disk."""

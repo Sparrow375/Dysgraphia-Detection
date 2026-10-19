@@ -791,9 +791,39 @@ Stream 3 was evaluated on the independent held-out external School B cohort (100
 #### Theoretical & Architectural Takeaways
 1. **Curse of Dimensionality in Early Fusion**:
    Concatenating 20+ mixed geometric and linguistic features into a unified model on small clinical sample cohorts causes tree partitioning fragmentation and degrades AUROC ($0.7500 \to 0.7407$). In Grade 8 ($N=11$), early fusion collapsed to 0.4000.
-2. **Superiority of Late Probability Stacking**:
-   Stacking decouples feature representations: Stream 1 specializes in kinematic stroke stability, while Stream 3 specializes in linguistic and visual token legibility. Blending their calibrated posterior probabilities achieves variance reduction and delivers consistent gains across every cohort slice (+0.0164 AUROC and +0.0161 AUPRC on All School B; +0.1000 AUROC on Grade 8).
+### 13.5 Granular Letter-Level Error Analytics & Teacher-Forced Target Scoring (`features/letter_analytics.py`)
 
+#### 13.5.1 Alignment & Error Taxonomy
+Rather than relying on coarse sentence-level Levenshtein edit distance, the letter-level engine computes an exact character-by-character alignment against standardized prompt strings:
+- **Spatial Confusable Reversals (`confusable_rate`)**:
+  - Latin: Reversals ($b \leftrightarrow d$, $p \leftrightarrow q$), rotations ($n \leftrightarrow u$, $m \leftrightarrow w$), and stroke counts ($m \leftrightarrow n$).
+  - Devanagari: Belly slash and headline curls ($ब \leftrightarrow व$, $घ \leftrightarrow ध$, $भ \leftrightarrow म$, $श \leftrightarrow ष$).
+- **Phonetic Slips vs Motor Reversals (`phonetic_error_rate`, `motor_error_rate`, `motor_vs_phonetic_ratio`)**:
+  - Distinguishes linguistic homophone errors ($c/k, c/s, s/z, ph/f$, vowel digraphs) from visuomotor/spatial inversions.
+  - Computes clinical dissociation ratio isolating pure graphomotor dysgraphia from non-motor spelling weakness.
+- **Letter Transpositions (`letter_transpositions`)**:
+  - Detects Damerau-Levenshtein adjacent letter order inversions (e.g. `teh` for `the`, `form` for `from`).
+- **Word Positional Errors (`word_onset_errors`, `word_mid_errors`, `word_coda_errors`)**:
+  - Resolves whether errors concentrate at word beginnings (onset), word bodies (nucleus), or word endings (coda/suffix).
+- **Motor Disinhibition Signs**:
+  - `midword_caps_rate`: Uppercase characters inside word boundaries (e.g. `qUick`, `laZy`).
+  - `errant_internal_periods`: Premature pen drops causing intra-word punctuation (e.g. `OF. EYMAUS`).
+- **Linguistic & Morphological Degradation**:
+  - `dropped_endings_rate`: Missing grammatical suffixes (e.g. `jump` for `jumps`).
+  - `matra_omissions_count`: Missing vowels in Devanagari text.
+  - `conjunct_errors_count`: Missing virama / halant (`\u094d`) in Devanagari ligature formations.
 
+#### 13.5.2 Teacher-Forced Target Scoring
+Autoregressive generation can hallucinate or smooth over letter deformities due to RoBERTa's language model prior. In teacher-forced scoring:
+$$\mathcal{L}_{\text{prompt}} = \frac{1}{T} \sum_{t=1}^{T} \log P(y_t^{\text{target}} \mid \text{image}, y_{<t}^{\text{target}})$$
+- Bypasses beam search drift by evaluating the probability of the *exact target prompt*.
+- Computes `conf_trajectory_slope` ($\beta_{\text{conf}}$ across line tokens) to quantify motor fatigue and trailing-off.
+- Measures `conf_consistency_cv` to detect erratic token certainty.
 
+#### 13.5.3 Multi-Stream Performance Impact
+Integrating letter-level and phonetic dissociation features produced a massive surge in **Precision-Recall AUC (AUPRC)** and balanced AUROC:
+- **All School B**: Late Stacking AUROC reached **0.7708** (up from 0.7500), and Early Fusion AUPRC surged from **0.3975 $\to$ 0.4826** (+0.0851 gain).
+- **Matched Grades 4–7**: Late Stacking AUROC reached **0.7513** (up from 0.7423), and Early Fusion AUPRC surged from **0.3961 $\to$ 0.4880** (+0.0919 gain).
+- **Grade 8**: AUROC surged from **0.6000 $\to$ 0.9000** and AUPRC surged from **0.2000 $\to$ 0.5000**.
+- **Brier Score**: Error dropped from **0.1446 $\to$ 0.1317** across the full external cohort.
 

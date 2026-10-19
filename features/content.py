@@ -39,6 +39,7 @@ from features.ocr_engine import (
     get_trocr_cache,
     save_trocr_cache,
 )
+from features.letter_analytics import analyze_letter_errors, _empty_analytics_result
 
 logger = logging.getLogger(__name__)
 
@@ -166,6 +167,15 @@ def compute_content_features(
             - ocr_cer: float | NaN
             - ocr_wer: float | NaN
     """
+    letter_empty = _empty_analytics_result()
+    forced_empty = {
+        "forced_mean_prob": np.nan,
+        "forced_min_prob": np.nan,
+        "forced_low_prob_ratio": np.nan,
+        "forced_mean_logprob": np.nan,
+        "forced_min_logprob": np.nan,
+    }
+
     empty_result = {
         "ocr_confidence_mean": np.nan,
         "ocr_confidence_std": np.nan,
@@ -178,6 +188,8 @@ def compute_content_features(
         "ocr_omission_ratio": np.nan,
         "ocr_cer": np.nan,
         "ocr_wer": np.nan,
+        **letter_empty,
+        **forced_empty,
     }
 
     if image_crop is None or image_crop.size == 0:
@@ -196,7 +208,8 @@ def compute_content_features(
         # Zero words recognized by OCR (severe illegibility or blank crop)
         exp_words = EXPECTED_WORD_COUNTS.get(task_name)
         exp_chars = EXPECTED_CHAR_COUNTS.get(task_name)
-        return {
+        res = dict(empty_result)
+        res.update({
             "ocr_confidence_mean": 0.0,
             "ocr_confidence_std": 0.0,
             "ocr_confidence_min": 0.0,
@@ -208,7 +221,10 @@ def compute_content_features(
             "ocr_omission_ratio": 1.0 if exp_chars else np.nan,
             "ocr_cer": 1.0 if task_name in CANDIDATE_PROMPTS else np.nan,
             "ocr_wer": 1.0 if task_name in CANDIDATE_PROMPTS else np.nan,
-        }
+            "char_omission_rate": 1.0 if exp_chars else np.nan,
+            "word_omission_rate": 1.0 if exp_words else np.nan,
+        })
+        return res
 
     cleaned_ocr_text = clean_text(task_res.text)
     ocr_tokens = cleaned_ocr_text.split()
@@ -225,6 +241,7 @@ def compute_content_features(
     # Calculate minimum CER and WER against candidate prompts
     cer = np.nan
     wer = np.nan
+    best_cand = ""
 
     candidates = CANDIDATE_PROMPTS.get(task_name)
     if candidates:
@@ -239,13 +256,32 @@ def compute_content_features(
             d_char = levenshtein_distance(cand_clean, cleaned_ocr_text)
             d_word = word_levenshtein_distance(cand_tokens, ocr_tokens)
 
-            cer_scores.append(d_char / cand_len)
+            cer_scores.append((d_char / cand_len, cand))
             wer_scores.append(d_word / cand_wlen)
 
-        cer = float(min(cer_scores))
+        best_score, best_cand = min(cer_scores, key=lambda x: x[0])
+        cer = float(best_score)
         wer = float(min(wer_scores))
 
-    return {
+    script = str(sentence_json.get("script", "latin")).lower()
+    letter_feats = analyze_letter_errors(
+        target_text=best_cand,
+        decoded_text=task_res.text,
+        token_confidences=task_res.token_confidences,
+        script=script,
+    )
+
+    forced_metrics = getattr(task_res, "forced_metrics", {})
+    if not forced_metrics and best_cand and not use_cache and image_crop is not None:
+        try:
+            forced_metrics = pipeline.score_target_text(image_crop, best_cand, script=script)
+        except Exception:
+            forced_metrics = {}
+
+    for k in ["forced_mean_prob", "forced_min_prob", "forced_low_prob_ratio", "forced_mean_logprob", "forced_min_logprob"]:
+        letter_feats[k] = float(forced_metrics.get(k, np.nan))
+
+    out_dict = {
         "ocr_confidence_mean": task_res.mean_confidence,
         "ocr_confidence_std": task_res.std_confidence,
         "ocr_confidence_min": task_res.min_confidence,
@@ -258,6 +294,8 @@ def compute_content_features(
         "ocr_cer": cer,
         "ocr_wer": wer,
     }
+    out_dict.update(letter_feats)
+    return out_dict
 
 
 def precompute_ocr_cache(

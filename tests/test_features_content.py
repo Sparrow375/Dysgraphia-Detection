@@ -91,3 +91,21 @@ def test_compute_content_features_synthetic_image():
     assert feats["ocr_words_recognized"] > 0
     assert feats["ocr_confidence_mean"] > 0.0
     assert not np.isnan(feats["ocr_cer"])
+
+    # Verify letter-level analytics features exist and are populated
+    letter_keys = [
+        "char_omission_count",
+        "char_omission_rate",
+        "word_omission_count",
+        "dropped_endings_count",
+        "confusable_swaps_count",
+        "midword_caps_count",
+        "early_line_error_rate",
+        "late_line_error_rate",
+        "fatigue_error_ratio",
+        "conf_trajectory_slope",
+        "conf_consistency_cv",
+    ]
+    for lk in letter_keys:
+        assert lk in feats
+        assert not np.isnan(feats[lk])

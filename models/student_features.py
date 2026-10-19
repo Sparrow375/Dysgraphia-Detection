@@ -31,6 +31,21 @@ KEY_DYSGRAPHIA_FEATURES = [
     "ocr_low_conf_ratio",
     "ocr_omission_ratio",
     "ocr_cer",
+    "char_omission_rate",
+    "dropped_endings_rate",
+    "confusable_rate",
+    "midword_caps_rate",
+    "motor_error_rate",
+    "phonetic_error_rate",
+    "motor_vs_phonetic_ratio",
+    "letter_transpositions",
+    "word_coda_errors",
+    "ocr_coverage_ratio",
+    "fatigue_error_ratio",
+    "conf_trajectory_slope",
+    "conf_consistency_cv",
+    "forced_mean_logprob",
+    "forced_low_prob_ratio",
 ]
 
 
@@ -98,13 +113,34 @@ def extract_student_features(df_combined: pd.DataFrame, df_folds: pd.DataFrame) 
             "raw_gap_cv",
             "raw_word_height_cv",
             "raw_jerk_proxy",
+            "raw_confusable_rate",
+            "raw_midword_caps_rate",
+            "raw_dropped_endings_rate",
+            "raw_char_omission_rate",
+            "raw_motor_error_rate",
+            "raw_letter_transpositions",
+            "raw_word_coda_errors",
+            "raw_fatigue_error_ratio",
+            "raw_conf_consistency_cv",
         ]:
-            fname = col.replace("raw_", "")
-            vals = sdf[col].dropna()
-            rec[f"{fname}_max"] = float(vals.max()) if len(vals) > 0 else np.nan
+            if col in sdf.columns:
+                fname = col.replace("raw_", "")
+                vals = sdf[col].dropna()
+                rec[f"{fname}_max"] = float(vals.max()) if len(vals) > 0 else np.nan
 
-        vals_ratio = sdf["raw_words_written_ratio"].dropna()
-        rec["words_written_ratio_min"] = float(vals_ratio.min()) if len(vals_ratio) > 0 else np.nan
+        if "raw_words_written_ratio" in sdf.columns:
+            vals_ratio = sdf["raw_words_written_ratio"].dropna()
+            rec["words_written_ratio_min"] = float(vals_ratio.min()) if len(vals_ratio) > 0 else np.nan
+        else:
+            rec["words_written_ratio_min"] = np.nan
+
+        if "raw_conf_trajectory_slope" in sdf.columns:
+            vals = sdf["raw_conf_trajectory_slope"].dropna()
+            rec["conf_trajectory_slope_min"] = float(vals.min()) if len(vals) > 0 else np.nan
+
+        if "raw_forced_mean_logprob" in sdf.columns:
+            vals = sdf["raw_forced_mean_logprob"].dropna()
+            rec["forced_mean_logprob_min"] = float(vals.min()) if len(vals) > 0 else np.nan
 
         # 3. Script-Specific Features
         h_df = sdf[sdf["script"] == "devanagari"]

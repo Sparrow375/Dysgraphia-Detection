@@ -15,9 +15,9 @@
     "n_students": 100,
     "positives": 16,
     "controls": 84,
-    "auroc": 0.6770833333333333,
-    "auprc": 0.24108334821166622,
-    "brier": 0.23830523564087694
+    "auroc": 0.6726190476190477,
+    "auprc": 0.3416978092259865,
+    "brier": 0.22715595851073828
   },
   {
     "cohort_slice": "All School B (Grades 3-8)",
@@ -25,9 +25,9 @@
     "n_students": 100,
     "positives": 16,
     "controls": 84,
-    "auroc": 0.7406994047619048,
-    "auprc": 0.3370816346748024,
-    "brier": 0.14818805659562173
+    "auroc": 0.7626488095238095,
+    "auprc": 0.4826038782320297,
+    "brier": 0.13165584814122616
   },
   {
     "cohort_slice": "All School B (Grades 3-8)",
@@ -35,9 +35,9 @@
     "n_students": 100,
     "positives": 16,
     "controls": 84,
-    "auroc": 0.7663690476190477,
-    "auprc": 0.4135501836761067,
-    "brier": 0.15814698065891583
+    "auroc": 0.7708333333333334,
+    "auprc": 0.44443432457241644,
+    "brier": 0.15546440054032276
   },
   {
     "cohort_slice": "Matched Grades 4-7",
@@ -55,9 +55,9 @@
     "n_students": 73,
     "positives": 13,
     "controls": 60,
-    "auroc": 0.6794871794871795,
-    "auprc": 0.2814575201811813,
-    "brier": 0.24133223045971106
+    "auroc": 0.6961538461538461,
+    "auprc": 0.3878599143022951,
+    "brier": 0.23395037744107486
   },
   {
     "cohort_slice": "Matched Grades 4-7",
@@ -65,9 +65,9 @@
     "n_students": 73,
     "positives": 13,
     "controls": 60,
-    "auroc": 0.7301282051282051,
-    "auprc": 0.373948667260673,
-    "brier": 0.15983001940976366
+    "auroc": 0.7493589743589744,
+    "auprc": 0.48801093077115654,
+    "brier": 0.1385214138332397
   },
   {
     "cohort_slice": "Matched Grades 4-7",
@@ -75,9 +75,9 @@
     "n_students": 73,
     "positives": 13,
     "controls": 60,
-    "auroc": 0.7474358974358974,
-    "auprc": 0.412415140629095,
-    "brier": 0.16657799823982805
+    "auroc": 0.7512820512820513,
+    "auprc": 0.45477434995320365,
+    "brier": 0.16457894349125393
   },
   {
     "cohort_slice": "Grade 3 (Zero Dictation)",
@@ -95,9 +95,9 @@
     "n_students": 16,
     "positives": 2,
     "controls": 14,
-    "auroc": 0.8571428571428571,
-    "auprc": 0.45,
-    "brier": 0.21976316479784846
+    "auroc": 0.7142857142857142,
+    "auprc": 0.26785714285714285,
+    "brier": 0.19091783377209776
   },
   {
     "cohort_slice": "Grade 3 (Zero Dictation)",
@@ -105,9 +105,9 @@
     "n_students": 16,
     "positives": 2,
     "controls": 14,
-    "auroc": 0.8928571428571429,
-    "auprc": 0.5,
-    "brier": 0.10463135978210669
+    "auroc": 0.8214285714285714,
+    "auprc": 0.6428571428571428,
+    "brier": 0.10990857107579628
   },
   {
     "cohort_slice": "Grade 3 (Zero Dictation)",
@@ -117,7 +117,7 @@
     "controls": 14,
     "auroc": 0.8928571428571428,
     "auprc": 0.7,
-    "brier": 0.13526231840449987
+    "brier": 0.12925849445598345
   },
   {
     "cohort_slice": "Grade 8 (Partial Dictation)",
@@ -135,9 +135,9 @@
     "n_students": 11,
     "positives": 1,
     "controls": 10,
-    "auroc": 0.6,
-    "auprc": 0.2,
-    "brier": 0.2451872821602919
+    "auroc": 0.9,
+    "auprc": 0.5,
+    "brier": 0.23477572341107258
   },
   {
     "cohort_slice": "Grade 8 (Partial Dictation)",
@@ -145,9 +145,9 @@
     "n_students": 11,
     "positives": 1,
     "controls": 10,
-    "auroc": 0.4,
-    "auprc": 0.14285714285714285,
-    "brier": 0.13428295328506543
+    "auroc": 0.9,
+    "auprc": 0.5,
+    "brier": 0.11772586064394314
   },
   {
     "cohort_slice": "Grade 8 (Partial Dictation)",
@@ -157,6 +157,6 @@
     "controls": 10,
     "auroc": 0.7,
     "auprc": 0.25,
-    "brier": 0.1354824636283759
+    "brier": 0.13309466071590936
   }
 ]

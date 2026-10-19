@@ -10,7 +10,8 @@ def test_stream3_core_features_list():
     assert len(STREAM3_CORE_FEATURES) >= 5
     assert "ocr_confidence_mean_mean" in STREAM3_CORE_FEATURES
     assert "ocr_cer_dict_minus_copy" in STREAM3_CORE_FEATURES
-    assert "ocr_omission_ratio_max" in STREAM3_CORE_FEATURES
+    assert "char_omission_rate_max" in STREAM3_CORE_FEATURES
+    assert "confusable_rate_max" in STREAM3_CORE_FEATURES
 
 
 def test_compute_metrics_calculation():

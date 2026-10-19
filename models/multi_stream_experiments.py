@@ -35,8 +35,9 @@ from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassif
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import average_precision_score, brier_score_loss, roc_auc_score
 
-from features.content import compute_content_features
+from features.content import CANDIDATE_PROMPTS, clean_text, compute_content_features, levenshtein_distance
 from features.extractor import extract_sentence_features
+from features.letter_analytics import analyze_letter_errors
 from features.ocr_engine import get_trocr_cache
 from models.student_features import extract_student_features
 from models.task_router import FULL_PROTOCOL_FEATURES, NO_DICTATION_FEATURES, TaskAwareRouter, TaskRoute
@@ -44,14 +45,31 @@ from models.task_router import FULL_PROTOCOL_FEATURES, NO_DICTATION_FEATURES, Ta
 REPORTS_DIR = WORKSPACE_ROOT / "reports"
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-# Key OCR features for student-level representation
+# Key OCR and letter-level graphomotor features for student-level representation
 STREAM3_CORE_FEATURES = [
     "ocr_confidence_mean_mean",
-    "ocr_confidence_mean_min",
     "ocr_low_conf_ratio_mean",
-    "ocr_omission_ratio_max",
+    "confusable_rate_mean",
+    "confusable_rate_max",
+    "midword_caps_rate_mean",
+    "midword_caps_rate_max",
+    "dropped_endings_rate_mean",
+    "char_omission_rate_mean",
+    "char_omission_rate_max",
+    "motor_error_rate_mean",
+    "motor_error_rate_max",
+    "motor_vs_phonetic_ratio_mean",
+    "motor_vs_phonetic_ratio_max",
+    "letter_transpositions_max",
+    "word_coda_errors_max",
+    "conf_consistency_cv_mean",
+    "conf_consistency_cv_max",
+    "conf_trajectory_slope_min",
     "ocr_cer_copy_mean",
     "ocr_cer_dict_minus_copy",
+    "char_omission_rate_dict_minus_copy",
+    "confusable_rate_dict_minus_copy",
+    "motor_error_rate_dict_minus_copy",
     "ocr_confidence_mean_dict_minus_copy",
 ]
 
@@ -61,62 +79,98 @@ def assemble_multistream_student_dataset(
     manifest_csv: str = "data/manifest.csv",
     use_cached_ocr_only: bool = True,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Assemble student-level dataset with both Stream 1 (Geometry) and Stream 3 (OCR)."""
-    import glob
-
-    p_base = Path(processed_dir)
-    json_paths = sorted(glob.glob(str(p_base / "*" / "*" / "sentence_*.json")))
+    """Assemble student-level dataset with both Stream 1 (Geometry) and Stream 3 (OCR & Letter Analytics)."""
+    raw_csv = WORKSPACE_ROOT / "data" / "features" / "features_raw.csv"
     trocr_cache = get_trocr_cache()
 
-    manifest_df = pd.read_csv(manifest_csv)
-    label_map = {str(r["student_id"]).strip(): float(r["label"]) for _, r in manifest_df.iterrows()}
+    if raw_csv.exists():
+        df_raw = pd.read_csv(raw_csv)
+        meta_cols = ["student_id", "school", "grade", "task_id", "task_name", "script", "json_path", "label"]
+        feature_cols = [c for c in df_raw.columns if c not in meta_cols]
+        rename_map = {c: f"raw_{c}" for c in feature_cols if not c.startswith("raw_")}
+        df_sentences = df_raw.rename(columns=rename_map).copy()
 
-    rows = []
-    for jp in json_paths:
-        try:
-            with open(jp, "r", encoding="utf-8") as f:
-                sj = json.load(f)
-            sid = str(sj.get("student_id", Path(jp).parent.name))
-            school = str(sj.get("school", Path(jp).parent.parent.name))
-            grade = int(sj.get("grade", 0))
-            task_id = str(sj.get("task_id", Path(jp).stem))
-            task_name = str(sj.get("task_name", "task"))
-            script = str(sj.get("script", "devanagari"))
+        # Extract OCR and letter analytics for all sentences
+        letter_rows = []
+        for _, r in df_sentences.iterrows():
+            sid = str(r["student_id"]).strip()
+            tid = str(r["task_id"]).strip()
+            task_name = str(r["task_name"]).strip().lower()
+            k = f"{sid}_{tid}"
 
-            crop_p = Path(jp).parent / sj.get("crop_filename", f"{task_id}.png")
-            img_crop = None
-            if crop_p.exists():
-                img_crop = cv2.imread(str(crop_p), cv2.IMREAD_GRAYSCALE)
+            if k in trocr_cache:
+                c = trocr_cache[k]
+                decoded = c.get("text", "")
+                confs = c.get("token_confidences", [])
+                candidates = CANDIDATE_PROMPTS.get(task_name, [])
+                best_cand = ""
+                if candidates:
+                    cl = clean_text(decoded)
+                    best_cand = min(candidates, key=lambda p: levenshtein_distance(clean_text(p), cl))
+                script = str(r.get("script", "latin")).lower()
+                errs = analyze_letter_errors(best_cand, decoded, token_confidences=confs, script=script)
+                row_dict = {f"raw_{k2}": v2 for k2, v2 in errs.items()}
+                row_dict["raw_ocr_confidence_mean"] = c.get("mean_confidence", np.nan)
+                row_dict["raw_ocr_low_conf_ratio"] = c.get("low_conf_ratio", np.nan)
+                row_dict["raw_ocr_omission_ratio"] = c.get("omission_ratio", np.nan)
+                row_dict["raw_ocr_cer"] = c.get("cer", np.nan)
+                letter_rows.append(row_dict)
+            else:
+                letter_rows.append({})
 
-            # Extract Stream 1 geometric features
-            feats = extract_sentence_features(sj, image_crop=img_crop, include_ocr=False)
+        df_letter = pd.DataFrame(letter_rows)
+        for col in df_letter.columns:
+            df_sentences[col] = df_letter[col]
+    else:
+        import glob
+        p_base = Path(processed_dir)
+        json_paths = sorted(glob.glob(str(p_base / "*" / "*" / "sentence_*.json")))
+        manifest_df = pd.read_csv(manifest_csv)
+        label_map = {str(r["student_id"]).strip(): float(r["label"]) for _, r in manifest_df.iterrows()}
 
-            # Extract Stream 3 OCR features
-            cache_key = f"{sid}_{task_id}"
-            if cache_key in trocr_cache:
-                ocr_feats = compute_content_features(sj, img_crop, use_cache=True)
-                feats.update(ocr_feats)
-            elif not use_cached_ocr_only and img_crop is not None:
-                ocr_feats = compute_content_features(sj, img_crop, use_cache=False)
-                feats.update(ocr_feats)
+        rows = []
+        for jp in json_paths:
+            try:
+                with open(jp, "r", encoding="utf-8") as f:
+                    sj = json.load(f)
+                sid = str(sj.get("student_id", Path(jp).parent.name))
+                school = str(sj.get("school", Path(jp).parent.parent.name))
+                grade = int(sj.get("grade", 0))
+                task_id = str(sj.get("task_id", Path(jp).stem))
+                task_name = str(sj.get("task_name", "task"))
+                script = str(sj.get("script", "devanagari"))
 
-            # Prepend raw_ prefix to align with student_features convention
-            row_dict = {
-                "student_id": sid,
-                "school": school,
-                "grade": grade,
-                "task_id": task_id,
-                "task_name": task_name,
-                "script": script,
-                "label": label_map.get(sid, np.nan),
-            }
-            for k, v in feats.items():
-                row_dict[f"raw_{k}"] = v
-            rows.append(row_dict)
-        except Exception:
-            continue
+                crop_p = Path(jp).parent / sj.get("crop_filename", f"{task_id}.png")
+                img_crop = None
+                if crop_p.exists():
+                    img_crop = cv2.imread(str(crop_p), cv2.IMREAD_GRAYSCALE)
 
-    df_sentences = pd.DataFrame(rows)
+                feats = extract_sentence_features(sj, image_crop=img_crop, include_ocr=False)
+
+                cache_key = f"{sid}_{task_id}"
+                if cache_key in trocr_cache:
+                    ocr_feats = compute_content_features(sj, img_crop, use_cache=True)
+                    feats.update(ocr_feats)
+                elif not use_cached_ocr_only and img_crop is not None:
+                    ocr_feats = compute_content_features(sj, img_crop, use_cache=False)
+                    feats.update(ocr_feats)
+
+                row_dict = {
+                    "student_id": sid,
+                    "school": school,
+                    "grade": grade,
+                    "task_id": task_id,
+                    "task_name": task_name,
+                    "script": script,
+                    "label": label_map.get(sid, np.nan),
+                }
+                for k, v in feats.items():
+                    row_dict[f"raw_{k}"] = v
+                rows.append(row_dict)
+            except Exception:
+                continue
+
+        df_sentences = pd.DataFrame(rows)
 
     # Dummy folds for student feature aggregation
     unique_students = df_sentences[["student_id"]].drop_duplicates()
@@ -163,11 +217,11 @@ def run_multistream_benchmark() -> pd.DataFrame:
 
     s3_train = df_train[available_s3].copy()
     s3_test = df_test[available_s3].copy()
-    s3_meds = s3_train.median()
+    s3_meds = s3_train.median().fillna(0.0)
 
-    X_train_s3 = s3_train.fillna(s3_meds).values
+    X_train_s3 = s3_train.fillna(s3_meds).fillna(0.0).values
     y_train = df_train["label"].values.astype(int)
-    X_test_s3 = s3_test.fillna(s3_meds).values
+    X_test_s3 = s3_test.fillna(s3_meds).fillna(0.0).values
     y_test = df_test["label"].values.astype(int)
 
     clf_s3 = LogisticRegression(C=0.1, class_weight="balanced", random_state=42)
@@ -179,10 +233,10 @@ def run_multistream_benchmark() -> pd.DataFrame:
     fused_full_features = FULL_PROTOCOL_FEATURES + [f for f in available_s3 if f not in FULL_PROTOCOL_FEATURES]
     fused_train = df_train[fused_full_features].copy()
     fused_test = df_test[fused_full_features].copy()
-    fused_meds = fused_train.median()
+    fused_meds = fused_train.median().fillna(0.0)
 
-    X_train_fused = fused_train.fillna(fused_meds).values
-    X_test_fused = fused_test.fillna(fused_meds).values
+    X_train_fused = fused_train.fillna(fused_meds).fillna(0.0).values
+    X_test_fused = fused_test.fillna(fused_meds).fillna(0.0).values
 
     clf_fused = HistGradientBoostingClassifier(
         max_depth=2, learning_rate=0.03, min_samples_leaf=4, class_weight="balanced", random_state=42
