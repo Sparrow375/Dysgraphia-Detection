@@ -83,7 +83,7 @@ def test_nested_cv_folds_no_student_leakage():
         data = json.load(f)
 
     df_manifest = pd.read_csv("data/manifest.csv")
-    all_students_a = set(df_manifest[df_manifest["school"] == "school_a"]["student_id"])
+    all_students_all = set(df_manifest["student_id"])
 
     repeats = data["repeats"]
     assert len(repeats) == 5, f"Expected 5 repeats, got {len(repeats)}"
@@ -104,17 +104,17 @@ def test_nested_cv_folds_no_student_leakage():
                 f"Repeat {r_idx} Fold {f_idx}: Student leakage detected! Overlapping students: {overlap}"
             )
 
-            # 2. Union equals full School A student set
-            assert (train_set | test_set) == all_students_a, (
-                f"Repeat {r_idx} Fold {f_idx}: Union does not match full School A student cohort"
+            # 2. Union equals full 215 student cohort
+            assert (train_set | test_set) == all_students_all, (
+                f"Repeat {r_idx} Fold {f_idx}: Union does not match full student cohort"
             )
 
-            # 3. Outer fold sizes
-            assert len(test_set) == 23, f"Expected test set size 23, got {len(test_set)}"
-            assert len(train_set) == 92, f"Expected train set size 92, got {len(train_set)}"
+            # 3. Outer fold sizes (43 test, 172 train)
+            assert len(test_set) == 43, f"Expected test set size 43, got {len(test_set)}"
+            assert len(train_set) == 172, f"Expected train set size 172, got {len(train_set)}"
 
-            # 4. Stratification: test must have positives
-            assert fold["test_positives"] in [4, 5], f"Unexpected test positive count: {fold['test_positives']}"
+            # 4. Stratification: test must have exactly 8 positives
+            assert fold["test_positives"] == 8, f"Unexpected test positive count: {fold['test_positives']}"
 
             tested_in_repeat.extend(fold["test_students"])
 
@@ -134,8 +134,8 @@ def test_nested_cv_folds_no_student_leakage():
                 )
 
         # In each repeat, each student must be tested exactly once
-        assert sorted(tested_in_repeat) == sorted(list(all_students_a)), (
-            f"Repeat {r_idx}: Students tested do not form a complete partition of School A"
+        assert sorted(tested_in_repeat) == sorted(list(all_students_all)), (
+            f"Repeat {r_idx}: Students tested do not form a complete partition of full cohort"
         )
 
 

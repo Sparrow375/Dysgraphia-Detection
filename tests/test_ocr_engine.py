@@ -105,3 +105,28 @@ def test_dual_pipeline_caching():
 
     # Clean up test entry
     del pipeline.cache[dummy_key]
+
+
+def test_extract_prompt_free_trocr_features():
+    from features.ocr_engine import extract_prompt_free_trocr_features
+
+    task_res = OCRTaskResult(
+        text="the quick brown fox",
+        tokens=["the", "quick", "brown", "fox"],
+        token_confidences=[0.95, 0.90, 0.85, 0.40, 0.35],
+        mean_confidence=0.69,
+        min_confidence=0.35,
+        std_confidence=0.28,
+        low_conf_ratio=0.4,
+        char_count=16,
+        word_count=4,
+        line_count=1,
+    )
+    feats = extract_prompt_free_trocr_features(task_res, components_per_unit_width=4.5, image_width=800.0)
+
+    assert 0.0 <= feats["trocr_conf_mean"] <= 1.0
+    assert 0.0 <= feats["trocr_conf_p10"] <= 1.0
+    assert feats["trocr_char_entropy_mean"] > 0.0
+    assert 0.0 <= feats["trocr_top2_margin_mean"] <= 1.0
+    assert feats["ink_to_char_density_ratio"] > 0.0
+

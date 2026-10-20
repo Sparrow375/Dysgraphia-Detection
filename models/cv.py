@@ -21,6 +21,8 @@ def load_dataset(dataset_name_or_path: Union[str, Path]) -> pd.DataFrame:
         "hindi": WORKSPACE_ROOT / "data" / "datasets" / "dataset_hindi.csv",
         "english": WORKSPACE_ROOT / "data" / "datasets" / "dataset_english.csv",
         "combined": WORKSPACE_ROOT / "data" / "datasets" / "dataset_combined.csv",
+        "student": WORKSPACE_ROOT / "data" / "datasets" / "dataset_student_level.csv",
+        "student_level": WORKSPACE_ROOT / "data" / "datasets" / "dataset_student_level.csv",
     }
     
     path_key = str(dataset_name_or_path).lower().strip()

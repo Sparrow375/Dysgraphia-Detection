@@ -1,248 +1,163 @@
-"""Multi-Stream Benchmark Engine: Stream 1 (Geometry) + Stream 3 (TrOCR Content).
+"""Unified Multi-Stream Benchmark Engine (Stage 25 Overhaul).
 
-Evaluates the clinical and empirical benefit of combining:
-- Stream 1: Spatial, rule adherence, fragmentation, and curvature kinematics.
-- Stream 3: Modern TrOCR handwriting legibility, omission ratio, and cognitive-motor collapse deltas.
+Evaluates the single unified screening architecture across all 215 students:
+- Stream 1: Task-Agnostic Spatial Geometry & Intra-Page Volatility
+- Stream 2: Writing-Tool-Calibrated Width, Pressure & Micro-Texture
+- Stream 3: Domain-Adapted Prompt-Free TrOCR Legibility & Ink-to-Character Density
+- Meta-Learner: Learned Logistic/Elastic-Net meta-model fit on inner CV folds.
 
-Evaluates:
-1. Stream 1 alone (Geometry Task-Aware Router).
-2. Stream 3 alone (TrOCR Legibility & Linguistic Errors).
-3. Early Feature Fusion (Stream 1 + Stream 3 concatenated).
-4. Late Probability Stacking (Weighted ensemble of Stream 1 + Stream 3).
-
-Assesses performance across:
-- All School B (Grades 3-8, N=100)
-- Matched Protocol (Grades 4-7, N=73)
-- Zero-Dictation Subgroup (Grade 3, N=16)
-- Partial-Dictation Subgroup (Grade 8, N=11)
+Zero manual per-grade weight hacks. Zero task-routing dependencies.
+Evaluated strictly with 5-repeat x 5-fold Stratified Group K-Fold nested CV.
 """
 
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
+import sys
 from typing import Any, Dict, List, Optional, Tuple
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (
+    average_precision_score,
+    brier_score_loss,
+    roc_auc_score,
+    roc_curve,
+)
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 if str(WORKSPACE_ROOT) not in sys.path:
     sys.path.insert(0, str(WORKSPACE_ROOT))
 
-import cv2
-import numpy as np
-import pandas as pd
-from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import average_precision_score, brier_score_loss, roc_auc_score, roc_curve
-
-from features.content import CANDIDATE_PROMPTS, clean_text, compute_content_features, levenshtein_distance
-from features.extractor import extract_sentence_features
-from features.letter_analytics import analyze_letter_errors
-from features.ocr_engine import get_trocr_cache
-from models.student_features import extract_student_features
-from models.task_router import FULL_PROTOCOL_FEATURES, NO_DICTATION_FEATURES, TaskAwareRouter, TaskRoute
+from features.ocr_engine import OCRTaskResult, extract_prompt_free_trocr_features, get_trocr_cache
+from models.cv import impute_fold_features
+from features.stroke_width_texture import calibrate_stream2_by_tool
 
 REPORTS_DIR = WORKSPACE_ROOT / "reports"
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-# Key Stream 2 features: stroke thickness, pressure variance, and smudge/erasure halos
-STREAM2_CORE_FEATURES = [
-    "stroke_width_mean_norm_mean",
-    "stroke_width_cv_mean",
-    "stroke_width_cv_max",
-    "stroke_width_jitter_mean",
-    "stroke_width_jitter_max",
-    "stroke_width_pinch_rate_mean",
-    "stroke_width_pinch_rate_max",
-    "stroke_width_bloat_rate_mean",
-    "stroke_width_bloat_rate_max",
-    "pressure_intensity_mean_mean",
-    "pressure_intensity_cv_mean",
-    "pressure_intensity_cv_max",
-    "pressure_gradient_mean_mean",
-    "pressure_faint_rate_mean",
-    "pressure_faint_rate_max",
-    "pressure_heavy_rate_mean",
-    "pressure_heavy_rate_max",
-    "pressure_width_corr_mean",
-    "smudge_halo_darkness_mean",
-    "smudge_halo_darkness_max",
-    "background_roughness_std_mean",
-    "background_roughness_std_max",
-    "erasure_patch_ratio_mean",
-    "erasure_patch_ratio_max",
-    "pressure_intensity_cv_dict_minus_copy",
-    "stroke_width_jitter_dict_minus_copy",
-    "stroke_width_bloat_rate_dict_minus_copy",
+# 1. STREAM 1: Task-Agnostic Geometry & Intra-Page Volatility (14 features)
+STREAM1_FEATURES: List[str] = [
+    "components_per_unit_width_median",
+    "components_per_unit_width_iqr",
+    "components_per_unit_width_p90",
+    "components_per_unit_width_late_minus_early",
+    "endpoints_per_unit_width_median",
+    "endpoints_per_unit_width_iqr",
+    "junctions_per_unit_width_median",
+    "baseline_rmse_norm_median",
+    "baseline_rmse_norm_iqr",
+    "gap_cv_median",
+    "word_height_cv_median",
+    "jerk_proxy_median",
+    "tortuosity_median_median",
+    "matra_ratio_iqr",
 ]
 
-# Key OCR and letter-level graphomotor features for student-level representation
-STREAM3_CORE_FEATURES = [
-    "ocr_confidence_mean_mean",
-    "ocr_low_conf_ratio_mean",
-    "confusable_rate_mean",
-    "confusable_rate_max",
-    "midword_caps_rate_mean",
-    "midword_caps_rate_max",
-    "dropped_endings_rate_mean",
-    "char_omission_rate_mean",
-    "char_omission_rate_max",
-    "motor_error_rate_mean",
-    "motor_error_rate_max",
-    "motor_vs_phonetic_ratio_mean",
-    "motor_vs_phonetic_ratio_max",
-    "letter_transpositions_max",
-    "word_coda_errors_max",
-    "conf_consistency_cv_mean",
-    "conf_consistency_cv_max",
-    "conf_trajectory_slope_min",
-    "ocr_cer_copy_mean",
-    "ocr_cer_dict_minus_copy",
-    "char_omission_rate_dict_minus_copy",
-    "confusable_rate_dict_minus_copy",
-    "motor_error_rate_dict_minus_copy",
-    "ocr_confidence_mean_dict_minus_copy",
-    "forced_mean_logprob_mean",
-    "forced_mean_logprob_min",
-    "forced_low_prob_ratio_mean",
-    "forced_mean_logprob_dict_minus_copy",
+# 2. STREAM 2: Tool-Calibrated Width & Pressure (7 features)
+STREAM2_FEATURES: List[str] = [
+    "is_pencil",
+    "pressure_intensity_cv_tool_norm",
+    "stroke_width_jitter_tool_norm",
+    "stroke_width_bloat_rate_tool_norm",
+    "pressure_faint_rate_tool_norm",
+    "pressure_heavy_rate_tool_norm",
+    "interaction_pencil_pressure",
+]
+
+# 3. STREAM 3: Prompt-Free TrOCR Legibility (5 features)
+STREAM3_FEATURES: List[str] = [
+    "trocr_conf_mean",
+    "trocr_conf_p10",
+    "trocr_char_entropy_mean",
+    "trocr_top2_margin_mean",
+    "ink_to_char_density_ratio",
 ]
 
 
-def assemble_multistream_student_dataset(
-    processed_dir: str = "data/processed",
-    manifest_csv: str = "data/manifest.csv",
-    use_cached_ocr_only: bool = True,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Assemble student-level dataset with both Stream 1 (Geometry) and Stream 3 (OCR & Letter Analytics)."""
-    raw_csv = WORKSPACE_ROOT / "data" / "features" / "features_raw.csv"
+def load_multistream_cohort_dataset(
+    student_dataset_path: str = "data/datasets/dataset_student_level.csv",
+) -> pd.DataFrame:
+    """Load unified 215-student dataset and inject prompt-free TrOCR features."""
+    p = WORKSPACE_ROOT / student_dataset_path
+    df = pd.read_csv(p)
+
+    # Extract prompt-free TrOCR metrics from disk cache
     trocr_cache = get_trocr_cache()
+    student_trocr: Dict[str, List[Dict[str, float]]] = {}
 
-    if raw_csv.exists():
-        df_raw = pd.read_csv(raw_csv)
-        meta_cols = ["student_id", "school", "grade", "task_id", "task_name", "script", "json_path", "label"]
-        feature_cols = [c for c in df_raw.columns if c not in meta_cols]
-        rename_map = {c: f"raw_{c}" for c in feature_cols if not c.startswith("raw_")}
-        df_sentences = df_raw.rename(columns=rename_map).copy()
+    for k, c in trocr_cache.items():
+        sid = k.rsplit("_sentence_", 1)[0]
+        t_res = OCRTaskResult(
+            text=c.get("text", ""),
+            tokens=c.get("tokens", []),
+            token_confidences=c.get("token_confidences", []),
+            mean_confidence=float(c.get("mean_confidence", 0.0)),
+            min_confidence=float(c.get("min_confidence", 0.0)),
+            std_confidence=float(c.get("std_confidence", 0.0)),
+            low_conf_ratio=float(c.get("low_conf_ratio", 1.0)),
+            char_count=int(c.get("char_count", 0)),
+            word_count=int(c.get("word_count", 0)),
+            line_count=int(c.get("line_count", 1)),
+        )
+        pf = extract_prompt_free_trocr_features(t_res)
+        if sid not in student_trocr:
+            student_trocr[sid] = []
+        student_trocr[sid].append(pf)
 
-        # Extract OCR and letter analytics for all sentences
-        letter_rows = []
-        for _, r in df_sentences.iterrows():
-            sid = str(r["student_id"]).strip()
-            tid = str(r["task_id"]).strip()
-            task_name = str(r["task_name"]).strip().lower()
-            k = f"{sid}_{tid}"
+    # Aggregate prompt-free TrOCR metrics per student
+    trocr_rows = []
+    for sid in df["student_id"]:
+        entries = student_trocr.get(str(sid), [])
+        if len(entries) > 0:
+            c_means = [e["trocr_conf_mean"] for e in entries if not np.isnan(e["trocr_conf_mean"])]
+            c_p10s = [e["trocr_conf_p10"] for e in entries if not np.isnan(e["trocr_conf_p10"])]
+            entropies = [e["trocr_char_entropy_mean"] for e in entries if not np.isnan(e["trocr_char_entropy_mean"])]
+            margins = [e["trocr_top2_margin_mean"] for e in entries if not np.isnan(e["trocr_top2_margin_mean"])]
 
-            if k in trocr_cache:
-                c = trocr_cache[k]
-                decoded = c.get("text", "")
-                confs = c.get("token_confidences", [])
-                cat = None
-                if "copy" in task_name and "english" in task_name:
-                    cat = "copy_english"
-                elif "dict" in task_name and "english" in task_name:
-                    cat = "dictated_english"
-                elif "copy" in task_name and "hindi" in task_name:
-                    cat = "copy_hindi"
-                elif "dict" in task_name and "hindi" in task_name:
-                    cat = "dictated_hindi"
-                candidates = CANDIDATE_PROMPTS.get(cat, []) if cat else []
-                best_cand = ""
-                if candidates:
-                    cl = clean_text(decoded)
-                    best_cand = min(candidates, key=lambda p: levenshtein_distance(clean_text(p), cl))
-                script = str(r.get("script", "latin")).lower()
-                errs = analyze_letter_errors(best_cand, decoded, token_confidences=confs, script=script)
-                row_dict = {f"raw_{k2}": v2 for k2, v2 in errs.items()}
-                row_dict["raw_ocr_confidence_mean"] = c.get("mean_confidence", np.nan)
-                row_dict["raw_ocr_low_conf_ratio"] = c.get("low_conf_ratio", np.nan)
-                row_dict["raw_ocr_omission_ratio"] = c.get("omission_ratio", np.nan)
-                row_dict["raw_ocr_cer"] = c.get("cer", np.nan)
-                forced = c.get("forced_metrics", {})
-                for fk in ["forced_mean_prob", "forced_min_prob", "forced_low_prob_ratio", "forced_mean_logprob", "forced_min_logprob"]:
-                    row_dict[f"raw_{fk}"] = float(forced.get(fk, np.nan))
-                letter_rows.append(row_dict)
-            else:
-                letter_rows.append({})
+            row = {
+                "trocr_conf_mean": float(np.mean(c_means)) if c_means else np.nan,
+                "trocr_conf_p10": float(np.min(c_p10s)) if c_p10s else np.nan,
+                "trocr_char_entropy_mean": float(np.mean(entropies)) if entropies else np.nan,
+                "trocr_top2_margin_mean": float(np.mean(margins)) if margins else np.nan,
+            }
+        else:
+            row = {
+                "trocr_conf_mean": np.nan,
+                "trocr_conf_p10": np.nan,
+                "trocr_char_entropy_mean": np.nan,
+                "trocr_top2_margin_mean": np.nan,
+            }
 
-        df_letter = pd.DataFrame(letter_rows)
-        for col in df_letter.columns:
-            df_sentences[col] = df_letter[col]
-    else:
-        import glob
-        p_base = Path(processed_dir)
-        json_paths = sorted(glob.glob(str(p_base / "*" / "*" / "sentence_*.json")))
-        manifest_df = pd.read_csv(manifest_csv)
-        label_map = {str(r["student_id"]).strip(): float(r["label"]) for _, r in manifest_df.iterrows()}
+        # Physical ink components to character ratio
+        comp_med = df.loc[df["student_id"] == sid, "components_per_unit_width_median"].values[0] if "components_per_unit_width_median" in df.columns else np.nan
+        conf_m = row["trocr_conf_mean"]
+        if not np.isnan(comp_med) and not np.isnan(conf_m):
+            row["ink_to_char_density_ratio"] = float(comp_med / max(0.1, conf_m))
+        else:
+            row["ink_to_char_density_ratio"] = np.nan
 
-        rows = []
-        for jp in json_paths:
-            try:
-                with open(jp, "r", encoding="utf-8") as f:
-                    sj = json.load(f)
-                sid = str(sj.get("student_id", Path(jp).parent.name))
-                school = str(sj.get("school", Path(jp).parent.parent.name))
-                grade = int(sj.get("grade", 0))
-                task_id = str(sj.get("task_id", Path(jp).stem))
-                task_name = str(sj.get("task_name", "task"))
-                script = str(sj.get("script", "devanagari"))
+        trocr_rows.append(row)
 
-                crop_p = Path(jp).parent / sj.get("crop_filename", f"{task_id}.png")
-                img_crop = None
-                if crop_p.exists():
-                    img_crop = cv2.imread(str(crop_p), cv2.IMREAD_GRAYSCALE)
+    df_trocr = pd.DataFrame(trocr_rows)
+    df = pd.concat([df, df_trocr], axis=1)
 
-                feats = extract_sentence_features(sj, image_crop=img_crop, include_ocr=False)
-
-                cache_key = f"{sid}_{task_id}"
-                if cache_key in trocr_cache:
-                    ocr_feats = compute_content_features(sj, img_crop, use_cache=True)
-                    feats.update(ocr_feats)
-                elif not use_cached_ocr_only and img_crop is not None:
-                    ocr_feats = compute_content_features(sj, img_crop, use_cache=False)
-                    feats.update(ocr_feats)
-
-                row_dict = {
-                    "student_id": sid,
-                    "school": school,
-                    "grade": grade,
-                    "task_id": task_id,
-                    "task_name": task_name,
-                    "script": script,
-                    "label": label_map.get(sid, np.nan),
-                }
-                for k, v in feats.items():
-                    row_dict[f"raw_{k}"] = v
-                rows.append(row_dict)
-            except Exception:
-                continue
-
-        df_sentences = pd.DataFrame(rows)
-
-    # Dummy folds for student feature aggregation
-    unique_students = df_sentences[["student_id"]].drop_duplicates()
-    df_folds = unique_students.copy()
-    df_folds["repeat_0_fold_0"] = 0
-
-    df_student_all = extract_student_features(df_sentences, df_folds)
-
-    df_train = df_student_all[df_student_all["school"] == "school_a"].copy().reset_index(drop=True)
-    df_test = df_student_all[df_student_all["school"] == "school_b"].copy().reset_index(drop=True)
-
-    return df_train, df_test
+    return df
 
 
-def compute_metrics(y_true: np.ndarray, y_prob: np.ndarray) -> Dict[str, Optional[float]]:
-    """Compute comprehensive diagnostic metrics including sensitivity at fixed specificity."""
+def compute_metrics(y_true: np.ndarray, y_prob: np.ndarray) -> Dict[str, float]:
+    """Calculate AUROC, AUPRC, Brier, and sensitivity at specific operating points."""
+    y_true = np.asarray(y_true, dtype=int)
+    y_prob = np.asarray(y_prob, dtype=float)
+
     n_pos = int(np.sum(y_true == 1))
     n_neg = int(np.sum(y_true == 0))
     if n_pos == 0 or n_neg == 0:
-        return {
-            "auroc": None, "auprc": None, "brier": None,
-            "sens_at_80_spec": None, "sens_at_90_spec": None,
-            "youden_sens": None, "youden_spec": None,
-            "n_pos": n_pos, "n_neg": n_neg,
-        }
+        return {"auroc": np.nan, "auprc": np.nan, "brier": np.nan, "sens_at_80_spec": np.nan, "sens_at_90_spec": np.nan}
 
     auc = float(roc_auc_score(y_true, y_prob))
     auprc = float(average_precision_score(y_true, y_prob))
@@ -251,19 +166,11 @@ def compute_metrics(y_true: np.ndarray, y_prob: np.ndarray) -> Dict[str, Optiona
     fpr, tpr, _ = roc_curve(y_true, y_prob)
     spec = 1.0 - fpr
 
-    # Sens @ 80% Spec (spec >= 0.80)
-    valid_80 = np.where(spec >= 0.80)[0]
-    sens_80 = float(np.max(tpr[valid_80])) if len(valid_80) > 0 else 0.0
+    v80 = np.where(spec >= 0.80)[0]
+    sens_80 = float(np.max(tpr[v80])) if len(v80) > 0 else 0.0
 
-    # Sens @ 90% Spec (spec >= 0.90)
-    valid_90 = np.where(spec >= 0.90)[0]
-    sens_90 = float(np.max(tpr[valid_90])) if len(valid_90) > 0 else 0.0
-
-    # Youden J = sens + spec - 1
-    j_scores = tpr + spec - 1.0
-    best_idx = int(np.argmax(j_scores))
-    youden_sens = float(tpr[best_idx])
-    youden_spec = float(spec[best_idx])
+    v90 = np.where(spec >= 0.90)[0]
+    sens_90 = float(np.max(tpr[v90])) if len(v90) > 0 else 0.0
 
     return {
         "auroc": auc,
@@ -271,214 +178,216 @@ def compute_metrics(y_true: np.ndarray, y_prob: np.ndarray) -> Dict[str, Optiona
         "brier": brier,
         "sens_at_80_spec": sens_80,
         "sens_at_90_spec": sens_90,
-        "youden_sens": youden_sens,
-        "youden_spec": youden_spec,
-        "n_pos": n_pos,
-        "n_neg": n_neg,
     }
 
 
-def run_multistream_benchmark() -> pd.DataFrame:
-    """Run full benchmark comparing Stream 1, Stream 2, Stream 3, and 3-Stream Late Stacking on School B."""
-    print("Assembling multi-stream dataset from processed sentence schemas & TrOCR cache...")
-    df_train, df_test = assemble_multistream_student_dataset(use_cached_ocr_only=True)
-    print(f"Loaded School A train cohort: {len(df_train)} students | School B test cohort: {len(df_test)} students.")
+def compute_bootstrap_ci(
+    y_true: np.ndarray,
+    y_prob: np.ndarray,
+    n_boot: int = 1000,
+    seed: int = 42,
+) -> Dict[str, Tuple[float, float]]:
+    """Compute empirical 95% percentile confidence intervals via student bootstrap."""
+    rng = np.random.RandomState(seed)
+    n = len(y_true)
+    boot_auroc = []
+    boot_auprc = []
 
-    y_train = df_train["label"].values.astype(int)
-    y_test = df_test["label"].values.astype(int)
+    for _ in range(n_boot):
+        idx = rng.choice(n, size=n, replace=True)
+        yt_b = y_true[idx]
+        if len(np.unique(yt_b)) < 2:
+            continue
+        yp_b = y_prob[idx]
+        boot_auroc.append(roc_auc_score(yt_b, yp_b))
+        boot_auprc.append(average_precision_score(yt_b, yp_b))
 
-    # 1. STREAM 1 ALONE: Task-Aware Router (Geometry)
-    print("\n--- Evaluating Stream 1 Alone (Geometric Task-Aware Router) ---")
-    s1_router = TaskAwareRouter(random_state=42)
-    s1_router.fit(df_train)
-    s1_probs = s1_router.predict_proba(df_test)
-
-    # 2. STREAM 2 ALONE: Stroke-Width & Grayscale Shading Micro-Texture
-    print("--- Evaluating Stream 2 Alone (Stroke-Width & Pressure Variance) ---")
-    available_s2 = [c for c in STREAM2_CORE_FEATURES if c in df_train.columns]
-    print(f"Available Stream 2 features: {len(available_s2)} features")
-
-    s2_train = df_train[available_s2].copy()
-    s2_test = df_test[available_s2].copy()
-    s2_meds = s2_train.median().fillna(0.0)
-
-    X_train_s2 = s2_train.fillna(s2_meds).fillna(0.0).values
-    X_test_s2 = s2_test.fillna(s2_meds).fillna(0.0).values
-
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.pipeline import Pipeline
-    pipe_s2 = Pipeline([
-        ("scaler", StandardScaler()),
-        ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=42)),
-    ])
-    pipe_s2.fit(X_train_s2, y_train)
-    s2_probs = pipe_s2.predict_proba(X_test_s2)[:, 1]
-
-    # 3. STREAM 3 ALONE: TrOCR Legibility & Linguistic Errors
-    print("--- Evaluating Stream 3 Alone (TrOCR Legibility & Error Deltas) ---")
-    available_s3 = [c for c in STREAM3_CORE_FEATURES if c in df_train.columns]
-    print(f"Available Stream 3 features: {len(available_s3)} features")
-
-    s3_train = df_train[available_s3].copy()
-    s3_test = df_test[available_s3].copy()
-    s3_meds = s3_train.median().fillna(0.0)
-
-    X_train_s3 = s3_train.fillna(s3_meds).fillna(0.0).values
-    X_test_s3 = s3_test.fillna(s3_meds).fillna(0.0).values
-
-    pipe_s3 = Pipeline([
-        ("scaler", StandardScaler()),
-        ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=42)),
-    ])
-    pipe_s3.fit(X_train_s3, y_train)
-    s3_probs = pipe_s3.predict_proba(X_test_s3)[:, 1]
-
-    # 4. STREAM 4 ALONE: Deep Visual Patch Stream (DenseNet201)
-    print("--- Evaluating Stream 4 Alone (Deep Visual Patch Stream) ---")
-    pv_json = WORKSPACE_ROOT / "data" / "features" / "p_vision_predictions.json"
-    if not pv_json.exists():
-        from baseline.visual_classifier import train_and_evaluate_visual_stream
-        p_vision_dict, _ = train_and_evaluate_visual_stream()
-    else:
-        with open(pv_json, "r", encoding="utf-8") as f:
-            p_vision_dict = json.load(f)
-
-    s4_probs = np.array([p_vision_dict.get(str(sid).strip(), 0.5) for sid in df_test["student_id"]])
-
-    # 5. 2-STREAM COMBINATIONS
-    stacked_s1_s2 = 0.60 * s1_probs + 0.40 * s2_probs
-    stacked_s1_s3 = 0.70 * s1_probs + 0.30 * s3_probs
-
-    # 6. 3-STREAM LATE STACKING
-    print("--- Evaluating 3-Stream Late Probability Stacking ---")
-    stacked_3stream_balanced = 0.50 * s1_probs + 0.25 * s2_probs + 0.25 * s3_probs
-    stacked_3stream_tuned = 0.45 * s1_probs + 0.35 * s2_probs + 0.20 * s3_probs
-
-    # 7. 4-STREAM LATE STACKING (Geometry + Pressure/Width + OCR + Vision)
-    print("--- Evaluating 4-Stream Late Probability Stacking ---")
-    stacked_4stream_balanced = 0.25 * s1_probs + 0.25 * s2_probs + 0.25 * s3_probs + 0.25 * s4_probs
-    stacked_4stream_tuned = 0.40 * s1_probs + 0.35 * s2_probs + 0.20 * s3_probs + 0.05 * s4_probs
-
-    # 8. EARLY FUSION (Concatenate all available S1 + S2 + S3 features)
-    print("--- Evaluating 3-Stream Early Feature Fusion ---")
-    all_fused_features = FULL_PROTOCOL_FEATURES + [
-        f for f in available_s2 + available_s3 if f not in FULL_PROTOCOL_FEATURES
-    ]
-    fused_train = df_train[all_fused_features].copy()
-    fused_test = df_test[all_fused_features].copy()
-    fused_meds = fused_train.median().fillna(0.0)
-
-    X_train_fused = fused_train.fillna(fused_meds).fillna(0.0).values
-    X_test_fused = fused_test.fillna(fused_meds).fillna(0.0).values
-
-    clf_fused = HistGradientBoostingClassifier(
-        max_depth=2, learning_rate=0.03, min_samples_leaf=4, class_weight="balanced", random_state=42
-    )
-    clf_fused.fit(X_train_fused, y_train)
-    fused_probs = clf_fused.predict_proba(X_test_fused)[:, 1]
-
-    # 9. ROUTED MULTI-STREAM ENSEMBLES
-    # Baseline Grade-Tuned Router
-    p_routed_3s = np.zeros(len(df_test))
-    p_routed_4s = np.zeros(len(df_test))
-    # Grade-Adaptive 4-Stream Router (Optimized by Developmental Maturity Stage)
-    p_adaptive_4s = np.zeros(len(df_test))
-
-    for i, g in enumerate(df_test["grade"]):
-        # Coarse routed
-        if g == 3:
-            p_routed_3s[i] = 0.60 * s1_probs[i] + 0.40 * s2_probs[i]
-            p_routed_4s[i] = 0.55 * s1_probs[i] + 0.40 * s2_probs[i] + 0.05 * s4_probs[i]
-        elif 4 <= g <= 7:
-            p_routed_3s[i] = 0.45 * s1_probs[i] + 0.35 * s2_probs[i] + 0.20 * s3_probs[i]
-            p_routed_4s[i] = 0.40 * s1_probs[i] + 0.35 * s2_probs[i] + 0.20 * s3_probs[i] + 0.05 * s4_probs[i]
-        elif g == 8:
-            p_routed_3s[i] = 0.30 * s1_probs[i] + 0.70 * s3_probs[i]
-            p_routed_4s[i] = 0.25 * s1_probs[i] + 0.70 * s3_probs[i] + 0.05 * s4_probs[i]
-
-        # Grade-Adaptive Router (Fine-tuned developmental weights)
-        if g == 3:
-            p_adaptive_4s[i] = 0.60 * s1_probs[i] + 0.40 * s2_probs[i]
-        elif g == 4:
-            p_adaptive_4s[i] = 0.15 * s1_probs[i] + 0.15 * s2_probs[i] + 0.70 * s3_probs[i]
-        elif g == 5:
-            p_adaptive_4s[i] = 0.15 * s1_probs[i] + 0.15 * s2_probs[i] + 0.60 * s3_probs[i] + 0.10 * s4_probs[i]
-        elif g == 6:
-            p_adaptive_4s[i] = 0.40 * s1_probs[i] + 0.35 * s3_probs[i] + 0.25 * s4_probs[i]
-        elif g == 7:
-            p_adaptive_4s[i] = 0.20 * s1_probs[i] + 0.40 * s2_probs[i] + 0.30 * s3_probs[i] + 0.10 * s4_probs[i]
-        elif g == 8:
-            p_adaptive_4s[i] = 0.20 * s1_probs[i] + 0.70 * s3_probs[i] + 0.10 * s4_probs[i]
-
-    # Evaluate across cohort slices
-    subsets = {
-        "All School B (Grades 3-8)": np.ones(len(df_test), dtype=bool),
-        "Matched Grades 4-7": df_test["grade"].between(4, 7).values,
-        "Matched Grades 4-6": df_test["grade"].between(4, 6).values,
-        "School B Excl G7 (Grades 3-6 & 8)": (df_test["grade"] != 7).values,
-        "Grade 3 (Zero Dictation)": (df_test["grade"] == 3).values,
-        "Grade 8 (Partial Dictation)": (df_test["grade"] == 8).values,
+    return {
+        "auroc_ci": (float(np.percentile(boot_auroc, 2.5)), float(np.percentile(boot_auroc, 97.5))) if boot_auroc else (np.nan, np.nan),
+        "auprc_ci": (float(np.percentile(boot_auprc, 2.5)), float(np.percentile(boot_auprc, 97.5))) if boot_auprc else (np.nan, np.nan),
     }
 
+
+def run_unified_215_benchmark() -> pd.DataFrame:
+    """Run full 5-repeat x 5-fold cross-validated benchmark across all 215 students."""
+    print("Loading unified 215-student cohort with task-agnostic features & prompt-free TrOCR...")
+    df = load_multistream_cohort_dataset()
+    print(f"Cohort loaded: {len(df)} students ({int((df['label'] == 1).sum())} positives, {int((df['label'] == 0).sum())} controls).")
+
+    folds_path = WORKSPACE_ROOT / "data" / "folds" / "nested_folds.json"
+    with open(folds_path, "r", encoding="utf-8") as f:
+        folds_data = json.load(f)
+
+    # Feature subsets
+    s1_cols = [c for c in STREAM1_FEATURES if c in df.columns]
+    s2_cols = [c for c in STREAM2_FEATURES if c in df.columns]
+    s3_cols = [c for c in STREAM3_FEATURES if c in df.columns]
+
+    print(f"Features: Stream 1 (Geometry)={len(s1_cols)}, Stream 2 (Tool/Width)={len(s2_cols)}, Stream 3 (TrOCR)={len(s3_cols)}")
+
+    # Containers for out-of-sample predictions across 5 repeats
+    n_students = len(df)
+    n_repeats = len(folds_data["repeats"])
+
+    all_preds_s1 = np.zeros((n_repeats, n_students))
+    all_preds_s2 = np.zeros((n_repeats, n_students))
+    all_preds_s3 = np.zeros((n_repeats, n_students))
+    all_preds_meta = np.zeros((n_repeats, n_students))
+    all_y_true = np.zeros((n_repeats, n_students))
+
+    sid_to_idx = {str(sid): i for i, sid in enumerate(df["student_id"])}
+
+    for rep in folds_data["repeats"]:
+        r_id = rep["repeat_id"]
+        print(f"\n--- Running Repeat {r_id} (5-Fold Stratified Group Split) ---")
+
+        for fold in rep["outer_folds"]:
+            f_id = fold["outer_fold_id"]
+            tr_sids = set(fold["train_students"])
+            te_sids = set(fold["test_students"])
+
+            tr_mask = df["student_id"].isin(tr_sids).values
+            te_mask = df["student_id"].isin(te_sids).values
+
+            df_tr = df[tr_mask].copy()
+            df_te = df[te_mask].copy()
+
+            y_tr = df_tr["label"].values.astype(int)
+            y_te = df_te["label"].values.astype(int)
+
+            # -------------------------------------------------------------
+            # Inner 3-Fold CV on df_tr to generate out-of-fold meta training data
+            # -------------------------------------------------------------
+            inner_s1_oof = np.zeros(len(df_tr))
+            inner_s2_oof = np.zeros(len(df_tr))
+            inner_s3_oof = np.zeros(len(df_tr))
+
+            for in_fold in fold["inner_folds"]:
+                in_tr_sids = set(in_fold["train_students"])
+                in_val_sids = set(in_fold["val_students"])
+
+                in_tr_mask = df_tr["student_id"].isin(in_tr_sids).values
+                in_val_mask = df_tr["student_id"].isin(in_val_sids).values
+
+                in_df_tr = df_tr[in_tr_mask]
+                in_df_val = df_tr[in_val_mask]
+                in_y_tr = in_df_tr["label"].values.astype(int)
+
+                # Stream 1 inner fit
+                X_tr_s1, X_val_s1, _ = impute_fold_features(in_df_tr, in_df_val, s1_cols)
+                p_s1 = Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=42))])
+                p_s1.fit(X_tr_s1, in_y_tr)
+                inner_s1_oof[in_val_mask] = p_s1.predict_proba(X_val_s1)[:, 1]
+
+                # Stream 2 inner fit
+                X_tr_s2, X_val_s2, _ = impute_fold_features(in_df_tr, in_df_val, s2_cols)
+                p_s2 = Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=42))])
+                p_s2.fit(X_tr_s2, in_y_tr)
+                inner_s2_oof[in_val_mask] = p_s2.predict_proba(X_val_s2)[:, 1]
+
+                # Stream 3 inner fit
+                X_tr_s3, X_val_s3, _ = impute_fold_features(in_df_tr, in_df_val, s3_cols)
+                p_s3 = Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=42))])
+                p_s3.fit(X_tr_s3, in_y_tr)
+                inner_s3_oof[in_val_mask] = p_s3.predict_proba(X_val_s3)[:, 1]
+
+            # Fit Meta-Learner purely on inner CV out-of-fold probability vectors
+            X_meta_tr = np.column_stack([inner_s1_oof, inner_s2_oof, inner_s3_oof, df_tr["is_pencil"].values])
+            meta_learner = LogisticRegression(C=0.5, class_weight="balanced", random_state=42)
+            meta_learner.fit(X_meta_tr, y_tr)
+
+            # -------------------------------------------------------------
+            # Outer Model Fitting on entire df_tr and Out-of-Sample Test Inference
+            # -------------------------------------------------------------
+            # Outer Stream 1
+            X_tr_s1_full, X_te_s1, _ = impute_fold_features(df_tr, df_te, s1_cols)
+            pipe_s1_full = Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=42))])
+            pipe_s1_full.fit(X_tr_s1_full, y_tr)
+            pred_s1 = pipe_s1_full.predict_proba(X_te_s1)[:, 1]
+
+            # Outer Stream 2
+            X_tr_s2_full, X_te_s2, _ = impute_fold_features(df_tr, df_te, s2_cols)
+            pipe_s2_full = Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=42))])
+            pipe_s2_full.fit(X_tr_s2_full, y_tr)
+            pred_s2 = pipe_s2_full.predict_proba(X_te_s2)[:, 1]
+
+            # Outer Stream 3
+            X_tr_s3_full, X_te_s3, _ = impute_fold_features(df_tr, df_te, s3_cols)
+            pipe_s3_full = Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=42))])
+            pipe_s3_full.fit(X_tr_s3_full, y_tr)
+            pred_s3 = pipe_s3_full.predict_proba(X_te_s3)[:, 1]
+
+            # Outer Meta-Learner Prediction
+            X_meta_te = np.column_stack([pred_s1, pred_s2, pred_s3, df_te["is_pencil"].values])
+            pred_meta = meta_learner.predict_proba(X_meta_te)[:, 1]
+
+            # Store predictions
+            for sid, p1, p2, p3, pm, yt in zip(df_te["student_id"], pred_s1, pred_s2, pred_s3, pred_meta, y_te):
+                idx = sid_to_idx[str(sid)]
+                all_preds_s1[r_id, idx] = p1
+                all_preds_s2[r_id, idx] = p2
+                all_preds_s3[r_id, idx] = p3
+                all_preds_meta[r_id, idx] = pm
+                all_y_true[r_id, idx] = yt
+
+    # Calculate Benchmark Metrics across all 5 repeats
     results = []
-    models_dict = {
-        "Stream 1 Alone (Geometry Router)": s1_probs,
-        "Stream 2 Alone (Stroke-Width/Pressure)": s2_probs,
-        "Stream 3 Alone (TrOCR Legibility)": s3_probs,
-        "Stream 4 Alone (Deep Vision Patch)": s4_probs,
-        "Late Stacking (0.60 S1 + 0.40 S2)": stacked_s1_s2,
-        "Late Stacking (0.70 S1 + 0.30 S3)": stacked_s1_s3,
-        "3-Stream Late Stacking (Balanced)": stacked_3stream_balanced,
-        "3-Stream Late Stacking (Tuned 45/35/20)": stacked_3stream_tuned,
-        "4-Stream Late Stacking (Tuned 40/35/20/05)": stacked_4stream_tuned,
-        "Routed 3-Stream System (S1 + S2 + S3)": p_routed_3s,
-        "Routed 4-Stream System (S1 + S2 + S3 + S4)": p_routed_4s,
-        "Grade-Adaptive 4-Stream Router": p_adaptive_4s,
-        "Early Fusion (S1 + S2 + S3)": fused_probs,
+
+    models = {
+        "Stream 1 Alone (Task-Agnostic Geometry)": all_preds_s1,
+        "Stream 2 Alone (Tool-Calibrated Width/Pressure)": all_preds_s2,
+        "Stream 3 Alone (Prompt-Free TrOCR Legibility)": all_preds_s3,
+        "Unified Multi-Stream Meta-Learner (S1 + S2 + S3)": all_preds_meta,
     }
 
-    for slice_name, mask in subsets.items():
-        y_slice = y_test[mask]
-        for model_name, probs in models_dict.items():
-            prob_slice = probs[mask]
-            met = compute_metrics(y_slice, prob_slice)
-            results.append({
-                "cohort_slice": slice_name,
-                "model": model_name,
-                "n_students": int(np.sum(mask)),
-                "positives": met["n_pos"],
-                "controls": met["n_neg"],
-                "auroc": met["auroc"],
-                "auprc": met["auprc"],
-                "brier": met["brier"],
-                "sens_at_80_spec": met["sens_at_80_spec"],
-                "sens_at_90_spec": met["sens_at_90_spec"],
-                "youden_sens": met["youden_sens"],
-                "youden_spec": met["youden_spec"],
-            })
+    for name, pred_matrix in models.items():
+        rep_aurocs = []
+        rep_auprcs = []
+        rep_briers = []
+        rep_s80 = []
+        rep_s90 = []
 
-    df_res = pd.DataFrame(results)
-    out_csv = REPORTS_DIR / "multi_stream_benchmark.csv"
-    df_res.to_csv(out_csv, index=False)
-    print(f"\nSaved Multi-Stream Benchmark results to {out_csv}!")
+        for r in range(n_repeats):
+            m = compute_metrics(all_y_true[r], pred_matrix[r])
+            rep_aurocs.append(m["auroc"])
+            rep_auprcs.append(m["auprc"])
+            rep_briers.append(m["brier"])
+            rep_s80.append(m["sens_at_80_spec"])
+            rep_s90.append(m["sens_at_90_spec"])
 
-    out_json = REPORTS_DIR / "multi_stream_benchmark.json"
-    with open(out_json, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2)
+        # Flattened across all repeats for student bootstrap CI
+        y_flat = all_y_true.flatten()
+        p_flat = pred_matrix.flatten()
+        ci = compute_bootstrap_ci(y_flat, p_flat)
 
-    return df_res
+        row = {
+            "Model Architecture": name,
+            "Mean AUROC": round(float(np.mean(rep_aurocs)), 4),
+            "AUROC 95% CI": f"[{ci['auroc_ci'][0]:.3f}, {ci['auroc_ci'][1]:.3f}]",
+            "Mean AUPRC": round(float(np.mean(rep_auprcs)), 4),
+            "AUPRC 95% CI": f"[{ci['auprc_ci'][0]:.3f}, {ci['auprc_ci'][1]:.3f}]",
+            "Mean Brier": round(float(np.mean(rep_briers)), 4),
+            "Sens @ 80% Spec": f"{np.mean(rep_s80):.1%}",
+            "Sens @ 90% Spec": f"{np.mean(rep_s90):.1%}",
+        }
+        results.append(row)
+
+    res_df = pd.DataFrame(results)
+
+    # Print honest scoreboard
+    print("\n" + "=" * 80)
+    print("HONEST UNIFIED 215-STUDENT SCOREBOARD (5-Repeat x 5-Fold Stratified Group CV)")
+    print("Zero Grade Hacks | Zero Task Routing | Zero Leakage")
+    print("=" * 80)
+    print(res_df.to_string(index=False))
+
+    # Save to disk
+    out_csv = REPORTS_DIR / "unified_215_benchmark_results.csv"
+    res_df.to_csv(out_csv, index=False)
+    print(f"\nBenchmark results saved to: {out_csv}")
+
+    return res_df
 
 
 if __name__ == "__main__":
-    df_results = run_multistream_benchmark()
-    print("\n=== MULTI-STREAM BENCHMARK SUMMARY ===")
-    for slice_name in df_results["cohort_slice"].unique():
-        sdf = df_results[df_results["cohort_slice"] == slice_name]
-        print(f"\n--- {slice_name} ---")
-        for _, r in sdf.iterrows():
-            auc_str = f"{r['auroc']:.4f}" if r["auroc"] is not None else "N/A"
-            prc_str = f"{r['auprc']:.4f}" if r["auprc"] is not None else "N/A"
-            s80_str = f"{r['sens_at_80_spec']*100:.1f}%" if r["sens_at_80_spec"] is not None else "N/A"
-            s90_str = f"{r['sens_at_90_spec']*100:.1f}%" if r["sens_at_90_spec"] is not None else "N/A"
-            ydn_str = f"Sens: {r['youden_sens']*100:.1f}%, Spec: {r['youden_spec']*100:.1f}%" if r["youden_sens"] is not None else "N/A"
-            print(f"  {r['model']:<38} | AUC: {auc_str} | PRC: {prc_str} | Sens@80%: {s80_str} | Sens@90%: {s90_str} | Youden: ({ydn_str})")
+    run_unified_215_benchmark()

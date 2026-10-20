@@ -1,0 +1,5 @@
+Model Architecture,Mean AUROC,AUROC 95% CI,Mean AUPRC,AUPRC 95% CI,Mean Brier,Sens @ 80% Spec,Sens @ 90% Spec
+Stream 1 Alone (Task-Agnostic Geometry),0.631,"[0.587, 0.676]",0.3061,"[0.251, 0.355]",0.2246,39.5%,23.0%
+Stream 2 Alone (Tool-Calibrated Width/Pressure),0.7057,"[0.664, 0.745]",0.3507,"[0.288, 0.399]",0.2146,54.5%,27.5%
+Stream 3 Alone (Prompt-Free TrOCR Legibility),0.7245,"[0.690, 0.757]",0.3385,"[0.278, 0.388]",0.2138,47.5%,27.0%
+Unified Multi-Stream Meta-Learner (S1 + S2 + S3),0.711,"[0.672, 0.747]",0.4043,"[0.331, 0.461]",0.2181,48.5%,39.5%

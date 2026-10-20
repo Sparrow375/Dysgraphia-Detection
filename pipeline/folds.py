@@ -25,6 +25,76 @@ def load_config(config_path: str = "configs/config.yaml") -> Dict[str, Any]:
         return yaml.safe_load(f)
 
 
+def _generate_balanced_split(df: pd.DataFrame, seed: int = 42) -> np.ndarray:
+    """Generate a single 5-fold split across 215 students ensuring exact balance:
+    - Exactly 8 positives per fold (40 / 5)
+    - Exactly 35 controls per fold (175 / 5)
+    - Exactly 23 School A per fold (115 / 5)
+    - Exactly 20 School B per fold (100 / 5)
+    - Total: exactly 43 students per fold (215 / 5)
+    - Balanced grade distribution across folds.
+    """
+    rng = np.random.RandomState(seed)
+    folds = np.zeros(len(df), dtype=int) - 1
+
+    fold_pos4 = int(rng.choice(5))
+
+    # 1. School A Positives (24 students) -> 4 folds get 5, fold_pos4 gets 4
+    a_pos = df[(df["school"] == "school_a") & (df["label"] == 1.0)].copy()
+    a_pos["jitter"] = rng.rand(len(a_pos))
+    a_pos = a_pos.sort_values(["grade", "jitter"]).reset_index()
+    target_a_pos = {i: 5 for i in range(5)}
+    target_a_pos[fold_pos4] = 4
+    curr_counts_ap = {i: 0 for i in range(5)}
+    for idx, row in a_pos.iterrows():
+        valid_folds = [f for f in range(5) if curr_counts_ap[f] < target_a_pos[f]]
+        chosen = valid_folds[idx % len(valid_folds)]
+        curr_counts_ap[chosen] += 1
+        folds[row["index"]] = chosen
+
+    # 2. School B Positives (16 students) -> 4 folds get 3, fold_pos4 gets 4 (total pos per fold == 8)
+    b_pos = df[(df["school"] == "school_b") & (df["label"] == 1.0)].copy()
+    b_pos["jitter"] = rng.rand(len(b_pos))
+    b_pos = b_pos.sort_values(["grade", "jitter"]).reset_index()
+    target_b_pos = {i: 3 for i in range(5)}
+    target_b_pos[fold_pos4] = 4
+    curr_counts_bp = {i: 0 for i in range(5)}
+    for idx, row in b_pos.iterrows():
+        valid_folds = [f for f in range(5) if curr_counts_bp[f] < target_b_pos[f]]
+        chosen = valid_folds[idx % len(valid_folds)]
+        curr_counts_bp[chosen] += 1
+        folds[row["index"]] = chosen
+
+    # 3. School A Negatives (91 students) -> 4 folds get 18, fold_pos4 gets 19 (total school_a == 23)
+    a_neg = df[(df["school"] == "school_a") & (df["label"] == 0.0)].copy()
+    a_neg["jitter"] = rng.rand(len(a_neg))
+    a_neg = a_neg.sort_values(["grade", "jitter"]).reset_index()
+    target_a_neg = {i: 18 for i in range(5)}
+    target_a_neg[fold_pos4] = 19
+    curr_counts_an = {i: 0 for i in range(5)}
+    for idx, row in a_neg.iterrows():
+        valid_folds = [f for f in range(5) if curr_counts_an[f] < target_a_neg[f]]
+        chosen = valid_folds[idx % len(valid_folds)]
+        curr_counts_an[chosen] += 1
+        folds[row["index"]] = chosen
+
+    # 4. School B Negatives (84 students) -> 4 folds get 17, fold_pos4 gets 16 (total school_b == 20, total neg == 35)
+    b_neg = df[(df["school"] == "school_b") & (df["label"] == 0.0)].copy()
+    b_neg["jitter"] = rng.rand(len(b_neg))
+    b_neg = b_neg.sort_values(["grade", "jitter"]).reset_index()
+    target_b_neg = {i: 17 for i in range(5)}
+    target_b_neg[fold_pos4] = 16
+    curr_counts_bn = {i: 0 for i in range(5)}
+    for idx, row in b_neg.iterrows():
+        valid_folds = [f for f in range(5) if curr_counts_bn[f] < target_b_neg[f]]
+        chosen = valid_folds[idx % len(valid_folds)]
+        curr_counts_bn[chosen] += 1
+        folds[row["index"]] = chosen
+
+    assert (folds >= 0).all(), "Unassigned folds detected!"
+    return folds
+
+
 def generate_nested_folds(
     manifest_path: str = "data/manifest.csv",
     output_dir: str = "data/folds",
@@ -33,24 +103,28 @@ def generate_nested_folds(
     inner_n_splits: int = 3,
     base_seed: int = 42,
 ) -> Dict[str, Any]:
-    """Generate and persist nested cross-validation splits on School A."""
+    """Generate and persist unified nested cross-validation splits on all 215 students."""
     df_manifest = pd.read_csv(manifest_path)
+    n_students = len(df_manifest)
 
-    # Filter to School A only
-    df_a = df_manifest[df_manifest["school"] == "school_a"].copy().reset_index(drop=True)
-    n_students = len(df_a)
+    student_ids = df_manifest["student_id"].values
+    labels = df_manifest["label"].astype(int).values
+    schools = df_manifest["school"].values
+    grades = df_manifest["grade"].values
 
-    student_ids = df_a["student_id"].values
-    labels = df_a["label"].astype(int).values
+    n_pos = int(labels.sum())
+    n_neg = int(n_students - n_pos)
 
-    print(f"Generating nested CV splits for School A ({n_students} students, {labels.sum()} positives)...")
+    print(f"Generating unified nested CV splits for {n_students} students ({n_pos} positives, {n_neg} controls across School A & B)...")
 
     folds_data: Dict[str, Any] = {
         "metadata": {
-            "school": "school_a",
+            "cohort": "unified_215",
             "n_students": n_students,
-            "n_positives": int(labels.sum()),
-            "n_negatives": int(n_students - labels.sum()),
+            "n_positives": n_pos,
+            "n_negatives": n_neg,
+            "n_school_a": int((schools == "school_a").sum()),
+            "n_school_b": int((schools == "school_b").sum()),
             "outer_n_splits": outer_n_splits,
             "outer_n_repeats": outer_n_repeats,
             "inner_n_splits": inner_n_splits,
@@ -60,11 +134,16 @@ def generate_nested_folds(
     }
 
     # Tracking table for easy lookup in CSV format
-    lookup_df = pd.DataFrame({"student_id": student_ids, "label": labels, "grade": df_a["grade"].values})
+    lookup_df = pd.DataFrame({
+        "student_id": student_ids,
+        "school": schools,
+        "grade": grades,
+        "label": labels,
+    })
 
     for repeat_idx in range(outer_n_repeats):
         repeat_seed = base_seed + (repeat_idx * 100)
-        skf_outer = StratifiedKFold(n_splits=outer_n_splits, shuffle=True, random_state=repeat_seed)
+        fold_assignments = _generate_balanced_split(df_manifest, seed=repeat_seed)
 
         repeat_entry: Dict[str, Any] = {
             "repeat_id": repeat_idx,
@@ -73,14 +152,15 @@ def generate_nested_folds(
         }
 
         col_name = f"repeat_{repeat_idx}_fold"
-        lookup_df[col_name] = -1
+        lookup_df[col_name] = fold_assignments
 
-        for outer_fold_idx, (train_idx, test_idx) in enumerate(skf_outer.split(student_ids, labels)):
-            lookup_df.loc[test_idx, col_name] = outer_fold_idx
+        for outer_fold_idx in range(outer_n_splits):
+            test_mask = fold_assignments == outer_fold_idx
+            train_mask = ~test_mask
 
-            outer_train_students = list(student_ids[train_idx])
-            outer_test_students = list(student_ids[test_idx])
-            outer_train_labels = labels[train_idx]
+            outer_train_students = list(student_ids[train_mask])
+            outer_test_students = list(student_ids[test_mask])
+            outer_train_labels = labels[train_mask]
 
             # Generate Inner 3-fold splits on outer_train
             inner_seed = repeat_seed + 10 + outer_fold_idx
@@ -100,8 +180,8 @@ def generate_nested_folds(
                         "val_students": in_val_students,
                         "n_train": len(in_train_students),
                         "n_val": len(in_val_students),
-                        "train_positives": int(sum(df_a.set_index("student_id").loc[in_train_students, "label"])),
-                        "val_positives": int(sum(df_a.set_index("student_id").loc[in_val_students, "label"])),
+                        "train_positives": int(labels[train_mask][in_train_rel_idx].sum()),
+                        "val_positives": int(labels[train_mask][in_val_rel_idx].sum()),
                     }
                 )
 
@@ -111,8 +191,10 @@ def generate_nested_folds(
                 "train_students": outer_train_students,
                 "n_test": len(outer_test_students),
                 "n_train": len(outer_train_students),
-                "test_positives": int(labels[test_idx].sum()),
-                "train_positives": int(labels[train_idx].sum()),
+                "test_positives": int(labels[test_mask].sum()),
+                "train_positives": int(labels[train_mask].sum()),
+                "test_school_a": int((schools[test_mask] == "school_a").sum()),
+                "test_school_b": int((schools[test_mask] == "school_b").sum()),
                 "inner_folds": inner_folds,
             }
             repeat_entry["outer_folds"].append(outer_fold_entry)
@@ -130,7 +212,7 @@ def generate_nested_folds(
     csv_path = out_dir / "student_folds_lookup.csv"
     lookup_df.to_csv(csv_path, index=False)
 
-    print(f"Folds successfully written to:")
+    print(f"Unified 215-student folds successfully written to:")
     print(f"  - Complete nested fold hierarchy: {json_path}")
     print(f"  - Student fold assignment lookup table: {csv_path}")
 
@@ -140,7 +222,7 @@ def generate_nested_folds(
     for f in r0["outer_folds"]:
         print(
             f"  Fold {f['outer_fold_id']}: Train={f['n_train']} (Pos={f['train_positives']}), "
-            f"Test={f['n_test']} (Pos={f['test_positives']})"
+            f"Test={f['n_test']} (Pos={f['test_positives']}, SchA={f['test_school_a']}, SchB={f['test_school_b']})"
         )
 
     return folds_data

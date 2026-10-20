@@ -671,7 +671,11 @@ In Stage 15, `models/motion_predictor.py` trained a linear Ridge regression on 1
   2. For stylus kinematics to genuinely augment classification accuracy, they will supervise *new image-level features* (Stream 2: grayscale micro-texture, stroke width jitter, and pressure shading) that capture physical graphite variation absent from binary skeletons.
 
 ### 12.3 Sub-Model Architecture & Feature Allocations
-The Task-Aware Router (`TaskAwareRouter`) decomposes dysgraphia detection into three specialized sub-models:
+
+> [!NOTE]
+> **Superseded in Stage 25 System Overhaul**: Task routing has been replaced by Task-Agnostic Page Aggregation (Stream 1). All scans are treated as an unordered collection of $K$ handwriting lines, with intra-page distribution metrics (`_median`, `_iqr`, `_p90`, `_late_minus_early`) eliminating the need for task classifiers or artificial routing branches.
+
+The Task-Aware Router (`TaskAwareRouter`) originally decomposed dysgraphia detection into three specialized sub-models:
 
 ```mermaid
 graph TD
@@ -878,6 +882,9 @@ Combining geometric kinematics (Stream 1), physical micro-texture & pressure (St
 
 ### 13.7 Stream 4: Deep Visual Patch Stream & 4-Stream Multi-Modal Late Stacking (`baseline/`)
 
+> [!NOTE]
+> **Dropped in Stage 25 System Overhaul**: ImageNet DenseNet201 patch representations were found during the reality audit to capture background paper noise, scan lighting, and texture rather than clinical handwriting motor features, producing misleading validation metrics. Stream 4 was completely deleted, eliminating 1,920 uninterpretable features and preventing out-of-domain shortcut learning.
+
 #### 13.7.1 Motivation & Dimensionality Defense
 Classical mathematical features (Stream 1), distance-transform pressure/stroke widths (Stream 2), and OCR sequence alignments (Stream 3) reduce handwriting to discrete summary numbers. However, they lack direct perceptual sensitivity to:
 - **Crushed character loops**: Interior counter loops in 'e', 'a', 'o', 'd' collapsing into solid ink blobs due to fine-motor dyspraxia.
@@ -954,6 +961,9 @@ $$P_{\text{student}} = w_1 P_{\text{Geometry (S1)}} + w_2 P_{\text{Grayscale/Wid
 
 ### 13.8 Grade-Adaptive Multi-Stream Routing & 80-80 Diagnostic Optimization
 
+> [!NOTE]
+> **Eliminated in Stage 25 System Overhaul**: The 6 hardcoded per-grade weight formulas were deleted to eliminate single-grade slice overfitting (such as Grade 8 N=1 giving an artificial 100% AUROC). In compliance with the fundamental cohort-wide rule (*"We never tune weights per grade, and we never judge success on a single-grade slice of 1 or 2 kids. Everything must work inside one unified model across the whole cohort"*), all streams are now combined via a single, learned Logistic Regression meta-learner fit purely on inner CV out-of-fold predictions.
+
 #### 13.8.1 Developmental Biomechanical Divergence
 Empirical feature audits across individual grades revealed that a single global stacking weight vector across elementary and middle school students suffers from developmental domain shift:
 1. **Elementary School (Grades 3–5)**:
@@ -993,35 +1003,43 @@ $$P_{\text{student}} = w_1(G) P_{\text{S1}} + w_2(G) P_{\text{S2}} + w_3(G) P_{\
 
 ## 14. Unified Main Screening Pipeline (`pipeline/main_pipeline.py`)
 
-### 14.1 Architecture & Production Unification
-To unify all separate analytical streams into a single cohesive, production-grade screening pipeline, `pipeline/main_pipeline.py` integrates all four active project workstreams into an end-to-end inference engine (`DysgraphiaScreeningPipeline`):
+### 14.1 Architecture & Production Unification (Stage 25 Overhaul)
+`pipeline/main_pipeline.py` provides the production-grade screening engine (`DysgraphiaScreeningPipeline`) built around the Stage 25 unified multi-stream architecture:
 
 ```mermaid
 graph TD
-    Input["Student Record / ID / Feature Dictionary"] --> S1["Stream 1: Geometry & Kinematics<br/>TaskAwareRouter (models/task_router.py)"]
-    Input --> S2["Stream 2: Stroke Width & Pressure<br/>Micro-Texture Pipeline (features/stroke_width_texture.py)"]
-    Input --> S3["Stream 3: Modern TrOCR & Letter Errors<br/>HTR & Analytics (features/ocr_engine.py, letter_analytics.py)"]
-    Input --> S4["Stream 4: Deep Vision Patch Probe<br/>DenseNet201 (baseline/visual_classifier.py)"]
+    Sheet["Student Handwriting Sheet / Feature Record"] --> Classifier["Writing-Tool Detector (features/stroke_width_texture.py)<br/>Optical Density Spread | Edge Gradient | Median Width"]
+    Classifier -->|"is_pencil Flag"| ToolNorm["Tool-Baseline Normalizer"]
+    
+    Sheet --> S1["Stream 1: Geometry & Intra-Page Volatility<br/>14 Task-Agnostic Features (models/student_features.py)<br/>Median, IQR, P90, Late-Early Fatigue Delta"]
+    Sheet --> S2["Stream 2: Tool-Calibrated Width & Pressure<br/>7 Features (features/stroke_width_texture.py)<br/>Normalized Jitter, Pressure CV, Interaction Term"]
+    Sheet --> S3["Stream 3: Prompt-Free TrOCR Legibility<br/>5 Features (features/ocr_engine.py)<br/>Token Confidence, Entropy, Margin, Ink/Char Ratio"]
 
-    S1 -->|"P_S1"| Stacker["Grade-Adaptive Multi-Stream Stacking Engine<br/>P_student = w1(G)*P_S1 + w2(G)*P_S2 + w3(G)*P_S3 + w4(G)*P_S4"]
-    S2 -->|"P_S2"| Stacker
-    S3 -->|"P_S3"| Stacker
-    S4 -->|"P_S4"| Stacker
+    S1 -->|"P_S1"| Meta["Unified Multi-Stream Meta-Learner (C=0.5, Balanced)<br/>Fit on Inner CV Out-of-Fold Predictions<br/>Features: [P_S1, P_S2, P_S3, is_pencil]"]
+    S2 -->|"P_S2"| Meta
+    S3 -->|"P_S3"| Meta
+    ToolNorm -->|"is_pencil"| Meta
 
-    Stacker --> P_final["Calibrated Risk P_dysgraphia"]
+    Meta --> P_final["Calibrated Risk P_dysgraphia"]
 
     P_final --> Cascade["Two-Tier Clinical Screening Cascade<br/>(models/cascade.py)"]
 
-    Cascade -->|"P < 0.276"| Tier1["🟢 Tier 1 Safe Rule-Out<br/>(Cleared - High Sensitivity NPV 97.7%)"]
-    Cascade -->|"0.276 <= P < 0.515"| Monitor["🟡 Progress Monitoring<br/>(Classroom Support & 4-Week Re-screen)"]
-    Cascade -->|"P >= 0.515"| Tier2["🔴 Tier 2 Clinical OT Referral<br/>(Urgent Specialist OT Workup Indicated)"]
+    Cascade -->|"P < Tier 1 Threshold"| Tier1["🟢 Tier 1 Safe Rule-Out<br/>(Cleared - High Sensitivity NPV > 97%)"]
+    Cascade -->|"Tier 1 <= P < Tier 2"| Monitor["🟡 Progress Monitoring<br/>(Classroom Support & 4-Week Re-screen)"]
+    Cascade -->|"P >= Tier 2 Threshold"| Tier2["🔴 Tier 2 Clinical OT Referral<br/>(Urgent Specialist OT Workup Indicated)"]
 
     Tier1 --> Report["ScreeningResult / Clinical Summary & Actionable Recommendations"]
     Monitor --> Report
     Tier2 --> Report
 ```
 
-### 14.2 Clinical Interfaces & Capabilities
+### 14.2 Key Architectural Principles
+1. **Zero Grade-Adaptive Weight Hacks**: No per-grade tuning or evaluation on single-grade slices. A single, unified meta-learner serves all children across grades 3 through 8.
+2. **Task-Agnostic Page Aggregation**: Notebook scans are processed as an unordered set of lines. Missing dictation lines do not require special-case routing; intra-page volatility metrics (`_iqr`, `_late_minus_early`) robustly quantify motor instability regardless of administered prompt.
+3. **Writing-Tool Calibration**: Mechanical nib differences (pencil graphite vs. thin ballpoint ink) are neutralized before classification by tool-specific baselines, preventing developmental grade artifacts from masquerading as dysgraphia.
+4. **Prompt-Free Linguistic Inference**: TrOCR legibility metrics operate directly on decoder token entropy and confidence without requiring ground-truth reference sentences.
+
+### 14.3 Clinical Interfaces & Capabilities
 1. **Individual Student Screening**:
    - `screen_student(student_id: str) -> ScreeningResult`: Automatic cohort lookup, multi-stream feature evaluation, cascade tier assignment, and risk factor extraction.
    - `screen_features(features_dict: Dict, grade: int) -> ScreeningResult`: Real-time screening directly from an in-memory feature dictionary.
@@ -1030,3 +1048,17 @@ graph TD
 3. **Command-Line Interface (CLI)**:
    - `python -m pipeline.main_pipeline --student SCHB_G4_IMG_20261007_100148`
    - `python -m pipeline.main_pipeline --school school_b --export reports/unified_screening_report.csv`
+
+---
+
+## 15. Stage 25 Unified Multi-Stream Benchmark Scoreboard
+
+Evaluated strictly using 5-repeat $\times$ 5-fold Stratified Group K-Fold split across all 215 students (115 School A + 100 School B; 40 positives, 175 controls; 1,075 student-fold evaluations):
+
+| Model Architecture | AUROC [95% CI] | AUPRC [95% CI] | Brier Loss | Sens @ 80% Spec | Sens @ 90% Spec |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Stream 1 Alone (Task-Agnostic Geometry)** | 0.6310 [0.587, 0.676] | 0.3061 [0.222, 0.389] | 0.1587 | 35.0% | 23.0% |
+| **Stream 2 Alone (Tool-Calibrated Width/Pressure)** | 0.7057 [0.664, 0.745] | 0.3507 [0.264, 0.448] | 0.1585 | **54.5%** | 29.5% |
+| **Stream 3 Alone (Prompt-Free TrOCR Legibility)** | **0.7245** [0.690, 0.757] | 0.3385 [0.268, 0.414] | 0.1717 | 47.5% | 35.5% |
+| **Unified Meta-Learner (S1 + S2 + S3)** | 0.7110 [0.672, 0.747] | **0.4043** [0.331, 0.461] | **0.1601** | 51.5% | **39.5%** |
+

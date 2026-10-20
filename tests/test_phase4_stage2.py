@@ -51,15 +51,15 @@ def test_student_feature_aggregation_schema():
 
     # Verify key cross-task features exist
     expected_feats = [
-        "components_per_unit_width_dict_mean",
-        "components_per_unit_width_max",
-        "components_per_unit_width_eng_minus_hindi",
-        "endpoints_per_unit_width_mean",
-        "junctions_per_unit_width_mean",
-        "gap_fraction_above_2h_mean",
-        "matra_ratio_std",
-        "shirorekha_rms_deviation_norm_max",
-        "gap_cv_mean",
+        "components_per_unit_width_median",
+        "components_per_unit_width_iqr",
+        "components_per_unit_width_p90",
+        "components_per_unit_width_late_minus_early",
+        "endpoints_per_unit_width_median",
+        "junctions_per_unit_width_median",
+        "baseline_rmse_norm_median",
+        "matra_ratio_iqr",
+        "gap_cv_median",
     ]
     for ef in expected_feats:
         assert ef in df_students.columns, f"Feature {ef} missing from student dataset"

@@ -1,20 +1,23 @@
 """Unified Main Screening Pipeline: Multilingual Dysgraphia Detection System.
 
-This module unifies all active project workstreams into a single production-grade
-screening engine:
-- Stream 1: Spatial Geometry, Rule Adherence & Graph Kinematics (Task-Aware Router)
-- Stream 2: Stroke-Width Dynamics & Dynamic Pencil Pressure Micro-Texture
-- Stream 3: Modern TrOCR Legibility, Omission Ratios & Letter-Level Analytics
-- Stream 4: Deep Visual Patch Representation (DenseNet201)
-- Ensemble: Grade-Adaptive Multi-Stream Stacking Router
+Stage 25 System Overhaul:
+This module unifies all active project workstreams into a single production-grade,
+task-agnostic screening engine:
+- Stream 1: Task-Agnostic Spatial Geometry & Intra-Page Volatility
+- Stream 2: Writing-Tool-Calibrated Stroke-Width Dynamics & Dynamic Pressure Texture
+- Stream 3: Domain-Adapted Prompt-Free TrOCR Legibility & Ink-to-Character Density Ratio
+- Meta-Learner: Unified Logistic Regression meta-model fit on cross-validated stream predictions
 - Clinical Decision: Two-Tier Clinical Screening Cascade (Safe Rule-Out vs Referral)
+
+Zero manual per-grade weight hacks. Zero task-routing dependencies.
+Unified across all 215 students (115 School A + 100 School B).
 
 Usage:
     from pipeline.main_pipeline import DysgraphiaScreeningPipeline
 
     pipeline = DysgraphiaScreeningPipeline()
     pipeline.fit()
-    result = pipeline.screen_student("SCHB_G4_Roll09")
+    result = pipeline.screen_student("SCHB_G4_IMG_20261007_100013")
     print(result.summary())
 """
 
@@ -36,16 +39,17 @@ if str(WORKSPACE_ROOT) not in sys.path:
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from models.cascade import TwoTierScreeningCascade
 from models.multi_stream_experiments import (
-    STREAM2_CORE_FEATURES,
-    STREAM3_CORE_FEATURES,
-    assemble_multistream_student_dataset,
+    STREAM1_FEATURES,
+    STREAM2_FEATURES,
+    STREAM3_FEATURES,
+    load_multistream_cohort_dataset,
 )
-from models.task_router import FULL_PROTOCOL_FEATURES, NO_DICTATION_FEATURES, TaskAwareRouter
 
 logger = logging.getLogger("pipeline.main_pipeline")
 if not logger.handlers:
@@ -72,11 +76,12 @@ class ScreeningResult:
     p_dysgraphia: float = 0.0
     stream_probabilities: Dict[str, float] = field(default_factory=dict)
     stream_weights_used: Dict[str, float] = field(default_factory=dict)
-    route_taken: str = "full_protocol"
+    route_taken: str = "task_agnostic_unified"
     screening_tier: ScreeningTier = ScreeningTier.TIER_1_RULE_OUT
     tier_label: str = "Cleared / Safe Rule-Out"
     clinical_action: str = "No clinical follow-up required"
     is_dysgraphia_suspected: bool = False
+    is_pencil: Optional[bool] = None
     key_risk_factors: List[Dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -99,18 +104,18 @@ class ScreeningResult:
         s1 = self.stream_probabilities.get("stream_1_geometry", 0.0)
         s2 = self.stream_probabilities.get("stream_2_texture", 0.0)
         s3 = self.stream_probabilities.get("stream_3_ocr", 0.0)
-        s4 = self.stream_probabilities.get("stream_4_vision", 0.0)
+        tool_desc = "Pencil" if self.is_pencil else "Pen (Ballpoint/Gel)"
 
         lines = [
             f"=== DYSGRAPHIA SCREENING REPORT: {self.student_id} (Grade {self.grade}) ===",
             f"Overall Status: {status_icon} [{self.tier_label}]",
             f"Calibrated Dysgraphia Risk: {self.p_dysgraphia:.1%}",
-            f"Task Routing Strategy: {self.route_taken}",
+            f"Writing Instrument Detected: {tool_desc}",
+            f"Architecture: Unified Task-Agnostic Multi-Stream Meta-Learner",
             f"Multi-Stream Breakdown:",
-            f"  • Stream 1 (Geometry & Task Kinematics): {s1:.1%} (Weight: {self.stream_weights_used.get('stream_1_geometry', 0.0):.2f})",
-            f"  • Stream 2 (Stroke Width & Pressure):   {s2:.1%} (Weight: {self.stream_weights_used.get('stream_2_texture', 0.0):.2f})",
-            f"  • Stream 3 (TrOCR Legibility & Errors): {s3:.1%} (Weight: {self.stream_weights_used.get('stream_3_ocr', 0.0):.2f})",
-            f"  • Stream 4 (Deep Vision Patch Probe):   {s4:.1%} (Weight: {self.stream_weights_used.get('stream_4_vision', 0.0):.2f})",
+            f"  • Stream 1 (Geometry & Intra-Page Volatility): {s1:.1%} (Weight: {self.stream_weights_used.get('stream_1_geometry', 0.0):.2f})",
+            f"  • Stream 2 (Tool-Calibrated Width/Pressure):   {s2:.1%} (Weight: {self.stream_weights_used.get('stream_2_texture', 0.0):.2f})",
+            f"  • Stream 3 (Prompt-Free TrOCR Legibility):     {s3:.1%} (Weight: {self.stream_weights_used.get('stream_3_ocr', 0.0):.2f})",
             f"Clinical Recommendation: {self.clinical_action}",
         ]
         if self.key_risk_factors:
@@ -121,27 +126,11 @@ class ScreeningResult:
 
 
 class DysgraphiaScreeningPipeline:
-    """Unified multi-stream dysgraphia screening engine."""
+    """Unified task-agnostic multi-stream dysgraphia screening engine."""
 
-    # Default Grade-Adaptive Stacking Weights based on developmental maturity
-    GRADE_ADAPTIVE_WEIGHTS: Dict[int, Dict[str, float]] = {
-        3: {"stream_1_geometry": 0.60, "stream_2_texture": 0.40, "stream_3_ocr": 0.00, "stream_4_vision": 0.00},
-        4: {"stream_1_geometry": 0.15, "stream_2_texture": 0.15, "stream_3_ocr": 0.70, "stream_4_vision": 0.00},
-        5: {"stream_1_geometry": 0.15, "stream_2_texture": 0.15, "stream_3_ocr": 0.60, "stream_4_vision": 0.10},
-        6: {"stream_1_geometry": 0.40, "stream_2_texture": 0.00, "stream_3_ocr": 0.35, "stream_4_vision": 0.25},
-        7: {"stream_1_geometry": 0.20, "stream_2_texture": 0.40, "stream_3_ocr": 0.30, "stream_4_vision": 0.10},
-        8: {"stream_1_geometry": 0.20, "stream_2_texture": 0.00, "stream_3_ocr": 0.70, "stream_4_vision": 0.10},
-    }
-    DEFAULT_WEIGHTS: Dict[str, float] = {
-        "stream_1_geometry": 0.40,
-        "stream_2_texture": 0.35,
-        "stream_3_ocr": 0.20,
-        "stream_4_vision": 0.05,
-    }
-
-    # Clinical screening thresholds
-    TIER_1_THRESHOLD: float = 0.276  # High Sensitivity safe triage / rule-out
-    TIER_2_THRESHOLD: float = 0.515  # High Specificity formal referral
+    # Default Clinical Screening Thresholds calibrated on 215-student cohort
+    TIER_1_THRESHOLD: float = 0.250  # Safe Rule-Out (High Sensitivity triage)
+    TIER_2_THRESHOLD: float = 0.450  # Specialist Referral (High Specificity)
 
     def __init__(
         self,
@@ -153,21 +142,23 @@ class DysgraphiaScreeningPipeline:
         self.tier2_threshold = tier2_threshold
         self.random_state = random_state
 
-        # Stream 1: Task-Aware Router
-        self.s1_router: Optional[TaskAwareRouter] = None
+        # Stream 1: Spatial Geometry & Intra-Page Volatility
+        self.pipe_s1: Optional[Pipeline] = None
+        self.s1_features: List[str] = STREAM1_FEATURES.copy()
+        self.s1_medians: Dict[str, float] = {}
 
-        # Stream 2: Micro-Texture / Pressure Model
+        # Stream 2: Tool-Calibrated Micro-Texture & Pressure Model
         self.pipe_s2: Optional[Pipeline] = None
-        self.s2_features: List[str] = []
+        self.s2_features: List[str] = STREAM2_FEATURES.copy()
         self.s2_medians: Dict[str, float] = {}
 
-        # Stream 3: TrOCR Legibility & Linguistic Model
+        # Stream 3: Prompt-Free TrOCR Legibility Model
         self.pipe_s3: Optional[Pipeline] = None
-        self.s3_features: List[str] = []
+        self.s3_features: List[str] = STREAM3_FEATURES.copy()
         self.s3_medians: Dict[str, float] = {}
 
-        # Stream 4: Vision predictions dictionary or probe
-        self.vision_predictions: Dict[str, float] = {}
+        # Meta-Learner: Learned Logistic Combiner (Unified across all grades)
+        self.meta_learner: Optional[LogisticRegression] = None
 
         # Cascade Decision Engine
         self.cascade_engine = TwoTierScreeningCascade(
@@ -178,34 +169,38 @@ class DysgraphiaScreeningPipeline:
         self.cascade_engine.theta_referral = tier2_threshold
 
         self.is_fitted: bool = False
-        self._df_train: Optional[pd.DataFrame] = None
         self._df_all_students: Optional[pd.DataFrame] = None
 
     def fit(self, df_train: Optional[pd.DataFrame] = None) -> DysgraphiaScreeningPipeline:
-        """Fit all stream models on the training cohort (School A)."""
-        logger.info("Initializing unified Dysgraphia Screening Pipeline...")
+        """Fit all 3 stream models and train the unified meta-learner."""
+        logger.info("Initializing unified Dysgraphia Screening Pipeline (Stage 25 Overhaul)...")
 
         if df_train is None:
-            logger.info("Assembling multi-stream training dataset from School A...")
-            df_train_raw, df_test_raw = assemble_multistream_student_dataset(use_cached_ocr_only=True)
-            self._df_train = df_train_raw
-            self._df_all_students = pd.concat([df_train_raw, df_test_raw], ignore_index=True)
+            logger.info("Loading unified multi-stream cohort dataset (215 students)...")
+            self._df_all_students = load_multistream_cohort_dataset()
+            df_train = self._df_all_students.copy()
         else:
-            self._df_train = df_train.copy()
+            self._df_all_students = df_train.copy()
 
-        y_train = self._df_train["label"].values.astype(int)
+        y_train = df_train["label"].values.astype(int)
 
-        # 1. Fit Stream 1: Task-Aware Router (Geometry & Kinematics)
-        logger.info("Fitting Stream 1 (Geometric Task-Aware Router)...")
-        self.s1_router = TaskAwareRouter(random_state=self.random_state)
-        self.s1_router.fit(self._df_train)
+        # 1. Fit Stream 1: Geometry & Intra-Page Volatility
+        logger.info(f"Fitting Stream 1 ({len(self.s1_features)} task-agnostic geometric features)...")
+        s1_df = df_train[[c for c in self.s1_features if c in df_train.columns]].copy()
+        self.s1_medians = s1_df.median().fillna(0.0).to_dict()
+        X_train_s1 = s1_df.fillna(self.s1_medians).fillna(0.0).values
 
-        # 2. Fit Stream 2: Stroke-Width & Pencil Pressure Micro-Texture
-        logger.info("Fitting Stream 2 (Stroke-Width & Pressure Texture)...")
-        self.s2_features = [c for c in STREAM2_CORE_FEATURES if c in self._df_train.columns]
-        s2_train_df = self._df_train[self.s2_features].copy()
-        self.s2_medians = s2_train_df.median().fillna(0.0).to_dict()
-        X_train_s2 = s2_train_df.fillna(self.s2_medians).fillna(0.0).values
+        self.pipe_s1 = Pipeline([
+            ("scaler", StandardScaler()),
+            ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=self.random_state)),
+        ])
+        self.pipe_s1.fit(X_train_s1, y_train)
+
+        # 2. Fit Stream 2: Tool-Calibrated Width & Dynamic Pressure
+        logger.info(f"Fitting Stream 2 ({len(self.s2_features)} tool-calibrated micro-texture features)...")
+        s2_df = df_train[[c for c in self.s2_features if c in df_train.columns]].copy()
+        self.s2_medians = s2_df.median().fillna(0.0).to_dict()
+        X_train_s2 = s2_df.fillna(self.s2_medians).fillna(0.0).values
 
         self.pipe_s2 = Pipeline([
             ("scaler", StandardScaler()),
@@ -213,12 +208,11 @@ class DysgraphiaScreeningPipeline:
         ])
         self.pipe_s2.fit(X_train_s2, y_train)
 
-        # 3. Fit Stream 3: TrOCR Legibility & Letter Error Alignment
-        logger.info("Fitting Stream 3 (TrOCR Legibility & Error Analytics)...")
-        self.s3_features = [c for c in STREAM3_CORE_FEATURES if c in self._df_train.columns]
-        s3_train_df = self._df_train[self.s3_features].copy()
-        self.s3_medians = s3_train_df.median().fillna(0.0).to_dict()
-        X_train_s3 = s3_train_df.fillna(self.s3_medians).fillna(0.0).values
+        # 3. Fit Stream 3: Prompt-Free TrOCR Legibility
+        logger.info(f"Fitting Stream 3 ({len(self.s3_features)} prompt-free TrOCR features)...")
+        s3_df = df_train[[c for c in self.s3_features if c in df_train.columns]].copy()
+        self.s3_medians = s3_df.median().fillna(0.0).to_dict()
+        X_train_s3 = s3_df.fillna(self.s3_medians).fillna(0.0).values
 
         self.pipe_s3 = Pipeline([
             ("scaler", StandardScaler()),
@@ -226,56 +220,58 @@ class DysgraphiaScreeningPipeline:
         ])
         self.pipe_s3.fit(X_train_s3, y_train)
 
-        # 4. Load Stream 4: Vision Predictions / Probe
-        logger.info("Loading Stream 4 (Deep DenseNet201 Visual Patch Embeddings)...")
-        pv_json = WORKSPACE_ROOT / "data" / "features" / "p_vision_predictions.json"
-        if pv_json.exists():
-            try:
-                with open(pv_json, "r", encoding="utf-8") as f:
-                    self.vision_predictions = json.load(f)
-                logger.info(f"Loaded {len(self.vision_predictions)} visual patch predictions.")
-            except Exception as e:
-                logger.warning(f"Failed to load visual predictions from {pv_json}: {e}")
-                self.vision_predictions = {}
-        else:
-            logger.info("p_vision_predictions.json not found; running with 3-stream late stacking.")
-            self.vision_predictions = {}
+        # 4. Generate Out-of-Fold probability vectors via StratifiedKFold to fit Meta-Learner
+        logger.info("Generating out-of-fold probability vectors for meta-learner training...")
+        skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=self.random_state)
+        oof_s1 = np.zeros(len(df_train))
+        oof_s2 = np.zeros(len(df_train))
+        oof_s3 = np.zeros(len(df_train))
+
+        for tr_idx, val_idx in skf.split(df_train, y_train):
+            # Inner fold s1
+            p1 = Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=self.random_state))])
+            p1.fit(X_train_s1[tr_idx], y_train[tr_idx])
+            oof_s1[val_idx] = p1.predict_proba(X_train_s1[val_idx])[:, 1]
+
+            # Inner fold s2
+            p2 = Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=self.random_state))])
+            p2.fit(X_train_s2[tr_idx], y_train[tr_idx])
+            oof_s2[val_idx] = p2.predict_proba(X_train_s2[val_idx])[:, 1]
+
+            # Inner fold s3
+            p3 = Pipeline([("scaler", StandardScaler()), ("clf", LogisticRegression(C=0.1, class_weight="balanced", random_state=self.random_state))])
+            p3.fit(X_train_s3[tr_idx], y_train[tr_idx])
+            oof_s3[val_idx] = p3.predict_proba(X_train_s3[val_idx])[:, 1]
+
+        # 5. Fit Unified Meta-Learner
+        logger.info("Fitting unified Multi-Stream Meta-Learner (C=0.5, balanced)...")
+        is_pencil_vec = df_train["is_pencil"].values.astype(float) if "is_pencil" in df_train.columns else np.zeros(len(df_train))
+        X_meta_tr = np.column_stack([oof_s1, oof_s2, oof_s3, is_pencil_vec])
+
+        self.meta_learner = LogisticRegression(C=0.5, class_weight="balanced", random_state=self.random_state)
+        self.meta_learner.fit(X_meta_tr, y_train)
+
+        # Calibrate screening cascade thresholds if feasible
+        meta_train_probs = self.meta_learner.predict_proba(X_meta_tr)[:, 1]
+        try:
+            self.cascade_engine.calibrate(y_train, meta_train_probs)
+            self.tier1_threshold = float(self.cascade_engine.theta_triage)
+            self.tier2_threshold = float(self.cascade_engine.theta_referral)
+            logger.info(f"Screening cascade calibrated: Tier 1={self.tier1_threshold:.3f}, Tier 2={self.tier2_threshold:.3f}")
+        except Exception as e:
+            logger.info(f"Using default cascade thresholds: {e}")
 
         self.is_fitted = True
         logger.info("Unified Dysgraphia Screening Pipeline fitted successfully.")
         return self
 
-    def get_grade_weights(
-        self,
-        grade: int,
-        available_streams: Optional[List[str]] = None,
-    ) -> Dict[str, float]:
-        """Compute normalized grade-adaptive weights across available streams."""
-        raw_weights = self.GRADE_ADAPTIVE_WEIGHTS.get(grade, self.DEFAULT_WEIGHTS).copy()
-
-        if available_streams is not None:
-            # Zero out any stream not present
-            for stream in list(raw_weights.keys()):
-                if stream not in available_streams:
-                    raw_weights[stream] = 0.0
-
-        total = sum(raw_weights.values())
-        if total > 0.0:
-            return {k: v / total for k, v in raw_weights.items()}
-        # If all weights 0, fall back to equal weighting among available
-        if available_streams:
-            eq = 1.0 / len(available_streams)
-            return {s: eq for s in available_streams}
-        return self.DEFAULT_WEIGHTS.copy()
-
     def screen_features(
         self,
         features_dict: Union[Dict[str, Any], pd.Series],
-        grade: int,
+        grade: int = 4,
         student_id: str = "UNKNOWN_STUDENT",
         school: Optional[str] = None,
         label: Optional[int] = None,
-        p_vision: Optional[float] = None,
     ) -> ScreeningResult:
         """Screen a student from their extracted multi-stream feature record."""
         if not self.is_fitted:
@@ -285,60 +281,52 @@ class DysgraphiaScreeningPipeline:
         if "grade" not in df_row.columns:
             df_row["grade"] = grade
 
-        # 1. Stream 1: Geometry & Kinematics (Task-Aware Router)
-        s1_prob = float(self.s1_router.predict_proba(df_row)[0])
-        # Detect route taken
-        try:
-            route = self.s1_router.detect_route_from_features(df_row.iloc[0]).value
-        except Exception:
-            route = "full_protocol"
+        # 1. Stream 1: Task-Agnostic Geometry
+        X_s1 = np.zeros((1, len(self.s1_features)))
+        for j, c in enumerate(self.s1_features):
+            val = df_row[c].values[0] if c in df_row.columns and pd.notna(df_row[c].values[0]) else self.s1_medians.get(c, 0.0)
+            X_s1[0, j] = float(val) if pd.notna(val) else self.s1_medians.get(c, 0.0)
+        s1_prob = float(self.pipe_s1.predict_proba(X_s1)[0, 1])
 
-        # 2. Stream 2: Stroke-Width & Pencil Pressure Micro-Texture
-        s2_row = df_row[[c for c in self.s2_features if c in df_row.columns]].copy()
-        X_s2 = s2_row.fillna(self.s2_medians).fillna(0.0).values
-        # Pad if missing columns
-        if X_s2.shape[1] < len(self.s2_features):
-            full_s2 = np.zeros((1, len(self.s2_features)))
-            for j, c in enumerate(self.s2_features):
-                full_s2[0, j] = df_row[c].values[0] if c in df_row.columns and pd.notna(df_row[c].values[0]) else self.s2_medians.get(c, 0.0)
-            X_s2 = full_s2
+        # 2. Stream 2: Tool-Calibrated Micro-Texture & Stroke Dynamics
+        X_s2 = np.zeros((1, len(self.s2_features)))
+        for j, c in enumerate(self.s2_features):
+            val = df_row[c].values[0] if c in df_row.columns and pd.notna(df_row[c].values[0]) else self.s2_medians.get(c, 0.0)
+            X_s2[0, j] = float(val) if pd.notna(val) else self.s2_medians.get(c, 0.0)
         s2_prob = float(self.pipe_s2.predict_proba(X_s2)[0, 1])
 
-        # 3. Stream 3: TrOCR Legibility & Letter Error Alignment
-        s3_row = df_row[[c for c in self.s3_features if c in df_row.columns]].copy()
-        X_s3 = s3_row.fillna(self.s3_medians).fillna(0.0).values
-        if X_s3.shape[1] < len(self.s3_features):
-            full_s3 = np.zeros((1, len(self.s3_features)))
-            for j, c in enumerate(self.s3_features):
-                full_s3[0, j] = df_row[c].values[0] if c in df_row.columns and pd.notna(df_row[c].values[0]) else self.s3_medians.get(c, 0.0)
-            X_s3 = full_s3
+        # 3. Stream 3: Prompt-Free TrOCR Legibility
+        X_s3 = np.zeros((1, len(self.s3_features)))
+        for j, c in enumerate(self.s3_features):
+            val = df_row[c].values[0] if c in df_row.columns and pd.notna(df_row[c].values[0]) else self.s3_medians.get(c, 0.0)
+            X_s3[0, j] = float(val) if pd.notna(val) else self.s3_medians.get(c, 0.0)
         s3_prob = float(self.pipe_s3.predict_proba(X_s3)[0, 1])
 
-        # 4. Stream 4: Deep Visual Patch Probe
-        if p_vision is not None:
-            s4_prob = float(p_vision)
-            has_s4 = True
-        elif student_id in self.vision_predictions:
-            s4_prob = float(self.vision_predictions[student_id])
-            has_s4 = True
+        # Tool classification indicator
+        if "is_pencil" in df_row.columns and pd.notna(df_row["is_pencil"].values[0]):
+            is_pencil = bool(float(df_row["is_pencil"].values[0]) > 0.5)
+        elif grade <= 3:
+            is_pencil = True
         else:
-            s4_prob = 0.50  # Uninformative prior
-            has_s4 = False
+            is_pencil = False
 
-        available_streams = ["stream_1_geometry", "stream_2_texture", "stream_3_ocr"]
-        if has_s4:
-            available_streams.append("stream_4_vision")
-
-        # Grade-Adaptive Late Stacking Weights
-        weights = self.get_grade_weights(grade, available_streams)
-
-        p_final = (
-            weights.get("stream_1_geometry", 0.0) * s1_prob
-            + weights.get("stream_2_texture", 0.0) * s2_prob
-            + weights.get("stream_3_ocr", 0.0) * s3_prob
-            + weights.get("stream_4_vision", 0.0) * s4_prob
-        )
+        # 4. Unified Meta-Learner Prediction
+        X_meta = np.array([[s1_prob, s2_prob, s3_prob, float(is_pencil)]])
+        p_final = float(self.meta_learner.predict_proba(X_meta)[0, 1])
         p_final = float(np.clip(p_final, 0.001, 0.999))
+
+        # Stream weight attribution from Meta-Learner coefficients
+        coefs = self.meta_learner.coef_[0]
+        pos_coefs = np.maximum(coefs[:3], 0.0)
+        sum_c = np.sum(pos_coefs)
+        if sum_c > 0:
+            weights = {
+                "stream_1_geometry": float(pos_coefs[0] / sum_c),
+                "stream_2_texture": float(pos_coefs[1] / sum_c),
+                "stream_3_ocr": float(pos_coefs[2] / sum_c),
+            }
+        else:
+            weights = {"stream_1_geometry": 0.333, "stream_2_texture": 0.333, "stream_3_ocr": 0.334}
 
         # Two-Tier Screening Cascade Decision
         if p_final >= self.tier2_threshold:
@@ -376,14 +364,14 @@ class DysgraphiaScreeningPipeline:
                 "stream_1_geometry": s1_prob,
                 "stream_2_texture": s2_prob,
                 "stream_3_ocr": s3_prob,
-                "stream_4_vision": s4_prob,
             },
             stream_weights_used=weights,
-            route_taken=route,
+            route_taken="task_agnostic_unified",
             screening_tier=tier,
             tier_label=tier_label,
             clinical_action=clinical_action,
             is_dysgraphia_suspected=is_suspected,
+            is_pencil=is_pencil,
             key_risk_factors=risk_factors,
         )
 
@@ -393,9 +381,7 @@ class DysgraphiaScreeningPipeline:
             self.fit()
 
         if self._df_all_students is None or student_id not in self._df_all_students["student_id"].values:
-            # Try reloading multi-stream student dataset
-            df_train_raw, df_test_raw = assemble_multistream_student_dataset(use_cached_ocr_only=True)
-            self._df_all_students = pd.concat([df_train_raw, df_test_raw], ignore_index=True)
+            self._df_all_students = load_multistream_cohort_dataset()
 
         matches = self._df_all_students[self._df_all_students["student_id"] == student_id]
         if len(matches) == 0:
@@ -405,7 +391,6 @@ class DysgraphiaScreeningPipeline:
         grade = int(row.get("grade", 4))
         school = str(row.get("school", "unknown"))
         label = int(row["label"]) if "label" in row and pd.notna(row["label"]) else None
-        p_vision = self.vision_predictions.get(student_id, None)
 
         return self.screen_features(
             features_dict=row,
@@ -413,7 +398,6 @@ class DysgraphiaScreeningPipeline:
             student_id=student_id,
             school=school,
             label=label,
-            p_vision=p_vision,
         )
 
     def screen_cohort(
@@ -427,8 +411,7 @@ class DysgraphiaScreeningPipeline:
 
         if df_cohort is None:
             if self._df_all_students is None:
-                df_train_raw, df_test_raw = assemble_multistream_student_dataset(use_cached_ocr_only=True)
-                self._df_all_students = pd.concat([df_train_raw, df_test_raw], ignore_index=True)
+                self._df_all_students = load_multistream_cohort_dataset()
             df_target = self._df_all_students.copy()
         else:
             df_target = df_cohort.copy()
@@ -443,7 +426,6 @@ class DysgraphiaScreeningPipeline:
             grade = int(row.get("grade", 4))
             sch = str(row.get("school", "unknown"))
             lbl = int(row["label"]) if "label" in row and pd.notna(row["label"]) else None
-            pv = self.vision_predictions.get(sid, None)
 
             res = self.screen_features(
                 features_dict=row,
@@ -451,7 +433,6 @@ class DysgraphiaScreeningPipeline:
                 student_id=sid,
                 school=sch,
                 label=lbl,
-                p_vision=pv,
             )
             records.append({
                 "student_id": res.student_id,
@@ -465,75 +446,74 @@ class DysgraphiaScreeningPipeline:
                 "p_s1_geometry": round(res.stream_probabilities.get("stream_1_geometry", 0.0), 4),
                 "p_s2_texture": round(res.stream_probabilities.get("stream_2_texture", 0.0), 4),
                 "p_s3_ocr": round(res.stream_probabilities.get("stream_3_ocr", 0.0), 4),
-                "p_s4_vision": round(res.stream_probabilities.get("stream_4_vision", 0.0), 4),
+                "is_pencil": res.is_pencil,
                 "is_dysgraphia_suspected": res.is_dysgraphia_suspected,
                 "clinical_action": res.clinical_action,
             })
 
-        df_out = pd.DataFrame(records)
-        return df_out
+        return pd.DataFrame(records)
 
     def _extract_risk_factors(self, feat: Union[Dict[str, Any], pd.Series]) -> List[Dict[str, Any]]:
         """Identify anomalous biomarkers explaining the screening decision."""
         factors = []
-        # 1. Stroke fragmentation in dictation
-        val = feat.get("components_per_unit_width_dict_mean", None)
+        # 1. Peak intra-page stroke fragmentation
+        val = feat.get("components_per_unit_width_p90", None)
         if val is not None and pd.notna(val) and float(val) > 2.5:
             factors.append({
-                "domain": "Auditory-Motor Integration",
-                "feature": "components_per_unit_width_dict_mean",
+                "domain": "Fine Motor Execution",
+                "feature": "components_per_unit_width_p90",
                 "value": float(val),
-                "note": "Severe stroke fragmentation and pen-stutter under dictation pacing",
+                "note": "Severe stroke fragmentation and pen-stutter across high-stress lines",
             })
 
-        # 2. Peak fragmentation episode
-        val = feat.get("components_per_unit_width_max", None)
-        if val is not None and pd.notna(val) and float(val) > 3.0:
+        # 2. Graphomotor fatigue decay
+        val = feat.get("components_per_unit_width_late_minus_early", None)
+        if val is not None and pd.notna(val) and float(val) > 0.4:
             factors.append({
-                "domain": "Episodic Motor Control",
-                "feature": "components_per_unit_width_max",
+                "domain": "Neuromotor Stamina",
+                "feature": "components_per_unit_width_late_minus_early",
                 "value": float(val),
-                "note": "Severe episodic motor breakdown with broken letter formations",
+                "note": "Pronounced handwriting degradation and motor fatigue from page top to bottom",
             })
 
-        # 3. Stroke width jitter
-        val = feat.get("stroke_width_jitter_mean", None)
-        if val is not None and pd.notna(val) and float(val) > 0.45:
+        # 3. Tool-normalized stroke width jitter
+        val = feat.get("stroke_width_jitter_tool_norm", None)
+        if val is not None and pd.notna(val) and float(val) > 0.40:
             factors.append({
                 "domain": "Fine Motor Stability",
-                "feature": "stroke_width_jitter_mean",
+                "feature": "stroke_width_jitter_tool_norm",
                 "value": float(val),
-                "note": "Irregular nib pressure and high stroke-width variance",
+                "note": "Irregular nib pressure and high stroke-width volatility relative to tool baseline",
             })
 
-        # 4. TrOCR character omission rate
-        val = feat.get("char_omission_rate_mean", None)
-        if val is not None and pd.notna(val) and float(val) > 0.15:
+        # 4. Tool-normalized pressure intensity CV
+        val = feat.get("pressure_intensity_cv_tool_norm", None)
+        if val is not None and pd.notna(val) and float(val) > 0.35:
             factors.append({
-                "domain": "Linguistic Transcription",
-                "feature": "char_omission_rate_mean",
+                "domain": "Dynamic Pressure Control",
+                "feature": "pressure_intensity_cv_tool_norm",
                 "value": float(val),
-                "note": "High rate of dropped letters and truncated words",
+                "note": "High pressure coefficient of variation indicating unstable grip or tremor",
             })
 
-        # 5. Spatial Confusable Reversals
-        val = feat.get("confusable_rate_max", None)
-        if val is not None and pd.notna(val) and float(val) > 0.05:
+        # 5. Prompt-free TrOCR character entropy
+        val = feat.get("trocr_char_entropy_mean", None)
+        if val is not None and pd.notna(val) and float(val) > 0.45:
             factors.append({
-                "domain": "Visuomotor Alignment",
-                "feature": "confusable_rate_max",
+                "domain": "Transcription Legibility",
+                "feature": "trocr_char_entropy_mean",
                 "value": float(val),
-                "note": "Spatial letter reversal patterns (e.g. b/d, p/q, or Hindi virama)",
+                "note": "Ambiguous, highly diffuse character formations confusing optical recognition",
             })
 
-        # 6. Headline Wobble
-        val = feat.get("shirorekha_rms_deviation_norm_max", None)
-        if val is not None and pd.notna(val) and float(val) > 0.20:
+        # 6. Physical ink to character density mismatch
+        val = feat.get("ink_to_char_density_ratio", None)
+        if val is not None and pd.notna(val) and float(val) > 3.0:
             factors.append({
-                "domain": "Devanagari Mechanics",
-                "feature": "shirorekha_rms_deviation_norm_max",
+                "domain": "Graphemic Coherence",
+                "feature": "ink_to_char_density_ratio",
                 "value": float(val),
-                "note": "Severe Devanagari Shirorekha headline tremor and vertical tilt",
+                "note": "Excessive ink fragments relative to recognized characters (scribbles/overwriting)",
             })
 
         return factors
@@ -548,7 +528,7 @@ def main():
         "--student",
         type=str,
         default=None,
-        help="Screen a specific student ID (e.g. SCHB_G4_Roll09)",
+        help="Screen a specific student ID (e.g. SCHB_G4_IMG_20261007_100013)",
     )
     parser.add_argument(
         "--school",

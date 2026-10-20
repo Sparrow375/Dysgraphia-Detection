@@ -286,3 +286,179 @@ def compute_stroke_width_texture_features(
         nan_dict["erasure_patch_ratio"] = 0.0
 
     return nan_dict
+
+
+def classify_writing_tool(
+    image_gray_or_path: Any,
+    bg_level: Optional[float] = None,
+) -> Dict[str, Any]:
+    """Classify writing tool (pen vs pencil) from 3 pure-math signals on page_normalized.png:
+    
+    1. Foreground Optical Density Spread:
+       Pencils have lower mean darkness and wider gray-level variance;
+       Ballpoint/gel pens have saturated dark cores.
+    2. Stroke Edge Gradient:
+       Pen ink creates a sharp step-edge against paper;
+       Graphite creates a softer, grainy edge falloff.
+    3. Median Stroke Width (w_med):
+       Ballpoint nibs cluster tightly around ~2 px; worn pencils are wider.
+
+    Parameters
+    ----------
+    image_gray_or_path : str, Path, or np.ndarray
+        Page image (grayscale array or filepath to page_normalized.png).
+    bg_level : float, optional
+        Estimated clean paper background level (default estimated from 90th percentile).
+
+    Returns
+    -------
+    dict
+        'tool': 'pencil' or 'pen'
+        'is_pencil': 1.0 if pencil else 0.0
+        'w_med': float (median stroke width in px)
+        'od_mean': float (mean foreground optical density in [0, 1])
+        'sat_ratio': float (fraction of saturated dark pixels I < 60)
+        'edge_grad': float (mean stroke edge gradient magnitude)
+    """
+    if isinstance(image_gray_or_path, (str, Path)):
+        img = cv2.imread(str(image_gray_or_path), cv2.IMREAD_GRAYSCALE)
+    elif isinstance(image_gray_or_path, np.ndarray):
+        img = image_gray_or_path if len(image_gray_or_path.shape) == 2 else cv2.cvtColor(image_gray_or_path, cv2.COLOR_BGR2GRAY)
+    else:
+        img = None
+
+    if img is None or img.size == 0:
+        return {
+            "tool": "pen",
+            "is_pencil": 0.0,
+            "w_med": 2.0,
+            "od_mean": 0.5,
+            "sat_ratio": 0.1,
+            "edge_grad": 400.0,
+        }
+
+    if bg_level is None:
+        bg_level = float(np.percentile(img, 90))
+
+    # Ink mask via Otsu thresholding
+    _, mask = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+    # 1. Median stroke width via Euclidean Distance Transform
+    dist = cv2.distanceTransform(mask, cv2.DIST_L2, 5)
+    w_med = float(np.median(dist[dist > 0]) * 2.0) if np.any(dist > 0) else 2.0
+
+    # 2. Foreground Optical Density and Core Darkness Saturation
+    fg = img[mask > 0]
+    if len(fg) > 0:
+        od = np.clip((bg_level - fg.astype(np.float32)) / max(bg_level, 1e-3), 0.0, 1.0)
+        od_mean = float(np.mean(od))
+        od_std = float(np.std(od))
+        sat_ratio = float(np.mean(fg < 60))
+    else:
+        od_mean = 0.5
+        od_std = 0.1
+        sat_ratio = 0.1
+
+    # 3. Stroke Edge Gradient
+    sobelx = cv2.Sobel(img, cv2.CV_32F, 1, 0, ksize=3)
+    sobely = cv2.Sobel(img, cv2.CV_32F, 0, 1, ksize=3)
+    grad = np.sqrt(sobelx**2 + sobely**2)
+    k_edge = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    edge_zone = cv2.dilate(mask, k_edge) ^ cv2.erode(mask, k_edge)
+    edge_grad = float(np.mean(grad[edge_zone > 0])) if np.any(edge_zone > 0) else 350.0
+
+    # Decision rule:
+    # Pens have saturated dark cores (sat_ratio > 0.03 and edge_grad > 330)
+    # or narrow crisp strokes (w_med <= 2.2 and edge_grad > 350) or high overall OD (> 0.65)
+    is_pen = (
+        (sat_ratio > 0.03 and edge_grad > 330.0)
+        or (w_med <= 2.2 and edge_grad > 350.0)
+        or (od_mean > 0.65)
+    )
+    tool = "pen" if is_pen else "pencil"
+    is_pencil = 0.0 if is_pen else 1.0
+
+    return {
+        "tool": tool,
+        "is_pencil": is_pencil,
+        "w_med": float(w_med),
+        "od_mean": float(od_mean),
+        "od_std": float(od_std),
+        "sat_ratio": float(sat_ratio),
+        "edge_grad": float(edge_grad),
+    }
+
+
+def calibrate_stream2_by_tool(
+    df: pd.DataFrame,
+    features_to_calibrate: Optional[List[str]] = None,
+    train_df: Optional[pd.DataFrame] = None,
+) -> Tuple[pd.DataFrame, Dict[str, Dict[str, Tuple[float, float]]]]:
+    """Normalize Stream 2 features strictly within tool (pen vs pencil) control baseline distribution.
+    
+    Formula:
+        z_{tool} = (x - median(tool_controls)) / (1.4826 * max(MAD(tool_controls), 1e-6))
+    
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe containing features and 'is_pencil'.
+    features_to_calibrate : list of str, optional
+        Features to normalize (defaults to core Stream 2 features).
+    train_df : pd.DataFrame, optional
+        Training set to fit baselines on (if None, fits on df).
+
+    Returns
+    -------
+    tuple of (calibrated_df, params_dict)
+    """
+    if features_to_calibrate is None:
+        features_to_calibrate = [
+            "pressure_intensity_cv",
+            "stroke_width_jitter",
+            "stroke_width_bloat_rate",
+            "pressure_faint_rate",
+            "pressure_heavy_rate",
+        ]
+
+    fit_source = train_df if train_df is not None else df
+    # Filter to controls for calibration baseline if label column exists
+    if "label" in fit_source.columns and (fit_source["label"] == 0).any():
+        control_source = fit_source[fit_source["label"] == 0]
+    else:
+        control_source = fit_source
+
+    res_df = df.copy()
+    params: Dict[str, Dict[str, Tuple[float, float]]] = {"pencil": {}, "pen": {}}
+
+    for feat in features_to_calibrate:
+        if feat not in df.columns:
+            continue
+
+        # Fit on pencil controls
+        p_vals = control_source[control_source.get("is_pencil", 1.0) == 1.0][feat].dropna()
+        p_med = float(p_vals.median()) if len(p_vals) > 0 else 0.0
+        p_mad = float(np.median(np.abs(p_vals - p_med))) if len(p_vals) > 0 else 1.0
+        p_scale = max(1.4826 * p_mad, 1e-4)
+        params["pencil"][feat] = (p_med, p_scale)
+
+        # Fit on pen controls
+        pen_vals = control_source[control_source.get("is_pencil", 1.0) == 0.0][feat].dropna()
+        pen_med = float(pen_vals.median()) if len(pen_vals) > 0 else p_med
+        pen_mad = float(np.median(np.abs(pen_vals - pen_med))) if len(pen_vals) > 0 else p_mad
+        pen_scale = max(1.4826 * pen_mad, 1e-4)
+        params["pen"][feat] = (pen_med, pen_scale)
+
+        # Apply calibration
+        norm_col = f"{feat}_tool_norm"
+        pencil_mask = res_df.get("is_pencil", 1.0) == 1.0
+        pen_mask = ~pencil_mask
+
+        res_df.loc[pencil_mask, norm_col] = (res_df.loc[pencil_mask, feat] - p_med) / p_scale
+        res_df.loc[pen_mask, norm_col] = (res_df.loc[pen_mask, feat] - pen_med) / pen_scale
+
+        # Clip z-scores to [-5.0, 5.0]
+        res_df[norm_col] = res_df[norm_col].clip(-5.0, 5.0)
+
+    return res_df, params
+
