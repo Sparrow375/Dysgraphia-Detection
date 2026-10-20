@@ -331,7 +331,11 @@
   - [x] 22.5 Full Regression Verification & Automated Testing:
     - 79/79 passed green across all unit test modules (`pytest tests/ -v`).
   - [x] 22.6 Documentation & Git Synchronization:
-    - Updated `task_list.md`, `context.md`, `architechture.md`, committed and pushed to `origin/OCR`.
+- [/] Stage 23: Unified Main Screening Pipeline & Workstream Consolidation under Main Branch:
+  - [ ] 23.1 Implement unified end-to-end screening engine (`pipeline/main_pipeline.py`) unifying Stream 1 (Geometry & Task Routing), Stream 2 (Stroke Width & Pressure), Stream 3 (TrOCR & Linguistic Errors), Stream 4 (Deep Vision), Grade-Adaptive Stacking, and Two-Tier Clinical Cascade.
+  - [ ] 23.2 Author comprehensive unit test suite (`tests/test_main_pipeline.py`) and verify 100% test pass rate across entire repository.
+  - [ ] 23.3 Update system documentation (`context.md`, `architechture.md`, `task_list.md`).
+  - [ ] 23.4 Consolidate active workstreams into `main` branch, verify working tree, and push to `origin/main` (leaving untouched branches isolated).
 
 ---
 

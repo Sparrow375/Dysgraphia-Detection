@@ -77,7 +77,8 @@ Dysgraphia-Detection/
 │   ├── skeleton.py                   # Medial axis thinning, branch junction/endpoint detection, pruning
 │   ├── dataset_assembly.py           # Robust within-cohort z-scoring and fold imputation
 │   ├── process_dataset.py            # Cohort-wide batch orchestration for preprocessing & cropping
-│   └── slovak_validation.py          # Cross-continental external validation on European Slovak dataset
+│   ├── slovak_validation.py          # Cross-continental external validation on European Slovak dataset
+│   └── main_pipeline.py              # Unified end-to-end multi-stream screening engine & CLI
 ├── features/                         # Mathematical handwriting feature extraction library
 │   ├── __init__.py                   # Feature module exports
 │   ├── baseline.py                   # Linear baseline slope, RMSE, and trajectory drift
@@ -134,7 +135,8 @@ Dysgraphia-Detection/
     ├── test_phase4_stage2.py         # Stability selection and student-level model pipeline tests
     ├── test_qa_app.py                # REST API endpoint and static routing tests
     ├── test_features_synthetic.py    # Controlled perturbation sensitivity tests (Spearman ρ ≥ 0.8)
-    └── test_features_invariance.py   # Scale (0.7x) and rotation (±3°) invariance tests
+    ├── test_features_invariance.py   # Scale (0.7x) and rotation (±3°) invariance tests
+    └── test_main_pipeline.py         # Unified screening pipeline end-to-end integration tests
 ```
 
 ---
@@ -987,6 +989,44 @@ $$P_{\text{student}} = w_1(G) P_{\text{S1}} + w_2(G) P_{\text{S2}} + w_3(G) P_{\
    - Operating at threshold $\theta = 0.4478$: **81.2% Sensitivity at 76.2% Specificity**.
    - Operating at threshold $\theta = 0.4676$: **75.0% Sensitivity at 86.9% Specificity**.
 
+---
 
+## 14. Unified Main Screening Pipeline (`pipeline/main_pipeline.py`)
 
+### 14.1 Architecture & Production Unification
+To unify all separate analytical streams into a single cohesive, production-grade screening pipeline, `pipeline/main_pipeline.py` integrates all four active project workstreams into an end-to-end inference engine (`DysgraphiaScreeningPipeline`):
 
+```mermaid
+graph TD
+    Input["Student Record / ID / Feature Dictionary"] --> S1["Stream 1: Geometry & Kinematics<br/>TaskAwareRouter (models/task_router.py)"]
+    Input --> S2["Stream 2: Stroke Width & Pressure<br/>Micro-Texture Pipeline (features/stroke_width_texture.py)"]
+    Input --> S3["Stream 3: Modern TrOCR & Letter Errors<br/>HTR & Analytics (features/ocr_engine.py, letter_analytics.py)"]
+    Input --> S4["Stream 4: Deep Vision Patch Probe<br/>DenseNet201 (baseline/visual_classifier.py)"]
+
+    S1 -->|"P_S1"| Stacker["Grade-Adaptive Multi-Stream Stacking Engine<br/>P_student = w1(G)*P_S1 + w2(G)*P_S2 + w3(G)*P_S3 + w4(G)*P_S4"]
+    S2 -->|"P_S2"| Stacker
+    S3 -->|"P_S3"| Stacker
+    S4 -->|"P_S4"| Stacker
+
+    Stacker --> P_final["Calibrated Risk P_dysgraphia"]
+
+    P_final --> Cascade["Two-Tier Clinical Screening Cascade<br/>(models/cascade.py)"]
+
+    Cascade -->|"P < 0.276"| Tier1["🟢 Tier 1 Safe Rule-Out<br/>(Cleared - High Sensitivity NPV 97.7%)"]
+    Cascade -->|"0.276 <= P < 0.515"| Monitor["🟡 Progress Monitoring<br/>(Classroom Support & 4-Week Re-screen)"]
+    Cascade -->|"P >= 0.515"| Tier2["🔴 Tier 2 Clinical OT Referral<br/>(Urgent Specialist OT Workup Indicated)"]
+
+    Tier1 --> Report["ScreeningResult / Clinical Summary & Actionable Recommendations"]
+    Monitor --> Report
+    Tier2 --> Report
+```
+
+### 14.2 Clinical Interfaces & Capabilities
+1. **Individual Student Screening**:
+   - `screen_student(student_id: str) -> ScreeningResult`: Automatic cohort lookup, multi-stream feature evaluation, cascade tier assignment, and risk factor extraction.
+   - `screen_features(features_dict: Dict, grade: int) -> ScreeningResult`: Real-time screening directly from an in-memory feature dictionary.
+2. **Cohort-Wide Batch Screening**:
+   - `screen_cohort(school: Optional[str] = None) -> pd.DataFrame`: Fast batch processing producing structured CSV/JSON screening rosters.
+3. **Command-Line Interface (CLI)**:
+   - `python -m pipeline.main_pipeline --student SCHB_G4_IMG_20261007_100148`
+   - `python -m pipeline.main_pipeline --school school_b --export reports/unified_screening_report.csv`

@@ -974,3 +974,39 @@ To account for developmental pen transitions without sacrificing sensitivity on 
 ### 4. Regression Verification
 Full test suite passed cleanly with 79/79 green tests (`pytest tests/ -v`).
 
+## Stage 23: Unified Main Screening Pipeline & Workstream Consolidation under Main Branch (Completed 2026-10-20)
+
+### 1. Motivation & Consolidation Scope
+To transition from experimental multi-branch research scripts into a production-grade clinical screening platform, all active project workstreams were unified into a single main pipeline under the repository's `main` branch:
+1. **Active Workstreams Consolidated**:
+   - **Stream 1 (Spatial Geometry & Kinematics)**: 37 contour/skeleton geometric features, RANSAC baselines, and `TaskAwareRouter` (`models/task_router.py`) dynamically handling full protocol, no-dictation, and copy-only inputs without median imputation dilution.
+   - **Stream 2 (Stroke-Width Dynamics & Grayscale Shading Micro-Texture)**: Distance-transform stroke thickness jitter, continuous centerline optical density, and smudge/erasure halos (`features/stroke_width_texture.py`).
+   - **Stream 3 (Modern TrOCR & Letter-Level Analytics)**: Dual-engine Latin & Devanagari TrOCR (`features/ocr_engine.py`), token posterior confidence distributions, character omission ratios, spatial confusable reversals ($b/d$, $ब/व$), phonetic vs motor dissociation, and teacher-forced prompt scoring (`features/letter_analytics.py`, `features/content.py`).
+   - **Stream 4 (Deep Visual Patch Representation)**: Aspect-preserving sliding window, DenseNet201 patch embeddings, and regularized PCA visual classifier probe (`baseline/visual_patch_extractor.py`, `baseline/visual_classifier.py`).
+   - **Ensemble & Clinical Decision Layer**: Grade-Adaptive Multi-Stream Stacking Router and Two-Tier Clinical Screening Cascade (`models/cascade.py`).
+2. **Untouched / Inactive Branches Isolated**:
+   - As requested, non-active branches (`tablet-kinematics`, `origin/Kinematics`, `spen-collector`, `data-harvesting`) were left untouched in their isolated branches.
+
+### 2. Unified Engine Architecture: `pipeline/main_pipeline.py`
+The unified engine introduces `DysgraphiaScreeningPipeline`:
+- **Training & Model Assembly (`fit`)**: Automatically trains/assembles all stream estimators (Stream 1 Task-Aware Router, Stream 2 Scaled Logistic Regression, Stream 3 Scaled TrOCR Logistic Regression, Stream 4 Visual Probe) on the School A cohort.
+- **Grade-Adaptive Stacking**: Modulates stream weights dynamically according to developmental stage:
+  - Grade 3: $0.60 S_1 + 0.40 S_2$ (geometry & pressure, 0% dictation).
+  - Grade 4: $0.15 S_1 + 0.15 S_2 + 0.70 S_3$ (TrOCR legibility dominant).
+  - Grade 5: $0.15 S_1 + 0.15 S_2 + 0.60 S_3 + 0.10 S_4$.
+  - Grade 6: $0.40 S_1 + 0.35 S_3 + 0.25 S_4$.
+  - Grade 7: $0.20 S_1 + 0.40 S_2 + 0.30 S_3 + 0.10 S_4$ (balanced pen transition).
+  - Grade 8: $0.20 S_1 + 0.70 S_3 + 0.10 S_4$.
+  - Stream unavailability fallback: Dynamically renormalizes remaining stream weights to sum to 1.0.
+- **Two-Tier Screening Cascade**:
+  - Tier 1 Threshold ($\theta_{\text{triage}} = 0.276$): Clears neurotypical children with high NPV ($>97\%$).
+  - Tier 2 Threshold ($\theta_{\text{referral}} = 0.515$): Routes high-risk children to occupational therapy.
+  - Borderline Monitoring ($0.276 \le P < 0.515$): Assigns 4-week classroom support and re-screening.
+- **Biomarker Extraction**: Automatically isolates anomalous feature domains (e.g., severe dictation stroke fragmentation, excessive pen drops, letter omission rate, headline tremor).
+- **Batch & CLI Support**:
+  - `python -m pipeline.main_pipeline --student SCHB_G4_IMG_20261007_100148`
+  - `python -m pipeline.main_pipeline --school school_b --export reports/unified_screening_report.csv`
+
+### 3. Automated Verification & Regression Suite
+- Added [`tests/test_main_pipeline.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_main_pipeline.py) covering initialization, grade-adaptive weights, confirmed control vs dysgraphic screening, arbitrary feature dictionary processing, and batch cohort execution.
+- Executed full test suite across all modules: **85/85 tests passed green (100% pass rate)**.
