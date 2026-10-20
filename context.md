@@ -1010,3 +1010,18 @@ The unified engine introduces `DysgraphiaScreeningPipeline`:
 ### 3. Automated Verification & Regression Suite
 - Added [`tests/test_main_pipeline.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_main_pipeline.py) covering initialization, grade-adaptive weights, confirmed control vs dysgraphic screening, arbitrary feature dictionary processing, and batch cohort execution.
 - Executed full test suite across all modules: **85/85 tests passed green (100% pass rate)**.
+
+---
+
+## Stage 24: Comprehensive Reality Audit & Breakthrough Roadmap (Completed 2026-10-20)
+
+### 1. Document Overview
+Authored authoritative post-mortem and system reality audit in [`reports/project_reality_audit_and_breakthrough_roadmap.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/project_reality_audit_and_breakthrough_roadmap.md). The document demystifies the "black box", provides step-by-step debug traces across every workstream, admits all compromises and workarounds, analyzes small-sample volatility ($N=1$ in Grade 8), dissects the Grade 7 pen transition failure, and outlines the 5 core breakthrough pillars to reach robust universal screening ($\ge 90\%$ Sensitivity and $\ge 90\%$ Specificity) without heuristic patches.
+
+### 2. Core Breakthrough Pillars Formulated
+1. **Pillar 1: Automated Tool & Paper Normalization (Physics-First)**: Decouple pen vs pencil optical profiles prior to feature calculation.
+2. **Pillar 2: Pure Intra-Student Stress Deltas (Self-Referencing Architecture)**: Measure relative degradation ($\Delta_{\text{stress}} = \text{Dictation} - \text{Copy}$) to cancel developmental age/grade confounding.
+3. **Pillar 3: Stroke Dynamics Reconstruction (Synthetic Kinematic Unrolling)**: Recover stroke sequence, pseudo-velocity, and in-air hesitations from stroke intersection topology and 2/3 power law.
+4. **Pillar 4: Contrastive Self-Supervised Handwriting Backbone**: Pretrain vision transformers directly on stroke patches, abandoning ImageNet DenseNet201.
+5. **Pillar 5: Rigorous Clinical Benchmark Protocol**: Lock thresholds on training data; report bootstrapped 95% CIs; eliminate $N=1$ subgroup reporting.
+
