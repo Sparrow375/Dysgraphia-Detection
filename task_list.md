@@ -366,7 +366,11 @@
   - [x] 26.4 Author self-contained Google Colab notebook `notebooks/strategy_b_gated_attention_mil.ipynb` and CLI runner `models/train_mil_colab.py`: Complete with Dual ViT feature extraction (English `microsoft/trocr-small-handwritten` + Hindi `paudelanil/trocr-devanagari-2`), 5x5 CV benchmark, AUROC/AUPRC evaluation, and clinical word-level attention heatmaps.
   - [x] 26.5 Verification: Executed full repository test suite (91/91 passed green in 187s), documentation (`context.md`, `task_list.md`, `architechture.md`), and Git commit/push.
 
----
+- [x] Stage 27: Strategy D — TabPFN (Prior-Data Fitted Network) Tabular Foundation Model:
+  - [x] 27.1 Benchmark Engine (`models/train_tabpfn_benchmark.py`): Built comprehensive cross-validation runner evaluating TabPFN alongside ElasticNet Logistic Regression and Random Forest across the complete 215-student cohort (175 controls, 40 dysgraphic) using locked 5-repeat x 5-fold CV splits.
+  - [x] 27.2 Feature Curation: Evaluated Curated 5 core features, Clinical Top-15 features (spacing fatigue, stroke tremor, pressure faint rate, baseline drift, interaction pen bloat, component height dispersion), and Multi-Phenotype Top-30 set.
+  - [x] 27.3 Colab Interactive Notebook (`notebooks/strategy_d_tabpfn_benchmark.ipynb`): Self-contained Colab notebook for GPU/CPU TabPFN execution with direct dataset retrieval, interactive token authentication, ROC/PR visualization, and prediction export.
+  - [x] 27.4 Update documentation (`context.md`, `task_list.md`) and Git commit/push.
 
 
 

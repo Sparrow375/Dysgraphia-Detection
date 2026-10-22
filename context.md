@@ -1139,5 +1139,23 @@ In Stage 21, DenseNet201 patch representations were averaged across the student'
   - Validated 215-student cohort coverage and fold assignments.
 - Executed full repository test suite: **91/91 tests passing green (100% pass rate in 187s)**.
 
+## Phase 5 Stage 27: Strategy D — TabPFN (Prior-Data Fitted Network) Tabular Foundation Model (Completed 2026-10-22)
+
+### 1. Clinical Rationale & Objective
+Following the post-mortem of Strategy B (where heuristic connected-component word segmentation generated 800–1200px horizontal slivers and single-letter fragments causing severe ViT aspect ratio distortion and attention collapse at AUROC ~0.599), the workflow pivoted to **Strategy D: TabPFN (Prior-Data Fitted Network)**.
+
+**Why TabPFN Overcomes Previous Vision Limitations**:
+1. **Zero Visual Noise**: Bypasses the broken heuristic word-cropping and aspect-ratio distortion of ViTs. Operates directly on student session statistics (stroke fragmentation, baseline wandering, inter-word spacing fatigue, pen pressure faint rate, Devanagari headline continuity).
+2. **Pre-Trained on Synthetic Priors**: TabPFN approximates Bayesian inference on structural causal models. It is designed specifically for small-sample tabular problems ($N \le 1,000$, $D \le 100$), providing mathematical immunity to overfitting on our 215-student cohort.
+3. **Cohort-Wide Evaluation**: Strictly evaluated across all 215 students (175 Control, 40 Dysgraphic) using the locked 5-repeat $\times$ 5-fold Stratified Group Cross-Validation split.
+
+### 2. Implementation & Artifacts
+- **Standalone Benchmark Engine ([`models/train_tabpfn_benchmark.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/models/train_tabpfn_benchmark.py))**:
+  - Full 5x5 cross-validation runner evaluating TabPFN against ElasticNet Logistic Regression and Random Forest.
+  - Curated feature sets: `Curated_5` (motor fragmentation, Devanagari headline, matra), `Clinical_Top15` (spacing fatigue, stroke tremor, pressure faint rate, baseline drift, interaction pen bloat, component height dispersion), and `MultiPhenotype_Top30`.
+- **Interactive Google Colab Notebook ([`notebooks/strategy_d_tabpfn_benchmark.ipynb`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/notebooks/strategy_d_tabpfn_benchmark.ipynb))**:
+  - 6 self-contained cells: GPU/CPU environment setup, direct dataset curl (`dataset_student_level.csv`), PriorLabs token integration, 5x5 CV benchmark loop, ROC/PR visualization, and prediction export (`p_tabpfn_predictions.csv`).
+
+
 
 
