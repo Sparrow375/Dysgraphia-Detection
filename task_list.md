@@ -372,6 +372,19 @@
   - [x] 27.3 Colab Interactive Notebook (`notebooks/strategy_d_tabpfn_benchmark.ipynb`): Self-contained Colab notebook for GPU/CPU TabPFN execution with direct dataset retrieval, interactive token authentication, ROC/PR visualization, and prediction export.
   - [x] 27.4 Update documentation (`context.md`, `task_list.md`) and Git commit/push.
 
+- [x] Stage 28: Strategy A — TrOCR Control Adaptation & Character-Level Perplexity (Completed 2026-10-22):
+  - [x] 28.1 Sentence Crops Dataset Packaging (`pipeline/package_sentence_crops_dataset.py`): Packaged all 1,145 full sentence crops across the complete 215-student cohort (School A + School B: 931 control, 214 dysgraphic; 570 English, 575 Hindi) with target prompt strings and locked 5x5 fold assignments into `data/sentence_crops_dataset.zip` (60.45 MB) and `data/sentence_crops_dataset/sentences_index.csv`.
+  - [x] 28.2 Direct Cloud Hosting: Uploaded dataset archive to high-speed direct download link (`https://temp.sh/NTgsm/sentence_crops_dataset.zip`) for instant 2-second Colab unzipping without browser drag-and-drop limitations.
+  - [x] 28.3 TrOCR LoRA Perplexity & Entropy Engine (`models/trocr_lora_perplexity.py`):
+    - Configured low-rank adapters ($r=8, \alpha=16$) on English TrOCR (`microsoft/trocr-small-handwritten`, targeting `["q_proj", "v_proj"]`) and Hindi Devanagari TrOCR (`paudelanil/trocr-devanagari-2`, targeting RoBERTa `["query", "value"]`).
+    - Freezes >99.6% of the vision transformer encoder and base decoder (only 0.338% trainable params).
+    - Teacher-forced cross-entropy scoring computing negative log-likelihood (`forced_nll_mean`, `forced_nll_max`), `perplexity`, Shannon predictive entropy (`char_entropy_mean`, `char_entropy_max`), `token_conf_mean`, `token_conf_min`, and `low_conf_ratio`.
+    - Student-level aggregation across all prompt sentences.
+  - [x] 28.4 Self-Contained Interactive Google Colab Notebook (`notebooks/strategy_a_trocr_lora_perplexity.ipynb`):
+    - 8 self-contained cells: GPU/environment check, high-speed direct cloud curl, cohort prompt inspection, LoRA TrOCR architecture definition, control adaptation loop, locked 5x5 CV benchmark, clinical scoreboard, ROC/PR visualizations, and prediction export (`p_trocr_lora_predictions.csv`).
+  - [x] 28.5 Automated Unit & Regression Tests (`tests/test_strategy_a.py`): 4/4 tests passed (cohort index coverage, synthetic teacher-forced scoring, student aggregation, clinical metrics).
+  - [x] 28.6 Documentation & Git Push (`context.md`, `architechture.md`, `task_list.md`).
+
 
 
 

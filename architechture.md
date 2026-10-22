@@ -1136,4 +1136,51 @@ For any evaluated child, the model outputs:
 - $P_{\text{MIL-ViT}} \in [0, 1]$: calibrated student risk.
 - Sorted attention vector $\mathbf{a}_i$: highlights the top-3 words with the highest attention weights, isolating the exact handwriting formations that triggered the dysgraphia referral.
 
+---
+
+## 17. Strategy A: TrOCR Control Adaptation & Character-Level Perplexity (`models/trocr_lora_perplexity.py`)
+
+### 17.1 Representational Philosophy & Overfitting Immunity
+Off-the-shelf TrOCR models were pre-trained on adult handwriting corpora (IAM dataset), causing them to perceive Indian 3rd–8th grade school children's handwriting on ruled paper as anomalous. However, training a 62-million parameter Vision Transformer directly on 40 dysgraphic student labels leads to catastrophic memorization and high sample variance.
+
+**The Solution: Character-Level Supervision on Healthy Controls**:
+1. Rather than training on 40 binary labels, TrOCR is fine-tuned via Low-Rank Adaptation (LoRA, $r=8, \alpha=16$) strictly on the **175 healthy control students** to predict the actual prompt text they were assigned to write (~35,000 characters of strong supervision).
+2. The vision encoder and base decoder remain **99.6% frozen** (only 0.338% trainable parameters).
+3. The network is **never exposed to dysgraphic labels during training**. Dysgraphia detection is formulated as an unsupervised anomaly detection problem.
+
+```mermaid
+graph TD
+    subgraph ControlAdaptation ["Training Phase: Control Motor Manifold Adaptation"]
+        ControlCrops["700+ Control Sentence Crops<br/>(label == 0)"] --> FrozenViT["Frozen ViT Image Encoder<br/>(microsoft/trocr-small-handwritten / paudelanil/trocr-devanagari-2)"]
+        FrozenViT --> Latents["Encoder Latent Representations"]
+        Latents --> LoRADecoder["LoRA-Adapted Transformer Decoder<br/>(r=8, alpha=16 on Attention Projections)<br/>Only 0.338% Trainable Parameters"]
+        Prompts["Ground Truth Prompt Strings<br/>(copy_hindi, copy_english, etc.)"] --> TeacherForcing["Teacher-Forcing Cross-Entropy Loss"]
+        LoRADecoder --> TeacherForcing
+    end
+
+    subgraph InferencePhase ["Inference Phase: Teacher-Forced Anomaly Scoring"]
+        EvalCrop["Evaluated Sentence Crop<br/>(Control or Dysgraphic)"] --> FrozenViT
+        EvalCrop --> LoRADecoder
+        PromptText["Target Prompt Text"] --> Logits["Token-by-Token Logit Distributions"]
+        Logits --> NLL["Negative Log-Likelihood (NLL / Perplexity)"]
+        Logits --> Entropy["Shannon Predictive Entropy H(p)"]
+        Logits --> Conf["Target Token Posterior Probabilities"]
+        
+        NLL & Entropy & Conf --> StudentPool["Student-Level Mean & Max Pooling"]
+        StudentPool --> Classifier["Regularized Screening Head"]
+        Classifier --> Risk["P_trocr_lora ∈ [0, 1]"]
+    end
+```
+
+### 17.2 Mathematical Formulation
+1. **Teacher-Forced Cross-Entropy / Perplexity**:
+   $$\text{NLL}_t = -\log P(y_t^{\text{target}} \mid \mathbf{I}, y_{<t}^{\text{target}})$$
+   $$\text{Perplexity} = \exp\left(\frac{1}{T}\sum_{t=1}^T \text{NLL}_t\right)$$
+2. **Predictive Shannon Entropy**:
+   $$p_{t, v} = \frac{\exp(z_{t, v})}{\sum_{j} \exp(z_{t, j})}$$
+   $$H_t = -\sum_{v \in \text{topK}} p_{t, v} \log_2(p_{t, v})$$
+3. **Biomarker Profile**:
+   - For a healthy child, the adapted model recognizes standard letterforms with high confidence and low entropy ($H < 2.0$ bits, $\text{NLL} < 2.0$).
+   - For a dysgraphic child with malformed strokes, letter inversions, or severe tremor, the control-adapted model struggles to align the strokes with expected characters, causing $\text{NLL}$, $\text{Perplexity}$, and $H$ to spike.
+
 

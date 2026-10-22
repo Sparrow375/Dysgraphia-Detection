@@ -46,6 +46,8 @@ ehthumbs.db
 data/processed/
 data/word_crops_dataset/
 data/word_crops_dataset.zip
+data/sentence_crops_dataset/
+data/sentence_crops_dataset.zip
 qa/*.html
 scratch/
 

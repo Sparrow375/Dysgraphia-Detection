@@ -1156,6 +1156,47 @@ Following the post-mortem of Strategy B (where heuristic connected-component wor
 - **Interactive Google Colab Notebook ([`notebooks/strategy_d_tabpfn_benchmark.ipynb`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/notebooks/strategy_d_tabpfn_benchmark.ipynb))**:
   - 6 self-contained cells: GPU/CPU environment setup, direct dataset curl (`dataset_student_level.csv`), PriorLabs token integration, 5x5 CV benchmark loop, ROC/PR visualization, and prediction export (`p_tabpfn_predictions.csv`).
 
+---
+
+## Phase 5 Stage 28: Strategy A — TrOCR Control Adaptation & Character-Level Perplexity (Completed 2026-10-22)
+
+### 1. Clinical Concept & Architectural Design
+In Strategy B (Gated-Attention MIL) and Strategy D (TabPFN), models were constrained by having only 40 dysgraphic student labels to train on across the entire 215-student cohort, causing high sample variance and early performance plateaus. Furthermore, Strategy B was crippled by legacy connected-component word segmentation that sliced words into horizontal slivers.
+
+**Strategy A Solves Both Problems**:
+1. **Full Clean Sentence Crops with Zero Slicing**: Operates directly on the 1,145 full sentence crops (`sentence_01` through `sentence_04`, plus free writing) that already exist cleanly for every student.
+2. **LoRA Fine-Tuning on Healthy Controls**:
+   - Rather than training on 40 binary labels, TrOCR is fine-tuned via Low-Rank Adaptation (LoRA, $r=8, \alpha=16$) strictly on the **175 healthy control students** to predict the actual prompt text they were assigned to write (~35,000 characters of strong supervision).
+   - English TrOCR (`microsoft/trocr-small-handwritten`): LoRA injected into attention projections `["q_proj", "v_proj"]`.
+   - Hindi Devanagari TrOCR (`paudelanil/trocr-devanagari-2`): LoRA injected into RoBERTa attention layers `["query", "value"]`.
+   - Over **99.6% of the vision transformer encoder and base decoder remain completely frozen** (only 0.338% trainable parameters), providing mathematical immunity to memorization.
+   - The model is **never trained on dysgraphic students**: dysgraphia detection is formulated as an unsupervised anomaly detection problem.
+3. **The Biomarker Mechanism**:
+   - Neurotypical controls write standard, expected letterforms $\implies$ High target token probability, low cross-entropy (NLL), and low predictive Shannon entropy.
+   - Dysgraphic children exhibit motor ataxia, tremor, stroke reversals, and malformed letter loops $\implies$ The control-adapted model's cross-attention cannot match the strokes to the expected characters, causing **Teacher-Forced Perplexity (NLL)** and **Character Shannon Entropy** to spike dramatically.
+
+### 2. Dataset Packaging & Direct Cloud Hosting
+- Implemented [`pipeline/package_sentence_crops_dataset.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/pipeline/package_sentence_crops_dataset.py):
+  - Traversed all 215 students in `data/processed/` and extracted 1,145 full sentence crops (931 Control, 214 Dysgraphic; 570 English, 575 Hindi).
+  - Paired crops with canonical ground truth prompts (`copy_hindi`, `copy_english`, `dictated_hindi`, `dictated_english`) and locked 5x5 fold assignments (`repeat_0_fold` through `repeat_4_fold`).
+  - Packaged complete dataset into [`data/sentence_crops_dataset.zip`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/sentence_crops_dataset.zip) (60.45 MB) and [`data/sentence_crops_dataset/sentences_index.csv`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/sentence_crops_dataset/sentences_index.csv).
+  - Uploaded archive to direct cloud hosting (`https://temp.sh/NTgsm/sentence_crops_dataset.zip`) for instant 2-second Colab retrieval.
+
+### 3. PyTorch Architecture & Interactive Colab Notebook
+- **Core Engine ([`models/trocr_lora_perplexity.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/models/trocr_lora_perplexity.py))**:
+  - `get_english_lora_trocr()` & `get_hindi_lora_trocr()`: Configures LoRA adapters, freezes vision encoders, and maps device tensors.
+  - `score_sentence_crop()`: Computes teacher-forced negative log-likelihood (`forced_nll_mean`, `forced_nll_max`), `perplexity`, Shannon predictive entropy (`char_entropy_mean`, `char_entropy_max`), `token_conf_mean`, `token_conf_min`, and `low_conf_ratio`.
+  - `aggregate_student_biomarkers()`: Aggregates sentence-level outputs across tasks for each student.
+- **Interactive Google Colab Notebook ([`notebooks/strategy_a_trocr_lora_perplexity.ipynb`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/notebooks/strategy_a_trocr_lora_perplexity.ipynb))**:
+  - 8 structured, self-contained cells: GPU/environment check $\to$ Direct cloud dataset retrieval $\to$ Cohort prompt inspection $\to$ LoRA TrOCR architecture definition $\to$ Control adaptation loop $\to$ Locked 5x5 CV benchmark loop $\to$ Clinical Scoreboard & ROC/PR curves $\to$ Prediction export (`p_trocr_lora_predictions.csv`).
+
+### 4. Automated Testing & Verification
+- Authored [`tests/test_strategy_a.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_strategy_a.py):
+  - Validated cohort integrity: all 215 students and locked 5x5 fold indices verified.
+  - Validated synthetic teacher-forced scoring, token cross-entropy, and entropy bounds.
+  - Validated student-level biomarker aggregation and clinical metrics calculation.
+  - 4/4 tests passed green.
+
 
 
 
