@@ -1228,10 +1228,7 @@ In Strategy B (Gated-Attention MIL on Word Crops), performance plateaued at AURO
   - `evaluate_hybrid_foundation_ensemble()`: Evaluates multimodal late fusion between DINOv2 and TabPFN.
 - **Interactive Google Colab Notebook ([`notebooks/strategy_c_dinov2_self_supervised.ipynb`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/notebooks/strategy_c_dinov2_self_supervised.ipynb))**:
   - 9 structured, self-contained cells: GPU/environment check $\to$ Direct cloud dataset retrieval (`sentence_crops_dataset.zip`) $\to$ Cohort prompt inspection $\to$ DINOv2 backbone loading $\to$ Fast GPU feature extraction across 1,145 crops $\to$ Student aggregation & stress deltas $\to$ Locked 5x5 CV benchmark $\to$ Synergistic TabPFN foundation fusion $\to$ Visualizations & prediction export (`p_strategy_c_dinov2_predictions.csv`).
+  - **Multimodal Student Alignment Guarantee**: In Cell 8, `df_tab` is explicitly merged onto `df_students[["student_id"]]` to strictly ensure 1:1 row alignment between visual scores and tabular features across all 215 students before late fusion, eliminating row-order mismatch.
+  - **Full Locked 5x5 Cross-Validation for TabPFN**: Evaluates TabPFN across all 5 repeats $\times$ 5 folds, matching the exact cross-validation protocol of DINOv2.
 - **Automated Regression Suite ([`tests/test_strategy_c.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_strategy_c.py))**:
-  - 4/4 automated tests passed green verifying cohort integrity, synthetic feature aggregation, locked CV execution, and multimodal foundation ensembling.
-
-
-
-
-
+  - 4/4 automated tests passed green verifying cohort integrity, synthetic feature aggregation, locked CV execution, and multimodal foundation ensembling. Full project suite: 99/99 passed green.
