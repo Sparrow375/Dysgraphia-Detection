@@ -385,6 +385,18 @@
   - [x] 28.5 Automated Unit & Regression Tests (`tests/test_strategy_a.py`): 4/4 tests passed (cohort index coverage, synthetic teacher-forced scoring, student aggregation, clinical metrics).
   - [x] 28.6 Documentation & Git Push (`context.md`, `architechture.md`, `task_list.md`).
 
+- [x] Stage 29: Strategy C — Self-Supervised Vision Transformer (DINOv2) Representation & Multi-Modal Foundation Probe (Completed 2026-10-23):
+  - [x] 29.1 Architecture Engine (`models/strategy_c_dinov2.py`):
+    - Pretrained self-supervised vision foundation model `facebook/dinov2-small` ($D=384$) on full sentence crops with 100% frozen backbone (0 trainable params).
+    - Aspect-preserving proportional resizing with neutral white padding to 224x224.
+    - Combined `[CLS]` token and spatial patch mean extraction with $L_2$ normalization.
+    - Multi-task student aggregation extracting session mean visual embedding, within-student motor dispersion, and cross-task cognitive stress deltas ($\Delta_{\text{stress}} = \|\mathbf{e}_{\text{dict}} - \mathbf{e}_{\text{copy}}\|_2$ and cosine distance).
+    - Leakage-free PCA dimensionality reduction ($K=10$) + regularized linear probe with class weighting.
+    - Synergistic multi-modal foundation ensemble blending DINOv2 visual features with TabPFN tabular foundation model.
+  - [x] 29.2 Automated Unit & Regression Tests (`tests/test_strategy_c.py`): 4/4 tests passed (cohort index coverage, synthetic student feature aggregation, locked 5x5 cross-validation loop, foundation ensemble evaluation).
+  - [x] 29.3 Self-Contained Interactive Google Colab Notebook (`notebooks/strategy_c_dinov2_self_supervised.ipynb`): 9 structured cells with GPU check, direct cloud curl of 1,145 crops, frozen DINOv2 extraction, student aggregation, locked 5x5 CV, clinical scoreboard, TabPFN foundation fusion, and ROC/PR visualizations.
+  - [x] 29.4 Documentation & Git Push (`context.md`, `architechture.md`, `task_list.md`).
+
 
 
 

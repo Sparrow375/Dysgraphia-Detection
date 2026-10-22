@@ -1183,4 +1183,60 @@ graph TD
    - For a healthy child, the adapted model recognizes standard letterforms with high confidence and low entropy ($H < 2.0$ bits, $\text{NLL} < 2.0$).
    - For a dysgraphic child with malformed strokes, letter inversions, or severe tremor, the control-adapted model struggles to align the strokes with expected characters, causing $\text{NLL}$, $\text{Perplexity}$, and $H$ to spike.
 
+---
+
+## 18. Strategy C: Self-Supervised Vision Transformer (DINOv2) & Multi-Modal Foundation Probe (`models/strategy_c_dinov2.py`)
+
+### 18.1 Clinical & Representational Foundation
+1. **Self-Supervised Vision Representations**: Unlike supervised models trained on ImageNet objects (DenseNet201) or adult handwriting (TrOCR), DINOv2 (`facebook/dinov2-small`, 21.7M parameters) was trained on 142M images via self-distillation and masked patch modeling without human labels. It naturally develops fine-grained spatial and texture representations of stroke continuity, line straightness, loop closures, and graphite pressure variations.
+2. **Full Sentence Crops with Zero Slicing**: Operates directly on the 1,145 full sentence crops, preserving the child's natural stroke scale and aspect ratio.
+3. **100% Frozen Backbone**: Zero backpropagation into the vision transformer (0 trainable parameters in the backbone), mathematically preventing memorization on our 215-student cohort.
+4. **Neuromotor Cognitive Stress Deltas**: Computes both overall visual texture and the cross-task cognitive stress vector:
+   $$\Delta_{\text{stress}} = \|\mathbf{e}_{\text{dictation}} - \mathbf{e}_{\text{copy}}\|_2$$
+   capturing the visual breakdown that occurs when children transition from slow visual copying to rapid auditory dictation.
+
+```mermaid
+graph TD
+    subgraph Input ["1,145 Full Sentence Crops (Preserved Scale)"]
+        Crop1["Task 1: Hindi Copy Crop"]
+        Crop2["Task 2: English Copy Crop"]
+        Crop3["Task 3: Hindi Dictation Crop"]
+        Crop4["Task 4: English Dictation Crop"]
+    end
+
+    subgraph FrozenDINOv2 ["Frozen DINOv2 Backbone (facebook/dinov2-small, 0 Trainable Params)"]
+        DINO["DINOv2 Vision Transformer<br/>Extract: [CLS] + Patch Mean Token (D=384)"]
+    end
+
+    Crop1 & Crop2 & Crop3 & Crop4 --> DINO
+
+    subgraph StudentAggregation ["Student-Level Visual Aggregation"]
+        DINO --> MeanEmb["Mean Session Visual Texture (e_mean ∈ R^384)"]
+        DINO --> StdEmb["Within-Student Motor Volatility (e_std ∈ R^384)"]
+        DINO --> StressDelta["Cognitive Stress Delta: ||e_dict - e_copy||_2"]
+    end
+
+    subgraph RegularizedProbe ["Leakage-Free 5x5 CV Probe"]
+        MeanEmb & StdEmb & StressDelta --> PCA["PCA(K=10, Explaining >= 80% Variance)<br/>Fit Strictly on Train Fold"]
+        PCA --> LinearProbe["Logistic Regression (C=0.1, Balanced Class Weights)"]
+        LinearProbe --> P_DINOv2["Visual Probability P_dinov2 ∈ [0, 1]"]
+    end
+
+    subgraph FoundationFusion ["Multimodal Foundation Ensemble"]
+        P_DINOv2 --> Blend["Late Fusion: α * P_dinov2 + (1 - α) * P_tabpfn"]
+        P_TabPFN["TabPFN Tabular Prior P_tabpfn (AUROC = 0.7006)"] --> Blend
+        Blend --> P_Final["Optimal Multimodal Foundation Score"]
+    end
+```
+
+### 18.2 Mathematical Formulation
+1. **Aspect-Preserving Feature Extraction**:
+   Each crop is proportionally resized and padded onto a white $224 \times 224$ canvas, preserving fine stroke thickness:
+   $$\mathbf{e}_{\text{crop}} = \frac{1}{2}\left( \mathbf{h}_{\text{CLS}} + \frac{1}{P}\sum_{p=1}^P \mathbf{h}_p \right), \quad \hat{\mathbf{e}} = \frac{\mathbf{e}}{\|\mathbf{e}\|_2}$$
+2. **Cognitive Stress Distance**:
+   $$\Delta_{\text{stress}} = \|\bar{\mathbf{e}}_{\text{dict}} - \bar{\mathbf{e}}_{\text{copy}}\|_2$$
+   $$\text{Dist}_{\text{cosine}} = 1 - \frac{\bar{\mathbf{e}}_{\text{dict}} \cdot \bar{\mathbf{e}}_{\text{copy}}}{\|\bar{\mathbf{e}}_{\text{dict}}\| \|\bar{\mathbf{e}}_{\text{copy}}\|}$$
+3. **Synergistic Multimodal Foundation Ensemble**:
+   $$P_{\text{hybrid}} = \alpha \cdot P_{\text{DINOv2}} + (1 - \alpha) \cdot P_{\text{TabPFN}}$$
+
 

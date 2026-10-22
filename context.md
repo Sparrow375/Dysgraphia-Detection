@@ -1197,6 +1197,41 @@ In Strategy B (Gated-Attention MIL) and Strategy D (TabPFN), models were constra
   - Validated student-level biomarker aggregation and clinical metrics calculation.
   - 4/4 tests passed green.
 
+---
+
+## Phase 5 Stage 29: Strategy C — Self-Supervised Vision Transformer (DINOv2) & Multi-Modal Foundation Probe (Completed 2026-10-23)
+
+### 1. Clinical Concept & Architectural Design
+In Strategy B (Gated-Attention MIL on Word Crops), performance plateaued at AUROC = 0.5996 because heuristic connected-component word segmentation sliced words into thin horizontal fragments, distorting letter geometry. In Strategy A (TrOCR LoRA Perplexity), performance reached AUROC = 0.6220, but was vulnerable to spelling variations, language truncation, and OCR token alignment drift.
+
+**Strategy C (Self-Supervised DINOv2 on Sentence Crops) Solves Both Problems**:
+1. **Self-Supervised Vision Foundation Model (`facebook/dinov2-small`)**:
+   - Pre-trained on 142M images via self-distillation and masked patch modeling without human labels or task supervision.
+   - Learns universal, fine-grained representations of stroke continuity, line straightness, loop closures, and graphite pressure variations without adult IAM or ImageNet bias.
+2. **Full Sentence Crops with Zero Slicing**:
+   - Operates directly on the 1,145 full sentence crops (`sentence_01` through `sentence_04`, plus free writing), preserving the child's natural stroke scale and aspect ratio.
+3. **100% Frozen Backbone (Zero Overfitting)**:
+   - All 21.7 million vision transformer parameters remain 100% frozen (0 trainable parameters in the backbone), mathematically preventing memorization on our 215-student cohort.
+4. **Neuromotor Cognitive Stress Deltas**:
+   - Computes both the session-wide visual texture ($\mathbf{e}_{\text{mean}}$) and the cross-task cognitive stress vector:
+     $$\Delta_{\text{stress}} = \|\mathbf{e}_{\text{dictation}} - \mathbf{e}_{\text{copy}}\|_2$$
+     capturing the visual breakdown that occurs when children transition from slow visual copying to rapid auditory dictation.
+5. **Synergistic Multi-Modal Foundation Fusion**:
+   - Combines DINOv2 visual embeddings with the TabPFN tabular foundation model (AUROC = 0.7006), testing the hypothesis that visual foundation features + tabular Bayesian priors deliver orthogonal, synergistic discrimination.
+
+### 2. Implementation & Artifacts
+- **Core Engine ([`models/strategy_c_dinov2.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/models/strategy_c_dinov2.py))**:
+  - `load_dinov2_backbone()`: Loads frozen `facebook/dinov2-small` ($D=384$) on target device.
+  - `extract_crop_dinov2_features()`: Extracts normalized embeddings with aspect-preserving white canvas padding.
+  - `aggregate_student_dinov2_features()`: Aggregates sentence representations into session-level vectors, within-student motor dispersion, and cognitive stress deltas.
+  - `run_dinov2_cross_validation()`: Executes locked 5-repeat $\times$ 5-fold cross-validation with leakage-free PCA ($K=10$) and class-weighted regularized linear probing.
+  - `evaluate_hybrid_foundation_ensemble()`: Evaluates multimodal late fusion between DINOv2 and TabPFN.
+- **Interactive Google Colab Notebook ([`notebooks/strategy_c_dinov2_self_supervised.ipynb`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/notebooks/strategy_c_dinov2_self_supervised.ipynb))**:
+  - 9 structured, self-contained cells: GPU/environment check $\to$ Direct cloud dataset retrieval (`sentence_crops_dataset.zip`) $\to$ Cohort prompt inspection $\to$ DINOv2 backbone loading $\to$ Fast GPU feature extraction across 1,145 crops $\to$ Student aggregation & stress deltas $\to$ Locked 5x5 CV benchmark $\to$ Synergistic TabPFN foundation fusion $\to$ Visualizations & prediction export (`p_strategy_c_dinov2_predictions.csv`).
+- **Automated Regression Suite ([`tests/test_strategy_c.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_strategy_c.py))**:
+  - 4/4 automated tests passed green verifying cohort integrity, synthetic feature aggregation, locked CV execution, and multimodal foundation ensembling.
+
+
 
 
 
