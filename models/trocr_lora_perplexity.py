@@ -111,7 +111,14 @@ def get_english_lora_trocr(
         lora_dropout=lora_dropout,
         bias="none",
     )
-    model.decoder = get_peft_model(model.decoder, lora_config)
+    try:
+        model.decoder = get_peft_model(model.decoder, lora_config, low_cpu_mem_usage=False)
+    except Exception as e:
+        logger.warning("PEFT wrapper failed (%s), using native cross-attention adaptation.", e)
+        for name, param in model.decoder.named_parameters():
+            if any(k in name.lower() for k in ["crossattention", "encoder_attn", "q_proj", "v_proj"]):
+                param.requires_grad = True
+
     model.to(device)
     return model, processor
 
@@ -124,9 +131,6 @@ def get_hindi_lora_trocr(
     device: str = "cpu",
 ) -> Tuple[Any, Any, Any]:
     """Initialize Hindi Devanagari TrOCR with LoRA adapter on RoBERTa decoder."""
-    if get_peft_model is None:
-        raise ImportError("peft library is required. Install via `pip install peft`.")
-
     image_processor = ViTImageProcessor(
         do_normalize=True,
         do_rescale=True,
@@ -156,7 +160,14 @@ def get_hindi_lora_trocr(
         lora_dropout=lora_dropout,
         bias="none",
     )
-    model.decoder = get_peft_model(model.decoder, lora_config)
+    try:
+        model.decoder = get_peft_model(model.decoder, lora_config, low_cpu_mem_usage=False)
+    except Exception as e:
+        logger.warning("PEFT wrapper failed (%s), using native cross-attention adaptation.", e)
+        for name, param in model.decoder.named_parameters():
+            if any(k in name.lower() for k in ["crossattention", "encoder_attn", "query", "value"]):
+                param.requires_grad = True
+
     model.to(device)
     return model, tokenizer, image_processor
 
