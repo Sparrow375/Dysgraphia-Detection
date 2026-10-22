@@ -1128,6 +1128,8 @@ In Stage 21, DenseNet201 patch representations were averaged across the student'
   - Full CLI runner supporting GPU-accelerated feature extraction, 5x5 CV training, and prediction export.
 - **Interactive Google Colab Notebook ([`notebooks/strategy_b_gated_attention_mil.ipynb`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/notebooks/strategy_b_gated_attention_mil.ipynb))**:
   - 9 structured cells: GPU check $\to$ Data unzipping $\to$ Dual ViT extraction with embedding caching $\to$ MIL model definition $\to$ 5x5 CV benchmark loop $\to$ ROC/PR curves $\to$ Word-level attention gallery $\to$ Prediction export.
+  - Resolved Colab browser-widget file upload restrictions by providing direct high-speed cloud download (`https://temp.sh/RSkck/word_crops_dataset.zip`).
+  - Hardened all Colab notebook cells to be completely self-contained with explicit path references (`DATA_DIR`, `index_csv`, `device`) so cells execute reliably without hidden inter-cell dependency issues.
 
 ### 4. Automated Testing & Verification
 - Authored unit test suites [`tests/test_mil_model.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_mil_model.py) and [`tests/test_mil_dataset.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_mil_dataset.py):
