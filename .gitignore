@@ -44,6 +44,8 @@ ehthumbs.db
 
 # Local datasets (always tracked via DVC pointer files *.dvc)
 data/processed/
+data/word_crops_dataset/
+data/word_crops_dataset.zip
 qa/*.html
 scratch/
 

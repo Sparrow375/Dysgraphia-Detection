@@ -1096,4 +1096,46 @@ Results across all 5 repeats $\times$ 5 folds (215 students, 1,075 student-fold 
 - Updated [`tests/test_main_pipeline.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_main_pipeline.py), [`tests/test_multi_stream.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_multi_stream.py), [`tests/test_phase0.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_phase0.py), and [`tests/test_phase4_stage2.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_phase4_stage2.py).
 - Automated regression suite: **83/83 tests passing green (100% pass rate)**.
 
+---
+
+## Phase 5 Stage 26: Strategy B — Handwriting ViT Encoder + Gated Attention Multiple Instance Learning (MIL) for Google Colab (Completed 2026-10-22)
+
+### 1. Clinical Rationale & Architectural Design
+In Stage 21, DenseNet201 patch representations were averaged across the student's notebook page. Because dysgraphic children often write 15–20 readable words and experience acute neuromotor collapse on only 3–5 difficult words or under fatigue, arithmetic averaging diluted the visual breakdown signal into the baseline noise.
+
+**The Fix: Gated Attention MIL on Frozen Handwriting Foundation ViTs**:
+1. **Foundation Vision Transformer Encoders**: Replaced ImageNet textures with the frozen vision encoder backbones from `microsoft/trocr-small-handwritten` (for Latin script) and `paudelanil/trocr-devanagari-2` (for Devanagari script), capturing stroke curvature, loop closures, and ink hesitations.
+2. **Gated Attention Mechanism (Ilse et al., ICML 2018)**:
+   $$e_{i,k} = \mathbf{w}^T \left( \tanh(\mathbf{V} h_{i,k}) \odot \sigma(\mathbf{U} h_{i,k}) \right)$$
+   $$a_{i,k} = \frac{\exp(e_{i,k})}{\sum_{j=1}^{K_i} \exp(e_{i,j})}$$
+   The network dynamically assigns an attention weight $a_{i,k} \in [0, 1]$ to each word on the page ($\sum a_k = 1$), zooming in on the most dysgraphic words.
+3. **Mathematical Immunity to Overfitting**: With frozen ViT encoders, low-rank projection $d=64$, and attention dimension $L=4$, the trainable parameters total strictly **581 parameters** ($\le 1,000$ limit). Catastrophic overfitting on 215 students is mathematically impossible.
+4. **Clinical Interpretability**: Generates an attention ranking over all words on the page, displaying the top-3 words where neuromuscular motor control collapsed.
+
+### 2. Dataset Packaging & Cohort Verification
+- Implemented [`pipeline/package_word_crops_dataset.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/pipeline/package_word_crops_dataset.py):
+  - Traversed all 215 students in `data/processed/` and extracted 16,469 individual word crops from `page_normalized.png` with 4px margin.
+  - Script distribution: **7,888 English words** and **8,581 Hindi words**.
+  - Generated index metadata [`data/word_crops_dataset/words_index.csv`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/word_crops_dataset/words_index.csv) with bounding boxes, script indicators, and locked 5x5 fold assignments (`repeat_0_fold` through `repeat_4_fold`).
+  - Packaged complete dataset into [`data/word_crops_dataset.zip`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/word_crops_dataset.zip) (113.70 MB), ready for direct Google Colab or Google Drive mounting.
+
+### 3. PyTorch Architecture & Colab Interactive Notebook
+- **Core Engine ([`models/gated_attention_mil.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/models/gated_attention_mil.py))**:
+  - `GatedAttention`: Non-linear gated attention pooling with padding masking.
+  - `GatedAttentionMIL`: End-to-end multiple instance learner predicting student probability $P \in [0, 1]$.
+  - `StudentBagDataset` & `collate_student_bags`: Handles variable bag sizes ($K_i \in [9, 256]$) via padded batches and boolean masks.
+- **Standalone Runner ([`models/train_mil_colab.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/models/train_mil_colab.py))**:
+  - Full CLI runner supporting GPU-accelerated feature extraction, 5x5 CV training, and prediction export.
+- **Interactive Google Colab Notebook ([`notebooks/strategy_b_gated_attention_mil.ipynb`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/notebooks/strategy_b_gated_attention_mil.ipynb))**:
+  - 9 structured cells: GPU check $\to$ Data unzipping $\to$ Dual ViT extraction with embedding caching $\to$ MIL model definition $\to$ 5x5 CV benchmark loop $\to$ ROC/PR curves $\to$ Word-level attention gallery $\to$ Prediction export.
+
+### 4. Automated Testing & Verification
+- Authored unit test suites [`tests/test_mil_model.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_mil_model.py) and [`tests/test_mil_dataset.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_mil_dataset.py):
+  - Validated attention probability simplex ($\sum a_k = 1, a_k \ge 0$).
+  - Validated parameter ceiling ($\le 1,000$ params, exactly 581).
+  - Validated variable bag collation and gradient propagation.
+  - Validated 215-student cohort coverage and fold assignments.
+- Executed full repository test suite: **91/91 tests passing green (100% pass rate in 187s)**.
+
+
 

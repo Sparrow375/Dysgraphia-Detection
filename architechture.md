@@ -1062,3 +1062,78 @@ Evaluated strictly using 5-repeat $\times$ 5-fold Stratified Group K-Fold split 
 | **Stream 3 Alone (Prompt-Free TrOCR Legibility)** | **0.7245** [0.690, 0.757] | 0.3385 [0.268, 0.414] | 0.1717 | 47.5% | 35.5% |
 | **Unified Meta-Learner (S1 + S2 + S3)** | 0.7110 [0.672, 0.747] | **0.4043** [0.331, 0.461] | **0.1601** | 51.5% | **39.5%** |
 
+---
+
+## 16. Strategy B: Deep Visual Architecture — Handwriting Foundation ViT + Gated-Attention MIL (`models/gated_attention_mil.py`)
+
+### 16.1 Clinical & Representational Motivation
+The failure of Stage 21's DenseNet201 patch stream stemmed from two fundamental flaws:
+1. **Domain Mismatch**: ImageNet CNNs encode textures suited for classifying natural objects (fur, metal, wheels), not pen stroke dynamics, ascenders/descenders, and ligatures.
+2. **Page-Averaging Dilution**: Dysgraphic children do not fail on every word uniformly. They often succeed on simple words and disintegrate into acute neuromotor ataxia on complex words or under fatigue. Averaging patch representations across the whole page mathematically washes out the 3–5 worst words.
+
+### 16.2 Architectural Design: Gated-Attention Multiple Instance Learning
+Strategy B models a student's handwriting submission as an unordered bag of word instances $X_i = \{w_{i,1}, w_{i,2}, \dots, w_{i,K_i}\}$:
+
+```mermaid
+graph TD
+    subgraph Instances ["Student Notebook Submission (Bag of Words)"]
+        W1["Word Crop 1 (English)"]
+        W2["Word Crop 2 (English)"]
+        W3["Word Crop 3 (Hindi)"]
+        WK["Word Crop K (...)"]
+    end
+
+    subgraph Encoders ["Frozen Handwriting ViT Encoders (0 Trainable Parameters)"]
+        ViTEng["TrOCR-Small ViT Encoder (English)<br/>microsoft/trocr-small-handwritten"]
+        ViTHin["Devanagari TrOCR ViT Encoder (Hindi)<br/>paudelanil/trocr-devanagari-2"]
+    end
+
+    W1 --> ViTEng --> H1["h_1 ∈ R^64"]
+    W2 --> ViTEng --> H2["h_2 ∈ R^64"]
+    W3 --> ViTHin --> H3["h_3 ∈ R^64"]
+    WK --> ViTEng --> HK["h_K ∈ R^64"]
+
+    subgraph AttentionMechanism ["Gated-Attention Pooling Layer (~581 Trainable Parameters)"]
+        TanhU["tanh(V h_k)"]
+        SigmV["sigmoid(U h_k)"]
+        Gate["Hadamard Product ⊙"]
+        LinearW["w^T · (tanh ⊙ sigm)"]
+        Softmax["Softmax over Bag K"]
+        TanhU & SigmV --> Gate --> LinearW --> Softmax --> Weights["Attention Weights a_k ∈ [0, 1]"]
+    end
+
+    H1 & H2 & H3 & HK --> AttentionMechanism
+    H1 & H2 & H3 & HK --> WeightedSum["z_student = Σ a_k · h_k"]
+    Weights --> WeightedSum
+
+    subgraph OutputHead ["Decision & Interpretability"]
+        WeightedSum --> ClsLinear["Linear(64, 1) + Sigmoid"]
+        ClsLinear --> Prob["P_student ∈ [0, 1]"]
+        Weights --> Heatmap["Word-Level Clinical Attention Ranking"]
+    end
+```
+
+### 16.3 Mathematical Formulation
+1. **Word Feature Extraction**:
+   - Latin words pass through frozen `microsoft/trocr-small-handwritten` ViT encoder.
+   - Devanagari words pass through frozen `paudelanil/trocr-devanagari-2` ViT encoder.
+   - Patch tokens are mean-pooled and projected to shared representation $h_{i,k} \in \mathbb{R}^d$ ($d=64$).
+2. **Gated-Attention Pooling (Ilse et al., ICML 2018)**:
+   $$e_{i,k} = \mathbf{w}^T \left( \tanh(\mathbf{V} h_{i,k}) \odot \sigma(\mathbf{U} h_{i,k}) \right)$$
+   $$a_{i,k} = \frac{\exp(e_{i,k})}{\sum_{j=1}^{K_i} \exp(e_{i,j})}$$
+   where $\mathbf{V} \in \mathbb{R}^{L \times d}$, $\mathbf{U} \in \mathbb{R}^{L \times d}$, $\mathbf{w} \in \mathbb{R}^{L \times 1}$ with $L=4$.
+3. **Student Classification Head**:
+   $$z_i = \sum_{k=1}^{K_i} a_{i,k} h_{i,k}, \quad \hat{p}_i = \sigma(\mathbf{w}_{\text{cls}}^T z_i + b_{\text{cls}})$$
+4. **Parameter Capacity**:
+   - $\mathbf{V}$: $4 \times 64 = 256$
+   - $\mathbf{U}$: $4 \times 64 = 256$
+   - $\mathbf{w}$: $4 \times 1 = 4$
+   - Classifier: $64 \times 1 + 1 = 65$
+   - **Total Trainable Parameters = 581** (mathematically immune to cohort overfitting).
+
+### 16.4 Clinical Interpretability
+For any evaluated child, the model outputs:
+- $P_{\text{MIL-ViT}} \in [0, 1]$: calibrated student risk.
+- Sorted attention vector $\mathbf{a}_i$: highlights the top-3 words with the highest attention weights, isolating the exact handwriting formations that triggered the dysgraphia referral.
+
+

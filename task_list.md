@@ -359,6 +359,13 @@
     - **Unified Meta-Learner (S1 + S2 + S3)**: AUROC **0.7110** [0.672, 0.747], AUPRC **0.4043** [0.331, 0.461] (+0.10 precision boost!), Brier **0.1601**, Sens@80%Spec **51.5%**, Sens@90%Spec **39.5%** (nearly doubled!).
   - [x] 25.8 Documentation & Git Push: Updated `context.md`, `architechture.md`, `task_list.md`, verified 100% green test pass across 83 tests (`pytest tests/ -v`), committed and pushed to Git.
 
+- [x] Stage 26: Strategy B — Handwriting ViT Encoder + Gated Attention Multiple Instance Learning (MIL) for Google Colab:
+  - [x] 26.1 Implement `pipeline/package_word_crops_dataset.py`: Extracted all 16,469 word crops (7,888 English, 8,581 Hindi across 215 students) from `page_normalized.png` with 4px margin, generated `data/word_crops_dataset/words_index.csv` with student metadata, task, script, and locked 5x5 fold assignments, and packaged into `data/word_crops_dataset.zip` (113.70 MB).
+  - [x] 26.2 Implement PyTorch Gated-Attention MIL engine in `models/gated_attention_mil.py`: `GatedAttention` pooling layer, `StudentBagDataset` for variable-length bags, weighted BCE loss ($\gamma = 175/40$), and 5-repeat x 5-fold cross-validation loop with strictly constrained trainable parameters (581 parameters, << 1,000 limit).
+  - [x] 26.3 Author unit tests in `tests/test_mil_model.py` and `tests/test_mil_dataset.py`: Verified forward/backward pass, softmax attention constraints ($\sum a_k = 1, a_k \ge 0$), variable bag collation, strict parameter ceiling ($\le 1,000$ params), dataset cohort coverage, and locked fold integrity (8/8 passed).
+  - [x] 26.4 Author self-contained Google Colab notebook `notebooks/strategy_b_gated_attention_mil.ipynb` and CLI runner `models/train_mil_colab.py`: Complete with Dual ViT feature extraction (English `microsoft/trocr-small-handwritten` + Hindi `paudelanil/trocr-devanagari-2`), 5x5 CV benchmark, AUROC/AUPRC evaluation, and clinical word-level attention heatmaps.
+  - [x] 26.5 Verification: Executed full repository test suite (91/91 passed green in 187s), documentation (`context.md`, `task_list.md`, `architechture.md`), and Git commit/push.
+
 ---
 
 
