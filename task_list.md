@@ -394,11 +394,15 @@
     - Leakage-free PCA dimensionality reduction ($K=10$) + regularized linear probe with class weighting.
     - Synergistic multi-modal foundation ensemble blending DINOv2 visual features with TabPFN tabular foundation model.
   - [x] 29.2 Automated Unit & Regression Tests (`tests/test_strategy_c.py`): 4/4 tests passed (cohort index coverage, synthetic student feature aggregation, locked 5x5 cross-validation loop, foundation ensemble evaluation).
-  - [x] 29.3 Self-Contained Interactive Google Colab Notebook (`notebooks/strategy_c_dinov2_self_supervised.ipynb`): 9 structured cells with GPU check, direct cloud curl of 1,145 crops, frozen DINOv2 extraction, student aggregation, locked 5x5 CV, clinical scoreboard, TabPFN foundation fusion, and ROC/PR visualizations.
   - [x] 29.4 Documentation & Git Push (`context.md`, `architechture.md`, `task_list.md`).
 
-
-
+- [x] Stage 30: "Baseline Paper" Full Unfreeze Experiment (DenseNet201 / ConvNeXt-Base) — Crop Split vs Honest Student Split:
+  - [x] 30.1 Implement `baseline/train_unfrozen_cnn.py` with fully unfrozen DenseNet201 (~20M params) / ConvNeXt-Base (~88M params), aspect-preserving canvas padding, aggressive augmentations (tilt $\pm 5^\circ$, zoom $0.85\text{--}1.15\times$, random erasing), and unified CLI for Run 1A (random 80/20 crop split) and Run 1B (honest StratifiedGroupKFold student split with student probability pooling).
+  - [x] 30.2 Author automated test suite `tests/test_unfrozen_cnn.py` verifying model loading, forward/backward pass, augmentation tensor shapes, and split leak-prevention (4/4 tests passed green).
+  - [x] 30.3 Execute Run 1A (The "Baseline Paper" Crop Split) on RTX 5060 Ti GPU across 20 epochs, tracking epoch-by-epoch Train/Test AUROC and Loss curves (Train AUROC reached 0.9964, Test Student AUROC reached 0.8802 with 100% student leakage).
+  - [x] 30.4 Execute Run 1B (The Honest student_id Split) on RTX 5060 Ti GPU with identical architecture and hyperparams, tracking epoch-by-epoch Train/Test AUROC (Train AUROC reached 0.9978, Honest Test Crop AUROC collapsed to 0.6767, while Student-Pooled AUROC reached 0.7893).
+  - [x] 30.5 Author empirical findings report comparing Run 1A vs Run 1B trajectories and evaluate the "baseline paper" hypothesis (`reports/unfrozen_cnn_empirical_report.md`).
+  - [x] 30.6 Update `context.md`, `task_list.md`, and commit/push to git.
 
 ## Completed Sprints
 
