@@ -50,4 +50,5 @@ data/sentence_crops_dataset/
 data/sentence_crops_dataset.zip
 qa/*.html
 scratch/
+*.npz
 

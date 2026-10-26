@@ -37,6 +37,9 @@ Dysgraphia-Detection/
 ├── context.md                        # Persistent project memory, sprint logs, and benchmark metrics
 ├── task_list.md                      # Active sprint tasks and historical phase trackers
 ├── requirements.txt                  # Python runtime dependencies
+├── baseline/                         # Deep learning visual models & empirical ablation experiments
+│   ├── train_unfrozen_cnn.py         # Exp 1: Unfrozen DenseNet201/ConvNeXt on raw crops (crop vs honest split)
+│   └── train_denoised_vit.py         # Exp 2: De-noised 3-ch stroke tensor to unfrozen Swin Transformer
 ├── configs/
 │   └── config.yaml                   # Global configuration (seeds, paths, thresholds, protocol definitions)
 ├── data/
@@ -136,7 +139,9 @@ Dysgraphia-Detection/
     ├── test_qa_app.py                # REST API endpoint and static routing tests
     ├── test_features_synthetic.py    # Controlled perturbation sensitivity tests (Spearman ρ ≥ 0.8)
     ├── test_features_invariance.py   # Scale (0.7x) and rotation (±3°) invariance tests
-    └── test_main_pipeline.py         # Unified screening pipeline end-to-end integration tests
+    ├── test_main_pipeline.py         # Unified screening pipeline end-to-end integration tests
+    ├── test_unfrozen_cnn.py          # Exp 1: DenseNet201 forward/backward & leak-free split tests
+    └── test_denoised_vit.py          # Exp 2: 3-ch stroke tensor construction & Swin-T tests
 ```
 
 ---

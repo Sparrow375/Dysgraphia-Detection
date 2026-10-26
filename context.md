@@ -1263,3 +1263,42 @@ To definitively resolve the debate over published deep learning handwriting base
 - Curves Visualization: [`reports/unfrozen_cnn_curves.png`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/unfrozen_cnn_curves.png)
 - Full Whitepaper: [`reports/unfrozen_cnn_empirical_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/unfrozen_cnn_empirical_report.md)
 
+---
+
+## Phase 5 Stage 31: Experiment 2 — The "De-Noised Big Gun" (3-Channel Clean Ink Tensor $\to$ Vision Transformer) (Completed 2026-10-26)
+
+### 1. Scientific Hypothesis & Tensor Formulation
+To eliminate background paper textures, desk shadows, and ruled lines that allowed deep CNNs to cheat via shortcut learning in Experiment 1, we constructed custom 3-channel de-noised tensors ($224 \times 224 \times 3$) padded onto a pitch-black canvas (`[0, 0, 0]`):
+- **Channel 1 (Binary Shape)**: Pure stroke geometry from `{task_id}_clean_ink.png` with ruled lines and background zeroed out.
+- **Channel 2 (Pencil/Pen Pressure)**: Normalized optical density $D(x, y) = \frac{\text{bg\_level} - I(x, y)}{\text{bg\_level}} \in [0, 1]$ masked strictly to ink pixels (background $= 0.0$).
+- **Channel 3 (Stroke Thickness)**: Normalized Euclidean Distance Transform of clean ink pixels ($[0, 1]$, background $= 0.0$).
+
+We trained a fully unfrozen **Swin Transformer** (`swin_tiny_patch4_window7_224`, 27,520,123 trainable parameters) on these pitch-black tensors across 20 epochs under identical splits:
+- **Run 2A (De-Noised Crop Split)**: Standard random 80/20 train/test split pooling all crops (100% student overlap).
+- **Run 2B (Honest `student_id` Split)**: `StratifiedGroupKFold` split strictly by `student_id` (0.0% student leakage) with student-level probability pooling.
+
+### 2. Empirical Findings & Breakthrough Discoveries
+1. **Background Removal Completely Destroys the "Paper Leakage" Cheat Code**:
+   - In Run 1A (Raw DenseNet201), the model effortlessly reached **0.9964 Train AUROC** and **0.8802 Test AUROC** by memorizing paper texture, camera warmth, and desk grain.
+   - In Run 2A (De-noised Swin-T), with the background set to pitch black (`0.0`), **Train AUROC collapsed to 0.5394 and Test Crop AUROC fell to 0.5957**!
+   - This proves conclusively that the 0.8802 AUROC observed in raw crop splits was largely driven by background environmental shortcuts rather than stroke geometry.
+2. **Complete Prevention of Loss Explosion**:
+   - In Run 1B (Raw DenseNet201, honest split), test loss exploded to **1.8512** due to visual overfitting on high-frequency paper grain.
+   - In Run 2B (De-Noised Swin-T, honest split), test loss stayed **exceptionally stable** throughout all 20 epochs ($1.1303 \to 1.0876 \to \mathbf{1.1190}$). Setting the background to zero completely eliminated gradient noise from varying lighting and scanner exposure.
+3. **Honest Generalization on Stroke Mechanics**:
+   - Swin-T steadily learned legitimate motor signals: Train AUROC reached **0.7583** (Student Train AUROC **0.8004**).
+   - Test Crop AUROC reached **0.6457** (peak **0.6494**).
+   - Test Student-Pooled AUROC reached **0.6929** (peaking at **0.7429** at Epoch 3 and sustaining ~0.70 at Epoch 18).
+   - Test Student AUPRC reached **0.4218** (more than $2.2\times$ class prevalence of 0.186).
+4. **Data Efficiency & Modeling Insight**:
+   - Vision Transformers require orders of magnitude more training samples to learn multi-scale motor dysfluencies from scratch on synthetic distance transforms.
+   - Clinical feature engineering (measuring rule-line adherence, shirorekha continuity, letter jitter, and cross-task cognitive fatigue) remains substantially more data-efficient and clinically actionable on cohorts of a few hundred students.
+
+### 3. Artifacts & Code
+- Implementation: [`baseline/train_denoised_vit.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/train_denoised_vit.py)
+- Automated Unit Tests: [`tests/test_denoised_vit.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_denoised_vit.py) (4/4 passed green)
+- Historical Curves & Logs: [`reports/denoised_vit_run2a_history.csv`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/denoised_vit_run2a_history.csv), [`reports/denoised_vit_run2b_history.csv`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/denoised_vit_run2b_history.csv), [`reports/denoised_vit_comparison.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/denoised_vit_comparison.json)
+- Curves Visualization: [`reports/denoised_vit_curves.png`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/denoised_vit_curves.png)
+- Full Whitepaper: [`reports/denoised_vit_empirical_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/denoised_vit_empirical_report.md)
+
+

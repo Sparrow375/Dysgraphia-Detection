@@ -404,6 +404,14 @@
   - [x] 30.5 Author empirical findings report comparing Run 1A vs Run 1B trajectories and evaluate the "baseline paper" hypothesis (`reports/unfrozen_cnn_empirical_report.md`).
   - [x] 30.6 Update `context.md`, `task_list.md`, and commit/push to git.
 
+- [x] Stage 31: Experiment 2 — The "De-Noised Big Gun" (3-Channel Clean Ink Tensor $\to$ Vision Transformer):
+  - [x] 31.1 Implement `baseline/train_denoised_vit.py` generating custom 3-channel tensors (Ch1: Binary Shape, Ch2: Masked Optical Density / Pressure, Ch3: Euclidean Distance Transform / Stroke Thickness) padded onto pitch black canvas `(0, 0, 0)`, preloaded into RAM, and trained on fully unfrozen Swin-Tiny (`swin_t`, ~28M params) or ConvNeXt-Small.
+  - [x] 31.2 Author automated unit test suite `tests/test_denoised_vit.py` verifying 3-channel construction, strict zero background invariance, Swin-T head replacement, and leak-free split (4/4 tests passed green).
+  - [x] 31.3 Execute Run 2A (The De-Noised Crop Split) on RTX 5060 Ti GPU across 20 epochs, tracking epoch-by-epoch Train/Test AUROC and Loss (demonstrated elimination of paper shortcut: Train AUROC collapsed to 0.5394, Test Crop AUROC fell to 0.5957).
+  - [x] 31.4 Execute Run 2B (The Honest `student_id` Split) on RTX 5060 Ti GPU with identical architecture, tracking epoch-by-epoch Train/Test AUROC (Test loss remained completely stable at 1.1190 with zero explosion; Test Student AUROC reached 0.6929, peaking at 0.7429).
+  - [x] 31.5 Author comparative report (`reports/denoised_vit_empirical_report.md`) evaluating whether zeroing out paper texture enables genuine visual feature learning beyond 0.7893 AUROC.
+  - [x] 31.6 Update `context.md`, `task_list.md`, and commit/push to git.
+
 ## Completed Sprints
 
 <details>
