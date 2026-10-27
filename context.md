@@ -1450,3 +1450,23 @@ Evaluated across all 5 locked outer folds on the NVIDIA GeForce RTX 5060 Ti GPU 
 - Benchmark JSON: [`reports/decheated_mil_5fold_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/decheated_mil_5fold_results.json)
 - ROC/PR Curves: [`reports/decheated_mil_5fold_roc_pr_curve.png`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/decheated_mil_5fold_roc_pr_curve.png)
 - Empirical Whitepaper: [`reports/decheated_mil_empirical_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/decheated_mil_empirical_report.md)
+
+## Stage 35: School C (Dawre) Dataset Ingestion & Interactive Dysgraphia Labeler Web App (Active)
+- **School C Cohort (Dawre)**: 47 handwritten sheets across Grades 3, 4, 5, 6, and 7:
+  - Grade 3: 8 sheets (`data/school_c/raw/Grade 3/`)
+  - Grade 4: 6 sheets (`data/school_c/raw/Grade 4/`)
+  - Grade 5: 12 sheets (`data/school_c/raw/Grade 5/`)
+  - Grade 6: 11 sheets (`data/school_c/raw/Grade 6/`)
+  - Grade 7: 10 sheets (`data/school_c/raw/Grade 7/`)
+- **Storage Layout**:
+  - Raw images copied and organized locally into `data/school_c/raw/` matching Schools A & B structure.
+  - Ignored in Git tracking via `data/school_c/.gitignore` (`/raw`).
+  - Synced to `data/manifest.csv` with `student_id = SCHC_G{grade}_{stem}`, `school = school_c`, `school_name = Dawre`, and `is_held_out = True`.
+- **Interactive Labeling Web App (`qa/school_c_labeler.py`)**:
+  - Lightweight single-page web app running on `http://localhost:8090` (launcher: `run_school_c_labeler.bat`).
+  - No task segmentation or bounding box hassle: displays full image pages and enables fast 1-click or keyboard labeling:
+    - <kbd>1</kbd>: Mark as Potential Dysgraphic / At-Risk.
+    - <kbd>0</kbd>: Mark as Control / Normal.
+    - <kbd>U</kbd>: Clear / Unlabeled.
+    - <kbd>→</kbd> / <kbd>←</kbd>: Navigate next / previous image.
+  - Automatically saves on every action to `data/school_c/labels.json`, exports `data/school_c/labels.csv`, and syncs with `data/manifest.csv`.

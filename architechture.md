@@ -58,6 +58,10 @@ Dysgraphia-Detection/
 │   │   └── raw/                      # Raw paper scans for School A (Grades 3, 4, 5, 6, 7)
 │   ├── school_b/
 │   │   └── raw/                      # Raw paper scans for School B (Grades 3, 4, 8)
+│   ├── school_c/
+│   │   ├── raw/                      # Raw paper scans for School C (Dawre, Grades 3, 4, 5, 6, 7; 47 images)
+│   │   ├── labels.json               # Key-value JSON storage for interactive binary dysgraphia labels
+│   │   └── labels.csv                # Tabular exported labels for School C cohort
 │   ├── processed/                    # Segmented crops, masks, and metadata schemas
 │   │   ├── school_a/{student_id}/    # Sentence crops, clean ink masks, review_status.json
 │   │   └── school_b/{student_id}/    # Sentence crops, clean ink masks, review_status.json

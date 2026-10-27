@@ -89,3 +89,4 @@ Across the entire research trajectory on the exact same 215-student cohort:
    - Stage 4 achieves **0.7970 AUROC, 0.4420 AUPRC, and 62.5% Sensitivity @ 80% Specificity** across all 215 students under nested cross-validation.
 2. **Preserve Deep MIL as an Auxiliary Representation**:
    - The wide $(128, 640)$ de-noised pipeline and gated attention mechanism should be retained for qualitative visual inspection and attention-weight attribution in the QA app (`qa/app.py`), while the clinical screening decision should be driven by the proven **Clinical Top-15 Ensemble**.
+

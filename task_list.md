@@ -439,6 +439,13 @@
   - [x] 34.6 Author whitepaper report (`reports/decheated_mil_empirical_report.md`) and user-facing artifacts.
   - [x] 34.7 Update `context.md`, `architechture.md`, and commit/push to git.
 
+- [ ] Stage 35: School C (Dawre) Dataset Ingestion & Interactive Dysgraphia Labeler Web App:
+  - [x] 35.1 Ingest and locally mirror all 47 Dawre Handwritten images from `F:/Avaneesh/download/Dawre Handwritten -20261027T140353Z-1-001/Dawre Handwritten` to `data/school_c/raw/` across Grades 3 to 7 (`Grade 3`, `Grade 4`, `Grade 5`, `Grade 6`, `Grade 7`) matching School A & B architecture.
+  - [x] 35.2 Create `qa/school_c_labeler.py` lightweight single-page web app for binary dysgraphia labeling (`0` = Control, `1` = Potential Dysgraphic, `U` = Clear) with instant auto-save to `data/school_c/labels.json`, `data/school_c/labels.csv`, and live synchronization into `data/manifest.csv`.
+  - [x] 35.3 Add `run_school_c_labeler.bat` convenience launcher and update `configs/config.yaml` with `school_c_raw_dir` and `school_c_labels_csv`.
+  - [ ] 35.4 User interactive labeling via Web App at `http://localhost:8090`.
+  - [ ] 35.5 Update `context.md`, `architechture.md`, and commit/push to git.
+
 ## Completed Sprints
 
 
