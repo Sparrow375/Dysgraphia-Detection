@@ -1,10 +1,17 @@
-"""Line-level multi-modal feature compilation and leak-free scaling for Experiment 4."""
+"""Line-level multi-modal feature compilation and leak-free scaling for Experiments 4 & 5.
+
+Features:
+---------
+- 22 standardized line-level physical math, pressure, stroke-width, tool, and TrOCR features.
+- Leak-free robust z-score fitting strictly on training fold.
+- Learning Under Privileged Information (LUPI): Continuous Wacom stylus motor severity targets.
+"""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -15,8 +22,10 @@ SENTENCE_DATASET_DIR = DATA_DIR / "sentence_crops_dataset"
 INDEX_CSV = SENTENCE_DATASET_DIR / "sentences_index.csv"
 FEATURES_RAW_CSV = DATA_DIR / "features" / "features_raw.csv"
 TROCR_CACHE_JSON = DATA_DIR / "features" / "trocr_cache.json"
+STUDENT_LEVEL_CSV = DATA_DIR / "datasets" / "dataset_student_level.csv"
+STYLUS_CSV = DATA_DIR / "school_a" / "stylus_student_features.csv"
 
-SELECTED_MATH_FEATURES = [
+SELECTED_MATH_FEATURES_16 = [
     "baseline_rmse_norm",
     "rule_offset_std",
     "slant_circular_std_deg",
@@ -35,9 +44,36 @@ SELECTED_MATH_FEATURES = [
     "trocr_mean_confidence",
 ]
 
+SELECTED_MATH_FEATURES_22 = [
+    "is_pencil",
+    "baseline_rmse_norm",
+    "rule_offset_std",
+    "slant_circular_std_deg",
+    "jerk_proxy",
+    "kappa_sign_changes_per_h",
+    "tortuosity_median",
+    "gap_mean",
+    "gap_cv",
+    "gap_fraction_below_0_3h",
+    "gap_fraction_above_2h",
+    "word_height_cv",
+    "component_height_cv",
+    "components_per_unit_width",
+    "stroke_width_cv",
+    "stroke_width_jitter",
+    "stroke_width_bloat_rate",
+    "pressure_intensity_cv",
+    "pressure_faint_rate",
+    "pressure_heavy_rate",
+    "trocr_mean_confidence",
+    "trocr_low_conf_ratio",
+]
+
+SELECTED_MATH_FEATURES = SELECTED_MATH_FEATURES_22
+
 
 def load_raw_multimodal_dataframe() -> pd.DataFrame:
-    """Load sentences index, merge features_raw.csv and TrOCR legibility signals."""
+    """Load sentences index, merge features_raw.csv, student tool indicators, and TrOCR legibility signals."""
     df_index = pd.read_csv(INDEX_CSV)
     df_raw = pd.read_csv(FEATURES_RAW_CSV)
 
@@ -49,6 +85,17 @@ def load_raw_multimodal_dataframe() -> pd.DataFrame:
         how="left",
         suffixes=("", "_raw"),
     )
+
+    # Merge is_pencil from dataset_student_level.csv if available
+    if STUDENT_LEVEL_CSV.exists():
+        df_stu = pd.read_csv(STUDENT_LEVEL_CSV)
+        if "is_pencil" in df_stu.columns:
+            stu_tool = dict(zip(df_stu["student_id"], df_stu["is_pencil"]))
+            df_merged["is_pencil"] = df_merged["student_id"].map(stu_tool).fillna(0.0)
+        else:
+            df_merged["is_pencil"] = 0.0
+    else:
+        df_merged["is_pencil"] = 0.0
 
     # Load TrOCR cache
     trocr_cache: Dict[str, Any] = {}
@@ -92,23 +139,78 @@ def load_raw_multimodal_dataframe() -> pd.DataFrame:
     return df_merged
 
 
+def load_wacom_stylus_lupi_targets() -> Dict[str, float]:
+    """Load continuous Wacom stylus motor severity targets for School A students (LUPI).
+
+    Returns:
+        Dict mapping student_id -> continuous severity score q_i in [0.05, 0.95]
+    """
+    if not STYLUS_CSV.exists():
+        return {}
+
+    try:
+        df_stylus = pd.read_csv(STYLUS_CSV)
+    except Exception:
+        return {}
+
+    cols = ["air_ratio", "mean_pause_sec", "log_jerk", "cv_vel"]
+    for c in cols:
+        if c not in df_stylus.columns:
+            return {}
+
+    z_scores = []
+    for c in cols:
+        vals = df_stylus[c].dropna().values
+        if len(vals) == 0:
+            continue
+        med = float(np.median(vals))
+        mad = float(np.median(np.abs(vals - med)))
+        scale = max(1e-6, 1.4826 * mad)
+        z = (df_stylus[c] - med) / scale
+        z_scores.append(z)
+
+    if not z_scores:
+        return {}
+
+    z_combined = np.mean(z_scores, axis=0)
+    q_stylus = 1.0 / (1.0 + np.exp(-z_combined))
+    q_stylus = np.clip(q_stylus, 0.05, 0.95)
+
+    lupi_dict: Dict[str, float] = {}
+    for sid, q in zip(df_stylus["student_id"], q_stylus):
+        if pd.notna(q):
+            lupi_dict[str(sid)] = float(q)
+
+    return lupi_dict
+
+
 def fit_and_scale_multimodal_features(
     df_all: pd.DataFrame,
     train_uids: List[str],
     test_uids: List[str],
-) -> Tuple[Dict[str, np.ndarray], Dict[str, np.ndarray], Dict[str, np.ndarray]]:
+    feature_cols: Optional[List[str]] = None,
+) -> Tuple[Dict[str, np.ndarray], Dict[str, np.ndarray], Dict[str, Any]]:
     """Fit robust z-scores strictly on training crops and return feature dictionaries.
 
+    Args:
+        df_all: Merged dataset dataframe
+        train_uids: Task UIDs for training students
+        test_uids: Task UIDs for test students
+        feature_cols: Optional list of features to extract (defaults to SELECTED_MATH_FEATURES_22)
+
     Returns:
-        math_features_dict: Dict mapping task_uid -> np.ndarray (16,)
+        math_features_dict: Dict mapping task_uid -> np.ndarray (D,)
         aux_targets_dict: Dict mapping task_uid -> np.ndarray (2,) with [mean_conf, low_conf_ratio]
-        meta_dict: Dict with training medians and MADs
+        meta_dict: Dict with training medians and MAD scales
     """
+    if feature_cols is None:
+        feature_cols = SELECTED_MATH_FEATURES_22
+
     df_train = df_all[df_all["task_uid"].isin(train_uids)].copy()
 
     # Compute training medians and MADs
     stats: Dict[str, Tuple[float, float]] = {}
-    for col in SELECTED_MATH_FEATURES:
+    for col in feature_cols:
         vals = df_train[col].dropna().values
         med = float(np.median(vals)) if len(vals) > 0 else 0.0
         mad = float(np.median(np.abs(vals - med))) if len(vals) > 0 else 1.0
@@ -120,9 +222,9 @@ def fit_and_scale_multimodal_features(
 
     for _, row in df_all.iterrows():
         uid = str(row["task_uid"])
-        vec = np.zeros(len(SELECTED_MATH_FEATURES), dtype=np.float32)
+        vec = np.zeros(len(feature_cols), dtype=np.float32)
 
-        for i, col in enumerate(SELECTED_MATH_FEATURES):
+        for i, col in enumerate(feature_cols):
             val = row[col]
             med, scale = stats[col]
             if pd.isna(val):

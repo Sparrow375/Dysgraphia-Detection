@@ -43,7 +43,9 @@ Dysgraphia-Detection/
 │   ├── train_whole_page_mil.py       # Exp 3: Whole-page end-to-end Gated-Attention MIL on wide (128, 640) crops
 │   ├── multimodal_features.py        # Exp 4: Line-level 16-feature compilation & leak-free robust z-scaling
 │   ├── train_multimodal_mil.py       # Exp 4: Joint Multi-Modal Gated-Attention MIL (Vision + Line Math/OCR + TrOCR Aux Loss)
-│   └── evaluate_multimodal_5fold_cv.py # Exp 4: Cohort-wide 5-fold cross-validation runner (all 215 students OOF)
+│   ├── evaluate_multimodal_5fold_cv.py # Exp 4: Cohort-wide 5-fold cross-validation runner (all 215 students OOF)
+│   ├── decheated_multimodal_mil.py   # Exp 5: De-Cheated MIL (anti-silhouette augs, 98.8% frozen backbone, dilated conv, modality dropout)
+│   └── train_decheated_5fold_cv.py   # Exp 5: Full 5-fold CV engine with inner-val early stopping, stylus LUPI, and Platt calibration
 ├── configs/
 │   └── config.yaml                   # Global configuration (seeds, paths, thresholds, protocol definitions)
 ├── data/
@@ -1302,6 +1304,53 @@ graph TD
    $$\mathbf{z}_{\text{student}} = \sum_{k=1}^K \alpha_k \mathbf{x}_k$$
 4. **Multi-Task Objective**:
    $$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{BCE}}(y_{\text{student}}, \hat{y}_{\text{student}}) + 0.3 \cdot \frac{1}{K} \sum_{k=1}^K \|\hat{\mathbf{y}}_{\text{trocr}, k} - \mathbf{y}_{\text{trocr}, k}\|_2^2$$
+---
 
+## 20. De-Cheated Multi-Modal MIL Architecture (Experiment 5)
 
+### 20.1 Architectural Overview & Dataflow
+```mermaid
+graph TD
+    subgraph MultiModalInput ["Line-Level Inputs (K Lines per Student)"]
+        WideImg["Wide De-noised Tensor (K, 3, 128, 640)<br/>Ch1: Clean Ink, Ch2: Pressure, Ch3: Ruled Line"]
+        MathVec["Physical Math & TrOCR Vector (K, 22)<br/>Motor Jitter, Spacing, Entropy, is_pencil"]
+    end
 
+    subgraph AntiSilhouette ["Anti-Silhouette Spatial Augmentation"]
+        WideImg --> WindowCut["Random Horizontal Window (128x480)<br/>+ 2x SpecAugment Vertical Cutouts (25-40px)<br/>+ Bag Line-Dropout (p=0.5)"]
+    end
+
+    subgraph FrozenBackboneConv ["Dilated Feature Extraction (~180k Trainable Params)"]
+        WindowCut --> DenseNetLocked["DenseNet201 (98.8% Frozen)<br/>Locked conv0..denseblock3 & denselayer1..24"]
+        DenseNetLocked --> DilatedConv["Bottleneck Dilated Sequence Conv1D<br/>Conv1d(1920, 32, dilation=2) + GroupNorm(4, 32)"]
+        DilatedConv --> VisualPool["Spatial Max + Mean Pooling → v_k ∈ R^32"]
+    end
+
+    subgraph ModalityDropoutBlock ["Modality Dropout & Fusion"]
+        VisualPool --> ModDropV["Vision Dropout (p=0.30)"]
+        MathVec --> MathLinear["Linear(22 → 32) + ReLU + Dropout(0.5)"]
+        MathLinear --> ModDropM["Math Dropout (p=0.20)"]
+        ModDropV & ModDropM --> Concat["Concatenate [v_k, m_k] ∈ R^64"]
+    end
+
+    subgraph GatedAttentionMIL ["Trainable Gated Attention & LUPI Loss"]
+        Concat --> AttentionGate["Gated Attention: α_k = softmax(w^T (tanh(V x_k) ⊙ σ(U x_k)))"]
+        AttentionGate --> BagPool["Bag Embedding: z_student = Σ (α_k · x_k)"]
+        BagPool --> Classifier["Student Classifier: Dropout(0.5) + Linear(64 → 1)"]
+        Classifier --> LUPILoss["LUPI Target: 0.75 y_student + 0.25 q_stylus"]
+    end
+```
+
+### 20.2 Key Architectural Components
+1. **98.8% Frozen DenseNet201 + Dilated Sequence Bottleneck**:
+   - Locks 98.8% of DenseNet201 parameters to ImageNet edge primitives.
+   - Extracts features using a lightweight dilated sequence convolution (`Conv1d(1920, 32, kernel_size=3, padding=2, dilation=2)` + `GroupNorm(4, 32)` + `Dropout1d(0.5)`).
+   - Reduces total trainable parameters from 18.3M to 2.34M (with the dilated sequence pooler comprising only 189,664 parameters).
+2. **Anti-Silhouette Spatial Augmentations**:
+   - `AntiSilhouetteAugmentor`: Random $128 	imes 480$ horizontal windowing, SpecAugment-inspired vertical strip cutout (2 masked strips, $25-40$px width), and bag line-dropout.
+3. **Modality Dropout**:
+   - Randomly zeros vision (30%) or math (20%) during training to prevent the gated-attention layer from co-adapting or over-relying on either stream.
+4. **Learning Under Privileged Information (LUPI) Supervision**:
+   - Supervises training bags using continuous Wacom digitizing tablet kinematic severity scores ($	ilde{y}_i = 0.75 y_i + 0.25 q_i^{	ext{stylus}}$), grounding static classifications in physical on-paper pen dynamics.
+5. **Inner-Fold Early Stopping & Platt Probability Calibration**:
+   - Employs an inner validation split (~29 students, 5 positives) per fold to select exponential moving average (`EMAWeightTracker`, $eta = 0.99$) weights and calibrate out-of-fold logits via Platt scaling.

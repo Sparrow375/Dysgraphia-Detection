@@ -1395,8 +1395,58 @@ To verify whether the single 80/20 test split (Fold 5 peak 0.8964–0.9036 AUROC
    - Metrics JSON: [`reports/multimodal_mil_5fold_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/multimodal_mil_5fold_results.json)
    - Curves Visualization: [`reports/multimodal_mil_5fold_roc_pr_curve.png`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/multimodal_mil_5fold_roc_pr_curve.png)
    - Full Report: [`reports/multimodal_mil_5fold_cv_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/multimodal_mil_5fold_cv_report.md)
+## Phase 5 Stage 34: Experiment 5 — De-Cheated Multi-Modal Gated-Attention MIL Benchmark (Completed 2026-10-27)
 
+### 1. Architectural Strategy & Anti-Overfitting Safeguards
+To eliminate the late-epoch student memorization decay identified in Experiment 4 (where peak fold AUROCs reached 0.7725 but decayed to 0.6877 at Epoch 20 due to 15M trainable parameters), Experiment 5 implemented six systematic architectural regularizations:
+1. **Backbone Parameter Reduction (98.8% Freezing)**:
+   - Locked DenseNet201 layers `conv0` through `denseblock3` and `denselayer1` through `denselayer24` of `denseblock4`.
+   - Replaced heavy sequence projections with a lightweight bottleneck dilated 1D sequence convolution (`Conv1d(1920, 32, kernel_size=3, padding=2, dilation=2)` + `GroupNorm(4, 32)` + `Dropout1d(0.5)`).
+   - Total trainable parameters reduced from 18.3M to 2.34M (with the dilated sequence pooler comprising only 189,664 parameters).
+2. **Anti-Silhouette Spatial Augmentation Suite**:
+   - Random $128 	imes 480$ horizontal windowing across the $128 	imes 640$ crop.
+   - SpecAugment-inspired vertical strip cutout (2 masked strips, $25-40$px width) to force the network to examine interior letter loops rather than overall word boundary aspect ratios.
+   - Bag-level line dropout (randomly dropping 1 sentence during training for bags with $K > 2$).
+3. **Modality Dropout**:
+   - Vision vector zeroed with $p = 0.30$; math vector zeroed with $p = 0.20$; both modalities preserved with $p = 0.50$ to enforce unimodal independence and prevent the fusion layer from over-relying on visual features.
+4. **Learning Under Privileged Information (LUPI) via Continuous Stylus Soft Targets**:
+   - Blended binary labels with 200 Hz digitizing stylus physical kinematic severity: $\tilde{y}_i = 0.75 y_i + 0.25 q_i^{\text{stylus}}$ ($q^{\text{stylus}} \in [0, 1]$ computed from on-paper pen velocity, jerk, and pressure entropy in `data/school_a/stylus_student_features.csv`).
+5. **Inner-Fold Early Stopping & Platt Probability Calibration**:
+   - Within each outer training fold ($N = 172$), an inner stratified validation set (~29 students, 5 positives) was held out to select the best exponential moving average (`EMAWeightTracker`, $\beta = 0.99$) checkpoint and calibrate test logits via Platt scaling.
 
+### 2. Empirical Benchmark Results (All 215 Students Evaluated Out-Of-Fold)
+Evaluated across all 5 locked outer folds on the NVIDIA GeForce RTX 5060 Ti GPU (`baseline/train_decheated_5fold_cv.py`):
 
+| Fold | Inner Train (Pos) | Inner Val (Pos) | Test Students (Pos) | Best Inner Val AUROC | Selected Epoch | Test AUROC | Test AUPRC | Sens @ 80% Spec | Sens @ 90% Spec |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Fold 1** | 143 (27 pos) | 29 (5 pos) | 43 (8 pos / 35 ctrl) | 0.5750 | Ep 1 | 0.6321 | 0.2682 | 50.0% (4/8) | 12.5% (1/8) |
+| **Fold 2** | 143 (27 pos) | 29 (5 pos) | 43 (8 pos / 35 ctrl) | 0.8750 | Ep 1 | 0.7214 | 0.3448 | 37.5% (3/8) | 25.0% (2/8) |
+| **Fold 3** | 143 (26 pos) | 29 (6 pos) | 43 (8 pos / 35 ctrl) | 0.2029 | Ep 2 | 0.5839 | 0.2718 | 50.0% (4/8) | 12.5% (1/8) |
+| **Fold 4** | 143 (26 pos) | 29 (6 pos) | 43 (8 pos / 35 ctrl) | 0.4928 | Ep 8 | 0.6143 | 0.2915 | 50.0% (4/8) | 12.5% (1/8) |
+| **Fold 5** | 143 (27 pos) | 29 (5 pos) | 43 (8 pos / 35 ctrl) | 0.5000 | Ep 18 | 0.5768 | 0.2433 | 37.5% (3/8) | 0.0% (0/8) |
+| **Mean ± Std** | — | — | — | — | — | **0.6257 ± 0.052** | **0.2839 ± 0.034** | **45.0% ± 7.9%** | **12.5% ± 8.8%** |
+| **Pooled (All 215)** | **215 Students** | — | **215 Students** | — | — | **0.5611** | **0.2259** | **22.5% (9/40)** | **12.5% (5/40)** |
 
+### 3. Root-Cause Analysis: The Over-Regularization Trap & Validation Noise
+1. **Compounding Destructive Regularization (Underfitting)**:
+   - Stacking horizontal windowing ($128 \times 480$) and two 25–40px vertical strip cutouts destroyed up to $45\%$ of genuine handwriting strokes per line, cutting across Devanagari Shirorekhas and Latin cursive loops.
+   - Combined with modality dropout (present together in only 50% of updates) and soft target compression, training loss plateaued at $0.60 - 0.71$ across all 20 epochs (failing to descend to 0.45 as in Exp 4).
+2. **Inner Validation Instability on 5 Positive Children**:
+   - Holding out 15% of training students left only 5 positive dysgraphic kids per inner validation fold.
+   - With $N_{\text{pos}} = 5$, ranking variance caused inner-validation AUROC to swing wildly (from 0.2029 in Fold 3 to 0.8750 in Fold 2).
+   - In 3 out of 5 folds, early stopping selected Epoch 1 or 2, terminating training before deep stroke features were formed.
+   - Platt scaling on near-random inner-validation logits compressed all test probabilities toward the prior (~0.18), flattening the decision boundary and dragging pooled AUROC down to 0.5611.
 
+### 4. Definitive Strategic Recommendation
+- **Production Screening Winner**: The **Stage 4 Clinical Top-15 Tabular Ensemble** remains the undisputed clinical benchmark (**0.7970 AUROC, 0.4420 AUPRC, 62.5% Sensitivity @ 80% Specificity** under 5x5 nested cross-validation across all 215 students). Its scale-free motor invariants (inter-word spacing fatigue, circular slant variance, jerk proxy, pen bloat) directly measure neuromuscular fatigue without requiring millions of parameters.
+- **Visual MIL Role**: The wide $(128, 640)$ 3-channel visual pipeline and gated-attention mechanism will be maintained as an explainability and visual QA overlay inside the web app (`qa/app.py`), surfacing highlighted dysfluency lines for occupational therapists.
+
+### 5. Deliverables & Code
+- Multi-Modal Feature Compilation: [`baseline/multimodal_features.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/multimodal_features.py)
+- De-Cheated MIL Architecture: [`baseline/decheated_multimodal_mil.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/decheated_multimodal_mil.py)
+- 5-Fold CV Training Engine: [`baseline/train_decheated_5fold_cv.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/train_decheated_5fold_cv.py)
+- Unit Tests: [`tests/test_decheated_mil.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_decheated_mil.py) (5/5 passed)
+- Out-of-Fold Predictions: [`reports/decheated_mil_5fold_oof_predictions.csv`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/decheated_mil_5fold_oof_predictions.csv)
+- Benchmark JSON: [`reports/decheated_mil_5fold_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/decheated_mil_5fold_results.json)
+- ROC/PR Curves: [`reports/decheated_mil_5fold_roc_pr_curve.png`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/decheated_mil_5fold_roc_pr_curve.png)
+- Empirical Whitepaper: [`reports/decheated_mil_empirical_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/decheated_mil_empirical_report.md)

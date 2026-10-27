@@ -1,0 +1,67 @@
+{
+  "experiment": "Experiment 5: De-Cheated Multi-Modal Gated-Attention MIL (5-Fold CV)",
+  "cohort_size": 215,
+  "num_positives": 40,
+  "num_controls": 175,
+  "pooled_oof_auroc": 0.5611428571428572,
+  "pooled_oof_auprc": 0.2259088650102496,
+  "pooled_oof_brier": 0.15139026364345354,
+  "pooled_sens_at_80_spec": 0.225,
+  "pooled_sens_at_90_spec": 0.125,
+  "mean_fold_auroc": 0.6257142857142857,
+  "std_fold_auroc": 0.051909949500484553,
+  "mean_fold_auprc": 0.283921230766354,
+  "std_fold_auprc": 0.034051724920203884,
+  "per_fold_metrics": [
+    {
+      "fold": 1,
+      "best_epoch": 1,
+      "best_inner_val_auroc": 0.575,
+      "test_auroc": 0.6321428571428571,
+      "test_auprc": 0.26821672608437314,
+      "test_brier": 0.15154535027012753,
+      "sens_at_80_spec": 0.5,
+      "sens_at_90_spec": 0.125
+    },
+    {
+      "fold": 2,
+      "best_epoch": 1,
+      "best_inner_val_auroc": 0.875,
+      "test_auroc": 0.7214285714285714,
+      "test_auprc": 0.3447521228771229,
+      "test_brier": 0.14993199279607278,
+      "sens_at_80_spec": 0.375,
+      "sens_at_90_spec": 0.25
+    },
+    {
+      "fold": 3,
+      "best_epoch": 2,
+      "best_inner_val_auroc": 0.2028985507246377,
+      "test_auroc": 0.5839285714285715,
+      "test_auprc": 0.2718349593824322,
+      "test_brier": 0.1520298461041014,
+      "sens_at_80_spec": 0.5,
+      "sens_at_90_spec": 0.125
+    },
+    {
+      "fold": 4,
+      "best_epoch": 8,
+      "best_inner_val_auroc": 0.4927536231884058,
+      "test_auroc": 0.6142857142857143,
+      "test_auprc": 0.29147053457398286,
+      "test_brier": 0.15182746671049285,
+      "sens_at_80_spec": 0.5,
+      "sens_at_90_spec": 0.125
+    },
+    {
+      "fold": 5,
+      "best_epoch": 18,
+      "best_inner_val_auroc": 0.5,
+      "test_auroc": 0.5767857142857142,
+      "test_auprc": 0.24333181091385897,
+      "test_brier": 0.15161666233647308,
+      "sens_at_80_spec": 0.375,
+      "sens_at_90_spec": 0.0
+    }
+  ]
+}

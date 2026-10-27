@@ -430,6 +430,15 @@
   - [x] 33.7 Execute full 5-fold cross-validation (`baseline/evaluate_multimodal_5fold_cv.py`) across all 215 students (Pooled OOF AUROC: 0.6877, Mean Fold AUROC: 0.7143 ± 0.0685, Sens@80%Spec: 45.0%, Sens@90%Spec: 35.0%) and author whitepaper (`reports/multimodal_mil_5fold_cv_report.md`).
   - [x] 33.8 Update `context.md`, `task_list.md`, `architechture.md`, and commit/push to git.
 
+- [x] Stage 34: Experiment 5 — De-Cheated Multi-Modal Gated-Attention MIL Pipeline:
+  - [x] 34.1 Expand `baseline/multimodal_features.py` to 22 line-level features (including `is_pencil`, stroke bloat/jitter, TrOCR confidence/entropy) and implement `load_wacom_stylus_lupi_targets()`.
+  - [x] 34.2 Implement `baseline/decheated_multimodal_mil.py`: anti-silhouette augmentations (horizontal windowing, SpecAugment vertical strip cutout, bag line dropout), 98.8% frozen backbone with bottleneck dilated sequence conv (~180k trainable params), Modality Dropout (30% vision drop, 20% math drop), and EMA weight tracker.
+  - [x] 34.3 Implement `baseline/train_decheated_5fold_cv.py`: full 5-fold cross-validation engine with inner-validation early stopping, soft stylus LUPI targets, and fold-level Platt calibration.
+  - [x] 34.4 Author automated test suite `tests/test_decheated_mil.py` verifying feature compilation, augmentations, parameter reduction, modality dropout, and calibration (5/5 passed).
+  - [x] 34.5 Execute full 5-fold cross-validation across all 215 students on RTX 5060 Ti GPU and compute pooled OOF metrics (AUROC: 0.5611, Mean Fold AUROC: 0.6257 ± 0.0519, AUPRC: 0.2259, Sens@80%Spec: 22.5%).
+  - [x] 34.6 Author whitepaper report (`reports/decheated_mil_empirical_report.md`) and user-facing artifacts.
+  - [x] 34.7 Update `context.md`, `architechture.md`, and commit/push to git.
+
 ## Completed Sprints
 
 
