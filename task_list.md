@@ -446,6 +446,16 @@
   - [ ] 35.4 User interactive labeling via Web App at `http://localhost:8090`.
   - [ ] 35.5 Update `context.md`, `architechture.md`, and commit/push to git.
 
+
+- [x] Stage 36: Experiment 6 — Dual-Script TrOCR Vision + Multi-Modal Gated-Attention MIL Pipeline:
+  - [x] 36.1 Implement `baseline/ablate_exp4_modalities.py` and execute the 4-way modality ablation (Run A: Vision Only, Run B: Math+OCR Only, Run C: Vision+Math No OCR, Run D: Vision+OCR No Math) across all 5 folds on RTX 5060 Ti GPU, exporting `reports/exp4_modality_ablation_report.md`.
+  - [x] 36.2 Implement `baseline/cache_dual_trocr_vision.py`: white-canvas renderer (384x384x3, bg 1.0, dark ink, guideline overlay), duplicate-only bag generation (Clean, Cutout, Micro-Shear), dual-script routing (Hindi -> paudelanil/trocr-devanagari-2, English -> microsoft/trocr-small-handwritten), vertical patch pooling, and disk caching in `data/features/dual_trocr_cached_tokens.npz`.
+  - [x] 36.3 Implement `baseline/dual_trocr_multimodal_mil.py`: dual-script 1D sequence bottleneck adapters (-> R^32), multi-modal line fusion ([v_k || m_k || q_k]), gated attention MIL, and TrOCR auxiliary legibility head.
+  - [x] 36.4 Author automated unit test suite `tests/test_exp6_dual_trocr.py` verifying white-canvas physics, dual-script token projection, duplicate bag generation, and SWA logit normalization.
+  - [x] 36.5 Implement `baseline/evaluate_exp6_dual_trocr_mil.py`: full 5-fold CV runner with zero-split training on 100% of training students (12 epochs, cosine annealing), SWA across Epochs 7-12, and training-anchored logit standardization.
+  - [x] 36.6 Execute full 5-fold cross-validation on RTX 5060 Ti GPU, export predictions, metrics JSON, ROC/PR curve, and empirical report (`reports/exp6_dual_trocr_empirical_report.md`).
+  - [x] 36.7 Update `context.md`, `architechture.md`, `task_list.md`, and commit/push to git.
+
 ## Completed Sprints
 
 

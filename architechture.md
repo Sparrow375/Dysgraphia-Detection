@@ -45,7 +45,11 @@ Dysgraphia-Detection/
 │   ├── train_multimodal_mil.py       # Exp 4: Joint Multi-Modal Gated-Attention MIL (Vision + Line Math/OCR + TrOCR Aux Loss)
 │   ├── evaluate_multimodal_5fold_cv.py # Exp 4: Cohort-wide 5-fold cross-validation runner (all 215 students OOF)
 │   ├── decheated_multimodal_mil.py   # Exp 5: De-Cheated MIL (anti-silhouette augs, 98.8% frozen backbone, dilated conv, modality dropout)
-│   └── train_decheated_5fold_cv.py   # Exp 5: Full 5-fold CV engine with inner-val early stopping, stylus LUPI, and Platt calibration
+│   ├── train_decheated_5fold_cv.py   # Exp 5: Full 5-fold CV engine with inner-val early stopping, stylus LUPI, and Platt calibration
+│   ├── ablate_exp4_modalities.py     # Exp 4: 4-way modality ablation matrix (Vision vs Math vs OCR) across 5 folds
+│   ├── cache_dual_trocr_vision.py    # Exp 6: White-canvas renderer, duplicate bags, dual-script ViT feature caching
+│   ├── dual_trocr_multimodal_mil.py  # Exp 6: Dual-Script TrOCR ViT + 1D Conv Adapters + Multi-Modal Gated MIL
+│   └── evaluate_exp6_dual_trocr_mil.py # Exp 6: Full 5-fold CV runner with SWA & training-anchored logit normalization
 ├── configs/
 │   └── config.yaml                   # Global configuration (seeds, paths, thresholds, protocol definitions)
 ├── data/
@@ -67,7 +71,8 @@ Dysgraphia-Detection/
 │   │   └── school_b/{student_id}/    # Sentence crops, clean ink masks, review_status.json
 │   ├── features/
 │   │   ├── features_raw.csv          # Unnormalized 37-feature table across 1,145 sentence tasks
-│   │   └── features_meta.json        # Mathematical definitions, units, and descriptions
+│   │   ├── features_meta.json        # Mathematical definitions, units, and descriptions
+│   │   └── dual_trocr_cached_tokens.npz # Exp 6: Pre-cached dual-script TrOCR sequence tokens (3,435 image bags)
 │   └── datasets/
 │       ├── dataset_hindi.csv         # Normalized Devanagari tasks (570 tasks, 72 cols)
 │       ├── dataset_english.csv       # Normalized Latin tasks (575 tasks, 66 cols)
@@ -1358,3 +1363,72 @@ graph TD
    - Supervises training bags using continuous Wacom digitizing tablet kinematic severity scores ($	ilde{y}_i = 0.75 y_i + 0.25 q_i^{	ext{stylus}}$), grounding static classifications in physical on-paper pen dynamics.
 5. **Inner-Fold Early Stopping & Platt Probability Calibration**:
    - Employs an inner validation split (~29 students, 5 positives) per fold to select exponential moving average (`EMAWeightTracker`, $eta = 0.99$) weights and calibrate out-of-fold logits via Platt scaling.
+
+
+---
+
+## 21. Dual-Script TrOCR Vision + Multi-Modal Gated-Attention MIL Architecture (Experiment 6)
+
+### 21.1 Architectural Overview & Dataflow
+```mermaid
+graph TD
+    subgraph InputProcessing ["White-Canvas Physics Input (K Lines per Student)"]
+        RawCrop["Task Sentence Crops (1145 Sentences Across Cohort)"] --> WhiteCanvas["White-Canvas Physics Renderer (3, 384, 384)<br/>Ch1: Inverted Binary Ink (1.0 bg, 0.0 ink)<br/>Ch2: Normalized Stroke Optical Density<br/>Ch3: Subtle 2px Guideline Overlay (0.7 gray)"]
+        MathVec["Physical Math & TrOCR Vector (K, 22)<br/>Motor Jitter, Spacing Fatigue, TrOCR Conf"]
+    end
+
+    subgraph ScriptRouting ["Dual-Script Handwriting Transformer Encoders"]
+        WhiteCanvas --> ScriptSwitch{"Script Router<br/>(is_hindi flag)"}
+        ScriptSwitch -- "Hindi / Devanagari" --> HindiViT["paudelanil/trocr-devanagari-2<br/>Vision Transformer (ViT-Base, D=768)<br/>Vertical Patch Pooling: (24x24) → (24, 768)"]
+        ScriptSwitch -- "English / Latin" --> EngDeiT["microsoft/trocr-small-handwritten<br/>Data-efficient ViT (DeiT, D=384)<br/>Vertical Patch Pooling: (24x24) → (24, 384)"]
+    end
+
+    subgraph SequenceAdapters ["Trainable 1D Sequence Bottleneck Adapters"]
+        HindiViT --> HindiAdapter["Conv1D(768 → 32, k=3, pad=1)<br/>+ GroupNorm(4, 32) + GELU + Dropout(0.3)"]
+        EngDeiT --> EngAdapter["Conv1D(384 → 32, k=3, pad=1)<br/>+ GroupNorm(4, 32) + GELU + Dropout(0.3)"]
+        HindiAdapter & EngAdapter --> VisualPool["Global Adaptive Sequence Pooling<br/>[MaxPool; MeanPool] → Linear(64 → 32) → v_k ∈ R^32"]
+    end
+
+    subgraph MultiModalLineFusion ["Line-Level Multi-Modal Fusion"]
+        VisualPool --> LineConcat["Concatenate Line Representations<br/>x_k = [v_k || m_k] ∈ R^64"]
+        MathVec --> MathProj["Linear(22 → 32) + ReLU + Dropout(0.3) → m_k ∈ R^32"]
+        MathProj --> LineConcat
+    end
+
+    subgraph GatedAttentionMIL ["Trainable Gated-Attention Bag Pooling"]
+        LineConcat --> GatedAttn["Attention Gate: α_k = softmax(w^T (tanh(V x_k) ⊙ σ(U x_k)))"]
+        GatedAttn --> BagEmbedding["Student Bag Vector: z_student = Σ (α_k · x_k) ∈ R^64"]
+        BagEmbedding --> StudentClassifier["Dropout(0.35) + Linear(64 → 1) → Student Logit"]
+        VisualPool --> AuxHead["Auxiliary TrOCR Legibility Head<br/>MSE Loss against 1,145 Character Readability Scores"]
+    end
+
+    subgraph SWANormalization ["Training Protocol & Logit Calibration"]
+        StudentClassifier --> SWA["Stochastic Weight Averaging (SWA)<br/>Epochs 7–12 Checkpoint Average (100% Training Students)"]
+        SWA --> Standardizer["Training-Anchored Logit Standardization<br/>z_test = (logit_test - μ_train) / σ_train"]
+        Standardizer --> FinalProb["Calibrated Student Risk Probability"]
+    end
+```
+
+### 21.2 Mathematical Formulation
+1. **White-Canvas Physics Normalization**:
+   $$I_{\text{ch1}}(x, y) = 1.0 - M_{\text{ink}}(x, y)$$
+   $$I_{\text{ch2}}(x, y) = 1.0 - \left( \frac{255 - I_{\text{gray}}(x, y)}{255} \right) \cdot M_{\text{ink}}(x, y)$$
+   $$I_{\text{ch3}}(x, y) = I_{\text{ch1}}(x, y) - 0.3 \cdot M_{\text{rule}}(x, y)$$
+
+2. **Dual-Script Vertical Sequence Pooling**:
+   Given ViT patch tokens $\mathbf{T} \in \mathbb{R}^{B \times 576 \times D_{\text{script}}}$ from an input image of size $384 \times 384$ ($24 \times 24$ patch grid):
+   $$\mathbf{S}[b, w, :] = \frac{1}{24} \sum_{h=1}^{24} \mathbf{T}[b, h \cdot 24 + w, :] \in \mathbb{R}^{24 \times D_{\text{script}}}$$
+   where $D_{\text{script}} = 768$ for Devanagari ViT and $384$ for Latin DeiT.
+
+3. **Script-Specific Bottleneck Projection**:
+   $$\mathbf{H}_{\text{seq}} = \text{Dropout}\left(\text{GELU}\left(\text{GroupNorm}\left(\text{Conv1D}_{1 \times 3}(\mathbf{S})\right)\right)\right) \in \mathbb{R}^{24 \times 32}$$
+   $$\mathbf{v}_k = \mathbf{W}_v \left[ \max_{w} \mathbf{H}_{\text{seq}}[:, w] \,\|\, \frac{1}{24}\sum_{w=1}^{24} \mathbf{H}_{\text{seq}}[:, w] \right] \in \mathbb{R}^{32}$$
+
+4. **Multi-Modal Line Fusion & Gated-Attention Bag Pooling**:
+   $$\mathbf{x}_k = [\mathbf{v}_k \,\|\, \text{Dropout}(\text{ReLU}(\mathbf{W}_m \mathbf{m}_k))] \in \mathbb{R}^{64}$$
+   $$\alpha_k = \frac{\exp\left(\mathbf{w}^T (\tanh(\mathbf{V} \mathbf{x}_k) \odot \sigma(\mathbf{U} \mathbf{x}_k))\right)}{\sum_{j=1}^K \exp\left(\mathbf{w}^T (\tanh(\mathbf{V} \mathbf{x}_j) \odot \sigma(\mathbf{U} \mathbf{x}_j))\right)}$$
+   $$\mathbf{z}_{\text{student}} = \sum_{k=1}^K \alpha_k \mathbf{x}_k \in \mathbb{R}^{64}, \quad \hat{y}_{\text{student}} = \mathbf{w}_c^T \mathbf{z}_{\text{student}} + b_c$$
+
+5. **Stochastic Weight Averaging (SWA) & Logit Standardization**:
+   $$\boldsymbol{\theta}_{\text{SWA}} = \frac{1}{6} \sum_{e=7}^{12} \boldsymbol{\theta}_e$$
+   $$z_{\text{norm}, i} = \frac{\hat{y}_i^{\text{test}} - \mu_{\text{train}}}{\sigma_{\text{train}}}, \quad p_i = \sigma(z_{\text{norm}, i})$$

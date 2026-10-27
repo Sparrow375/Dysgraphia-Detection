@@ -781,3 +781,4 @@ if __name__ == "__main__":
     save_labels(load_labels())
     print(f"School C Dysgraphia Labeler running at http://localhost:{args.port}")
     web.run_app(create_app(), host="127.0.0.1", port=args.port)
+
