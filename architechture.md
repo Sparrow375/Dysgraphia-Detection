@@ -40,7 +40,9 @@ Dysgraphia-Detection/
 ├── baseline/                         # Deep learning visual models & empirical ablation experiments
 │   ├── train_unfrozen_cnn.py         # Exp 1: Unfrozen DenseNet201/ConvNeXt on raw crops (crop vs honest split)
 │   ├── train_denoised_vit.py         # Exp 2: De-noised 3-ch stroke tensor to unfrozen Swin Transformer
-│   └── train_whole_page_mil.py       # Exp 3: Whole-page end-to-end Gated-Attention MIL on wide (128, 640) crops
+│   ├── train_whole_page_mil.py       # Exp 3: Whole-page end-to-end Gated-Attention MIL on wide (128, 640) crops
+│   ├── multimodal_features.py        # Exp 4: Line-level 16-feature compilation & leak-free robust z-scaling
+│   └── train_multimodal_mil.py       # Exp 4: Joint Multi-Modal Gated-Attention MIL (Vision + Line Math/OCR + TrOCR Aux Loss)
 ├── configs/
 │   └── config.yaml                   # Global configuration (seeds, paths, thresholds, protocol definitions)
 ├── data/
@@ -143,7 +145,8 @@ Dysgraphia-Detection/
     ├── test_main_pipeline.py         # Unified screening pipeline end-to-end integration tests
     ├── test_unfrozen_cnn.py          # Exp 1: DenseNet201 forward/backward & leak-free split tests
     ├── test_denoised_vit.py          # Exp 2: 3-ch stroke tensor construction & Swin-T tests
-    └── test_whole_page_mil.py        # Exp 3: Wide 3-ch tensor construction, student bags & MIL tests
+    ├── test_whole_page_mil.py        # Exp 3: Wide 3-ch tensor construction, student bags & MIL tests
+    └── test_multimodal_mil.py        # Exp 4: Feature compilation, partial backbone freeze & multi-task MIL tests
 ```
 
 ---
@@ -1245,5 +1248,59 @@ graph TD
    $$\text{Dist}_{\text{cosine}} = 1 - \frac{\bar{\mathbf{e}}_{\text{dict}} \cdot \bar{\mathbf{e}}_{\text{copy}}}{\|\bar{\mathbf{e}}_{\text{dict}}\| \|\bar{\mathbf{e}}_{\text{copy}}\|}$$
 3. **Synergistic Multimodal Foundation Ensemble**:
    $$P_{\text{hybrid}} = \alpha \cdot P_{\text{DINOv2}} + (1 - \alpha) \cdot P_{\text{TabPFN}}$$
+
+---
+
+## 19. Joint Multi-Modal Gated-Attention MIL Architecture (Experiment 4)
+
+### 19.1 System Architecture Diagram
+
+```mermaid
+graph TD
+    subgraph MultiModalInput ["Line-Level Multi-Modal Input Tensors (K Lines per Student)"]
+        WideImg["Wide De-noised Tensor (K, 3, 128, 640)<br/>Ch1: Clean Ink, Ch2: Pressure, Ch3: Ruled Line"]
+        MathVec["Physical Math & TrOCR Vector (K, 16)<br/>Sub-pixel Geometry, Jitter, Spacing, Confidence"]
+    end
+
+    subgraph DeepVisualBranch ["Visual Processing & Horizontal Sequence Pooling"]
+        WideImg --> FrozenBackbone["DenseNet201 (conv0 to denseblock2)<br/>FROZEN ImageNet Primitives (3M Params)"]
+        FrozenBackbone --> TrainableBackbone["DenseNet201 (denseblock3 & denseblock4)<br/>TRAINABLE Motor Specialization (15M Params)"]
+        TrainableBackbone --> FeatMap["Feature Map (K, 1920, 4, 20)"]
+        FeatMap --> VertMean["Vertical Mean Pooling: (K, 1920, 20)"]
+        VertMean --> Conv1D["1D Sequence Conv (K, 64, 20)<br/>Temporal Left-to-Right Letter Rhythm"]
+        Conv1D --> DualPool["Max + Mean Spatial Pooling: (K, 128)"]
+        DualPool --> ProjV["Linear Projection: v_k ∈ R^32"]
+        ProjV --> AuxHead["Auxiliary TrOCR Legibility Head<br/>MSE Loss against 1,145 Dense Targets"]
+    end
+
+    subgraph MathBranch ["Physical Math Projection"]
+        MathVec --> MathProj["Linear + ReLU + Dropout<br/>m_k ∈ R^32"]
+    end
+
+    subgraph FusionMIL ["Line-Level Fusion & Gated-Attention MIL"]
+        ProjV & MathProj --> Concat["Concatenate: x_k = [v_k, m_k] ∈ R^64"]
+        Concat --> GateV["V(x_k) ∈ R^32 with Tanh"]
+        Concat --> GateU["U(x_k) ∈ R^32 with Sigmoid"]
+        GateV & GateU --> ElementWise["Hadamard Product: v ⊙ u"]
+        ElementWise --> LinearW["Linear w^T → Attention Logits"]
+        LinearW --> Softmax["Softmax over K Lines → α_k"]
+        Concat & Softmax --> BagPool["Weighted Sum: z = Σ (α_k · x_k) ∈ R^64"]
+        BagPool --> Classifier["Student Dropout(0.35) + Linear(64 → 1)"]
+        Classifier --> StudentLogit["Student Dysgraphia Probability"]
+    end
+```
+
+### 19.2 Mathematical Formulation
+1. **Horizontal Sequence Pooling**:
+   $$\mathbf{s}_k = \frac{1}{H} \sum_{h=1}^H \mathbf{F}_k[:, h, :] \in \mathbb{R}^{C \times W}, \quad \mathbf{h}_k = \text{Conv1D}(\mathbf{s}_k) \in \mathbb{R}^{D \times W}$$
+   $$\mathbf{v}_k = \text{Linear}\left( [\text{MaxPool}(\mathbf{h}_k); \text{MeanPool}(\mathbf{h}_k)] \right) \in \mathbb{R}^{32}$$
+2. **Line-Level Multi-Modal Fusion**:
+   $$\mathbf{x}_k = [\mathbf{v}_k \,\|\, \text{Dropout}(\text{ReLU}(\mathbf{W}_m \mathbf{m}_k))] \in \mathbb{R}^{64}$$
+3. **Trainable Gated-Attention Bag Pooling**:
+   $$\alpha_k = \frac{\exp\left(\mathbf{w}^T (\tanh(\mathbf{V} \mathbf{x}_k) \odot \sigma(\mathbf{U} \mathbf{x}_k))\right)}{\sum_{j=1}^K \exp\left(\mathbf{w}^T (\tanh(\mathbf{V} \mathbf{x}_j) \odot \sigma(\mathbf{U} \mathbf{x}_j))\right)}$$
+   $$\mathbf{z}_{\text{student}} = \sum_{k=1}^K \alpha_k \mathbf{x}_k$$
+4. **Multi-Task Objective**:
+   $$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{BCE}}(y_{\text{student}}, \hat{y}_{\text{student}}) + 0.3 \cdot \frac{1}{K} \sum_{k=1}^K \|\hat{\mathbf{y}}_{\text{trocr}, k} - \mathbf{y}_{\text{trocr}, k}\|_2^2$$
+
 
 

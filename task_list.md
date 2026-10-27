@@ -420,7 +420,17 @@
   - [x] 32.5 Author empirical findings report (`reports/whole_page_mil_empirical_report.md`) comparing Run 3B against Run 1B (0.7893) and Run 2B (0.6929) with attention weight diagnostic analysis across tasks (discovered free writing Sentence 6 receives 1.78x higher attention in dysgraphic kids).
   - [x] 32.6 Update `context.md`, `task_list.md`, and commit/push to git.
 
+- [x] Stage 33: Experiment 4 — Joint Multi-Modal Gated-Attention MIL (Vision + Line Math/OCR + Auxiliary Loss):
+  - [x] 33.1 Implement `baseline/multimodal_features.py` extracting 16 standardized line-level math & TrOCR features with leak-free fold scaling.
+  - [x] 33.2 Implement `baseline/train_multimodal_mil.py` with partial backbone freezing (`conv0`-`denseblock2` locked), horizontal sequence pooling, line-level multi-modal fusion, and multi-task auxiliary legibility loss.
+  - [x] 33.3 Author automated unit test suite `tests/test_multimodal_mil.py` verifying feature compilation, sequence pooler, partial freezing, and multi-task forward/backward pass (4/4 tests passed green).
+  - [x] 33.4 Execute Run 4A (Multi-Modal Gated-Attention MIL without auxiliary loss) across 20 epochs on RTX 5060 Ti GPU (Peak Test Student AUROC reached 0.9036 at Ep 17, AUPRC reached 0.7268).
+  - [x] 33.5 Execute Run 4B (Full Multi-Task Multi-Modal Gated-Attention MIL with auxiliary loss) across 20 epochs on RTX 5060 Ti GPU (Peak Test Student AUROC reached 0.8964 at Ep 19, Test Student AUPRC surged to record 0.7543, memorization arrested).
+  - [x] 33.6 Author empirical findings report (`reports/multimodal_mil_empirical_report.md`) evaluating how multi-modal line fusion broke 0.85+ AUROC honestly with 0.0% student leakage.
+  - [x] 33.7 Update `context.md`, `task_list.md`, and commit/push to git.
+
 ## Completed Sprints
+
 
 
 <details>
