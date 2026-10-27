@@ -1,0 +1,62 @@
+{
+  "experiment": "Experiment 4: Full 5-Fold Cross-Validation Multi-Modal MIL",
+  "cohort_size": 215,
+  "num_positives": 40,
+  "num_controls": 175,
+  "pooled_oof_auroc": 0.6877142857142857,
+  "pooled_oof_auprc": 0.3726935806913905,
+  "pooled_oof_brier": 0.15906862090958782,
+  "pooled_sens_at_80_spec": 0.45,
+  "pooled_sens_at_90_spec": 0.35,
+  "mean_fold_auroc": 0.7142857142857142,
+  "std_fold_auroc": 0.06854910350862896,
+  "mean_fold_auprc": 0.44003075123991636,
+  "std_fold_auprc": 0.13906483969282266,
+  "per_fold_metrics": [
+    {
+      "fold": 1,
+      "test_auroc": 0.6464285714285715,
+      "best_auroc": 0.7410714285714286,
+      "test_auprc": 0.4289943609022556,
+      "test_brier": 0.15213954865106435,
+      "sens_at_80_spec": 0.375,
+      "sens_at_90_spec": 0.375
+    },
+    {
+      "fold": 2,
+      "test_auroc": 0.7214285714285714,
+      "best_auroc": 0.7714285714285715,
+      "test_auprc": 0.35267810494103596,
+      "test_brier": 0.19952805259387507,
+      "sens_at_80_spec": 0.375,
+      "sens_at_90_spec": 0.25
+    },
+    {
+      "fold": 3,
+      "test_auroc": 0.6285714285714287,
+      "best_auroc": 0.6535714285714285,
+      "test_auprc": 0.28320105820105823,
+      "test_brier": 0.17203708717085398,
+      "sens_at_80_spec": 0.375,
+      "sens_at_90_spec": 0.125
+    },
+    {
+      "fold": 4,
+      "test_auroc": 0.807142857142857,
+      "best_auroc": 0.825,
+      "test_auprc": 0.6936936936936937,
+      "test_brier": 0.1077036453646373,
+      "sens_at_80_spec": 0.75,
+      "sens_at_90_spec": 0.5
+    },
+    {
+      "fold": 5,
+      "test_auroc": 0.7678571428571429,
+      "best_auroc": 0.8714285714285714,
+      "test_auprc": 0.44158653846153845,
+      "test_brier": 0.16393477076750854,
+      "sens_at_80_spec": 0.5,
+      "sens_at_90_spec": 0.375
+    }
+  ]
+}

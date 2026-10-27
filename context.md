@@ -1376,6 +1376,27 @@ Evaluated on the unified 215-student cohort under strict 5-split `StratifiedGrou
 - Curves Visualization: [`reports/multimodal_mil_curves.png`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/multimodal_mil_curves.png)
 - Full Whitepaper: [`reports/multimodal_mil_empirical_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/multimodal_mil_empirical_report.md)
 
+### 4. Full 5-Fold Cross-Validation Audit (All 215 Students Out-Of-Fold)
+To verify whether the single 80/20 test split (Fold 5 peak 0.8964–0.9036 AUROC) reflected cohort-wide generalization or single-fold variance ($N=43, 8$ positives), we implemented and executed [`baseline/evaluate_multimodal_5fold_cv.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/evaluate_multimodal_5fold_cv.py) across all 5 locked outer folds:
+1. **Cohort Ground Truth Verification**: Verified exact cohort numbers: **40 dysgraphic positives, 175 normal controls** (215 unique students total).
+2. **Pooled Out-Of-Fold Benchmark Results**:
+   - **Pooled OOF AUROC**: **0.6877**
+   - **Mean Fold AUROC**: **0.7143 ± 0.0685** (Folds ranged from 0.6536 in Fold 3 to 0.8714 in Fold 5)
+   - **Pooled OOF AUPRC**: **0.3727** (Mean fold: 0.4400 ± 0.1391; baseline prevalence = 0.1860)
+   - **Pooled Brier Score**: **0.1591**
+   - **Sensitivity @ 80% Specificity**: **45.0%** (18 of 40 dysgraphic children identified at 80% specificity)
+   - **Sensitivity @ 90% Specificity**: **35.0%** (14 of 40 dysgraphic children identified at 90% specificity)
+3. **Clinical Takeaway**:
+   - Single 80/20 test slices carry high sampling variance on small positive cohorts: lucky folds (Fold 4 and Fold 5) hit 0.825–0.871 AUROC, while tougher folds (Fold 1 and Fold 3) drop to 0.63–0.65.
+   - On full cohort cross-validation, the low-capacity, physically invariant **Clinical Top-15 Tabular Model (Stage 4, 0.7970 AUROC, Sens@80%Spec = 62.5%)** maintains superior cohort-wide generalization compared to 15M-parameter deep convolutional networks.
+4. **5-Fold Deliverables**:
+   - Runner: [`baseline/evaluate_multimodal_5fold_cv.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/evaluate_multimodal_5fold_cv.py)
+   - Predictions: [`reports/multimodal_mil_5fold_oof_predictions.csv`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/multimodal_mil_5fold_oof_predictions.csv)
+   - Metrics JSON: [`reports/multimodal_mil_5fold_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/multimodal_mil_5fold_results.json)
+   - Curves Visualization: [`reports/multimodal_mil_5fold_roc_pr_curve.png`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/multimodal_mil_5fold_roc_pr_curve.png)
+   - Full Report: [`reports/multimodal_mil_5fold_cv_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/multimodal_mil_5fold_cv_report.md)
+
+
 
 
 

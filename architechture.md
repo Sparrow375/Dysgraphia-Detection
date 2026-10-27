@@ -42,7 +42,8 @@ Dysgraphia-Detection/
 │   ├── train_denoised_vit.py         # Exp 2: De-noised 3-ch stroke tensor to unfrozen Swin Transformer
 │   ├── train_whole_page_mil.py       # Exp 3: Whole-page end-to-end Gated-Attention MIL on wide (128, 640) crops
 │   ├── multimodal_features.py        # Exp 4: Line-level 16-feature compilation & leak-free robust z-scaling
-│   └── train_multimodal_mil.py       # Exp 4: Joint Multi-Modal Gated-Attention MIL (Vision + Line Math/OCR + TrOCR Aux Loss)
+│   ├── train_multimodal_mil.py       # Exp 4: Joint Multi-Modal Gated-Attention MIL (Vision + Line Math/OCR + TrOCR Aux Loss)
+│   └── evaluate_multimodal_5fold_cv.py # Exp 4: Cohort-wide 5-fold cross-validation runner (all 215 students OOF)
 ├── configs/
 │   └── config.yaml                   # Global configuration (seeds, paths, thresholds, protocol definitions)
 ├── data/

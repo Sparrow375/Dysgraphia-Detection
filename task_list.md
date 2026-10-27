@@ -427,7 +427,8 @@
   - [x] 33.4 Execute Run 4A (Multi-Modal Gated-Attention MIL without auxiliary loss) across 20 epochs on RTX 5060 Ti GPU (Peak Test Student AUROC reached 0.9036 at Ep 17, AUPRC reached 0.7268).
   - [x] 33.5 Execute Run 4B (Full Multi-Task Multi-Modal Gated-Attention MIL with auxiliary loss) across 20 epochs on RTX 5060 Ti GPU (Peak Test Student AUROC reached 0.8964 at Ep 19, Test Student AUPRC surged to record 0.7543, memorization arrested).
   - [x] 33.6 Author empirical findings report (`reports/multimodal_mil_empirical_report.md`) evaluating how multi-modal line fusion broke 0.85+ AUROC honestly with 0.0% student leakage.
-  - [x] 33.7 Update `context.md`, `task_list.md`, and commit/push to git.
+  - [x] 33.7 Execute full 5-fold cross-validation (`baseline/evaluate_multimodal_5fold_cv.py`) across all 215 students (Pooled OOF AUROC: 0.6877, Mean Fold AUROC: 0.7143 ± 0.0685, Sens@80%Spec: 45.0%, Sens@90%Spec: 35.0%) and author whitepaper (`reports/multimodal_mil_5fold_cv_report.md`).
+  - [x] 33.8 Update `context.md`, `task_list.md`, `architechture.md`, and commit/push to git.
 
 ## Completed Sprints
 
