@@ -125,6 +125,7 @@ def train_dual_trocr_fold(
     weight_decay: float = 1e-4,
     device: torch.device = None,
     seed: int = 42,
+    pure_vision: bool = False,
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     """Train Experiment 6 model on one fold with SWA and training-anchored calibration."""
     set_seed(seed + fold_idx)
@@ -166,7 +167,7 @@ def train_dual_trocr_fold(
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_dual_script_bags, pin_memory=True, num_workers=0)
     train_clean_loader = DataLoader(train_clean_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_dual_script_bags, pin_memory=True, num_workers=0)
 
-    model = DualScriptMultiModalMILModel(math_dim=16, visual_dim=32, math_emb_dim=32, attn_dim=32, dropout=0.40).to(device)
+    model = DualScriptMultiModalMILModel(math_dim=16, visual_dim=32, math_emb_dim=0 if pure_vision else 32, attn_dim=32, dropout=0.40, pure_vision=pure_vision).to(device)
 
     criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
     aux_criterion = nn.MSELoss()
@@ -256,7 +257,7 @@ def train_dual_trocr_fold(
     return metrics, test_meta
 
 
-def run_exp6_5fold(device: torch.device) -> Dict[str, Any]:
+def run_exp6_5fold(device: torch.device, pure_vision: bool = False) -> Dict[str, Any]:
     """Execute full 5-fold cross-validation for Experiment 6."""
     tokens_cache = precompute_and_cache_dual_trocr_tokens()
     df_raw = load_raw_multimodal_dataframe()
@@ -271,7 +272,7 @@ def run_exp6_5fold(device: torch.device) -> Dict[str, Any]:
     all_oof_predictions: List[Dict[str, Any]] = []
 
     logger.info("=================================================================")
-    logger.info("Executing Experiment 6: Dual-Script TrOCR Vision + Multi-Modal MIL")
+    logger.info("Executing Experiment 6: Dual-Script TrOCR %s", "PURE VISION MIL (No Math)" if pure_vision else "Vision + Multi-Modal MIL")
     logger.info("Cohort: %d Students (40 Positives, 175 Controls; G3-G8)", len(students_list))
     logger.info("Evaluation: 5-Fold Student Stratified CV (0.0%% Leakage; All OOF)")
     logger.info("=================================================================")
@@ -326,6 +327,7 @@ def run_exp6_5fold(device: torch.device) -> Dict[str, Any]:
             lr=3e-4,
             lambda_aux=0.30,
             device=device,
+            pure_vision=pure_vision,
         )
 
         all_fold_metrics.append(metrics)
@@ -383,26 +385,27 @@ def run_exp6_5fold(device: torch.device) -> Dict[str, Any]:
     # Export Out-of-Fold Predictions CSV
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     oof_df = pd.DataFrame(all_oof_predictions)
-    pred_csv_path = REPORTS_DIR / "exp6_dual_trocr_oof_predictions.csv"
+    prefix = "exp6_pure_vision" if pure_vision else "exp6_dual_trocr"
+    pred_csv_path = REPORTS_DIR / f"{prefix}_oof_predictions.csv"
     oof_df.to_csv(pred_csv_path, index=False)
     logger.info("Saved OOF predictions CSV to %s", pred_csv_path)
 
     # Export Benchmark JSON
-    results_json_path = REPORTS_DIR / "exp6_dual_trocr_results.json"
+    results_json_path = REPORTS_DIR / f"{prefix}_results.json"
     with open(results_json_path, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2, ensure_ascii=False)
     logger.info("Saved benchmark metrics JSON to %s", results_json_path)
 
     # Plot ROC and PR Curves
-    plot_curves(y_true, y_pred, pooled_auroc, pooled_auprc)
+    plot_curves(y_true, y_pred, pooled_auroc, pooled_auprc, prefix=prefix)
 
     # Author Whitepaper Report
-    author_empirical_report(summary, all_fold_metrics)
+    author_empirical_report(summary, all_fold_metrics, prefix=prefix)
 
     return summary
 
 
-def plot_curves(y_true: np.ndarray, y_pred: np.ndarray, auroc: float, auprc: float) -> None:
+def plot_curves(y_true: np.ndarray, y_pred: np.ndarray, auroc: float, auprc: float, prefix: str = "exp6_dual_trocr") -> None:
     """Plot and save ROC and Precision-Recall curves."""
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
@@ -434,15 +437,15 @@ def plot_curves(y_true: np.ndarray, y_pred: np.ndarray, auroc: float, auprc: flo
     axes[1].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plot_path = REPORTS_DIR / "exp6_dual_trocr_roc_pr_curve.png"
+    plot_path = REPORTS_DIR / f"{prefix}_roc_pr_curve.png"
     plt.savefig(plot_path, dpi=300)
     plt.close()
     logger.info("Saved ROC and PR curves plot to %s", plot_path)
 
 
-def author_empirical_report(summary: Dict[str, Any], fold_metrics: List[Dict[str, Any]]) -> None:
+def author_empirical_report(summary: Dict[str, Any], fold_metrics: List[Dict[str, Any]], prefix: str = "exp6_dual_trocr") -> None:
     """Author empirical whitepaper report."""
-    report_path = REPORTS_DIR / "exp6_dual_trocr_empirical_report.md"
+    report_path = REPORTS_DIR / f"{prefix}_empirical_report.md"
     lines = [
         "# Empirical Report: Experiment 6 — Dual-Script TrOCR Vision + Multi-Modal MIL Benchmark",
         "",
@@ -516,8 +519,13 @@ def author_empirical_report(summary: Dict[str, Any], fold_metrics: List[Dict[str
 
 
 def main() -> None:
+    import argparse
+    parser = argparse.ArgumentParser(description="Evaluate Exp 6 Dual-Script TrOCR MIL.")
+    parser.add_argument("--pure-vision", action="store_true", help="Run pure TrOCR vision MIL without math columns.")
+    args = parser.parse_args()
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    run_exp6_5fold(device)
+    run_exp6_5fold(device, pure_vision=args.pure_vision)
 
 
 if __name__ == "__main__":

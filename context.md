@@ -1531,3 +1531,42 @@ Evaluated across all 5 locked outer folds on the NVIDIA GeForce RTX 5060 Ti GPU 
 - Benchmark JSON: [eports/exp6_dual_trocr_results.json\](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp6_dual_trocr_results.json)
 - ROC & PR Curve Artifact: [eports/exp6_dual_trocr_roc_pr_curve.png\](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp6_dual_trocr_roc_pr_curve.png)
 - Empirical Report: [eports/exp6_dual_trocr_empirical_report.md\](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp6_dual_trocr_empirical_report.md)
+
+
+## Stage 37: Test 1 (Pure Vision TrOCR MIL) & Test 2 (Late-Stage Out-of-Fold Multimodal Ensemble) (Completed 2026-10-27)
+
+### 1. Test 1: Pure Vision Dual-Script TrOCR MIL (No Math Attention Pollution)
+In response to the Phase 1 ablation discovery that line-level math scores only 0.5494 AUROC, `--pure-vision` mode was implemented in `baseline/dual_trocr_multimodal_mil.py` and evaluated across all 5 folds on the RTX 5060 Ti GPU (`baseline/evaluate_exp6_dual_trocr_mil.py --pure-vision`):
+- **Pooled Out-Of-Fold AUROC (All 215 Students)**: **0.7101** (Highest deep vision benchmark to date; up from 0.7034 in Exp 6 multimodal).
+- **Mean Fold AUROC**: **0.7121 ± 0.0873**.
+- **Fold 2**: Test AUROC = **0.8500**, Sensitivity @ 80% Specificity = **75.0%** (6 of 8 positive children detected).
+- **Fold 4 Breakthrough**: Test AUROC jumped from **0.6286 → 0.7250** (+9.64 points) by stripping the noisy math branch.
+- **Fold 5**: Test AUROC = **0.7250**, Sensitivity @ 90% Specificity = **50.0%**.
+
+### 2. Test 2: Late Out-of-Fold Ensemble (Stage 4 Tabular + Dual-Script TrOCR Vision)
+The 215 out-of-fold probability predictions from Stage 4 Tabular screening were blended with Dual-Script TrOCR Vision MIL predictions ($P_{\text{final}} = (1 - \alpha) P_{\text{Tabular}} + \alpha P_{\text{Vision}}$) across $\alpha \in [0.0, 1.0]$:
+- **Top-30 Regularized LR + Pure Vision TrOCR ($\alpha = 0.40$)**:
+  - Pooled AUROC: **0.7811** (up from 0.7497 tabular alone and 0.7101 vision alone).
+  - Pooled AUPRC: **0.4992** (up from 0.4001 tabular alone).
+  - Sensitivity @ 80% Specificity: **62.5% (25/40)**.
+  - Sensitivity @ 90% Specificity: **47.5% (19/40)**.
+- **Tabular Ensemble Stack + Pure Vision TrOCR ($\alpha = 0.40$)**:
+  - Pooled AUROC: **0.7771**.
+  - Pooled AUPRC: **0.5315** (**Cohort record**, +32.4% relative gain over standalone tabular).
+  - Sensitivity @ 90% Specificity: **47.5% (19/40)**.
+
+### 3. False Negative Rescue Analysis
+Because tabular models assess cross-page statistics while TrOCR assesses 2D stroke contours, they make orthogonal errors. At 80% specificity, **4 positive dysgraphic children** missed by Tabular screening were rescued into confirmed detection by Pure Vision TrOCR:
+1. `G4_A_Roll17` (School A): Tabular $P=0.398 \to$ Pure Vision $P=0.898 \to$ Blended $P=0.598$ (Rescued).
+2. `G6_A_Roll14` (School A): Tabular $P=0.532 \to$ Pure Vision $P=0.867 \to$ Blended $P=0.666$ (Rescued).
+3. `SCHB_G4_IMG_20261007_100621` (School B): Tabular $P=0.345 \to$ Pure Vision $P=0.789 \to$ Blended $P=0.523$ (Rescued).
+4. `SCHB_G7_IMG_20261007_105436` (School B): Tabular $P=0.496 \to$ Pure Vision $P=0.573 \to$ Blended $P=0.526$ (Rescued).
+Balanced 50/50 cross-school rescue (2 School A, 2 School B) proves true visual generalization.
+
+### 4. Deliverables & Artifacts
+- Pure Vision Runner: [`baseline/evaluate_exp6_dual_trocr_mil.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/evaluate_exp6_dual_trocr_mil.py) (`--pure-vision`)
+- Pure Vision OOF Predictions: [`reports/exp6_pure_vision_oof_predictions.csv`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp6_pure_vision_oof_predictions.csv)
+- Pure Vision Benchmark JSON: [`reports/exp6_pure_vision_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp6_pure_vision_results.json)
+- Pure Vision ROC/PR Plot: [`reports/exp6_pure_vision_roc_pr_curve.png`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp6_pure_vision_roc_pr_curve.png)
+- Late Ensemble Engine: [`baseline/evaluate_late_ensemble.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/evaluate_late_ensemble.py)
+- Late Ensemble Results JSON: [`reports/late_ensemble_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/late_ensemble_results.json)

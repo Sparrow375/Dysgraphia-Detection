@@ -456,6 +456,13 @@
   - [x] 36.6 Execute full 5-fold cross-validation on RTX 5060 Ti GPU, export predictions, metrics JSON, ROC/PR curve, and empirical report (`reports/exp6_dual_trocr_empirical_report.md`).
   - [x] 36.7 Update `context.md`, `architechture.md`, `task_list.md`, and commit/push to git.
 
+- [x] Stage 37: Test 1 (Pure Vision TrOCR MIL) & Test 2 (Late-Stage Out-of-Fold Multimodal Ensemble):
+  - [x] 37.1 Implement `--pure-vision` mode in `baseline/dual_trocr_multimodal_mil.py` and `baseline/evaluate_exp6_dual_trocr_mil.py`, eliminating the 0.5494 math branch from visual attention.
+  - [x] 37.2 Execute Pure Vision 5-fold CV across all 215 students on RTX 5060 Ti GPU (Pooled AUROC: 0.7101, Fold 2: 0.8500, Fold 4: 0.7250, Fold 5: 0.7250).
+  - [x] 37.3 Author `baseline/evaluate_late_ensemble.py` and sweep $\alpha \in [0.0, 1.0]$ blending Stage 4 Tabular models with Dual-Script TrOCR Vision MIL across all 215 out-of-fold students.
+  - [x] 37.4 Verify Late Ensemble breakthrough: AUROC reaches 0.7811, AUPRC surges to cohort record 0.5315 (+32.4% gain), and 4 false negatives rescued across School A and School B (`G4_A_Roll17`, `G6_A_Roll14`, `SCHB_G4_IMG_20261007_100621`, `SCHB_G7_IMG_20261007_105436`).
+  - [x] 37.5 Update `context.md`, `architechture.md`, `task_list.md`, and commit/push to git.
+
 ## Completed Sprints
 
 

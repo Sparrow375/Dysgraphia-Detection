@@ -90,20 +90,25 @@ class DualScriptMultiModalMILModel(nn.Module):
         math_emb_dim: int = 32,
         attn_dim: int = 32,
         dropout: float = 0.40,
+        pure_vision: bool = False,
     ) -> None:
         super().__init__()
         self.visual_dim = visual_dim
-        self.math_emb_dim = math_emb_dim
+        self.pure_vision = pure_vision
+        self.math_emb_dim = 0 if pure_vision else math_emb_dim
 
         # 1. Dual-Script Sequence Bottleneck
         self.visual_adapter = DualScriptSequenceBottleneck(out_dim=visual_dim, dropout=0.30)
 
-        # 2. Math & OCR Feature Projection
-        self.math_proj = nn.Sequential(
-            nn.Linear(math_dim, math_emb_dim),
-            nn.ReLU(),
-            nn.Dropout(p=0.20),
-        )
+        # 2. Math & OCR Feature Projection (skipped if pure_vision)
+        if not pure_vision:
+            self.math_proj = nn.Sequential(
+                nn.Linear(math_dim, math_emb_dim),
+                nn.ReLU(),
+                nn.Dropout(p=0.20),
+            )
+        else:
+            self.math_proj = None
 
         # 3. Auxiliary Legibility Head (Predicts [mean_conf, low_conf_ratio])
         self.aux_head = nn.Sequential(
@@ -113,7 +118,7 @@ class DualScriptMultiModalMILModel(nn.Module):
         )
 
         # 4. Gated Attention Pooling
-        fused_dim = visual_dim + math_emb_dim  # 32 + 32 = 64
+        fused_dim = visual_dim if pure_vision else (visual_dim + math_emb_dim)
         self.attention_V = nn.Linear(fused_dim, attn_dim)
         self.attention_U = nn.Linear(fused_dim, attn_dim)
         self.attention_w = nn.Linear(attn_dim, 1)
@@ -147,11 +152,12 @@ class DualScriptMultiModalMILModel(nn.Module):
         v_emb = self.visual_adapter(seq_tokens_list, script_list)  # (sum(K), 32)
         aux_preds = self.aux_head(v_emb)                           # (sum(K), 2)
 
-        # Math representation
-        m_emb = self.math_proj(all_math)                           # (sum(K), 32)
-
-        # Line fusion
-        x_line = torch.cat([v_emb, m_emb], dim=-1)                 # (sum(K), 64)
+        # Line representation
+        if self.pure_vision:
+            x_line = v_emb                                         # (sum(K), 32) Pure TrOCR Vision
+        else:
+            m_emb = self.math_proj(all_math)                       # (sum(K), 32)
+            x_line = torch.cat([v_emb, m_emb], dim=-1)             # (sum(K), 64) Multi-Modal Fusion
 
         student_logits_list: List[torch.Tensor] = []
         all_attentions: List[torch.Tensor] = []

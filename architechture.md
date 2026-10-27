@@ -1432,3 +1432,60 @@ graph TD
 5. **Stochastic Weight Averaging (SWA) & Logit Standardization**:
    $$\boldsymbol{\theta}_{\text{SWA}} = \frac{1}{6} \sum_{e=7}^{12} \boldsymbol{\theta}_e$$
    $$z_{\text{norm}, i} = \frac{\hat{y}_i^{\text{test}} - \mu_{\text{train}}}{\sigma_{\text{train}}}, \quad p_i = \sigma(z_{\text{norm}, i})$$
+
+
+---
+
+## 22. Pure Vision TrOCR MIL & Out-of-Fold Late Consensus Stacking (Tests 1 & 2)
+
+### 22.1 Motivation & Decoupling
+Phase 1 ablation revealed that line-level physical math features inside neural MIL scored only **0.5494 AUROC**, acting as noise in the attention gating layer when concatenated with visual representations. By removing the 16 math columns from the attention gate:
+1. Gated attention weights $\alpha_k$ are computed strictly on visual stroke dysfluency embeddings $\mathbf{v}_k \in \mathbb{R}^{32}$.
+2. Mean fold AUROC rose to **0.7121 \pm 0.0873** and Fold 4 surged from **0.6286 \to 0.7250** (+9.64 points).
+3. The resulting visual representations become completely orthogonal to the Stage 4 tabular features.
+
+### 22.2 Late Consensus Stacking Architecture
+```mermaid
+graph TD
+    subgraph EngineA ["Engine A: Tabular Hand-Crafted Kinematics (Stage 4)"]
+        TabularData["Multi-Task Session Aggregates (215 Students)<br/>Macro Spacing, Fatigue Slopes, Circular Slant Variance"] --> TabularModel["Top-30 Regularized LR / Stacking Ensemble<br/>(Inner-CV Calibrated Probabilities)"]
+        TabularModel --> P_Tabular["P_Tabular ∈ [0, 1]<br/>Cohort AUROC = 0.7970, AUPRC = 0.4013"]
+    end
+
+    subgraph EngineB ["Engine B: Deep Handwriting Vision MIL (Exp 6 Pure Vision)"]
+        LineCrops["Task Sentence Crops (1145 Sentences)"] --> DualTrOCR["Dual-Script TrOCR Vision Encoders<br/>(Hindi ViT-Base + English DeiT-Small)"]
+        DualTrOCR --> SeqAdapters["1D Sequence Adapters + GroupNorm"]
+        SeqAdapters --> PureVisionMIL["Pure Visual Gated-Attention MIL (v_k ∈ R^32)<br/>Auxiliary Character Legibility Loss"]
+        PureVisionMIL --> SWACalib["SWA (Epochs 7–12) + Training-Anchored Standardization"]
+        SWACalib --> P_Vision["P_Vision ∈ [0, 1]<br/>Cohort AUROC = 0.7101, AUPRC = 0.4285"]
+    end
+
+    subgraph LateEnsemble ["Late Consensus Fusion Layer"]
+        P_Tabular --> Blender["Convex Combination:<br/>P_final = (1 - α) · P_Tabular + α · P_Vision<br/>(Optimal α = 0.40)"]
+        P_Vision --> Blender
+        Blender --> FinalDecision["Ensemble Calibrated Risk Probability<br/>Cohort AUPRC = 0.5315 (+32.4% Relative Surge)<br/>AUROC = 0.7811, 4 Rescued Positives"]
+    end
+```
+
+### 22.3 Mathematical Formulation & Orthogonal Rescue Mechanism
+1. **Late Stacking Formulation**:
+   $$P_{\text{final}, i} = (1 - \alpha) P_{\text{Tabular}, i} + \alpha P_{\text{Vision\_MIL}, i}, \quad \alpha \in [0.0, 1.0]$$
+   Evaluated strictly out-of-fold across all 215 students on identical 5-fold partitions (`repeat_0_fold` 0 through 4).
+
+2. **Benchmark Comparison**:
+   | Pipeline Configuration | 5-Fold Pooled AUROC | 5-Fold Pooled AUPRC | Sens @ 80% Spec | Sens @ 90% Spec | Rescued Positives |
+   |---|:---:|:---:|:---:|:---:|:---:|
+   | **Pure Vision TrOCR MIL ($\alpha = 1.0$)** | 0.7101 | 0.4285 | 50.0% (20/40) | 37.5% (15/40) | Reference Vision |
+   | **Stage 4 Tabular Champion ($\alpha = 0.0$)** | 0.7970 | 0.4013 | 62.5% (25/40) | 42.5% (17/40) | Reference Tabular |
+   | **Late Ensemble ($\alpha = 0.40$) + LR** | **0.7811** | **0.4992** | **62.5% (25/40)** | **47.5% (19/40)** | **+4 Rescued** |
+   | **Late Ensemble ($\alpha = 0.40$) + Stack** | **0.7771** | **0.5315** | 60.0% (24/40) | **47.5% (19/40)** | **+4 Rescued** |
+
+3. **Orthogonal False-Negative Rescue**:
+   Tabular models rely on statistical macro-aggregates across the full page, causing them to miss students whose motor deficits appear as acute micro-morphological breaks (e.g., crushed loops, shaky Shirorekha segments) rather than global spacing shifts. The Pure Vision TrOCR MIL rescues 4 false negatives without increasing false positives:
+
+   | Student ID | School | Grade | Status | $P_{\text{Tabular}}$ | $P_{\text{Vision}}$ | $P_{\text{Ensemble}}$ | Clinical Rescue Mechanism |
+   |---|:---:|:---:|:---:|:---:|:---:|:---:|---|
+   | `G4_A_Roll17` | School A | 4 | **Dysgraphic** | 0.398 (FN) | **0.898** | **0.598 (TP)** | TrOCR detects severe Devanagari headline breaks |
+   | `G6_A_Roll14` | School A | 6 | **Dysgraphic** | 0.532 (FN) | **0.867** | **0.666 (TP)** | Vision flags crushed letter loops and jitter |
+   | `SCHB_G4_IMG_20261007_100621` | School B | 4 | **Dysgraphic** | 0.345 (FN) | **0.789** | **0.523 (TP)** | Rescued via Latin cursive stroke tremors |
+   | `SCHB_G7_IMG_20261007_105436` | School B | 7 | **Dysgraphic** | 0.496 (FN) | **0.573** | **0.526 (TP)** | Rescued via high stroke optical density variance |

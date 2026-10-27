@@ -1,0 +1,4350 @@
+{
+  "tabular_top30_lr_x_Exp6_Multimodal_TrOCR": {
+    "tabular_model": "tabular_top30_lr",
+    "vision_model": "Exp6_Multimodal_TrOCR",
+    "best_auroc_blend": {
+      "alpha": 0.45,
+      "weight_tabular": 0.55,
+      "weight_vision": 0.45,
+      "auroc": 0.7789999999999999,
+      "auprc": 0.49645267003069454,
+      "brier": 0.19150970431037706,
+      "det_at_80_spec": 23,
+      "sens_at_80_spec": 0.575,
+      "det_at_90_spec": 17,
+      "sens_at_90_spec": 0.425,
+      "n_rescued": 3,
+      "rescued_students": [
+        {
+          "student_id": "G4_A_Roll17",
+          "p_tabular": 0.397743820179961,
+          "p_vision": 0.8564367998793356,
+          "p_blend": 0.6041556610446797
+        },
+        {
+          "student_id": "G6_A_Roll14",
+          "p_tabular": 0.5316100905928596,
+          "p_vision": 0.8918967733385262,
+          "p_blend": 0.6937390978284096
+        },
+        {
+          "student_id": "SCHB_G7_IMG_20261007_105436",
+          "p_tabular": 0.4955658910863668,
+          "p_vision": 0.6664480675629494,
+          "p_blend": 0.572462870500829
+        }
+      ]
+    },
+    "best_auprc_blend": {
+      "alpha": 0.55,
+      "weight_tabular": 0.45,
+      "weight_vision": 0.55,
+      "auroc": 0.7751428571428572,
+      "auprc": 0.5019163934627272,
+      "brier": 0.19679706734838356,
+      "det_at_80_spec": 24,
+      "sens_at_80_spec": 0.6,
+      "det_at_90_spec": 18,
+      "sens_at_90_spec": 0.45,
+      "n_rescued": 4,
+      "rescued_students": [
+        {
+          "student_id": "G4_A_Roll17",
+          "p_tabular": 0.397743820179961,
+          "p_vision": 0.8564367998793356,
+          "p_blend": 0.6500249590146171
+        },
+        {
+          "student_id": "G6_A_Roll14",
+          "p_tabular": 0.5316100905928596,
+          "p_vision": 0.8918967733385262,
+          "p_blend": 0.7297677661029762
+        },
+        {
+          "student_id": "SCHB_G4_IMG_20261007_100621",
+          "p_tabular": 0.3449127267466617,
+          "p_vision": 0.7365131487266077,
+          "p_blend": 0.560292958835632
+        },
+        {
+          "student_id": "SCHB_G7_IMG_20261007_105436",
+          "p_tabular": 0.4955658910863668,
+          "p_vision": 0.6664480675629494,
+          "p_blend": 0.5895510881484872
+        }
+      ]
+    },
+    "sweep": [
+      {
+        "alpha": 0.0,
+        "weight_tabular": 1.0,
+        "weight_vision": 0.0,
+        "auroc": 0.7497142857142857,
+        "auprc": 0.40014565392761064,
+        "brier": 0.18874741472363823,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.05,
+        "weight_tabular": 0.95,
+        "weight_vision": 0.05,
+        "auroc": 0.7544285714285714,
+        "auprc": 0.40625979692224407,
+        "brier": 0.18735487364060593,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.549624424730143
+          }
+        ]
+      },
+      {
+        "alpha": 0.1,
+        "weight_tabular": 0.9,
+        "weight_vision": 0.1,
+        "auroc": 0.7595714285714286,
+        "auprc": 0.43346383143833983,
+        "brier": 0.18638719809463006,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 17,
+        "sens_at_90_spec": 0.425,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.5676387588674263
+          }
+        ]
+      },
+      {
+        "alpha": 0.15,
+        "weight_tabular": 0.85,
+        "weight_vision": 0.15,
+        "auroc": 0.763,
+        "auprc": 0.4493883011891576,
+        "brier": 0.18584438808571047,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 17,
+        "sens_at_90_spec": 0.425,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.5856530930047096
+          }
+        ]
+      },
+      {
+        "alpha": 0.2,
+        "weight_tabular": 0.8,
+        "weight_vision": 0.2,
+        "auroc": 0.767,
+        "auprc": 0.4598876130625054,
+        "brier": 0.18572644361384733,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.603667427141993
+          }
+        ]
+      },
+      {
+        "alpha": 0.25,
+        "weight_tabular": 0.75,
+        "weight_vision": 0.25,
+        "auroc": 0.7689999999999999,
+        "auprc": 0.46226908393180577,
+        "brier": 0.1860333646790405,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 17,
+        "sens_at_90_spec": 0.425,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.6216817612792762
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5382864352055124
+          }
+        ]
+      },
+      {
+        "alpha": 0.3,
+        "weight_tabular": 0.7,
+        "weight_vision": 0.3,
+        "auroc": 0.7728571428571429,
+        "auprc": 0.4702260296674973,
+        "brier": 0.1867651512812901,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.5353517140897734
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.6396960954165596
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5468305440293416
+          }
+        ]
+      },
+      {
+        "alpha": 0.35,
+        "weight_tabular": 0.65,
+        "weight_vision": 0.35,
+        "auroc": 0.7761428571428571,
+        "auprc": 0.48272332433581877,
+        "brier": 0.18792180342059603,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.5582863630747421
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.657710429553843
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5553746528531707
+          }
+        ]
+      },
+      {
+        "alpha": 0.4,
+        "weight_tabular": 0.6,
+        "weight_vision": 0.4,
+        "auroc": 0.7775714285714286,
+        "auprc": 0.48934631555889746,
+        "brier": 0.1895033210969584,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.5812210120597109
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.6757247636911263
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5639187616769998
+          }
+        ]
+      },
+      {
+        "alpha": 0.45,
+        "weight_tabular": 0.55,
+        "weight_vision": 0.45,
+        "auroc": 0.7789999999999999,
+        "auprc": 0.49645267003069454,
+        "brier": 0.19150970431037706,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 17,
+        "sens_at_90_spec": 0.425,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.6041556610446797
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.6937390978284096
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.572462870500829
+          }
+        ]
+      },
+      {
+        "alpha": 0.5,
+        "weight_tabular": 0.5,
+        "weight_vision": 0.5,
+        "auroc": 0.7781428571428571,
+        "auprc": 0.498551477800782,
+        "brier": 0.19394095306085216,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.6270903100296483
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.7117534319656929
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.5407129377366346
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5810069793246581
+          }
+        ]
+      },
+      {
+        "alpha": 0.55,
+        "weight_tabular": 0.45,
+        "weight_vision": 0.55,
+        "auroc": 0.7751428571428572,
+        "auprc": 0.5019163934627272,
+        "brier": 0.19679706734838356,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.6500249590146171
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.7297677661029762
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.560292958835632
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5895510881484872
+          }
+        ]
+      },
+      {
+        "alpha": 0.6,
+        "weight_tabular": 0.4,
+        "weight_vision": 0.6,
+        "auroc": 0.7724285714285715,
+        "auprc": 0.5004083928591372,
+        "brier": 0.2000780471729714,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.6729596079995859
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.7477821002402596
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.5524455357416106
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.5798729799346294
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5980951969723163
+          }
+        ]
+      },
+      {
+        "alpha": 0.65,
+        "weight_tabular": 0.35,
+        "weight_vision": 0.65,
+        "auroc": 0.7652857142857143,
+        "auprc": 0.4848710937827867,
+        "brier": 0.20378389253461557,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.6958942569845545
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.765796434377543
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.5808447892785191
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.5994530010336265
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6066393057961454
+          }
+        ]
+      },
+      {
+        "alpha": 0.7,
+        "weight_tabular": 0.3,
+        "weight_vision": 0.7,
+        "auroc": 0.7584285714285713,
+        "auprc": 0.48070296360161285,
+        "brier": 0.2079146034333162,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.7188289059695233
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.7838107685148263
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.6092440428154275
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.6190330221326239
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6151834146199746
+          }
+        ]
+      },
+      {
+        "alpha": 0.75,
+        "weight_tabular": 0.25,
+        "weight_vision": 0.75,
+        "auroc": 0.7525714285714286,
+        "auprc": 0.47579045589583707,
+        "brier": 0.2124701798690731,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.741763554954492
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.8018251026521096
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.6376432963523361
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.6386130432316213
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6237275234438038
+          }
+        ]
+      },
+      {
+        "alpha": 0.8,
+        "weight_tabular": 0.2,
+        "weight_vision": 0.8,
+        "auroc": 0.7452857142857142,
+        "auprc": 0.46553660059879354,
+        "brier": 0.2174506218418864,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.7646982039394608
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.819839436789393
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.6660425498892447
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.6581930643306185
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6322716322676329
+          }
+        ]
+      },
+      {
+        "alpha": 0.85,
+        "weight_tabular": 0.15,
+        "weight_vision": 0.85,
+        "auroc": 0.7351428571428571,
+        "auprc": 0.46134676040275,
+        "brier": 0.22285592935175613,
+        "det_at_80_spec": 20,
+        "sens_at_80_spec": 0.5,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.7876328529244295
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.8378537709266762
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.6944418034261534
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.6777730854296158
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.640815741091462
+          }
+        ]
+      },
+      {
+        "alpha": 0.9,
+        "weight_tabular": 0.1,
+        "weight_vision": 0.9,
+        "auroc": 0.724,
+        "auprc": 0.43858412307248495,
+        "brier": 0.22868610239868217,
+        "det_at_80_spec": 19,
+        "sens_at_80_spec": 0.475,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.8105675019093982
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.8558681050639596
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.7228410569630617
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.697353106528613
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6493598499152912
+          }
+        ]
+      },
+      {
+        "alpha": 0.95,
+        "weight_tabular": 0.05,
+        "weight_vision": 0.95,
+        "auroc": 0.7135714285714286,
+        "auprc": 0.42461806807452174,
+        "brier": 0.23494114098266455,
+        "det_at_80_spec": 17,
+        "sens_at_80_spec": 0.425,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.833502150894367
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.8738824392012429
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.7512403104999703
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.7169331276276104
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6579039587391203
+          }
+        ]
+      },
+      {
+        "alpha": 1.0,
+        "weight_tabular": 0.0,
+        "weight_vision": 1.0,
+        "auroc": 0.7033571428571429,
+        "auprc": 0.39345264519986556,
+        "brier": 0.2416210451037034,
+        "det_at_80_spec": 17,
+        "sens_at_80_spec": 0.425,
+        "det_at_90_spec": 13,
+        "sens_at_90_spec": 0.325,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.8564367998793356
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8918967733385262,
+            "p_blend": 0.8918967733385262
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.7796395640368788
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.7365131487266077
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6664480675629494
+          }
+        ]
+      }
+    ]
+  },
+  "tabular_multistream_x_Exp6_Multimodal_TrOCR": {
+    "tabular_model": "tabular_multistream",
+    "vision_model": "Exp6_Multimodal_TrOCR",
+    "best_auroc_blend": {
+      "alpha": 0.65,
+      "weight_tabular": 0.35,
+      "weight_vision": 0.65,
+      "auroc": 0.7355714285714284,
+      "auprc": 0.4659180733091732,
+      "brier": 0.21298502437554676,
+      "det_at_80_spec": 21,
+      "sens_at_80_spec": 0.525,
+      "det_at_90_spec": 14,
+      "sens_at_90_spec": 0.35,
+      "n_rescued": 3,
+      "rescued_students": [
+        {
+          "student_id": "G6_A_Roll27",
+          "p_tabular": 0.4914065212670872,
+          "p_vision": 0.7045965516116494,
+          "p_blend": 0.6299800409910526
+        },
+        {
+          "student_id": "SCHB_G5_IMG_20261007_101020",
+          "p_tabular": 0.47042136129871104,
+          "p_vision": 0.8071660461771398,
+          "p_blend": 0.6893054064696897
+        },
+        {
+          "student_id": "SCHB_G7_IMG_20261007_105436",
+          "p_tabular": 0.3939549158155364,
+          "p_vision": 0.6664480675629494,
+          "p_blend": 0.5710754644513548
+        }
+      ]
+    },
+    "best_auprc_blend": {
+      "alpha": 0.6,
+      "weight_tabular": 0.4,
+      "weight_vision": 0.6,
+      "auroc": 0.7354285714285715,
+      "auprc": 0.46684194043487603,
+      "brier": 0.2101294173250141,
+      "det_at_80_spec": 21,
+      "sens_at_80_spec": 0.525,
+      "det_at_90_spec": 15,
+      "sens_at_90_spec": 0.375,
+      "n_rescued": 3,
+      "rescued_students": [
+        {
+          "student_id": "G6_A_Roll27",
+          "p_tabular": 0.4914065212670872,
+          "p_vision": 0.7045965516116494,
+          "p_blend": 0.6193205394738245
+        },
+        {
+          "student_id": "SCHB_G5_IMG_20261007_101020",
+          "p_tabular": 0.47042136129871104,
+          "p_vision": 0.8071660461771398,
+          "p_blend": 0.6724681722257684
+        },
+        {
+          "student_id": "SCHB_G7_IMG_20261007_105436",
+          "p_tabular": 0.3939549158155364,
+          "p_vision": 0.6664480675629494,
+          "p_blend": 0.5574508068639842
+        }
+      ]
+    },
+    "sweep": [
+      {
+        "alpha": 0.0,
+        "weight_tabular": 1.0,
+        "weight_vision": 0.0,
+        "auroc": 0.7054285714285715,
+        "auprc": 0.4120118647368389,
+        "brier": 0.19994956726167226,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.05,
+        "weight_tabular": 0.95,
+        "weight_vision": 0.05,
+        "auroc": 0.7087142857142857,
+        "auprc": 0.4216735799790655,
+        "brier": 0.19909941515173574,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.1,
+        "weight_tabular": 0.9,
+        "weight_vision": 0.1,
+        "auroc": 0.7118571428571429,
+        "auprc": 0.4251224053830743,
+        "brier": 0.19855807630517158,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.15,
+        "weight_tabular": 0.85,
+        "weight_vision": 0.15,
+        "auroc": 0.7155714285714286,
+        "auprc": 0.44339063413707547,
+        "brier": 0.1983255507219799,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.2,
+        "weight_tabular": 0.8,
+        "weight_vision": 0.2,
+        "auroc": 0.7198571428571428,
+        "auprc": 0.45543791473328626,
+        "brier": 0.19840183840216064,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.5340445273359997
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.5377702982743968
+          }
+        ]
+      },
+      {
+        "alpha": 0.25,
+        "weight_tabular": 0.75,
+        "weight_vision": 0.25,
+        "auroc": 0.7228571428571429,
+        "auprc": 0.46473963475306185,
+        "brier": 0.1987869393457138,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.5447040288532278
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.5546075325183183
+          }
+        ]
+      },
+      {
+        "alpha": 0.3,
+        "weight_tabular": 0.7,
+        "weight_vision": 0.3,
+        "auroc": 0.7261428571428572,
+        "auprc": 0.4642414448453572,
+        "brier": 0.19948085355263942,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.5553635303704558
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.5714447667622398
+          }
+        ]
+      },
+      {
+        "alpha": 0.35,
+        "weight_tabular": 0.65,
+        "weight_vision": 0.35,
+        "auroc": 0.7312857142857142,
+        "auprc": 0.46642947863030093,
+        "brier": 0.20048358102293742,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.566023031887684
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.5882820010061611
+          }
+        ]
+      },
+      {
+        "alpha": 0.4,
+        "weight_tabular": 0.6,
+        "weight_vision": 0.4,
+        "auroc": 0.7324285714285714,
+        "auprc": 0.46663984681509507,
+        "brier": 0.2017951217566079,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.5766825334049122
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.6051192352500825
+          }
+        ]
+      },
+      {
+        "alpha": 0.45,
+        "weight_tabular": 0.55,
+        "weight_vision": 0.45,
+        "auroc": 0.734,
+        "auprc": 0.4631343097936953,
+        "brier": 0.20341547575365085,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 17,
+        "sens_at_90_spec": 0.425,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.5873420349221402
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.6219564694940041
+          }
+        ]
+      },
+      {
+        "alpha": 0.5,
+        "weight_tabular": 0.5,
+        "weight_vision": 0.5,
+        "auroc": 0.7342857142857142,
+        "auprc": 0.4621309531386529,
+        "brier": 0.20534464301406619,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 17,
+        "sens_at_90_spec": 0.425,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.5980015364393683
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.6387937037379254
+          }
+        ]
+      },
+      {
+        "alpha": 0.55,
+        "weight_tabular": 0.45,
+        "weight_vision": 0.55,
+        "auroc": 0.7348571428571428,
+        "auprc": 0.4604435331581872,
+        "brier": 0.20758262353785392,
+        "det_at_80_spec": 20,
+        "sens_at_80_spec": 0.5,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.6086610379565964
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.6556309379818469
+          }
+        ]
+      },
+      {
+        "alpha": 0.6,
+        "weight_tabular": 0.4,
+        "weight_vision": 0.6,
+        "auroc": 0.7354285714285715,
+        "auprc": 0.46684194043487603,
+        "brier": 0.2101294173250141,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.6193205394738245
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.6724681722257684
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.3939549158155364,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5574508068639842
+          }
+        ]
+      },
+      {
+        "alpha": 0.65,
+        "weight_tabular": 0.35,
+        "weight_vision": 0.65,
+        "auroc": 0.7355714285714284,
+        "auprc": 0.4659180733091732,
+        "brier": 0.21298502437554676,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.6299800409910526
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.6893054064696897
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.3939549158155364,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5710754644513548
+          }
+        ]
+      },
+      {
+        "alpha": 0.7,
+        "weight_tabular": 0.3,
+        "weight_vision": 0.7,
+        "auroc": 0.7351428571428571,
+        "auprc": 0.46604792959819746,
+        "brier": 0.21614944468945185,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.6406395425082807
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.7061426407136111
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.3939549158155364,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5847001220387256
+          }
+        ]
+      },
+      {
+        "alpha": 0.75,
+        "weight_tabular": 0.25,
+        "weight_vision": 0.75,
+        "auroc": 0.7297142857142856,
+        "auprc": 0.46002837069174085,
+        "brier": 0.21962267826672932,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.6512990440255089
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.6046493232101996
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.7229798749575326
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.3939549158155364,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5983247796260961
+          }
+        ]
+      },
+      {
+        "alpha": 0.8,
+        "weight_tabular": 0.2,
+        "weight_vision": 0.8,
+        "auroc": 0.7245714285714285,
+        "auprc": 0.453850007182325,
+        "brier": 0.2234047251073793,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.6619585455427369
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.6396473713755355
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.739817109201454
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.3939549158155364,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6119494372134668
+          }
+        ]
+      },
+      {
+        "alpha": 0.85,
+        "weight_tabular": 0.15,
+        "weight_vision": 0.85,
+        "auroc": 0.7202857142857143,
+        "auprc": 0.4427044794508048,
+        "brier": 0.2274955852114017,
+        "det_at_80_spec": 19,
+        "sens_at_80_spec": 0.475,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.672618047059965
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.6746454195408714
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.7566543434453756
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.3939549158155364,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6255740948008375
+          }
+        ]
+      },
+      {
+        "alpha": 0.9,
+        "weight_tabular": 0.1,
+        "weight_vision": 0.9,
+        "auroc": 0.7144285714285714,
+        "auprc": 0.43197398497363315,
+        "brier": 0.23189525857879648,
+        "det_at_80_spec": 17,
+        "sens_at_80_spec": 0.425,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.6832775485771931
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.7096434677062071
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.7734915776892969
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.3939549158155364,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6391987523882081
+          }
+        ]
+      },
+      {
+        "alpha": 0.95,
+        "weight_tabular": 0.05,
+        "weight_vision": 0.95,
+        "auroc": 0.7095714285714286,
+        "auprc": 0.4216808201551294,
+        "brier": 0.23660374520956376,
+        "det_at_80_spec": 17,
+        "sens_at_80_spec": 0.425,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.6939370500944212
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.744641515871543
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.7903288119332184
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.3939549158155364,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6528234099755788
+          }
+        ]
+      },
+      {
+        "alpha": 1.0,
+        "weight_tabular": 0.0,
+        "weight_vision": 1.0,
+        "auroc": 0.7033571428571429,
+        "auprc": 0.39345264519986556,
+        "brier": 0.2416210451037034,
+        "det_at_80_spec": 17,
+        "sens_at_80_spec": 0.425,
+        "det_at_90_spec": 13,
+        "sens_at_90_spec": 0.325,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7045965516116494,
+            "p_blend": 0.7045965516116494
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.7796395640368788
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.8071660461771398,
+            "p_blend": 0.8071660461771398
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.3939549158155364,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6664480675629494
+          }
+        ]
+      }
+    ]
+  },
+  "tabular_ensemble_stack_x_Exp6_Multimodal_TrOCR": {
+    "tabular_model": "tabular_ensemble_stack",
+    "vision_model": "Exp6_Multimodal_TrOCR",
+    "best_auroc_blend": {
+      "alpha": 0.35,
+      "weight_tabular": 0.65,
+      "weight_vision": 0.35,
+      "auroc": 0.7747142857142858,
+      "auprc": 0.5153427994530339,
+      "brier": 0.18494396081651568,
+      "det_at_80_spec": 24,
+      "sens_at_80_spec": 0.6,
+      "det_at_90_spec": 21,
+      "sens_at_90_spec": 0.525,
+      "n_rescued": 2,
+      "rescued_students": [
+        {
+          "student_id": "G4_A_Roll17",
+          "p_tabular": 0.4429678318828725,
+          "p_vision": 0.8564367998793356,
+          "p_blend": 0.5876819706816345
+        },
+        {
+          "student_id": "SCHB_G7_IMG_20261007_105436",
+          "p_tabular": 0.4297837431715607,
+          "p_vision": 0.6664480675629494,
+          "p_blend": 0.5126162567085467
+        }
+      ]
+    },
+    "best_auprc_blend": {
+      "alpha": 0.4,
+      "weight_tabular": 0.6,
+      "weight_vision": 0.4,
+      "auroc": 0.7727142857142857,
+      "auprc": 0.5239689583922014,
+      "brier": 0.1873777864345306,
+      "det_at_80_spec": 25,
+      "sens_at_80_spec": 0.625,
+      "det_at_90_spec": 18,
+      "sens_at_90_spec": 0.45,
+      "n_rescued": 3,
+      "rescued_students": [
+        {
+          "student_id": "G4_A_Roll17",
+          "p_tabular": 0.4429678318828725,
+          "p_vision": 0.8564367998793356,
+          "p_blend": 0.6083554190814577
+        },
+        {
+          "student_id": "SCHB_G4_IMG_20261007_100621",
+          "p_tabular": 0.3701277625147419,
+          "p_vision": 0.7365131487266077,
+          "p_blend": 0.5166819169994882
+        },
+        {
+          "student_id": "SCHB_G7_IMG_20261007_105436",
+          "p_tabular": 0.4297837431715607,
+          "p_vision": 0.6664480675629494,
+          "p_blend": 0.5244494729281162
+        }
+      ]
+    },
+    "sweep": [
+      {
+        "alpha": 0.0,
+        "weight_tabular": 1.0,
+        "weight_vision": 0.0,
+        "auroc": 0.7454285714285714,
+        "auprc": 0.4109653225032677,
+        "brier": 0.17689494860687016,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.05,
+        "weight_tabular": 0.95,
+        "weight_vision": 0.05,
+        "auroc": 0.752,
+        "auprc": 0.42682775819858515,
+        "brier": 0.17708183244577033,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.1,
+        "weight_tabular": 0.9,
+        "weight_vision": 0.1,
+        "auroc": 0.7574285714285713,
+        "auprc": 0.4423936234359772,
+        "brier": 0.17758970796740117,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.15,
+        "weight_tabular": 0.85,
+        "weight_vision": 0.15,
+        "auroc": 0.762,
+        "auprc": 0.4684173537972777,
+        "brier": 0.1784185751717627,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.5049881770823419
+          }
+        ]
+      },
+      {
+        "alpha": 0.2,
+        "weight_tabular": 0.8,
+        "weight_vision": 0.2,
+        "auroc": 0.7661428571428571,
+        "auprc": 0.48160805330869494,
+        "brier": 0.17956843405885498,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.5256616254821651
+          }
+        ]
+      },
+      {
+        "alpha": 0.25,
+        "weight_tabular": 0.75,
+        "weight_vision": 0.25,
+        "auroc": 0.7684285714285715,
+        "auprc": 0.4928357247630436,
+        "brier": 0.18103928462867783,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.5463350738819883
+          }
+        ]
+      },
+      {
+        "alpha": 0.3,
+        "weight_tabular": 0.7,
+        "weight_vision": 0.3,
+        "auroc": 0.7717142857142857,
+        "auprc": 0.505602915413522,
+        "brier": 0.1828311268812314,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 20,
+        "sens_at_90_spec": 0.5,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.5670085222818114
+          }
+        ]
+      },
+      {
+        "alpha": 0.35,
+        "weight_tabular": 0.65,
+        "weight_vision": 0.35,
+        "auroc": 0.7747142857142858,
+        "auprc": 0.5153427994530339,
+        "brier": 0.18494396081651568,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 21,
+        "sens_at_90_spec": 0.525,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.5876819706816345
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5126162567085467
+          }
+        ]
+      },
+      {
+        "alpha": 0.4,
+        "weight_tabular": 0.6,
+        "weight_vision": 0.4,
+        "auroc": 0.7727142857142857,
+        "auprc": 0.5239689583922014,
+        "brier": 0.1873777864345306,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.6083554190814577
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.5166819169994882
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5244494729281162
+          }
+        ]
+      },
+      {
+        "alpha": 0.45,
+        "weight_tabular": 0.55,
+        "weight_vision": 0.45,
+        "auroc": 0.7699999999999999,
+        "auprc": 0.517060218577268,
+        "brier": 0.19013260373527627,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.629028867481281
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.5350011863100815
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5362826891476856
+          }
+        ]
+      },
+      {
+        "alpha": 0.5,
+        "weight_tabular": 0.5,
+        "weight_vision": 0.5,
+        "auroc": 0.769,
+        "auprc": 0.5165200869297542,
+        "brier": 0.19320841271875255,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.649702315881104
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.5533204556206748
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5481159053672551
+          }
+        ]
+      },
+      {
+        "alpha": 0.55,
+        "weight_tabular": 0.45,
+        "weight_vision": 0.55,
+        "auroc": 0.7664285714285715,
+        "auprc": 0.5106584117607618,
+        "brier": 0.19660521338495954,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.6703757642809273
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.5716397249312681
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5599491215868245
+          }
+        ]
+      },
+      {
+        "alpha": 0.6,
+        "weight_tabular": 0.4,
+        "weight_vision": 0.6,
+        "auroc": 0.7628571428571429,
+        "auprc": 0.5111052706289401,
+        "brier": 0.20032300573389725,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.6910492126807504
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.5461542964808984
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.5899589942418614
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5717823378063939
+          }
+        ]
+      },
+      {
+        "alpha": 0.65,
+        "weight_tabular": 0.35,
+        "weight_vision": 0.65,
+        "auroc": 0.7574285714285716,
+        "auprc": 0.5120985375861211,
+        "brier": 0.20436178976556557,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.7117226610805736
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.5753399549253959
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.6082782635524546
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5836155540259633
+          }
+        ]
+      },
+      {
+        "alpha": 0.7,
+        "weight_tabular": 0.3,
+        "weight_vision": 0.7,
+        "auroc": 0.7521428571428571,
+        "auprc": 0.49809940170980915,
+        "brier": 0.20872156547996473,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.7323961094803967
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.6045256133698935
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.626597532863048
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.5954487702455329
+          }
+        ]
+      },
+      {
+        "alpha": 0.75,
+        "weight_tabular": 0.25,
+        "weight_vision": 0.75,
+        "auroc": 0.7455714285714286,
+        "auprc": 0.48741412991139926,
+        "brier": 0.2134023328770944,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.7530695578802198
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.633711271814391
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.6449168021736413
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6072819864651022
+          }
+        ]
+      },
+      {
+        "alpha": 0.8,
+        "weight_tabular": 0.2,
+        "weight_vision": 0.8,
+        "auroc": 0.7371428571428572,
+        "auprc": 0.4683815131431132,
+        "brier": 0.21840409195695487,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.773743006280043
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.6628969302588886
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.6632360714842346
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6191152026846717
+          }
+        ]
+      },
+      {
+        "alpha": 0.85,
+        "weight_tabular": 0.15,
+        "weight_vision": 0.85,
+        "auroc": 0.7268571428571429,
+        "auprc": 0.45170196412659835,
+        "brier": 0.22372684271954596,
+        "det_at_80_spec": 19,
+        "sens_at_80_spec": 0.475,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.7944164546798662
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.6920825887033862
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.6815553407948278
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6309484189042411
+          }
+        ]
+      },
+      {
+        "alpha": 0.9,
+        "weight_tabular": 0.1,
+        "weight_vision": 0.9,
+        "auroc": 0.7188571428571429,
+        "auprc": 0.4418445956103691,
+        "brier": 0.22937058516486772,
+        "det_at_80_spec": 17,
+        "sens_at_80_spec": 0.425,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.8150899030796893
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.7212682471478837
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.6998746101054211
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6427816351238105
+          }
+        ]
+      },
+      {
+        "alpha": 0.95,
+        "weight_tabular": 0.05,
+        "weight_vision": 0.95,
+        "auroc": 0.7101428571428572,
+        "auprc": 0.42549217678297935,
+        "brier": 0.23533531929292026,
+        "det_at_80_spec": 17,
+        "sens_at_80_spec": 0.425,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.8357633514795125
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.7504539055923813
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.7181938794160143
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.65461485134338
+          }
+        ]
+      },
+      {
+        "alpha": 1.0,
+        "weight_tabular": 0.0,
+        "weight_vision": 1.0,
+        "auroc": 0.7033571428571429,
+        "auprc": 0.39345264519986556,
+        "brier": 0.2416210451037034,
+        "det_at_80_spec": 17,
+        "sens_at_80_spec": 0.425,
+        "det_at_90_spec": 13,
+        "sens_at_90_spec": 0.325,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8564367998793356,
+            "p_blend": 0.8564367998793356
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.7796395640368788,
+            "p_blend": 0.7796395640368788
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7365131487266077,
+            "p_blend": 0.7365131487266077
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4297837431715607,
+            "p_vision": 0.6664480675629494,
+            "p_blend": 0.6664480675629494
+          }
+        ]
+      }
+    ]
+  },
+  "tabular_top30_lr_x_Exp6_Pure_Vision_TrOCR": {
+    "tabular_model": "tabular_top30_lr",
+    "vision_model": "Exp6_Pure_Vision_TrOCR",
+    "best_auroc_blend": {
+      "alpha": 0.4,
+      "weight_tabular": 0.6,
+      "weight_vision": 0.4,
+      "auroc": 0.7811428571428571,
+      "auprc": 0.49923232143417345,
+      "brier": 0.18868957810560144,
+      "det_at_80_spec": 25,
+      "sens_at_80_spec": 0.625,
+      "det_at_90_spec": 19,
+      "sens_at_90_spec": 0.475,
+      "n_rescued": 4,
+      "rescued_students": [
+        {
+          "student_id": "G4_A_Roll17",
+          "p_tabular": 0.397743820179961,
+          "p_vision": 0.8984516207424725,
+          "p_blend": 0.5980269404049656
+        },
+        {
+          "student_id": "G6_A_Roll14",
+          "p_tabular": 0.5316100905928596,
+          "p_vision": 0.8668680714139694,
+          "p_blend": 0.6657132829213035
+        },
+        {
+          "student_id": "SCHB_G4_IMG_20261007_100621",
+          "p_tabular": 0.3449127267466617,
+          "p_vision": 0.7888978208396791,
+          "p_blend": 0.5225067643838687
+        },
+        {
+          "student_id": "SCHB_G7_IMG_20261007_105436",
+          "p_tabular": 0.4955658910863668,
+          "p_vision": 0.5728012370861331,
+          "p_blend": 0.5264600294862734
+        }
+      ]
+    },
+    "best_auprc_blend": {
+      "alpha": 0.5,
+      "weight_tabular": 0.5,
+      "weight_vision": 0.5,
+      "auroc": 0.7795714285714286,
+      "auprc": 0.5107965157707214,
+      "brier": 0.19300026426423655,
+      "det_at_80_spec": 25,
+      "sens_at_80_spec": 0.625,
+      "det_at_90_spec": 19,
+      "sens_at_90_spec": 0.475,
+      "n_rescued": 4,
+      "rescued_students": [
+        {
+          "student_id": "G4_A_Roll17",
+          "p_tabular": 0.397743820179961,
+          "p_vision": 0.8984516207424725,
+          "p_blend": 0.6480977204612168
+        },
+        {
+          "student_id": "G6_A_Roll14",
+          "p_tabular": 0.5316100905928596,
+          "p_vision": 0.8668680714139694,
+          "p_blend": 0.6992390810034145
+        },
+        {
+          "student_id": "SCHB_G4_IMG_20261007_100621",
+          "p_tabular": 0.3449127267466617,
+          "p_vision": 0.7888978208396791,
+          "p_blend": 0.5669052737931704
+        },
+        {
+          "student_id": "SCHB_G7_IMG_20261007_105436",
+          "p_tabular": 0.4955658910863668,
+          "p_vision": 0.5728012370861331,
+          "p_blend": 0.5341835640862499
+        }
+      ]
+    },
+    "sweep": [
+      {
+        "alpha": 0.0,
+        "weight_tabular": 1.0,
+        "weight_vision": 0.0,
+        "auroc": 0.7497142857142857,
+        "auprc": 0.40014565392761064,
+        "brier": 0.18874741472363823,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.05,
+        "weight_tabular": 0.95,
+        "weight_vision": 0.05,
+        "auroc": 0.7535714285714286,
+        "auprc": 0.40583817170281633,
+        "brier": 0.1872263842867831,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.548372989633915
+          }
+        ]
+      },
+      {
+        "alpha": 0.1,
+        "weight_tabular": 0.9,
+        "weight_vision": 0.1,
+        "auroc": 0.7564285714285715,
+        "auprc": 0.4293800270369263,
+        "brier": 0.18613786838124244,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 17,
+        "sens_at_90_spec": 0.425,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.5651358886749706
+          }
+        ]
+      },
+      {
+        "alpha": 0.15,
+        "weight_tabular": 0.85,
+        "weight_vision": 0.15,
+        "auroc": 0.7622857142857143,
+        "auprc": 0.44628867314766074,
+        "brier": 0.1854818670070162,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 17,
+        "sens_at_90_spec": 0.425,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.581898787716026
+          }
+        ]
+      },
+      {
+        "alpha": 0.2,
+        "weight_tabular": 0.8,
+        "weight_vision": 0.2,
+        "auroc": 0.7665714285714286,
+        "auprc": 0.45675615334591957,
+        "brier": 0.18525838016410434,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.5986616867570815
+          }
+        ]
+      },
+      {
+        "alpha": 0.25,
+        "weight_tabular": 0.75,
+        "weight_vision": 0.25,
+        "auroc": 0.7677142857142858,
+        "auprc": 0.4628429178810411,
+        "brier": 0.18546740785250698,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.6154245857981371
+          }
+        ]
+      },
+      {
+        "alpha": 0.3,
+        "weight_tabular": 0.7,
+        "weight_vision": 0.3,
+        "auroc": 0.774,
+        "auprc": 0.47747445651735,
+        "brier": 0.18610895007222406,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.5479561603487145
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.6321874848391925
+          }
+        ]
+      },
+      {
+        "alpha": 0.35,
+        "weight_tabular": 0.65,
+        "weight_vision": 0.35,
+        "auroc": 0.777,
+        "auprc": 0.4887212659049095,
+        "brier": 0.18718300682325548,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 20,
+        "sens_at_90_spec": 0.5,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.57299155037684
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.648950383880248
+          }
+        ]
+      },
+      {
+        "alpha": 0.4,
+        "weight_tabular": 0.6,
+        "weight_vision": 0.4,
+        "auroc": 0.7811428571428571,
+        "auprc": 0.49923232143417345,
+        "brier": 0.18868957810560144,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.5980269404049656
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.6657132829213035
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.5225067643838687
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.5728012370861331,
+            "p_blend": 0.5264600294862734
+          }
+        ]
+      },
+      {
+        "alpha": 0.45,
+        "weight_tabular": 0.55,
+        "weight_vision": 0.45,
+        "auroc": 0.78,
+        "auprc": 0.5070333848356233,
+        "brier": 0.19062866391926175,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.6230623304330912
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.682476181962359
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.5447060190885196
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.5728012370861331,
+            "p_blend": 0.5303217967862617
+          }
+        ]
+      },
+      {
+        "alpha": 0.5,
+        "weight_tabular": 0.5,
+        "weight_vision": 0.5,
+        "auroc": 0.7795714285714286,
+        "auprc": 0.5107965157707214,
+        "brier": 0.19300026426423655,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.6480977204612168
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.6992390810034145
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.5669052737931704
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.5728012370861331,
+            "p_blend": 0.5341835640862499
+          }
+        ]
+      },
+      {
+        "alpha": 0.55,
+        "weight_tabular": 0.45,
+        "weight_vision": 0.55,
+        "auroc": 0.7784285714285715,
+        "auprc": 0.50812266447852,
+        "brier": 0.19580437914052568,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.6731331104893423
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.7160019800444699
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.5394542645877229
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.5891045284978214
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.5728012370861331,
+            "p_blend": 0.5380453313862382
+          }
+        ]
+      },
+      {
+        "alpha": 0.6,
+        "weight_tabular": 0.4,
+        "weight_vision": 0.6,
+        "auroc": 0.7751428571428571,
+        "auprc": 0.5015525109705626,
+        "brier": 0.19904100854812942,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 5,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.698168500517468
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.7327648790855255
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.5692542437958152
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.6113037832024721
+          },
+          {
+            "student_id": "SCHB_G7_IMG_20261007_105436",
+            "p_tabular": 0.4955658910863668,
+            "p_vision": 0.5728012370861331,
+            "p_blend": 0.5419070986862266
+          }
+        ]
+      },
+      {
+        "alpha": 0.65,
+        "weight_tabular": 0.35,
+        "weight_vision": 0.65,
+        "auroc": 0.7697142857142858,
+        "auprc": 0.4960618823532829,
+        "brier": 0.20271015248704752,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.7232038905455935
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.749527778126581
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.5990542230039075
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.633503037907123
+          }
+        ]
+      },
+      {
+        "alpha": 0.7,
+        "weight_tabular": 0.3,
+        "weight_vision": 0.7,
+        "auroc": 0.7651428571428571,
+        "auprc": 0.49630131035213587,
+        "brier": 0.20681181095728002,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.7482392805737191
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.7662906771676365
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.6288542022119997
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.6557022926117738
+          }
+        ]
+      },
+      {
+        "alpha": 0.75,
+        "weight_tabular": 0.25,
+        "weight_vision": 0.75,
+        "auroc": 0.7581428571428571,
+        "auprc": 0.47921841589234293,
+        "brier": 0.211345983958827,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 17,
+        "sens_at_90_spec": 0.425,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.7732746706018446
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.783053576208692
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.658654181420092
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.6779015473164247
+          }
+        ]
+      },
+      {
+        "alpha": 0.8,
+        "weight_tabular": 0.2,
+        "weight_vision": 0.8,
+        "auroc": 0.753,
+        "auprc": 0.4747151813780074,
+        "brier": 0.2163126714916884,
+        "det_at_80_spec": 20,
+        "sens_at_80_spec": 0.5,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.7983100606299702
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.7998164752497474
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.6884541606281843
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.7001008020210756
+          }
+        ]
+      },
+      {
+        "alpha": 0.85,
+        "weight_tabular": 0.15,
+        "weight_vision": 0.85,
+        "auroc": 0.7447142857142858,
+        "auprc": 0.45107739049674583,
+        "brier": 0.2217118735558642,
+        "det_at_80_spec": 20,
+        "sens_at_80_spec": 0.5,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.8233454506580958
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.816579374290803
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.7182541398362767
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.7223000567257265
+          }
+        ]
+      },
+      {
+        "alpha": 0.9,
+        "weight_tabular": 0.1,
+        "weight_vision": 0.9,
+        "auroc": 0.7322857142857142,
+        "auprc": 0.4117062234238751,
+        "brier": 0.2275435901513544,
+        "det_at_80_spec": 19,
+        "sens_at_80_spec": 0.475,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.8483808406862214
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.8333422733318585
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.7480541190443688
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.7444993114303773
+          }
+        ]
+      },
+      {
+        "alpha": 0.95,
+        "weight_tabular": 0.05,
+        "weight_vision": 0.95,
+        "auroc": 0.7222857142857143,
+        "auprc": 0.3888197006184149,
+        "brier": 0.23380782127815916,
+        "det_at_80_spec": 19,
+        "sens_at_80_spec": 0.475,
+        "det_at_90_spec": 12,
+        "sens_at_90_spec": 0.3,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.873416230714347
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.8501051723729138
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.7778540982524611
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.7666985661350283
+          }
+        ]
+      },
+      {
+        "alpha": 1.0,
+        "weight_tabular": 0.0,
+        "weight_vision": 1.0,
+        "auroc": 0.7101428571428572,
+        "auprc": 0.3616067196753372,
+        "brier": 0.24050456693627825,
+        "det_at_80_spec": 16,
+        "sens_at_80_spec": 0.4,
+        "det_at_90_spec": 11,
+        "sens_at_90_spec": 0.275,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.397743820179961,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.8984516207424725
+          },
+          {
+            "student_id": "G6_A_Roll14",
+            "p_tabular": 0.5316100905928596,
+            "p_vision": 0.8668680714139694,
+            "p_blend": 0.8668680714139694
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.21165449329870797,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.8076540774605534
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3449127267466617,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.7888978208396791
+          }
+        ]
+      }
+    ]
+  },
+  "tabular_multistream_x_Exp6_Pure_Vision_TrOCR": {
+    "tabular_model": "tabular_multistream",
+    "vision_model": "Exp6_Pure_Vision_TrOCR",
+    "best_auroc_blend": {
+      "alpha": 0.65,
+      "weight_tabular": 0.35,
+      "weight_vision": 0.65,
+      "auroc": 0.7434285714285714,
+      "auprc": 0.4621883643772527,
+      "brier": 0.21185050996513974,
+      "det_at_80_spec": 21,
+      "sens_at_80_spec": 0.525,
+      "det_at_90_spec": 15,
+      "sens_at_90_spec": 0.375,
+      "n_rescued": 3,
+      "rescued_students": [
+        {
+          "student_id": "G6_A_Roll27",
+          "p_tabular": 0.4914065212670872,
+          "p_vision": 0.7480374267443223,
+          "p_blend": 0.65821660982729
+        },
+        {
+          "student_id": "SCHB_G4_IMG_20261007_100632",
+          "p_tabular": 0.5203635735140039,
+          "p_vision": 0.6344303683206102,
+          "p_blend": 0.594506990138298
+        },
+        {
+          "student_id": "SCHB_G5_IMG_20261007_101020",
+          "p_tabular": 0.47042136129871104,
+          "p_vision": 0.7860802972476949,
+          "p_blend": 0.6755996696655506
+        }
+      ]
+    },
+    "best_auprc_blend": {
+      "alpha": 0.45,
+      "weight_tabular": 0.55,
+      "weight_vision": 0.45,
+      "auroc": 0.7397142857142858,
+      "auprc": 0.47916185752364576,
+      "brier": 0.20246831819856792,
+      "det_at_80_spec": 23,
+      "sens_at_80_spec": 0.575,
+      "det_at_90_spec": 14,
+      "sens_at_90_spec": 0.35,
+      "n_rescued": 3,
+      "rescued_students": [
+        {
+          "student_id": "G6_A_Roll27",
+          "p_tabular": 0.4914065212670872,
+          "p_vision": 0.7480374267443223,
+          "p_blend": 0.6068904287318431
+        },
+        {
+          "student_id": "SCHB_G4_IMG_20261007_100632",
+          "p_tabular": 0.5203635735140039,
+          "p_vision": 0.6344303683206102,
+          "p_blend": 0.5716936311769767
+        },
+        {
+          "student_id": "SCHB_G5_IMG_20261007_101020",
+          "p_tabular": 0.47042136129871104,
+          "p_vision": 0.7860802972476949,
+          "p_blend": 0.6124678824757539
+        }
+      ]
+    },
+    "sweep": [
+      {
+        "alpha": 0.0,
+        "weight_tabular": 1.0,
+        "weight_vision": 0.0,
+        "auroc": 0.7054285714285715,
+        "auprc": 0.4120118647368389,
+        "brier": 0.19994956726167226,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.05,
+        "weight_tabular": 0.95,
+        "weight_vision": 0.05,
+        "auroc": 0.7095714285714286,
+        "auprc": 0.4221266596764518,
+        "brier": 0.19895823664523227,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.1,
+        "weight_tabular": 0.9,
+        "weight_vision": 0.1,
+        "auroc": 0.712,
+        "auprc": 0.4382267647984493,
+        "brier": 0.19828470398670484,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.5317702529946645
+          }
+        ]
+      },
+      {
+        "alpha": 0.15,
+        "weight_tabular": 0.85,
+        "weight_vision": 0.15,
+        "auroc": 0.7155714285714286,
+        "auprc": 0.45168815398098533,
+        "brier": 0.1979289692860901,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.5299011570886725
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.5374735927349948
+          }
+        ]
+      },
+      {
+        "alpha": 0.2,
+        "weight_tabular": 0.8,
+        "weight_vision": 0.2,
+        "auroc": 0.7182857142857142,
+        "auprc": 0.45412892715341274,
+        "brier": 0.19789103254338813,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.5427327023625342
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.5431769324753252
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.5335531484885079
+          }
+        ]
+      },
+      {
+        "alpha": 0.25,
+        "weight_tabular": 0.75,
+        "weight_vision": 0.25,
+        "auroc": 0.7225714285714286,
+        "auprc": 0.4631026012255247,
+        "brier": 0.19817089375859873,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.555564247636396
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.5488802722156554
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.5493360952859571
+          }
+        ]
+      },
+      {
+        "alpha": 0.3,
+        "weight_tabular": 0.7,
+        "weight_vision": 0.3,
+        "auroc": 0.7282857142857142,
+        "auprc": 0.4722577495844764,
+        "brier": 0.19876855293172196,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.5683957929102578
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.5545836119559858
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.5651190420834062
+          }
+        ]
+      },
+      {
+        "alpha": 0.35,
+        "weight_tabular": 0.65,
+        "weight_vision": 0.35,
+        "auroc": 0.7322857142857143,
+        "auprc": 0.4782407996200607,
+        "brier": 0.19968401006275793,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.5812273381841195
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.560286951696316
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.5809019888808553
+          }
+        ]
+      },
+      {
+        "alpha": 0.4,
+        "weight_tabular": 0.6,
+        "weight_vision": 0.4,
+        "auroc": 0.7348571428571429,
+        "auprc": 0.4789027714414011,
+        "brier": 0.20091726515170658,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.5940588834579812
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.5659902914366464
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.5966849356783046
+          }
+        ]
+      },
+      {
+        "alpha": 0.45,
+        "weight_tabular": 0.55,
+        "weight_vision": 0.45,
+        "auroc": 0.7397142857142858,
+        "auprc": 0.47916185752364576,
+        "brier": 0.20246831819856792,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.6068904287318431
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.5716936311769767
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.6124678824757539
+          }
+        ]
+      },
+      {
+        "alpha": 0.5,
+        "weight_tabular": 0.5,
+        "weight_vision": 0.5,
+        "auroc": 0.7408571428571428,
+        "auprc": 0.47761512094502223,
+        "brier": 0.20433716920334183,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.6197219740057047
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.577396970917307
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.628250829273203
+          }
+        ]
+      },
+      {
+        "alpha": 0.55,
+        "weight_tabular": 0.45,
+        "weight_vision": 0.55,
+        "auroc": 0.7428571428571428,
+        "auprc": 0.47754978124513925,
+        "brier": 0.2065238181660284,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.6325535192795665
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.5831003106576373
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.6440337760706522
+          }
+        ]
+      },
+      {
+        "alpha": 0.6,
+        "weight_tabular": 0.4,
+        "weight_vision": 0.6,
+        "auroc": 0.7412857142857143,
+        "auprc": 0.46646351624310844,
+        "brier": 0.20902826508662778,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.6453850645534283
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.5888036503979677
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.6598167228681013
+          }
+        ]
+      },
+      {
+        "alpha": 0.65,
+        "weight_tabular": 0.35,
+        "weight_vision": 0.65,
+        "auroc": 0.7434285714285714,
+        "auprc": 0.4621883643772527,
+        "brier": 0.21185050996513974,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.65821660982729
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.594506990138298
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.6755996696655506
+          }
+        ]
+      },
+      {
+        "alpha": 0.7,
+        "weight_tabular": 0.3,
+        "weight_vision": 0.7,
+        "auroc": 0.7421428571428572,
+        "auprc": 0.4618746561789146,
+        "brier": 0.2149905528015644,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.6710481551011518
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.589261434441436
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.6002103298786283
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.6913826164629997
+          }
+        ]
+      },
+      {
+        "alpha": 0.75,
+        "weight_tabular": 0.25,
+        "weight_vision": 0.75,
+        "auroc": 0.7382857142857142,
+        "auprc": 0.4547046670447937,
+        "brier": 0.21844839359590168,
+        "det_at_80_spec": 20,
+        "sens_at_80_spec": 0.5,
+        "det_at_90_spec": 15,
+        "sens_at_90_spec": 0.375,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.6838797003750136
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.6256602082779555
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.6059136696189587
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.7071655632604489
+          }
+        ]
+      },
+      {
+        "alpha": 0.8,
+        "weight_tabular": 0.2,
+        "weight_vision": 0.8,
+        "auroc": 0.734,
+        "auprc": 0.43758105239476464,
+        "brier": 0.22222403234815166,
+        "det_at_80_spec": 20,
+        "sens_at_80_spec": 0.5,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.6967112456488752
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.6620589821144751
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.611617009359289
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.7229485100578981
+          }
+        ]
+      },
+      {
+        "alpha": 0.85,
+        "weight_tabular": 0.15,
+        "weight_vision": 0.85,
+        "auroc": 0.7291428571428571,
+        "auprc": 0.41834833973315483,
+        "brier": 0.22631746905831435,
+        "det_at_80_spec": 19,
+        "sens_at_80_spec": 0.475,
+        "det_at_90_spec": 13,
+        "sens_at_90_spec": 0.325,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.709542790922737
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.6984577559509948
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.6173203490996193
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.7387314568553474
+          }
+        ]
+      },
+      {
+        "alpha": 0.9,
+        "weight_tabular": 0.1,
+        "weight_vision": 0.9,
+        "auroc": 0.724,
+        "auprc": 0.40796160595317466,
+        "brier": 0.23072870372638962,
+        "det_at_80_spec": 19,
+        "sens_at_80_spec": 0.475,
+        "det_at_90_spec": 12,
+        "sens_at_90_spec": 0.3,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.7223743361965987
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.7348565297875143
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.6230236888399495
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.7545144036527965
+          }
+        ]
+      },
+      {
+        "alpha": 0.95,
+        "weight_tabular": 0.05,
+        "weight_vision": 0.95,
+        "auroc": 0.7172857142857143,
+        "auprc": 0.37641084976629385,
+        "brier": 0.2354577363523776,
+        "det_at_80_spec": 18,
+        "sens_at_80_spec": 0.45,
+        "det_at_90_spec": 13,
+        "sens_at_90_spec": 0.325,
+        "n_rescued": 4,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.7352058814704605
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.7712553036240338
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100632",
+            "p_tabular": 0.5203635735140039,
+            "p_vision": 0.6344303683206102,
+            "p_blend": 0.6287270285802798
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.7702973504502457
+          }
+        ]
+      },
+      {
+        "alpha": 1.0,
+        "weight_tabular": 0.0,
+        "weight_vision": 1.0,
+        "auroc": 0.7101428571428572,
+        "auprc": 0.3616067196753372,
+        "brier": 0.24050456693627825,
+        "det_at_80_spec": 16,
+        "sens_at_80_spec": 0.4,
+        "det_at_90_spec": 11,
+        "sens_at_90_spec": 0.275,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G6_A_Roll27",
+            "p_tabular": 0.4914065212670872,
+            "p_vision": 0.7480374267443223,
+            "p_blend": 0.7480374267443223
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.07967860073016188,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.8076540774605534
+          },
+          {
+            "student_id": "SCHB_G5_IMG_20261007_101020",
+            "p_tabular": 0.47042136129871104,
+            "p_vision": 0.7860802972476949,
+            "p_blend": 0.7860802972476949
+          }
+        ]
+      }
+    ]
+  },
+  "tabular_ensemble_stack_x_Exp6_Pure_Vision_TrOCR": {
+    "tabular_model": "tabular_ensemble_stack",
+    "vision_model": "Exp6_Pure_Vision_TrOCR",
+    "best_auroc_blend": {
+      "alpha": 0.4,
+      "weight_tabular": 0.6,
+      "weight_vision": 0.4,
+      "auroc": 0.7771428571428572,
+      "auprc": 0.5314522459993136,
+      "brier": 0.18685489834042018,
+      "det_at_80_spec": 23,
+      "sens_at_80_spec": 0.575,
+      "det_at_90_spec": 19,
+      "sens_at_90_spec": 0.475,
+      "n_rescued": 2,
+      "rescued_students": [
+        {
+          "student_id": "G4_A_Roll17",
+          "p_tabular": 0.4429678318828725,
+          "p_vision": 0.8984516207424725,
+          "p_blend": 0.6251613474267125
+        },
+        {
+          "student_id": "SCHB_G4_IMG_20261007_100621",
+          "p_tabular": 0.3701277625147419,
+          "p_vision": 0.7888978208396791,
+          "p_blend": 0.5376357858447167
+        }
+      ]
+    },
+    "best_auprc_blend": {
+      "alpha": 0.4,
+      "weight_tabular": 0.6,
+      "weight_vision": 0.4,
+      "auroc": 0.7771428571428572,
+      "auprc": 0.5314522459993136,
+      "brier": 0.18685489834042018,
+      "det_at_80_spec": 23,
+      "sens_at_80_spec": 0.575,
+      "det_at_90_spec": 19,
+      "sens_at_90_spec": 0.475,
+      "n_rescued": 2,
+      "rescued_students": [
+        {
+          "student_id": "G4_A_Roll17",
+          "p_tabular": 0.4429678318828725,
+          "p_vision": 0.8984516207424725,
+          "p_blend": 0.6251613474267125
+        },
+        {
+          "student_id": "SCHB_G4_IMG_20261007_100621",
+          "p_tabular": 0.3701277625147419,
+          "p_vision": 0.7888978208396791,
+          "p_blend": 0.5376357858447167
+        }
+      ]
+    },
+    "sweep": [
+      {
+        "alpha": 0.0,
+        "weight_tabular": 1.0,
+        "weight_vision": 0.0,
+        "auroc": 0.7454285714285714,
+        "auprc": 0.4109653225032677,
+        "brier": 0.17689494860687016,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.05,
+        "weight_tabular": 0.95,
+        "weight_vision": 0.05,
+        "auroc": 0.7518571428571429,
+        "auprc": 0.4273659748038873,
+        "brier": 0.17701090812369422,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.1,
+        "weight_tabular": 0.9,
+        "weight_vision": 0.1,
+        "auroc": 0.7568571428571429,
+        "auprc": 0.43987891343165564,
+        "brier": 0.17744944884048103,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 0,
+        "rescued_students": []
+      },
+      {
+        "alpha": 0.15,
+        "weight_tabular": 0.85,
+        "weight_vision": 0.15,
+        "auroc": 0.762,
+        "auprc": 0.45724742433725907,
+        "brier": 0.1782105707572306,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.5112904002118125
+          }
+        ]
+      },
+      {
+        "alpha": 0.2,
+        "weight_tabular": 0.8,
+        "weight_vision": 0.2,
+        "auroc": 0.7671428571428571,
+        "auprc": 0.47965545416644106,
+        "brier": 0.179294273873943,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.5340645896547925
+          }
+        ]
+      },
+      {
+        "alpha": 0.25,
+        "weight_tabular": 0.75,
+        "weight_vision": 0.25,
+        "auroc": 0.7711428571428571,
+        "auprc": 0.49530369899677784,
+        "brier": 0.18070055819061812,
+        "det_at_80_spec": 24,
+        "sens_at_80_spec": 0.6,
+        "det_at_90_spec": 20,
+        "sens_at_90_spec": 0.5,
+        "n_rescued": 1,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.5568387790977725
+          }
+        ]
+      },
+      {
+        "alpha": 0.3,
+        "weight_tabular": 0.7,
+        "weight_vision": 0.3,
+        "auroc": 0.7744285714285714,
+        "auprc": 0.5098043667512421,
+        "brier": 0.18242942370725604,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 20,
+        "sens_at_90_spec": 0.5,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.5796129685407525
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.49575878001222307
+          }
+        ]
+      },
+      {
+        "alpha": 0.35,
+        "weight_tabular": 0.65,
+        "weight_vision": 0.35,
+        "auroc": 0.7765714285714285,
+        "auprc": 0.5294756734876158,
+        "brier": 0.18448087042385675,
+        "det_at_80_spec": 25,
+        "sens_at_80_spec": 0.625,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.6023871579837325
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.5166972829284698
+          }
+        ]
+      },
+      {
+        "alpha": 0.4,
+        "weight_tabular": 0.6,
+        "weight_vision": 0.4,
+        "auroc": 0.7771428571428572,
+        "auprc": 0.5314522459993136,
+        "brier": 0.18685489834042018,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.6251613474267125
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.5376357858447167
+          }
+        ]
+      },
+      {
+        "alpha": 0.45,
+        "weight_tabular": 0.55,
+        "weight_vision": 0.45,
+        "auroc": 0.776,
+        "auprc": 0.5308596883368438,
+        "brier": 0.1895515074569464,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.6479355368696925
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.5585742887609636
+          }
+        ]
+      },
+      {
+        "alpha": 0.5,
+        "weight_tabular": 0.5,
+        "weight_vision": 0.5,
+        "auroc": 0.7735714285714285,
+        "auprc": 0.5286544588689482,
+        "brier": 0.1925706977734354,
+        "det_at_80_spec": 23,
+        "sens_at_80_spec": 0.575,
+        "det_at_90_spec": 19,
+        "sens_at_90_spec": 0.475,
+        "n_rescued": 2,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.6707097263126724
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.5795127916772105
+          }
+        ]
+      },
+      {
+        "alpha": 0.55,
+        "weight_tabular": 0.45,
+        "weight_vision": 0.55,
+        "auroc": 0.7705714285714286,
+        "auprc": 0.5180271253823617,
+        "brier": 0.19591246928988723,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.6934839157556525
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.5323766204194218
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.6004512945934574
+          }
+        ]
+      },
+      {
+        "alpha": 0.6,
+        "weight_tabular": 0.4,
+        "weight_vision": 0.6,
+        "auroc": 0.769,
+        "auprc": 0.5122800167045809,
+        "brier": 0.1995768220063018,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 17,
+        "sens_at_90_spec": 0.425,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.7162581051986325
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.5629630045351031
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.6213897975097042
+          }
+        ]
+      },
+      {
+        "alpha": 0.65,
+        "weight_tabular": 0.35,
+        "weight_vision": 0.65,
+        "auroc": 0.7617142857142857,
+        "auprc": 0.49096095621349517,
+        "brier": 0.2035637559226791,
+        "det_at_80_spec": 22,
+        "sens_at_80_spec": 0.55,
+        "det_at_90_spec": 18,
+        "sens_at_90_spec": 0.45,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.7390322946416126
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.5935493886507843
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.6423283004259511
+          }
+        ]
+      },
+      {
+        "alpha": 0.7,
+        "weight_tabular": 0.3,
+        "weight_vision": 0.7,
+        "auroc": 0.758,
+        "auprc": 0.48922242495303925,
+        "brier": 0.2078732710390193,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.7618064840845925
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.6241357727664657
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.6632668033421979
+          }
+        ]
+      },
+      {
+        "alpha": 0.75,
+        "weight_tabular": 0.25,
+        "weight_vision": 0.75,
+        "auroc": 0.7494285714285714,
+        "auprc": 0.4729927194942129,
+        "brier": 0.21250536735532213,
+        "det_at_80_spec": 21,
+        "sens_at_80_spec": 0.525,
+        "det_at_90_spec": 16,
+        "sens_at_90_spec": 0.4,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.7845806735275724
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.654722156882147
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.6842053062584448
+          }
+        ]
+      },
+      {
+        "alpha": 0.8,
+        "weight_tabular": 0.2,
+        "weight_vision": 0.8,
+        "auroc": 0.7427142857142857,
+        "auprc": 0.4575616026301194,
+        "brier": 0.21746004487158782,
+        "det_at_80_spec": 20,
+        "sens_at_80_spec": 0.5,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.8073548629705525
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.6853085409978282
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.7051438091746917
+          }
+        ]
+      },
+      {
+        "alpha": 0.85,
+        "weight_tabular": 0.15,
+        "weight_vision": 0.85,
+        "auroc": 0.7361428571428571,
+        "auprc": 0.4446901039909904,
+        "brier": 0.22273730358781627,
+        "det_at_80_spec": 20,
+        "sens_at_80_spec": 0.5,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.8301290524135325
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.7158949251135096
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.7260823120909385
+          }
+        ]
+      },
+      {
+        "alpha": 0.9,
+        "weight_tabular": 0.1,
+        "weight_vision": 0.9,
+        "auroc": 0.7262857142857143,
+        "auprc": 0.40009092595771556,
+        "brier": 0.2283371435040075,
+        "det_at_80_spec": 19,
+        "sens_at_80_spec": 0.475,
+        "det_at_90_spec": 14,
+        "sens_at_90_spec": 0.35,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.8529032418565126
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.7464813092291909
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.7470208150071853
+          }
+        ]
+      },
+      {
+        "alpha": 0.95,
+        "weight_tabular": 0.05,
+        "weight_vision": 0.95,
+        "auroc": 0.7194285714285714,
+        "auprc": 0.38493623736034566,
+        "brier": 0.2342595646201615,
+        "det_at_80_spec": 18,
+        "sens_at_80_spec": 0.45,
+        "det_at_90_spec": 12,
+        "sens_at_90_spec": 0.3,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.8756774312994926
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.7770676933448721
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.7679593179234322
+          }
+        ]
+      },
+      {
+        "alpha": 1.0,
+        "weight_tabular": 0.0,
+        "weight_vision": 1.0,
+        "auroc": 0.7101428571428572,
+        "auprc": 0.3616067196753372,
+        "brier": 0.24050456693627825,
+        "det_at_80_spec": 16,
+        "sens_at_80_spec": 0.4,
+        "det_at_90_spec": 11,
+        "sens_at_90_spec": 0.275,
+        "n_rescued": 3,
+        "rescued_students": [
+          {
+            "student_id": "G4_A_Roll17",
+            "p_tabular": 0.4429678318828725,
+            "p_vision": 0.8984516207424725,
+            "p_blend": 0.8984516207424725
+          },
+          {
+            "student_id": "SCHB_G3_IMG_20261007_101635",
+            "p_tabular": 0.1959263951469276,
+            "p_vision": 0.8076540774605534,
+            "p_blend": 0.8076540774605534
+          },
+          {
+            "student_id": "SCHB_G4_IMG_20261007_100621",
+            "p_tabular": 0.3701277625147419,
+            "p_vision": 0.7888978208396791,
+            "p_blend": 0.7888978208396791
+          }
+        ]
+      }
+    ]
+  }
+}

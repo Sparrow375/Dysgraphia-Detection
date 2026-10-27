@@ -9,9 +9,11 @@ Verifies:
 """
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import numpy as np
-import pytest
 import torch
 import torch.nn as nn
 
@@ -142,3 +144,34 @@ def test_swa_model_tracker():
 
     assert torch.allclose(toy[0].weight.data, torch.full((2, 4), 3.0))
 
+
+
+def test_pure_vision_forward_and_attention():
+    """Verify pure-vision forward pass (math_dim=0, fused_dim=32)."""
+    model = DualScriptMultiModalMILModel(visual_dim=32, attn_dim=32, pure_vision=True)
+
+    tokens_list = [torch.randn(24, 768), torch.randn(24, 384), torch.randn(24, 768)]
+    scripts_list = ["devanagari", "latin", "devanagari"]
+    dummy_math = torch.empty(3, 0)
+    splits = [(0, 2), (2, 3)]
+
+    logits, attentions, aux_preds = model(tokens_list, scripts_list, dummy_math, splits)
+
+    assert logits.shape == (2,)
+    assert aux_preds.shape == (3, 2)
+    assert len(attentions) == 2
+    assert torch.isclose(attentions[0].sum(), torch.tensor(1.0), atol=1e-5)
+    assert torch.isclose(attentions[1].sum(), torch.tensor(1.0), atol=1e-5)
+
+
+if __name__ == '__main__':
+    import tempfile
+    from pathlib import Path
+    with tempfile.TemporaryDirectory() as td:
+        test_white_canvas_physics(Path(td))
+    test_duplicate_bag_augmentations()
+    test_dual_script_sequence_bottleneck()
+    test_dual_script_mil_forward_pass()
+    test_pure_vision_forward_and_attention()
+    test_swa_model_tracker()
+    print('ALL 6 EXP6 UNIT TESTS PASSED GREEN!')
