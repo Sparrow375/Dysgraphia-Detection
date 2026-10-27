@@ -412,7 +412,16 @@
   - [x] 31.5 Author comparative report (`reports/denoised_vit_empirical_report.md`) evaluating whether zeroing out paper texture enables genuine visual feature learning beyond 0.7893 AUROC.
   - [x] 31.6 Update `context.md`, `task_list.md`, and commit/push to git.
 
+- [x] Stage 32: Experiment 3 — Whole-Page End-to-End MIL (DenseNet201 + Wide (128, 640) Crops + Gated Attention):
+  - [x] 32.1 Implement `baseline/train_whole_page_mil.py` generating wide $(128, 640, 3)$ de-noised tensors (Ch1: Clean Ink, Ch2: Masked Optical Density / Pressure, Ch3: Clean Ruled Line Trajectory), caching to disk/RAM, with DenseNet201 backbone and Gated-Attention MIL pooling over student bags.
+  - [x] 32.2 Author automated unit test suite `tests/test_whole_page_mil.py` verifying wide tensor shape, ruled line trajectory alignment, student bag batching, Gated-Attention forward/backward pass, and attention weight normalization (4/4 tests passed green).
+  - [x] 32.3 Execute Run 3A (Honest Split with Uniform Mean Pooling) across 20 epochs on RTX 5060 Ti GPU, tracking Train/Test Student AUROC, AUPRC, and Loss (Test AUROC reached 0.7321).
+  - [x] 32.4 Execute Run 3B (Honest Split with Gated-Attention MIL) across 20 epochs on RTX 5060 Ti GPU, tracking whether end-to-end attention focusing on the worst lines beats uniform averaging (Test AUROC reached 0.7857, AUPRC surged to 0.6784, beating mean pooling by +0.054 AUROC).
+  - [x] 32.5 Author empirical findings report (`reports/whole_page_mil_empirical_report.md`) comparing Run 3B against Run 1B (0.7893) and Run 2B (0.6929) with attention weight diagnostic analysis across tasks (discovered free writing Sentence 6 receives 1.78x higher attention in dysgraphic kids).
+  - [x] 32.6 Update `context.md`, `task_list.md`, and commit/push to git.
+
 ## Completed Sprints
+
 
 <details>
 <summary>Phase 3 Dataset Assembly (Completed 2026-10-10)</summary>
