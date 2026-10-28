@@ -13,16 +13,16 @@
 
 ---
 
-### Slide 2: Two-Branch Multimodal Architecture (20D Vector)
-* **Branch A (Static Spatial Engine — 9 BHK Clinical Indicators)**:
-  - Binarization $\to$ 1-pixel Zhang-Suen skeleton $\to$ Euclidean Distance Transform $\to$ Connected Component character segmentation.
-  - Scale-normalized by median character height ($X / H_{\text{med}}$).
-* **Branch B (Biophysical Kinematics Proxy Engine — 11 Neuromotor Proxies)**:
+### Slide 2: Biophysical Kinematics Extraction Engine (13D)
+* **Scope & Modular Demarcation**:
+  - All BHK (static handwriting scale) features and OCR are maintained separately by teammates.
+  - This repository is strictly kinematics-only, extracting a canonical 13-dimensional kinematic and trajectory feature vector.
+* **Trajectory Reconstruction & Kinematic Synthesis**:
   - Junction clique contraction $\to$ Tangent "fly-through" traversal $\to$ Scale-invariant spatial hash stitching.
   - Velocity synthesis via the **Two-Thirds Power Law** ($v \propto \kappa^{-1/3}$) modulated by the **Plamondon Asymmetric Sigma-Lognormal Impulse Envelope** ($u^{0.8}(1-u)^{1.4}$).
   - Scale-invariant fluency metrics: Flash & Hogan dimensionless jerk and 4–8 Hz spatial roughness power.
   - **CRITICAL CONSTRAINT**: Synthesized kinematics are uncalibrated mathematical proxies. Static images contain NO timing or ground-truth velocity.
-* **Consolidated Feature Vector**: $\mathbf{f}_{\text{multimodal}} = [\mathbf{f}_{\text{BHK}} \in \mathbb{R}^9 \;\|\; \mathbf{f}_{\text{kinematic}} \in \mathbb{R}^{11}] \in \mathbb{R}^{20}$.
+* **Canonical Feature Vector**: $\mathbf{f}_{\text{kinematic}} \in \mathbb{R}^{13}$.
 ---
 
 ### Slide 3: Dataset Landscape & DiaGraMo Architecture
@@ -42,12 +42,10 @@
 
 ---
 
-### Slide 4: Branch A Findings (9 BHK Clinical Indicators)
-* **Line Collisions & Spacing (`bhk_line_collisions`)**: **$+21.5\%$ elevated** in dysgraphia ($0.611$ vs $0.503$). Ascenders crash into descenders across line boundaries.
-* **Letter Size Covariance (`bhk_size_covariance`)**: **$+11.8\%$ elevated** in dysgraphia ($2.090$ vs $1.870$). Inconsistent glyph heights and areas.
-* **Telescoping Overlap (`bhk_telescoping_overlap`)**: **$+4.3\%$ elevated** ($28.009$ vs $26.850$).
-* **Critical Finding on Capture Confounds**: In unconstrained photos, dysgraphic crops were $25\%$ taller and written with thick markers. Scale normalization ($X / H_{\text{med}}$) proved essential to isolate motor planning from camera distance.
-
+### Slide 4: Scope Demarcation (BHK Features Transferred to Teammate)
+* **Modular Division**: Static handwriting-scale (BHK) features and OCR are developed separately by teammates.
+* **Kinematics Engine**: This codebase is strictly focused on biophysical trajectory kinematics and differential geometry.
+* **Historical Preservation**: All Phase 1 BHK features remain archived and accessible at git tag `pre-bhk-removal`.
 ---
 
 ### Slide 5: Topological Trajectory Recovery (The 1,861 Fragment Defect)
@@ -77,9 +75,13 @@
 ---
 
 ### Slide 7: Dominant Biomarkers & Cohen's $d$ Effect Sizes
-* **Multimodal Empirical Findings & Limitations**:
-  - Branch A spatial metrics (`bhk_line_collisions`, `bhk_size_covariance`) reliably capture physical layout collapse.
-  - Branch B proxy metrics (`kin_nvi_per_stroke`, `kin_dimensionless_jerk`) quantify geometric trajectory irregularity.
+* **Kinematic Empirical Findings & Limitations**:
+  - Kinematic proxy metrics (`kin_nvi_per_stroke`, `kin_dimensionless_jerk`) quantify geometric trajectory irregularity.
+  - All metrics are normalized by median character height ($H_{\text{med}}$) for scale invariance.
+  - BHK spatial metrics and OCR are owned separately by teammates.
+  - Kinematic proxy metrics (`kin_nvi_per_stroke`, `kin_dimensionless_jerk`) quantify geometric trajectory irregularity.
+  - All metrics are normalized by median character height ($H_{\text{med}}$) for scale invariance.
+  - BHK spatial metrics and OCR are owned separately by teammates.
   - Statistical effect sizes from unconstrained photo datasets (such as Malay LPD/PD) are confounded by camera crop scale and marker thickness unless normalized by $H_{\text{med}}$.
 * **Removing Feature Redundancy**:
   - Optical pressure proxy was found to be $99.1\%$ collinear with stroke width ($r = 0.9914$). Removed from primary vector.
@@ -156,151 +158,37 @@ Before attempting feature extraction or kinematic reconstruction, we established
 
 ---
 
-## Phase 1 — Branch A: BHK Static Features (Expanded to 9 Clinical Indicators)
+## Phase 1 — Scope Demarcation: BHK Features Transferred to Teammate
 
-### 1. Objectives & Approach
-Branch A implements a standalone clinical feature extraction engine based on the BHK (Concise Assessment Scale for Children's Handwriting) diagnostic criteria. It operates purely on static 2D bitmap images without needing dynamic sensor telemetry.
-
-We expanded the original 6 BHK features to **9 comprehensive clinical features** by incorporating:
-1. **Acute Turns / Tremor (BHK #5)**: Quantifies sharp curvature direction changes ($> 110^\circ$) along continuous strokes, measuring fine motor tremor and angularity.
-2. **Left Margin Drift (BHK #2)**: Linear regression slope and standard deviation of line starting positions ($x_{\text{start}}$), capturing page layout disorganization.
-3. **Line Collisions & Inter-Line Spacing (BHK #13)**: Ratio of vertical line overlaps and coefficient of variation of baseline-to-baseline distances.
-4. **Scale Normalization**: All spatial distance and boundary metrics are normalized by median character height ($H_{\text{med}}$) and width ($W_{\text{med}}$), insulating the pipeline against camera zoom and cropping variations.
-
-### 2. Files Created & Architecture
-- [`src/branch_a/preprocessing.py`](src/branch_a/preprocessing.py): Adaptive illumination binarization, Zhang-Suen 1-pixel skeletonization, and exact Euclidean Distance Transform.
-- [`src/branch_a/segmentation.py`](src/branch_a/segmentation.py): Connected component extraction, line grouping (`TextLine`), character sorting, and inter-character gap computation.
-- [`src/branch_a/features.py`](src/branch_a/features.py): Full suite of 9 BHK clinical estimators.
-- [`scripts/run_phase1.py`](scripts/run_phase1.py): Batch execution across 53 samples with 9-panel statistical comparison plots and CSV export.
-
-### 3. Empirical Results & Statistical Findings
-
-The batch extraction across 25 Low Potential Dysgraphia (LPD / Control) and 25 Potential Dysgraphia (PD / Dysgraphic) photographed specimens yielded:
-
-| BHK Clinical Feature | Control (LPD) Mean (±Std) | Dysgraphic (PD) Mean (±Std) | Status in Dysgraphia | Clinical Interpretation |
-| :--- | :---: | :---: | :---: | :--- |
-| **Size Covariance ($CV_{\text{size}}$)** | 1.870 (±0.921) | **2.090 (±0.765)** | **Elevated (+11.8%)** | Letters fluctuate irregularly in scale and area. |
-| **Telescoping / Collision Score** | 26.850 (±29.956) | **28.009 (±20.661)** | **Elevated (+4.3%)** | Frequent character collisions and overlapping glyphs. |
-| **Line Collisions & Spacing** | 0.503 (±0.512) | **0.611 (±0.437)** | **Elevated (+21.5%)** | Ascenders collide across line boundaries with erratic spacing. |
-| **Stroke-Width CV** | 0.836 (±0.199) | 0.665 (±0.099) | Lower | Thicker uniform felt-tip markers in photographed PD cohort. |
-| **Acute Turns / Tremor** | 0.285 (±0.106) | 0.236 (±0.059) | Comparable | Smooth continuous stroke tracing across cursive joints. |
-| **Left Margin Drift** | 6.619 (±15.054) | 4.149 (±7.228) | Comparable | High baseline variance across unconstrained page crops. |
-| **Height-Ratio Dispersion** | 0.677 (±0.346) | 0.592 (±0.303) | Comparable | Broad spread across both classes. |
-| **Spacing Entropy** | 0.662 (±0.171) | 0.613 (±0.290) | Comparable | Irregular gap distribution across both groups. |
-| **Baseline Drift** | 4.471 (±4.545) | 3.812 (±2.558) | Comparable | Sensitive to single-line vs multi-line crops. |
-
-
-### 4. Step 4: Ruled-Line Removal — Monte Carlo Quantitative Benchmark
-
-The ruled-line removal module ([`src/branch_a/line_removal.py`](src/branch_a/line_removal.py)) was evaluated via a **50-sample Monte Carlo simulation** (seed=42) generating varied synthetic handwriting strokes crossing multiple line types. Benchmark script: [`scripts/eval_ruled_line_metrics.py`](scripts/eval_ruled_line_metrics.py). The primary reported metric is **crossing preservation rate** — the fraction of handwriting ink pixels at line-crossing intersections that are preserved intact.
-
-> **PRIMARY FINDING**: The aggregate F1 score is dominated by background (isolated-line) pixels and is misleading for assessing handwriting ink integrity. The operationally relevant metric is the **crossing preservation rate**.
-
-| Paper Type | Total Crossing Pixels | **Crossing Failure Rate** | **Crossing Preservation Rate** | Precision (iso. lines) | Recall | Mean FP/trial |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Case A: Ruled Notebook (H-lines)** | 11,249 across 50 trials | **86.3%** | **14.95% ± 7.28%** | 95.67% ± 2.75% | 99.90% | 893 px |
-| **Case B: Plain Unlined Paper** | 0 (no lines) | — | — | — | — | **660 px FP** |
-| **Case C: Grid / Graph Paper (H+V)** | 9,989 across 50 trials | **42.3%** | **58.91% ± 11.35%** | 96.79% ± 2.95% | 99.92% | — |
-
-**Interpretation — Honest Assessment**:
-- **Case A (Ruled Notebook)**: 86.3% of ink pixels at line-crossing intersections are incorrectly removed. This is the primary failure mode of ruled-line removal: the algorithm does not reliably distinguish handwriting ink from ruled-line ink at crossing points. Aggregate precision (95.67%) and recall (99.90%) look healthy because isolated-line pixels dominate — they disguise the crossing failure entirely.
-- **Case B (Unlined Paper)**: With no ruled lines, 660 handwriting pixels/trial are mistakenly removed on average (ranging 0–3,350). The module is not perfectly specific — strokes with crossbars, underlines, or near-horizontal segments can trigger false detections.
-- **Case C (Grid/Graph Paper)**: 42.3% of ink pixels at grid-crossing intersections are incorrectly removed. Grid paper (H+V rules) performs better than ruled notebook paper at crossing preservation (58.91% vs. 14.95%), likely because the grid pattern is more distinct from typical stroke orientations.
-
-**Conclusion**: The ruled-line removal module reliably removes isolated line pixels (>96% precision, ~100% recall) but has a significant crossing-preservation limitation. Any downstream pipeline consuming images that were processed through this module should be aware that handwriting ink at crossing points may have been partially or substantially removed. This limitation is inherent to pixel-level morphological approaches that cannot distinguish ink-over-line from line pixels without additional stroke trajectory information.
-
-
-
-## Phase 2 — Branch B: Kinematics & Multi-Level Ground-Truth Validation
-
-### 1. The 1,861 Fragment Defect & Its Topological Resolution
-In the initial naive implementation, whenever the traversal encountered an intersection clique (such as the 3-pixel triangle clusters naturally formed by thinning algorithms), it prematurely terminated strokes. This chopped handwriting into **1,861 micro-fragments** (median length: 3 pixels), scrambling the temporal reconstruction.
-
-We resolved this with three core topological improvements:
-1. **Junction Clique Contraction**: Identifies all connected clusters of junction pixels ($\text{degree} \ge 3$) and contracts them into a single intersection centroid, eliminating internal micro-cycles and dead ends.
-2. **Tangent "Fly-Through" Continuation**: When traversal enters a junction with $\ge 2$ unvisited outgoing branches, it computes the unit tangent vectors of incoming and outgoing paths. It continues straight through the intersection along the branch that maximizes directional cosine similarity ($< 35^\circ$ deflection), exactly mimicking a pen moving through a crossing.
-3. **Spatial-Indexed Stroke Stitching**: Stitches contiguous fragments whose endpoints meet within `max_gap = max(0.15 × H_med, 2.0)` pixels with smooth orientation, using a spatial hash grid index to achieve $O(N)$ execution speed.
-4. **$O(1)$ Active Degree Map**: Eliminates repeated subgraph copying during stroke discovery, speeding up traversal by $24\times$.
-
-**Result**: On sample `u00006s00001_hw00001`, recovered stroke count dropped from **1,861** down to **331 continuous strokes** (median length: $18\text{ px}$, mean: $21.2\text{ px}$, max: $80\text{ px}$).
-
-### 2. Multi-Level Ground-Truth Validation Findings
-
-We benchmarked reconstructed kinematics against the true recorded digitizer telemetry across two distinct levels of hierarchy:
-- **Level 1 (Single-Stroke Level)**: Evaluates whether the Two-Thirds Power Law ($v \propto \kappa^{-1/3}$) correctly predicts the physical speed of the human hand along individual continuous strokes.
-- **Level 3 (Whole-Document Level)**: Evaluates chronological signal correlation when all strokes across an entire multi-sentence document are concatenated.
-
-#### Honest Headline (70-Sample Broad Cohort — Text Tasks Only)
-
-> **Mean stroke-level Pearson $r = +0.227$ (median $+0.232$)** across 7,275 individual strokes from 70 samples (35 `dataSciRep_public` + 35 `DiaGraMo` TSK3/TSK4/TSK15/TSK16). Graphomotor/drawing tasks (spirals, loops, waves, RCFT) are explicitly excluded from this validation cohort as they are not handwriting.
->
-> Only **37.9% of strokes** achieve $r > 0.30$; **17.3% achieve $r > 0.50$**. Reconstructed velocity has **weak-to-moderate fidelity** to ground truth on average. Anyone consuming these kinematic features downstream should treat absolute velocity/jerk magnitudes as a **noisy proxy signal**, not a precise reconstruction.
-
-| Cohort | N (samples) | Mean stroke $r$ | Median stroke $r$ | Std | Min | Max | Strokes >0.30 | Strokes >0.50 |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `dataSciRep_public` (handwriting HW) | 35 | +0.195 | +0.196 | 0.079 | +0.022 | +0.331 | — | — |
-| `DiaGraMo` TSK3/4/15/16 (text tasks) | 35 | +0.252 | +0.256 | 0.052 | +0.152 | +0.373 | — | — |
-| **OVERALL COMBINED** | **70** | **+0.223** | **+0.232** | **0.073** | **+0.022** | **+0.373** | **37.9%** | **17.3%** |
-
-**Total individual strokes evaluated**: 7,275 across 70 samples.
-
-#### Reference Single-Sample Benchmark (6-sample Pilot Cohort)
-
-Prior to the broad cohort, the following 6 anchor samples were used for algorithm development and are retained for reproducibility (not representative of the full distribution):
-
-| Dataset / Task | Sample ID | True GT Strokes | Recovered Strokes | Level 1 Stroke Mean $r$ | Level 1 Frac $r > 0.30$ | Whole Doc Vel $r$ | 4–8 Hz Tremor Power |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`DiaGraMo` TSK15 (Word Copy)** | `BR10301_TSK15` | 146 | 297 | +0.373 | 65.0% | -0.060 | 22.0% |
-| **`DiaGraMo` TSK3 (Sentence Dict)** | `BR10301_TSK3` | 239 | 378 | +0.328 | 56.9% | -0.004 | 31.0% |
-| **`dataSciRep_public` (Dysgraphic HW)** | `u00006s00001` | 73 | 331 | +0.312 | 50.0% | +0.078 | 31.7% |
-| **`DiaGraMo` TSK4 (Alphabet Dict)** | `BR10403_TSK4` | 218 | 507 | +0.289 | 46.0% | -0.012 | 34.0% |
-| **`DiaGraMo` TSK16 (Sentence Copy)** | `BR10402_TSK16` | 158 | 368 | +0.231 | 41.7% | +0.080 | 26.7% |
-| **`dataSciRep_public` (Control HW)** | `u00050s00001` | 71 | 226 | +0.092 | 19.4% | +0.021 | 16.9% |
-
-#### Validation Findings & Discussion:
-1. **The Physics Model Provides a Useful Signal**: On individual intact strokes, the Two-Thirds Power Law achieves statistically positive correlation with real tablet velocity. Individual strokes reach up to $r = +0.9757$; at the broad cohort level, mean $r = +0.223$ with 37.9% of strokes exceeding $r > 0.30$. Static handwriting centerlines *do* encode motor velocity, but the relationship is noisy and should not be treated as precise reconstruction.
-2. **Why Whole-Document Concatenation Correlation is Near Zero ($r \approx 0.04$)**: In natural handwriting, writers frequently perform non-linear motor jumps — returning to dot an 'i', cross a 't', or add punctuation long after writing a word. In a static image, spatial proximity causes these strokes to be ordered differently than chronological time. An arbitrary phase shift in time-series concatenation naturally drives whole-document Pearson correlation to zero.
-3. **Pressure Proxy is Ineffective**: Whole-document stylus pressure correlation mean $r = +0.002$ (median $+0.006$) — near-zero. The optical pressure proxy (stroke width) cannot reconstruct true stylus force from static images. No constant-pressure (zero-variance) signals are silently included in aggregates; they are detected and excluded with logged warnings.
-4. **NVI Metric Fix**: Resolved the stroke-length inversion artifact by normalizing Number of Velocity Inversions per physical stroke (`nvi_per_stroke`) and per 100 character units via fixed arc-length resampling, making NVI strictly scale-invariant.
-5. **Collinear Proxy Removed**: Documented the $r = 0.9914$ collinearity between optical pressure proxy and stroke width; removed from primary feature vector to prevent redundancy in downstream pipelines.
+Another teammate now owns BHK (static handwriting scale) features and OCR separately. This codebase is kinematics-only moving forward.
 
 ---
 
-## Phase 3 — Consolidate: Unified 20D Multimodal Pipeline
+## Phase 3 — 13D Biophysical Kinematics Pipeline
 
-### 1. Architecture & 20-Dimensional Feature Space
-Phase 3 integrates Branch A (9 BHK spatial indicators) and Branch B (11 kinematic fluency indicators) into a unified, high-performance class: `DysgraphiaFeaturePipeline`.
+Phase 3 implements the canonical 13-dimensional kinematic and trajectory feature extraction engine: `DysgraphiaFeaturePipeline`.
 
-$$\mathbf{f}_{\text{multimodal}} = \left[ \mathbf{f}_{\text{BHK}} \in \mathbb{R}^9 \;\|\; \mathbf{f}_{\text{kinematic}} \in \mathbb{R}^{11} \right] \in \mathbb{R}^{20}$$
+$$\mathbf{f}_{\text{kinematic}} \in \mathbb{R}^{13}$$
 
-### 2. Verified 20D Multimodal Feature Vector Schema
+### 2. Verified 13D Kinematic Feature Vector Schema
 
-Below is the verified schema extracted end-to-end by `DysgraphiaFeaturePipeline` (Schema v2.0.0):
+Below is the verified schema extracted end-to-end by `DysgraphiaFeaturePipeline` (Schema v3.0.0-kinematics):
 
-| Index | Feature Identifier | Domain | Mathematical Formulation | Sample Value (LPD_1) | Confidence | Technical Interpretation |
+| Index | Feature Identifier | Domain | Physical Units | Sample Value (LPD_1) | Confidence | Technical Interpretation |
 | :-: | :--- | :---: | :--- | :---: | :---: | :--- |
-| **1** | `bhk_size_covariance` | Branch A (Spatial) | dimensionless (CV) | `0.3960` | 0.60 | Fluctuation in character box height and area relative to H_med. |
-| **2** | `bhk_height_ratio_consistency` | Branch A (Spatial) | dimensionless (IQR/median) | `0.6875` | 0.60 | Dispersion of ascenders/descenders vs body x-height. |
-| **3** | `bhk_baseline_drift` | Branch A (Spatial) | 1/H_med | `0.6301` | 0.60 | Macro slant and micro vertical oscillation along text baseline. |
-| **4** | `bhk_spacing_entropy` | Branch A (Spatial) | dimensionless (nats) | `0.6284` | 0.60 | Shannon entropy of inter-character spatial gaps. |
-| **5** | `bhk_stroke_width_variance` | Branch A (Spatial) | dimensionless (CV) | `0.1173` | 0.42 | Stroke width CV from Euclidean Distance Transform (EDT). |
-| **6** | `bhk_telescoping_overlap` | Branch A (Spatial) | ratio [0,1] | `0.8971` | 0.60 | Bounding box horizontal collision frequency and intrusion depth. |
-| **7** | `bhk_acute_turns` | Branch A (Spatial) | turns/H_med | `1.810` | 0.60 | High-curvature angular turn rate (|Delta theta| >= 110 deg). |
-| **8** | `bhk_left_margin_drift` | Branch A (Spatial) | 1/H_med | `0.0000` | 0.60 | Horizontal drift of line start coordinates relative to H_med. |
-| **9** | `bhk_line_collisions` | Branch A (Spatial) | ratio [0,1] | `0.0000` | 0.60 | Inter-line vertical intrusions and ascender-descender collisions. |
-| **10** | `kin_mean_velocity` | Branch B (Kinematic Proxy) | H_med/s (ESTIMATED) | `0.6988` | 0.30 | Two-Thirds Power Law proxy speed (H_med/s). Mathematical proxy only. |
-| **11** | `kin_peak_velocity` | Branch B (Kinematic Proxy) | H_med/s (ESTIMATED) | `3.981` | 0.30 | Maximum ballistic impulse proxy (H_med/s). |
-| **12** | `kin_velocity_skewness` | Branch B (Kinematic Proxy) | dimensionless (ESTIMATED) | `1.775` | 0.30 | Asymmetry between synthetic acceleration and deceleration phases. |
-| **13** | `kin_nvi_rate` | Branch B (Kinematic Proxy) | inversions/s (ESTIMATED) | `2.800` | 0.30 | Number of velocity inversions per unit synthetic time (Hz). |
-| **14** | `kin_nvi_per_stroke` | Branch B (Kinematic Proxy) | inversions/stroke (ESTIMATED) | `13.381` | 0.30 | Total velocity inversions normalized per physical recovered stroke. |
-| **15** | `kin_nvi_per_h_med` | Branch B (Kinematic Proxy) | 1/H_med (ESTIMATED) | `4.000` | 0.30 | Spatial density of velocity inversions per H_med length. |
-| **16** | `kin_jerk_metric` | Branch B (Kinematic Proxy) | H_med^2/s^5 (ESTIMATED) | `13065.9` | 0.30 | Mean squared 3rd derivative (H_med^2/s^5). High due to numerical diff. |
-| **17** | `kin_dimensionless_jerk` | Branch B (Kinematic Proxy) | dimensionless (ESTIMATED) | `754.7` | 0.30 | Flash & Hogan scale-invariant jerk ((T^5/L^2) * int(j^2 dt) * 1e-4). |
-| **18** | `kin_spatial_roughness_4_8hz` | Branch B (Kinematic Proxy) | ratio [0,1] (ESTIMATED) | `0.0388` | 0.50 | Normalized power in 4-8 Hz band along synthetic trajectory. |
-| **19** | `kin_pen_lift_count` | Branch B (Kinematic Proxy) | integer count (ESTIMATED) | `21.000` | 0.30 | Count of discrete physical stroke segments. |
-| **20** | `kin_mean_stroke_length` | Branch B (Kinematic Proxy) | H_med units (ESTIMATED) | `3.346` | 0.50 | Average continuous arc length per stroke (in units of H_med). |
-| **21** | `kin_ink_width_ratio_mean` | Branch B (Kinematic Proxy) | W/H_med (ESTIMATED) | `0.1271` | 0.35 | Mean optical ink thickness relative to median character height. |
-| **22** | `kin_ink_width_ratio_std` | Branch B (Kinematic Proxy) | W/H_med (ESTIMATED) | `0.0075` | 0.35 | Standard deviation of optical ink thickness relative to H_med. |
+| **1** | `kin_mean_velocity` | Kinematic Waveform | H_med/s (ESTIMATED) | `0.6988` | 0.30 | Two-Thirds Power Law proxy speed (H_med/s). Mathematical proxy only. |
+| **2** | `kin_peak_velocity` | Kinematic Waveform | H_med/s (ESTIMATED) | `3.981` | 0.30 | Maximum ballistic impulse proxy (H_med/s). |
+| **3** | `kin_velocity_skewness` | Kinematic Waveform | dimensionless (ESTIMATED) | `1.775` | 0.30 | Asymmetry between synthetic acceleration and deceleration phases. |
+| **4** | `kin_nvi_rate` | Fluency & Hesitation | inversions/s (ESTIMATED) | `2.800` | 0.30 | Number of velocity inversions per unit synthetic time (Hz). |
+| **5** | `kin_nvi_per_stroke` | Fluency & Hesitation | inversions/stroke (ESTIMATED) | `13.381` | 0.30 | Total velocity inversions normalized per physical recovered stroke. |
+| **6** | `kin_nvi_per_h_med` | Fluency & Hesitation | 1/H_med (ESTIMATED) | `4.000` | 0.30 | Spatial density of velocity inversions per H_med length. |
+| **7** | `kin_jerk_metric` | Kinematic Waveform | H_med^2/s^5 (ESTIMATED) | `13065.9` | 0.30 | Mean squared 3rd derivative (H_med^2/s^5). High due to numerical diff. |
+| **8** | `kin_dimensionless_jerk` | Kinematic Waveform | dimensionless (ESTIMATED) | `754.7` | 0.30 | Flash & Hogan scale-invariant jerk ((T^5/L^2) * int(j^2 dt) * 1e-4). |
+| **9** | `kin_spatial_roughness_4_8hz` | Kinematic Waveform | ratio [0,1] (ESTIMATED) | `0.0388` | 0.50 | Normalized power in 4-8 Hz band along synthetic trajectory. |
+| **10** | `kin_pen_lift_count` | Stroke & Ink Geometry | integer count (ESTIMATED) | `21.000` | 0.30 | Count of discrete physical stroke segments. |
+| **11** | `kin_mean_stroke_length` | Stroke & Ink Geometry | H_med units (ESTIMATED) | `3.346` | 0.50 | Average continuous arc length per stroke (in units of H_med). |
+| **12** | `kin_ink_width_ratio_mean` | Stroke & Ink Geometry | W/H_med (ESTIMATED) | `0.1271` | 0.35 | Mean optical ink thickness relative to median character height. |
+| **13** | `kin_ink_width_ratio_std` | Stroke & Ink Geometry | W/H_med (ESTIMATED) | `0.0075` | 0.35 | Standard deviation of optical ink thickness relative to H_med. |
 
 
 ### 3. Broad-Cohort Multi-Task Validation Benchmarks
@@ -313,8 +201,6 @@ Benchmarked across 80 multi-cohort handwriting samples with honest ground-truth 
 | **Paragraph Sequence Fidelity** | Full text documents | Global $r \approx +0.016$ | Global chronological ordering cannot be recovered from static ink. |
 | **Pressure Correlation** | Digitizer samples | $r = 0.002$ (no correlation) | Optical stroke width does NOT measure pen down-force; renamed to `kin_ink_width_ratio`. |
 | **Tremor Frequency Fidelity** | Synthesized kinematics | Uncalibrated on static ink | Renamed from `tremor_index_4_8hz` to `spatial_roughness_4_8hz`. |
-| **Line Collisions (BHK #13)** | Malay photographed cohort | $+21.5\%$ in dysgraphia | Structural spatial indicator; ascenders crashing into adjacent lines. |
-| **Letter Size Covariance (BHK #4)** | Malay photographed cohort | $+11.8\%$ in dysgraphia | Motor planning inconsistency in glyph dimensions. |
 
 > **Scientific Disclaimer on Clinical Claims**: Prior reports cited Cohen's $d$ effect sizes ($d = +1.994$) on uncalibrated camera photos. These effect sizes reflected photographic confounds (closer camera distance, felt-tip pen thickness) rather than genuine neuromotor separation. All classification must be performed downstream by supervised models on calibrated, standardized datasets.
 
@@ -343,22 +229,20 @@ To enable instant feature inspection without installing heavy frameworks, we bui
 ```python
 from src.pipeline import DysgraphiaFeaturePipeline
 
-# 1. Initialize pipeline
+# 1. Initialize pipeline (kinematics-only)
 pipeline = DysgraphiaFeaturePipeline(compute_kinematics=True)
 
 # 2. Extract features from any image (PNG, JPG, or PIL Image)
 results = pipeline.extract("path/to/handwriting_sample.jpg")
 
-# 3. Access feature vectors
-bhk_vector = results["bhk_vector"]            # Shape (9,) - 9 BHK clinical features
-kinematic_vector = results["kinematic_vector"] # Shape (8,) - 8 Neuromotor kinematic features
-full_vector = results["combined_vector"]       # Shape (17,) - Full multimodal vector
+# 3. Access 13D kinematic feature vector
+features = results["feature_vector"]       # Shape (13,) - 13 kinematic features
+feature_dict = results["feature_dict"]     # Dict of all 13 kinematic features
 
 # 4. Inspect named metrics
-print("Size Covariance:", results["bhk_metrics"]["size_covariance_score"])
-print("Acute Turns:", results["bhk_metrics"]["acute_turns_score"])
-print("Line Collisions:", results["bhk_metrics"]["line_collision_score"])
-print("NVI per Stroke:", results["kinematic_metrics"]["nvi_per_stroke"])
+print("Mean Velocity:", feature_dict["kin_mean_velocity"])
+print("Dimensionless Jerk:", feature_dict["kin_dimensionless_jerk"])
+print("NVI per Stroke:", feature_dict["kin_nvi_per_stroke"])
 ```
 
 ### Launching the Interactive Live Screening Studio:
@@ -384,3 +268,29 @@ python scripts/run_phase2.py
 # Phase 3: Consolidated 20D multimodal batch evaluation across 80 samples
 python scripts/run_phase3.py
 ```
+
+---
+
+## Experiment Log: InkSight Generative Reconstruction (Negative Result)
+
+> **Verdict: NOT USEFUL** � Documented negative result from a pre-registered experiment.  
+> Full data: `experiments/inksight/results/summary.md`
+
+### Hypothesis Tested
+
+Replace skeleton graph traversal (Branch B) with Google's *InkSight* CVPR 2024 model, which predicts digital ink stroke sequences from offline images.
+
+### Pre-Registered Gates & Outcome
+
+| Gate | Criterion | Result |
+|---|---|---|
+| P1 � Chamfer Distance | 95% CI of (SK - IS) strictly > 0 | **FAIL** (IS Chamfer 0.131 vs SK 0.079) |
+| P2 � Feature Spearman | Beats SK on = 2/4 geometric features | **FAIL** (0/4) |
+| P3 � Effect Size Retention | Retains = 80% GT Cohen's *d* on = 2/4 features | **FAIL** (all 4 inverted) |
+
+### Root Cause
+
+InkSight's learned generative prior produces *fluent* strokes and suppresses irregular high-curvature micro-tremors. Dysgraphia signals are concentrated in exactly those suppressed irregularities. The result is **sign inversion** of all geometric biomarkers (e.g., Curvature retention: -112%, Turn Density: -186%).
+
+**Implication**: Generative image-to-stroke models trained for plausibility are incompatible with pathological tremor analysis. This negative result has been formally logged and does not affect the core pipeline.
+

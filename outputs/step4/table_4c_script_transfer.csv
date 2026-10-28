@@ -1,0 +1,14 @@
+Feature,InDomain_S1_rho,Transfer_S2_to_S1_rho,S2_to_S1_Retention,InDomain_S2_rho,Transfer_S1_to_S2_rho,S1_to_S2_Retention,Transfer_Stability
+kin_mean_velocity,0.665,0.608,91.5%,0.434,0.298,68.6%,Script-Sensitive
+kin_peak_velocity,0.462,0.442,95.6%,0.294,0.333,113.3%,Stable (>70% retention)
+kin_velocity_skewness,0.21,0.221,105.5%,0.057,0.134,235.4%,Stable (>70% retention)
+kin_nvi_rate,0.28,0.244,87.1%,0.201,0.194,96.7%,Stable (>70% retention)
+kin_nvi_per_stroke,0.294,0.204,69.4%,0.353,0.311,88.2%,Script-Sensitive
+kin_nvi_per_h_med,0.59,0.44,74.6%,0.448,0.393,87.7%,Stable (>70% retention)
+kin_jerk_metric,0.391,0.326,83.4%,0.158,0.192,122.0%,Stable (>70% retention)
+kin_dimensionless_jerk,0.368,0.329,89.4%,0.572,0.544,95.1%,Stable (>70% retention)
+kin_spatial_roughness_4_8hz,0.294,0.346,118.0%,0.113,0.06,52.9%,Script-Sensitive
+kin_pen_lift_count,0.663,0.484,73.0%,0.659,0.372,56.4%,Script-Sensitive
+kin_mean_stroke_length,0.334,0.211,63.3%,0.591,0.135,22.9%,Script-Sensitive
+kin_ink_width_ratio_mean,0.797,0.77,96.7%,0.837,0.83,99.2%,Stable (>70% retention)
+kin_ink_width_ratio_std,0.609,0.489,80.3%,0.644,0.56,87.0%,Stable (>70% retention)

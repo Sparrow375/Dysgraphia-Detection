@@ -1,6 +1,9 @@
 # Multilingual, Stylus-Free Dysgraphia Detection
 ## Project Scope & Workstream Document — v0.1 (Initial Large Scope)
 
+> **Modular Scope Demarcation (v3.0.0)**:
+> In the production division of labor, static handwriting-scale (BHK) features and OCR modules are developed and maintained separately by dedicated teammates. This codebase focuses exclusively on the **13-dimensional biophysical kinematics and differential trajectory geometry engine**.
+
 *This document is a planning baseline, not a locked spec. Expect it to be tuned as workstreams progress and we learn more.*
 
 ---

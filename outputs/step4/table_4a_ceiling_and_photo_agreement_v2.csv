@@ -1,0 +1,14 @@
+Feature,N_paired,Paper_Stylus_Pearson_r,Paper_Stylus_Spearman_rho,Intra_Student_Ceiling_rho,Ceiling_Attained_Pct,Agreement_P_Value,Stylus_Free_Status
+kin_mean_velocity,57,0.123,0.216,0.606,35.6%,1.07e-01,Low Correlation (Tier D)
+kin_peak_velocity,57,0.153,0.24,0.689,34.8%,7.27e-02,Low Correlation (Tier D)
+kin_velocity_skewness,57,0.208,0.228,0.188,121.5%,8.76e-02,Low Correlation (Tier D)
+kin_nvi_rate,57,0.261,0.256,0.668,38.4%,5.41e-02,Low Correlation (Tier D)
+kin_nvi_per_stroke,57,0.155,0.072,0.448,16.1%,5.95e-01,Low Correlation (Tier D)
+kin_nvi_per_h_med,57,0.192,0.147,0.543,27.1%,2.75e-01,Low Correlation (Tier D)
+kin_jerk_metric,57,-0.002,0.063,0.77,8.2%,6.43e-01,Low Correlation (Tier D)
+kin_dimensionless_jerk,57,0.181,0.178,0.358,49.9%,1.84e-01,Low Correlation (Tier D)
+kin_spatial_roughness_4_8hz,54,0.271,0.327,0.366,89.2%,1.59e-02,Validated
+kin_pen_lift_count,57,-0.169,-0.095,0.01,-910.7%,4.80e-01,Low Correlation (Tier D)
+kin_mean_stroke_length,57,-0.005,0.027,0.532,5.1%,8.42e-01,Low Correlation (Tier D)
+kin_ink_width_ratio_mean,57,-0.016,0.016,0.845,1.9%,9.05e-01,Descriptive Proxy
+kin_ink_width_ratio_std,57,-0.28,-0.221,0.855,-25.8%,9.89e-02,Descriptive Proxy

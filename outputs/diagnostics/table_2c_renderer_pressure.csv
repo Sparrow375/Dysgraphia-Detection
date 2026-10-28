@@ -1,0 +1,3 @@
+Measurement_Pair,N_Points,Pearson_r,Spearman_rho,Physical_Finding,Clinical_Status
+Hardware Stylus Pressure vs. Screenshot Stroke Width,63677,0.852,0.7013,"Strong positive coupling (r=0.7831, rho=0.7545): Canvas rendering engine drew line width directly proportional to stylus pressure.",APP-SPECIFIC SOFTWARE BRUSH ARTIFACT (Not a natural biophysical width-pressure relationship).
+Hardware Stylus Pressure vs. Screenshot Ink Opacity / Darkness,63677,0.0389,0.0409,"Near-zero coupling (r=0.0577, rho=0.0755): Canvas rendering engine drew constant solid black opacity regardless of pressure.",UNINFORMATIVE IN SCREENSHOTS (Digital canvas lacked alpha down-force modulation).
