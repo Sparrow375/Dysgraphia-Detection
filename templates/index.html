@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dysgraphia Kinematics Harmonization Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-sky-500 selection:text-white">
+
+  <!-- TOP HEADER -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40 px-6 py-3.5 shadow-md">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3.5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20 ring-1 ring-white/20">
+          <i class="fa-solid fa-pen-nib text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2.5">
+            <h1 class="text-lg font-bold tracking-tight text-white">Dysgraphia Kinematics Harmonization Studio</h1>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5"></span>
+              Pipeline v2.1 Active
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Photo-to-Digital Scale Harmonization with Conformal Uncertainty & Hardware Ground Truth</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <div class="hidden md:flex items-center space-x-2 text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+          <i class="fa-solid fa-microchip text-sky-400"></i>
+          <span>13 Canonical Features</span>
+          <span class="text-slate-600">•</span>
+          <span>Nested CV Calibrated</span>
+        </div>
+        <button id="btn-export-json" disabled class="opacity-50 cursor-not-allowed inline-flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 transition shadow">
+          <i class="fa-solid fa-download text-sky-400"></i>
+          <span>Export JSON</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT COLUMN: CONTROLS & INPUTS (4 Cols) -->
+    <div class="lg:col-span-4 space-y-5">
+
+      <!-- QUICK SAMPLE LOAD CARD -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+          <span><i class="fa-solid fa-bolt text-amber-400 mr-1.5"></i> Quick Load Sample Student</span>
+          <span class="text-[10px] text-slate-400 font-mono">FG_G4_A_Roll01</span>
+        </h2>
+        <div class="grid grid-cols-1 gap-2">
+          <button id="btn-sample-screenshot" class="group relative flex items-center justify-between p-3 rounded-xl bg-slate-800/70 hover:bg-slate-800 border border-slate-700 hover:border-sky-500/50 transition text-left">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center border border-sky-500/20 group-hover:scale-105 transition">
+                <i class="fa-solid fa-tablet-screen-button text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-slate-200 group-hover:text-sky-300 transition">Digital Stylus Screenshot</p>
+                <p class="text-[11px] text-slate-400">Task S1 (Hindi) • True Hardware GT</p>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-500 group-hover:text-sky-400 group-hover:translate-x-0.5 transition"></i>
+          </button>
+
+          <button id="btn-sample-paper" class="group relative flex items-center justify-between p-3 rounded-xl bg-slate-800/70 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 transition text-left">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20 group-hover:scale-105 transition">
+                <i class="fa-solid fa-camera text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-slate-200 group-hover:text-amber-300 transition">Real Paper Notebook Photo</p>
+                <p class="text-[11px] text-slate-400">DocScanner Ruled Paper • Full Page</p>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-500 group-hover:text-amber-400 group-hover:translate-x-0.5 transition"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- FILE UPLOADER CARD -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center">
+          <i class="fa-solid fa-cloud-arrow-up text-sky-400 mr-1.5"></i> Upload Handwriting Image
+        </h2>
+
+        <!-- Dropzone -->
+        <div id="dropzone" class="relative border-2 border-dashed border-slate-700 hover:border-sky-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950/40 hover:bg-sky-500/5 transition">
+          <input type="file" id="file-input" accept="image/png, image/jpeg, image/jpg" class="hidden">
+          <div id="dropzone-prompt" class="space-y-2 py-2">
+            <i class="fa-solid fa-image text-2xl text-slate-500"></i>
+            <p class="text-xs text-slate-300 font-medium">Drag & drop handwriting image here, or <span class="text-sky-400 underline">browse</span></p>
+            <p class="text-[11px] text-slate-400">PNG, JPG, or JPEG up to 32MB</p>
+          </div>
+          <div id="image-preview-container" class="hidden relative">
+            <img id="image-preview" src="" alt="Handwriting Preview" class="max-h-36 mx-auto rounded-lg object-contain border border-slate-700 bg-slate-900">
+            <div id="preview-badge" class="mt-2 text-[11px] font-mono text-slate-400 truncate"></div>
+            <button id="btn-clear-image" type="button" class="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- CONFIGURATION FORM -->
+        <div class="mt-4 space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Script System</label>
+              <select id="select-script" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="S1" selected>S1 (Hindi - Devanagari)</option>
+                <option value="S2">S2 (English - Latin)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Grade Cohort</label>
+              <select id="select-grade" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="4" selected>Grade 4 (Ages 9-10)</option>
+                <option value="5">Grade 5 (Ages 10-11)</option>
+                <option value="6">Grade 6 (Ages 11-12)</option>
+                <option value="7">Grade 7 (Ages 12-13)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+              <span>Student ID (Optional)</span>
+              <span class="text-[10px] text-slate-400">For Ground Truth Matching</span>
+            </label>
+            <input type="text" id="input-student-id" placeholder="e.g. FG_G4_A_Roll01" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-mono placeholder:text-slate-400 focus:outline-none focus:border-sky-500">
+          </div>
+
+          <!-- PRIMARY ACTION BUTTON -->
+          <button id="btn-run-analysis" class="w-full mt-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-xs tracking-wide shadow-lg shadow-sky-500/20 transition flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <i id="btn-icon" class="fa-solid fa-wand-magic-sparkles"></i>
+            <span id="btn-label">Run Kinematic Harmonization</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CONFIDENCE TIERS LEGEND CARD -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm text-xs space-y-2">
+        <h3 class="font-bold text-slate-300 flex items-center space-x-1.5 mb-2">
+          <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+          <span>Confidence Tier Architecture</span>
+        </h3>
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between p-1.5 rounded-lg bg-emerald-950/30 border border-emerald-800/40 text-[11px]">
+            <span class="font-bold text-emerald-400 px-1.5 py-0.5 rounded bg-emerald-500/20">Tier A</span>
+            <span class="text-slate-300">High Agreement (&rho; &ge; 0.40)</span>
+          </div>
+          <div class="flex items-center justify-between p-1.5 rounded-lg bg-sky-950/30 border border-sky-800/40 text-[11px]">
+            <span class="font-bold text-sky-400 px-1.5 py-0.5 rounded bg-sky-500/20">Tier B</span>
+            <span class="text-slate-300">Moderate Agreement (&rho; &isin; [0.25, 0.40))</span>
+          </div>
+          <div class="flex items-center justify-between p-1.5 rounded-lg bg-amber-950/30 border border-amber-800/40 text-[11px]">
+            <span class="font-bold text-amber-400 px-1.5 py-0.5 rounded bg-amber-500/20">Tier C</span>
+            <span class="text-slate-300">Weak Agreement (&rho; &isin; [0.15, 0.25))</span>
+          </div>
+          <div class="flex items-center justify-between p-1.5 rounded-lg bg-rose-950/30 border border-rose-800/40 text-[11px]">
+            <span class="font-bold text-rose-400 px-1.5 py-0.5 rounded bg-rose-500/20">Tier D</span>
+            <span class="text-slate-300">High Uncertainty (Wide Interval)</span>
+          </div>
+          <div class="flex items-center justify-between p-1.5 rounded-lg bg-purple-950/30 border border-purple-800/40 text-[11px]">
+            <span class="font-bold text-purple-400 px-1.5 py-0.5 rounded bg-purple-500/20">Proxy</span>
+            <span class="text-slate-300">Descriptive Proxy Only (No Stylus Equiv.)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: RESULTS & DIAGNOSTIC VISUALIZATIONS (8 Cols) -->
+    <div class="lg:col-span-8 space-y-6">
+
+      <!-- WELCOME / PLACEHOLDER STATE -->
+      <div id="placeholder-state" class="bg-slate-900 border border-slate-800 rounded-2xl p-10 text-center space-y-4">
+        <div class="w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-500">
+          <i class="fa-solid fa-chart-line text-2xl"></i>
+        </div>
+        <div class="max-w-md mx-auto space-y-1">
+          <h3 class="text-base font-bold text-slate-200">No Handwriting Analyzed Yet</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Click one of the <strong class="text-sky-400">Quick Load</strong> sample buttons on the left or upload any photo/screenshot to run the complete 4-stage physical extraction and view the 13 canonical digital kinematics.
+          </p>
+        </div>
+        <div class="inline-flex items-center space-x-2 text-xs text-slate-400 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700/60">
+          <i class="fa-solid fa-info-circle text-sky-400"></i>
+          <span>Sample FG_G4_A_Roll01 contains matching hardware stylus ground truth.</span>
+        </div>
+      </div>
+
+      <!-- PROCESSING LOADING STATE -->
+      <div id="loading-state" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-5">
+        <div class="flex items-center space-x-3">
+          <div class="w-6 h-6 border-2 border-sky-400 border-t-transparent rounded-full animate-spin"></div>
+          <div>
+            <h4 class="text-sm font-bold text-white">Running Physical Harmonization Pipeline...</h4>
+            <p id="loading-step-text" class="text-xs text-slate-400 font-mono">Stage 1: Removing ruled lines & normalizing background illumination...</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 gap-2 pt-2">
+          <div class="h-1.5 rounded bg-sky-500 animate-pulse"></div>
+          <div class="h-1.5 rounded bg-indigo-500 animate-pulse"></div>
+          <div class="h-1.5 rounded bg-amber-500 animate-pulse"></div>
+          <div class="h-1.5 rounded bg-emerald-500 animate-pulse"></div>
+        </div>
+      </div>
+
+      <!-- RESULTS CONTAINER (HIDDEN INITIALLY) -->
+      <div id="results-container" class="hidden space-y-6">
+
+        <!-- SUMMARY BANNER -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-800 border border-slate-700/80 rounded-2xl p-4 shadow-md">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+              <span id="banner-doc-type" class="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                Digital Screenshot
+              </span>
+              <span id="banner-script-grade" class="text-xs font-semibold text-slate-300">
+                Task S1 (Hindi) • Grade 4
+              </span>
+            </div>
+            <div id="banner-gt-status" class="hidden flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+              <i class="fa-solid fa-circle-check text-emerald-400"></i>
+              <span>True Hardware Stylus Ground Truth Attached</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-3 border-t border-slate-800 text-center">
+            <div class="p-2 bg-slate-950/40 rounded-xl border border-slate-800/80">
+              <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Median Height H_med</div>
+              <div id="stat-hmed" class="text-sm font-bold text-white font-mono mt-0.5">-- px</div>
+            </div>
+            <div class="p-2 bg-slate-950/40 rounded-xl border border-slate-800/80">
+              <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Merged Trajectories</div>
+              <div id="stat-strokes" class="text-sm font-bold text-white font-mono mt-0.5">-- strokes</div>
+            </div>
+            <div class="p-2 bg-slate-950/40 rounded-xl border border-slate-800/80">
+              <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Arc Length</div>
+              <div id="stat-arc" class="text-sm font-bold text-white font-mono mt-0.5">-- H_med</div>
+            </div>
+            <div class="p-2 bg-slate-950/40 rounded-xl border border-slate-800/80">
+              <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">High-Confidence</div>
+              <div id="stat-tiers" class="text-sm font-bold text-emerald-400 font-mono mt-0.5">-- / 13 Tiers A-B</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STAGE-BY-STAGE PHYSICAL EXTRACTION PANELS (2X2 GRID) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center">
+              <i class="fa-solid fa-layer-group text-sky-400 mr-2"></i> Stage-by-Stage Physical Extraction Inspection
+            </h3>
+            <span class="text-[11px] text-slate-400"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i>Click any panel to enlarge</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Panel 1 -->
+            <div class="group relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden cursor-pointer hover:border-sky-500/50 transition" onclick="openModal('panel1', 'Stage 1: Illumination Normalization & Line Cleaning')">
+              <div class="p-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-[11px] font-semibold text-slate-300">
+                <span>1. Illumination Normalization & Ruling Clean</span>
+                <i class="fa-solid fa-expand text-slate-400 group-hover:text-sky-400 transition"></i>
+              </div>
+              <img id="img-panel1" src="" alt="Stage 1" class="w-full h-48 object-contain bg-slate-950 p-1">
+            </div>
+
+            <!-- Panel 2 -->
+            <div class="group relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden cursor-pointer hover:border-sky-500/50 transition" onclick="openModal('panel2', 'Stage 2: Zhang-Suen Skeleton & Tangent Continuity Graph Merging')">
+              <div class="p-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-[11px] font-semibold text-slate-300">
+                <span>2. Skeleton & Tangent-Continuity Merging</span>
+                <i class="fa-solid fa-expand text-slate-400 group-hover:text-sky-400 transition"></i>
+              </div>
+              <img id="img-panel2" src="" alt="Stage 2" class="w-full h-48 object-contain bg-slate-950 p-1">
+            </div>
+
+            <!-- Panel 3 -->
+            <div class="group relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden cursor-pointer hover:border-sky-500/50 transition" onclick="openModal('panel3', 'Stage 3: Two-Thirds Power Law Tangential Velocity Heatmap')">
+              <div class="p-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-[11px] font-semibold text-slate-300">
+                <span>3. 2/3 Power Law (ds &rarr; dt) Velocity Profile</span>
+                <i class="fa-solid fa-expand text-slate-400 group-hover:text-sky-400 transition"></i>
+              </div>
+              <img id="img-panel3" src="" alt="Stage 3" class="w-full h-48 object-contain bg-slate-950 p-1">
+            </div>
+
+            <!-- Panel 4 -->
+            <div class="group relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden cursor-pointer hover:border-sky-500/50 transition" onclick="openModal('panel4', 'Stage 4: 4-8 Hz Tremor Spectrum & Sub-Pixel Optical Width')">
+              <div class="p-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-[11px] font-semibold text-slate-300">
+                <span>4. 4-8 Hz Tremor & Optical Cross-Section</span>
+                <i class="fa-solid fa-expand text-slate-400 group-hover:text-sky-400 transition"></i>
+              </div>
+              <img id="img-panel4" src="" alt="Stage 4" class="w-full h-48 object-contain bg-slate-950 p-1">
+            </div>
+          </div>
+        </div>
+
+        <!-- 13 CANONICAL FEATURES DASHBOARD -->
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-white">13 Canonical Digital-Equivalent Kinematic Features</h3>
+              <p class="text-xs text-slate-400">Calibrated to match hardware tablet stylus recording scale with 95% conformal bounds</p>
+            </div>
+          </div>
+
+          <!-- CATEGORY 1: VELOCITY DYNAMICS -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center">
+              <i class="fa-solid fa-gauge-high mr-1.5"></i> 1. Velocity Dynamics
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="cards-velocity"></div>
+          </div>
+
+          <!-- CATEGORY 2: FLUENCY & HESITATION -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center">
+              <i class="fa-solid fa-wave-square mr-1.5"></i> 2. Fluency & Velocity Reversals (NVI)
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="cards-nvi"></div>
+          </div>
+
+          <!-- CATEGORY 3: NEUROMOTOR JERK -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-rose-400 flex items-center">
+              <i class="fa-solid fa-bolt-lightning mr-1.5"></i> 3. Neuromotor Jerk & Movement Smoothness
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="cards-jerk"></div>
+          </div>
+
+          <!-- CATEGORY 4: MICRO-TREMOR BIOMARKER -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center">
+              <i class="fa-solid fa-hand-dots mr-1.5"></i> 4. Micro-Tremor (Validated Biomarker)
+            </h4>
+            <div class="grid grid-cols-1 gap-3" id="cards-tremor"></div>
+          </div>
+
+          <!-- CATEGORY 5: STROKE TOPOLOGY -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center">
+              <i class="fa-solid fa-lines-leaning mr-1.5"></i> 5. Stroke Topology & Pen Lifts
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="cards-topology"></div>
+          </div>
+
+          <!-- CATEGORY 6: OPTICAL STYLING PROXIES -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center">
+              <i class="fa-solid fa-brush mr-1.5"></i> 6. Optical Styling (Descriptive Proxies)
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="cards-styling"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL FOR FULL-RESOLUTION DIAGNOSTIC VIEW -->
+  <div id="image-modal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="relative max-w-4xl w-full bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
+      <div class="p-3 bg-slate-800 border-b border-slate-700 flex items-center justify-between">
+        <h4 id="modal-title" class="text-xs font-bold text-slate-200">Stage Inspection</h4>
+        <button onclick="closeModal()" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 flex items-center justify-center text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="p-4 bg-slate-950 flex items-center justify-center">
+        <img id="modal-image" src="" alt="Enlarged Stage" class="max-h-[75vh] w-auto rounded-lg object-contain">
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script>
+    // State
+    let currentPayload = null;
+    let selectedSampleId = null;
+    let selectedFile = null;
+
+    // Elements
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+    const dropzonePrompt = document.getElementById('dropzone-prompt');
+    const previewContainer = document.getElementById('image-preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    const previewBadge = document.getElementById('preview-badge');
+    const btnClearImage = document.getElementById('btn-clear-image');
+    const btnRun = document.getElementById('btn-run-analysis');
+    const btnIcon = document.getElementById('btn-icon');
+    const btnLabel = document.getElementById('btn-label');
+    const btnExportJson = document.getElementById('btn-export-json');
+
+    const selectScript = document.getElementById('select-script');
+    const selectGrade = document.getElementById('select-grade');
+    const inputStudentId = document.getElementById('input-student-id');
+
+    const btnSampleScreenshot = document.getElementById('btn-sample-screenshot');
+    const btnSamplePaper = document.getElementById('btn-sample-paper');
+
+    const placeholderState = document.getElementById('placeholder-state');
+    const loadingState = document.getElementById('loading-state');
+    const resultsContainer = document.getElementById('results-container');
+
+    // Drag and drop handlers
+    dropzone.addEventListener('click', (e) => {
+      if (e.target !== btnClearImage && !btnClearImage.contains(e.target)) {
+        fileInput.click();
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        handleFileSelect(e.target.files[0]);
+      }
+    });
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('border-sky-500', 'bg-sky-500/10');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('border-sky-500', 'bg-sky-500/10');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-sky-500', 'bg-sky-500/10');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleFileSelect(e.dataTransfer.files[0]);
+      }
+    });
+
+    btnClearImage.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearSelectedImage();
+    });
+
+    function handleFileSelect(file) {
+      selectedFile = file;
+      selectedSampleId = null;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imagePreview.src = e.target.result;
+        dropzonePrompt.classList.add('hidden');
+        previewContainer.classList.remove('hidden');
+        previewBadge.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearSelectedImage() {
+      selectedFile = null;
+      selectedSampleId = null;
+      fileInput.value = '';
+      imagePreview.src = '';
+      dropzonePrompt.classList.remove('hidden');
+      previewContainer.classList.add('hidden');
+      previewBadge.textContent = '';
+    }
+
+    // Quick Load Samples
+    btnSampleScreenshot.addEventListener('click', () => {
+      loadSamplePreset('screenshot_fg_g4', 'FG_G4_A_Roll01', 'S1', 4, 'Sample: Digital Stylus Screenshot');
+    });
+
+    btnSamplePaper.addEventListener('click', () => {
+      loadSamplePreset('paper_fg_g4', 'FG_G4_A_Roll01', 'S1', 4, 'Sample: Real Paper Notebook Photo');
+    });
+
+    function loadSamplePreset(sampleId, studentId, script, grade, label) {
+      selectedSampleId = sampleId;
+      selectedFile = null;
+      fileInput.value = '';
+      selectScript.value = script;
+      selectGrade.value = grade;
+      inputStudentId.value = studentId;
+
+      imagePreview.src = `/api/sample_image/${sampleId}`;
+      dropzonePrompt.classList.add('hidden');
+      previewContainer.classList.remove('hidden');
+      previewBadge.textContent = label;
+
+      // Trigger analysis immediately on sample select for frictionless review
+      runAnalysis();
+    }
+
+    // Run Analysis Button
+    btnRun.addEventListener('click', () => {
+      runAnalysis();
+    });
+
+    async function runAnalysis() {
+      if (!selectedFile && !selectedSampleId) {
+        alert('Please select an image or click a Quick Load sample button.');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        let response;
+        if (selectedSampleId) {
+          response = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sample_id: selectedSampleId,
+              script: selectScript.value,
+              grade: parseInt(selectGrade.value),
+              student_id: inputStudentId.value.trim() || undefined
+            })
+          });
+        } else {
+          const formData = new FormData();
+          formData.append('image', selectedFile);
+          formData.append('script', selectScript.value);
+          formData.append('grade', selectGrade.value);
+          if (inputStudentId.value.trim()) {
+            formData.append('student_id', inputStudentId.value.trim());
+          }
+          response = await fetch('/api/analyze', {
+            method: 'POST',
+            body: formData
+          });
+        }
+
+        const data = await response.json();
+        if (data.status !== 'success') {
+          throw new Error(data.message || 'Error executing kinematic harmonization');
+        }
+
+        currentPayload = data;
+        renderResults(data);
+      } catch (err) {
+        alert('Analysis Error: ' + err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function setLoading(isLoading) {
+      if (isLoading) {
+        btnRun.disabled = true;
+        btnIcon.className = 'fa-solid fa-circle-notch fa-spin';
+        btnLabel.textContent = 'Harmonizing Kinematics...';
+        placeholderState.classList.add('hidden');
+        resultsContainer.classList.add('hidden');
+        loadingState.classList.remove('hidden');
+      } else {
+        btnRun.disabled = false;
+        btnIcon.className = 'fa-solid fa-wand-magic-sparkles';
+        btnLabel.textContent = 'Run Kinematic Harmonization';
+        loadingState.classList.add('hidden');
+      }
+    }
+
+    // Render Results
+    function renderResults(data) {
+      placeholderState.classList.add('hidden');
+      loadingState.classList.add('hidden');
+      resultsContainer.classList.remove('hidden');
+
+      // 1. Banner
+      const meta = data.metadata;
+      document.getElementById('banner-doc-type').textContent = meta.document_type === 'paper_photo' ? 'Real Paper Notebook Photo' : 'Digital Stylus Screenshot';
+      document.getElementById('banner-script-grade').textContent = `${meta.script} • Grade ${meta.grade}`;
+      
+      const gtStatus = document.getElementById('banner-gt-status');
+      if (data.ground_truth) {
+        gtStatus.classList.remove('hidden');
+      } else {
+        gtStatus.classList.add('hidden');
+      }
+
+      document.getElementById('stat-hmed').textContent = `${meta.h_med_px} px`;
+      document.getElementById('stat-strokes').textContent = `${meta.raw_strokes_detected} strokes`;
+      document.getElementById('stat-arc').textContent = `${meta.raw_total_arc_norm} H_med`;
+
+      // Count Tiers A & B
+      let highConf = 0;
+      Object.values(data.features).forEach(f => {
+        if (f.confidence_tier === 'A' || f.confidence_tier === 'B') highConf++;
+      });
+      document.getElementById('stat-tiers').textContent = `${highConf} / 13 Tiers A-B`;
+
+      // 2. Visual Panels
+      document.getElementById('img-panel1').src = data.visualizations.panel1;
+      document.getElementById('img-panel2').src = data.visualizations.panel2;
+      document.getElementById('img-panel3').src = data.visualizations.panel3;
+      document.getElementById('img-panel4').src = data.visualizations.panel4;
+
+      // 3. Feature Cards by Category
+      const featGroups = {
+        velocity: ['kin_mean_velocity', 'kin_peak_velocity', 'kin_velocity_skewness'],
+        nvi: ['kin_nvi_rate', 'kin_nvi_per_stroke', 'kin_nvi_per_h_med'],
+        jerk: ['kin_jerk_metric', 'kin_dimensionless_jerk'],
+        tremor: ['kin_spatial_roughness_4_8hz'],
+        topology: ['kin_pen_lift_count', 'kin_mean_stroke_length'],
+        styling: ['kin_ink_width_ratio_mean', 'kin_ink_width_ratio_std']
+      };
+
+      const gtFeatures = data.ground_truth ? data.ground_truth.features : {};
+
+      renderCategoryCards('cards-velocity', featGroups.velocity, data.features, gtFeatures);
+      renderCategoryCards('cards-nvi', featGroups.nvi, data.features, gtFeatures);
+      renderCategoryCards('cards-jerk', featGroups.jerk, data.features, gtFeatures);
+      renderCategoryCards('cards-tremor', featGroups.tremor, data.features, gtFeatures);
+      renderCategoryCards('cards-topology', featGroups.topology, data.features, gtFeatures);
+      renderCategoryCards('cards-styling', featGroups.styling, data.features, gtFeatures);
+
+      // Enable Export JSON button
+      btnExportJson.disabled = false;
+      btnExportJson.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    function renderCategoryCards(containerId, featKeys, features, gtFeatures) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      featKeys.forEach(key => {
+        const f = features[key];
+        if (!f) return;
+        const gt = gtFeatures ? gtFeatures[key] : null;
+        container.appendChild(createFeatureCard(key, f, gt));
+      });
+    }
+
+    function createFeatureCard(key, f, gt) {
+      const card = document.createElement('div');
+      card.className = 'bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm hover:border-slate-700 transition flex flex-col justify-between space-y-3';
+
+      // Tier styling badge
+      let tierBadge = '';
+      if (f.confidence_tier === 'A') {
+        tierBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Tier A (High Agreement)</span>';
+      } else if (f.confidence_tier === 'B') {
+        tierBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">Tier B (Moderate)</span>';
+      } else if (f.confidence_tier === 'C') {
+        tierBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">Tier C (Weak)</span>';
+      } else if (f.confidence_tier === 'D') {
+        tierBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30" title="High Extrapolation Uncertainty"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Tier D (Uncertain)</span>';
+      } else {
+        tierBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">Descriptive Proxy</span>';
+      }
+
+      // Feature title formatting
+      const cleanTitle = key.replace('kin_', '').replace(/_/g, ' ').toUpperCase();
+
+      // Estimate string
+      const [piLow, piHigh] = f.prediction_interval_95;
+      let linearDisplay = '';
+      if (f.linear_scale_estimate !== undefined) {
+        linearDisplay = `<span class="text-[11px] text-slate-400 ml-1.5 font-normal font-mono">(Linear: ${f.linear_scale_estimate})</span>`;
+      }
+
+      // Ground truth comparison box if available
+      let gtHtml = '';
+      if (gt) {
+        const gtVal = gt.value;
+        const diff = (f.estimate - gtVal).toFixed(2);
+        const sign = diff >= 0 ? '+' : '';
+        gtHtml = `
+          <div class="mt-2 p-2 rounded-lg bg-emerald-950/20 border border-emerald-800/40 text-[11px] flex items-center justify-between">
+            <div>
+              <span class="text-emerald-400 font-semibold"><i class="fa-solid fa-tablet mr-1"></i>Hardware Stylus GT:</span>
+              <span class="font-mono font-bold text-slate-200 ml-1">${gtVal}</span>
+            </div>
+            <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+              Δ: ${sign}${diff}
+            </span>
+          </div>
+        `;
+      }
+
+      card.innerHTML = `
+        <div>
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <h5 class="text-xs font-bold text-slate-200 tracking-tight" title="${f.description}">${cleanTitle}</h5>
+              <p class="text-[10px] text-slate-400 font-mono">${f.units}</p>
+            </div>
+            ${tierBadge}
+          </div>
+
+          <div class="mt-3 flex items-baseline">
+            <span class="text-xl font-extrabold text-white font-mono">${f.estimate}</span>
+            ${linearDisplay}
+          </div>
+
+          <!-- 95% Conformal Prediction Interval -->
+          <div class="mt-2 text-[11px] space-y-1">
+            <div class="flex items-center justify-between text-slate-400 text-[10px]">
+              <span>95% Conformal Interval:</span>
+              <span class="font-mono text-slate-300 font-medium">[${piLow}, ${piHigh}]</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden relative">
+              <div class="bg-gradient-to-r from-sky-500 to-indigo-500 h-1.5 rounded-full" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <!-- Normative Rank Percentile -->
+          <div class="mt-3 text-[11px] space-y-1">
+            <div class="flex items-center justify-between text-slate-400 text-[10px]">
+              <span>Grade Cohort Rank:</span>
+              <span class="font-mono text-sky-400 font-bold">${f.rank_percentile}th %ile</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-sky-400 h-1.5 rounded-full transition-all duration-500" style="width: ${Math.min(Math.max(f.rank_percentile, 3), 100)}%;"></div>
+            </div>
+          </div>
+        </div>
+
+        ${gtHtml}
+      `;
+
+      return card;
+    }
+
+    // Modal inspection
+    function openModal(panelKey, title) {
+      if (!currentPayload || !currentPayload.visualizations[panelKey]) return;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-image').src = currentPayload.visualizations[panelKey];
+      document.getElementById('image-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('image-modal').classList.add('hidden');
+    }
+
+    // Export JSON
+    btnExportJson.addEventListener('click', () => {
+      if (!currentPayload) return;
+      const cleanPayload = { ...currentPayload };
+      // Omit huge base64 strings in downloaded JSON for lightweight file
+      cleanPayload.visualizations = {
+        panel1_base64_omitted: true,
+        panel2_base64_omitted: true,
+        panel3_base64_omitted: true,
+        panel4_base64_omitted: true
+      };
+      const blob = new Blob([JSON.stringify(cleanPayload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `kinematics_report_${currentPayload.metadata.document_type}_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+
+</body>
+</html>
+
