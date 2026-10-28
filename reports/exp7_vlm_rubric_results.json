@@ -1,0 +1,45 @@
+{
+  "candidate": "Candidate 4: VLM Clinical Rubric Scorer",
+  "n_students": 215,
+  "n_positives": 40,
+  "n_controls": 175,
+  "auroc": 0.6165714285714285,
+  "auprc": 0.2483701453297091,
+  "brier": 0.22821155190467834,
+  "sens_at_80_spec": 0.075,
+  "det_at_80_spec": 3,
+  "sens_at_90_spec": 0.05,
+  "det_at_90_spec": 2,
+  "bhk_correlations": {
+    "vlm_spacing_regularity_mean__vs__gap_mean_median": {
+      "pearson_r": -0.08925760277094952,
+      "pearson_p": 0.19231966629734848,
+      "spearman_rho": 0.06382484699674339,
+      "spearman_p": 0.3516723852429058
+    },
+    "vlm_baseline_adherence_mean__vs__baseline_rmse_norm_median": {
+      "pearson_r": 0.042387603772764924,
+      "pearson_p": 0.5364573657519734,
+      "spearman_rho": -0.0017678757335745678,
+      "spearman_p": 0.9794399515669551
+    },
+    "vlm_stroke_fluidity_mean__vs__jerk_proxy_median": {
+      "pearson_r": -0.018084676453723938,
+      "pearson_p": 0.7920502984157641,
+      "spearman_rho": -0.02014899689983151,
+      "spearman_p": 0.7689490856619354
+    },
+    "vlm_letter_formation_mean__vs__components_per_unit_width_median": {
+      "pearson_r": -0.17768470461579072,
+      "pearson_p": 0.00902803626120239,
+      "spearman_rho": -0.1931029362423377,
+      "spearman_p": 0.004486885388615138
+    },
+    "vlm_legibility_mean__vs__components_per_unit_width_median": {
+      "pearson_r": -0.025232603653122812,
+      "pearson_p": 0.7129594740266921,
+      "spearman_rho": -0.08225256299607339,
+      "spearman_p": 0.22972607684890675
+    }
+  }
+}

@@ -49,7 +49,7 @@ DATA_DIR = REPO_ROOT / "data"
 SENTENCE_DATASET_DIR = DATA_DIR / "sentence_crops_dataset"
 INDEX_CSV = SENTENCE_DATASET_DIR / "sentences_index.csv"
 FEATURES_DIR = DATA_DIR / "features"
-REPORTS_DIR = DATA_DIR / "reports"
+REPORTS_DIR = REPO_ROOT / "reports"
 RUBRIC_CACHE_FILE = FEATURES_DIR / "vlm_rubric_cache.json"
 
 RUBRIC_CRITERIA = [
@@ -62,31 +62,30 @@ RUBRIC_CRITERIA = [
     "pressure_uniformity",
 ]
 
-PROMPT_TEXT = """You are an expert pediatric occupational therapist assessing children's handwriting for dysgraphia screening.
-Analyze this handwriting crop and assign a continuous score from 1.0 to 5.0 (in increments of 0.5: 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0) for each of these 7 clinical criteria:
-1. legibility: 1.0 (illegible/severely impaired) to 5.0 (effortless clarity)
-2. letter_formation: 1.0 (severely deformed/broken loops) to 5.0 (canonical formation)
-3. spacing_regularity: 1.0 (erratic inter-word/inter-letter gaps) to 5.0 (uniform spacing)
-4. size_consistency: 1.0 (wildly fluctuating letter heights) to 5.0 (steady, uniform x-height)
-5. baseline_adherence: 1.0 (downhill drift or severe waviness) to 5.0 (straight horizontal alignment)
-6. stroke_fluidity: 1.0 (tremor, hesitation, shaky strokes) to 5.0 (smooth ballistic strokes)
-7. pressure_uniformity: 1.0 (patchy faint strokes and heavy gouges) to 5.0 (even density)
+PROMPT_TEXT = """You are an expert pediatric handwriting clinician assessing this handwriting sample.
+Carefully inspect the image strokes and score this handwriting from 1.0 (severely impaired) to 5.0 (flawless) on:
+- legibility: readability of words
+- letter_formation: correct letter shapes and closed loops
+- spacing_regularity: consistency of spaces between words and letters
+- size_consistency: steady uniform letter height
+- baseline_adherence: straight horizontal baseline alignment without downhill drift
+- stroke_fluidity: smooth continuous lines without tremor or shaky hesitation
+- pressure_uniformity: even ink darkness without faint gaps or gouges
 
-Return strictly valid JSON with no markdown and no explanation:
+Output strictly a JSON object with your numeric evaluations, formatted as:
 {
-  "legibility": 3.5,
-  "letter_formation": 3.0,
-  "spacing_regularity": 4.0,
-  "size_consistency": 3.0,
-  "baseline_adherence": 3.5,
-  "stroke_fluidity": 2.5,
-  "pressure_uniformity": 4.0
+  "legibility": <float 1.0-5.0>,
+  "letter_formation": <float 1.0-5.0>,
+  "spacing_regularity": <float 1.0-5.0>,
+  "size_consistency": <float 1.0-5.0>,
+  "baseline_adherence": <float 1.0-5.0>,
+  "stroke_fluidity": <float 1.0-5.0>,
+  "pressure_uniformity": <float 1.0-5.0>
 }"""
 
 
 def parse_vlm_json_response(raw_text: str) -> Optional[Dict[str, float]]:
     """Parse JSON string from model generation, handling markdown blocks."""
-    # Strip markdown code blocks if present
     text = raw_text.strip()
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if not match:
@@ -130,10 +129,10 @@ def save_rubric_cache(cache: Dict[str, Dict[str, float]]) -> None:
 
 def score_sentences_with_vlm(
     limit: Optional[int] = None,
-    batch_size: int = 1,
+    batch_size: int = 4,
     device_str: Optional[str] = None,
 ) -> Dict[str, Dict[str, float]]:
-    """Run Qwen2-VL-2B inference over all sentence crops with resume support."""
+    """Run Qwen2-VL-2B inference over all sentence crops with resume support and batching."""
     from transformers import AutoProcessor, Qwen2VLForConditionalGeneration
 
     cache = load_rubric_cache()
@@ -167,45 +166,53 @@ def score_sentences_with_vlm(
     )
     model.eval()
 
-    logger.info("Beginning VLM scoring loop...")
+    logger.info("Beginning VLM scoring loop (batch_size=%d)...", batch_size)
     start_time = time.time()
     n_scored = 0
 
-    for idx, row in enumerate(pending_tasks):
-        tuid = str(row["task_uid"])
-        rel_path = str(row["rel_path"])
-        img_path = SENTENCE_DATASET_DIR / rel_path
+    for b_start in range(0, len(pending_tasks), batch_size):
+        b_rows = pending_tasks[b_start : b_start + batch_size]
+        batch_images = []
+        batch_tuids = []
 
-        if not img_path.exists():
-            logger.warning("Image missing: %s", img_path)
-            continue
-
-        try:
+        for row in b_rows:
+            tuid = str(row["task_uid"])
+            rel_path = str(row["rel_path"])
+            img_path = SENTENCE_DATASET_DIR / rel_path
+            if not img_path.exists():
+                logger.warning("Image missing: %s", img_path)
+                continue
             image = Image.open(img_path).convert("RGB")
-            # If extremely wide, resize height to 224 maintaining aspect ratio
             w, h = image.size
             if h != 224:
                 new_w = max(224, int(w * (224 / h)))
                 image = image.resize((new_w, 224), Image.Resampling.BILINEAR)
+            batch_images.append(image)
+            batch_tuids.append(tuid)
 
-            messages = [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "image", "image": image},
-                        {"type": "text", "text": PROMPT_TEXT},
-                    ],
-                }
+        if not batch_images:
+            continue
+
+        try:
+            messages_list = [
+                [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "image", "image": img},
+                            {"type": "text", "text": PROMPT_TEXT},
+                        ],
+                    }
+                ]
+                for img in batch_images
             ]
-
-            text_prompt = processor.apply_chat_template(
-                messages, tokenize=False, add_generation_prompt=True
-            )
-            image_inputs, video_inputs = [image], None
+            text_prompts = [
+                processor.apply_chat_template(m, tokenize=False, add_generation_prompt=True)
+                for m in messages_list
+            ]
             inputs = processor(
-                text=[text_prompt],
-                images=image_inputs,
-                videos=video_inputs,
+                text=text_prompts,
+                images=batch_images,
                 padding=True,
                 return_tensors="pt",
             ).to(device)
@@ -213,28 +220,24 @@ def score_sentences_with_vlm(
             with torch.no_grad():
                 generated_ids = model.generate(
                     **inputs,
-                    max_new_tokens=100,
-                    do_sample=False,  # Temperature 0.0 greedy
+                    max_new_tokens=120,
+                    do_sample=False,
                 )
-                generated_ids_trimmed = [
-                    out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
-                ]
-                output_text = processor.batch_decode(
-                    generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
-                )[0]
+                trimmed = generated_ids[:, len(inputs.input_ids[0]) :]
+                output_texts = processor.batch_decode(
+                    trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+                )
 
-            scores = parse_vlm_json_response(output_text)
-            if scores is not None:
-                cache[tuid] = scores
+            for tuid, out_text in zip(batch_tuids, output_texts):
+                scores = parse_vlm_json_response(out_text)
+                if scores is not None:
+                    cache[tuid] = scores
+                else:
+                    logger.warning("Parse retry for %s: '%s'", tuid, out_text.strip())
+                    cache[tuid] = {k: 3.0 for k in RUBRIC_CRITERIA}
                 n_scored += 1
-            else:
-                # Fallback: parse whatever floats exist in output
-                logger.warning("Parse retry for %s: '%s'", tuid, output_text.strip())
-                # Default middle score if complete parse failure
-                cache[tuid] = {k: 3.0 for k in RUBRIC_CRITERIA}
 
-            # Periodic save every 20 sentences
-            if n_scored % 20 == 0:
+            if n_scored % 20 < batch_size or (b_start + batch_size >= len(pending_tasks)):
                 save_rubric_cache(cache)
                 logger.info(
                     "Scored %d / %d tasks (%.1fs elapsed, %.2fs/task)",
@@ -245,7 +248,7 @@ def score_sentences_with_vlm(
                 )
 
         except Exception as e:
-            logger.error("Error processing %s: %s", tuid, e)
+            logger.error("Error processing batch starting at %d: %s", b_start, e)
             continue
 
     save_rubric_cache(cache)
@@ -256,23 +259,22 @@ def score_sentences_with_vlm(
 def build_student_rubric_features(
     cache: Dict[str, Dict[str, float]],
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, List[str]]:
-    """Aggregate sentence-level rubric scores to student-level feature matrix."""
+    """Aggregate sentence-level rubric scores to student-level feature matrix for scored students."""
     df_index = pd.read_csv(INDEX_CSV)
 
-    student_groups = df_index.groupby("student_id")
-    unique_students = list(student_groups.groups.keys())
-    unique_students.sort()
+    cached_tuids = set(cache.keys())
+    df_cached = df_index[df_index["task_uid"].astype(str).isin(cached_tuids)].copy()
+    unique_students = sorted(df_cached["student_id"].unique())
 
     student_features_list = []
     student_labels = []
     feature_names = []
 
-    # Features: for each of the 7 criteria -> [mean, std, min]
     for c in RUBRIC_CRITERIA:
         feature_names.extend([f"vlm_{c}_mean", f"vlm_{c}_std", f"vlm_{c}_min"])
 
     for sid in unique_students:
-        s_rows = df_index[df_index["student_id"] == sid]
+        s_rows = df_cached[df_cached["student_id"] == sid]
         label = int(s_rows["label"].iloc[0])
         student_labels.append(label)
 
@@ -284,7 +286,6 @@ def build_student_rubric_features(
                 for c in RUBRIC_CRITERIA:
                     s_scores[c].append(task_s[c])
 
-        # Compute aggregates
         feats = []
         for c in RUBRIC_CRITERIA:
             vals = s_scores[c] if s_scores[c] else [3.0]
@@ -298,6 +299,59 @@ def build_student_rubric_features(
     y = np.array(student_labels, dtype=np.int64)
     sids = np.array(unique_students)
     return X, y, sids, feature_names
+
+
+def compute_bhk_correlations(
+    X: np.ndarray,
+    sids: np.ndarray,
+    feature_names: List[str],
+) -> Dict[str, Dict[str, float]]:
+    """Compute Pearson and Spearman correlations between VLM rubric features and tabular BHK features."""
+    student_csv = DATA_DIR / "datasets" / "dataset_student_level.csv"
+    if not student_csv.exists():
+        logger.warning("Tabular dataset not found at %s. Skipping BHK correlation.", student_csv)
+        return {}
+
+    df_tab = pd.read_csv(student_csv).set_index("student_id")
+    common_sids = [s for s in sids if s in df_tab.index]
+    if len(common_sids) < 10:
+        logger.warning("Too few overlapping students (%d) for BHK correlation.", len(common_sids))
+        return {}
+
+    sub_tab = df_tab.loc[common_sids]
+    sid_to_idx = {s: i for i, s in enumerate(sids)}
+    sub_X = X[[sid_to_idx[s] for s in common_sids]]
+
+    pairs = [
+        ("vlm_spacing_regularity_mean", "gap_mean_median"),
+        ("vlm_baseline_adherence_mean", "baseline_rmse_norm_median"),
+        ("vlm_stroke_fluidity_mean", "jerk_proxy_median"),
+        ("vlm_letter_formation_mean", "components_per_unit_width_median"),
+        ("vlm_legibility_mean", "components_per_unit_width_median"),
+    ]
+
+    corr_results = {}
+    for vlm_feat, tab_feat in pairs:
+        if vlm_feat in feature_names and tab_feat in sub_tab.columns:
+            v_idx = feature_names.index(vlm_feat)
+            v_vals = sub_X[:, v_idx]
+            t_vals = sub_tab[tab_feat].values
+            valid_mask = ~np.isnan(t_vals) & ~np.isnan(v_vals)
+            if np.sum(valid_mask) > 5:
+                r_p, p_p = pearsonr(v_vals[valid_mask], t_vals[valid_mask])
+                r_s, p_s = spearmanr(v_vals[valid_mask], t_vals[valid_mask])
+                corr_results[f"{vlm_feat}__vs__{tab_feat}"] = {
+                    "pearson_r": float(r_p),
+                    "pearson_p": float(p_p),
+                    "spearman_rho": float(r_s),
+                    "spearman_p": float(p_s),
+                }
+                logger.info(
+                    "Correlation %s vs %s: Pearson r=%.3f (p=%.3e), Spearman rho=%.3f (p=%.3e)",
+                    vlm_feat, tab_feat, r_p, p_p, r_s, p_s
+                )
+
+    return corr_results
 
 
 def evaluate_vlm_rubric_cv(
@@ -358,24 +412,32 @@ def evaluate_vlm_rubric_cv(
     th90 = float(np.percentile(neg_scores, 90.0))
     det90 = int(np.sum(pos_scores >= th90))
 
+    # BHK correlations
+    bhk_corrs = compute_bhk_correlations(X, sids, feature_names)
+
     results = {
         "candidate": "Candidate 4: VLM Clinical Rubric Scorer",
+        "n_students": n_students,
+        "n_positives": int(np.sum(y == 1)),
+        "n_controls": int(np.sum(y == 0)),
         "auroc": auc,
         "auprc": ap,
         "brier": brier,
-        "sens_at_80_spec": det80 / len(pos_scores),
+        "sens_at_80_spec": det80 / max(1, len(pos_scores)),
         "det_at_80_spec": det80,
-        "sens_at_90_spec": det90 / len(pos_scores),
+        "sens_at_90_spec": det90 / max(1, len(pos_scores)),
         "det_at_90_spec": det90,
+        "bhk_correlations": bhk_corrs,
     }
 
     logger.info("\n" + "=" * 80)
     logger.info("CANDIDATE 4 VLM RUBRIC SCOREBOARD (5x5 Repeated CV)")
     logger.info("=" * 80)
     logger.info(
+        f"Students: {n_students} ({results['n_positives']} pos, {results['n_controls']} ctl) | "
         f"AUROC: {auc:.4f} | AUPRC: {ap:.4f} | "
-        f"Sens@80%: {results['sens_at_80_spec']*100:.1f}% ({det80}/40) | "
-        f"Sens@90%: {results['sens_at_90_spec']*100:.1f}% ({det90}/40)"
+        f"Sens@80%: {results['sens_at_80_spec']*100:.1f}% ({det80}/{results['n_positives']}) | "
+        f"Sens@90%: {results['sens_at_90_spec']*100:.1f}% ({det90}/{results['n_positives']})"
     )
     logger.info("=" * 80)
 
@@ -391,13 +453,13 @@ def evaluate_vlm_rubric_cv(
 def main():
     parser = argparse.ArgumentParser(description="Candidate 4: VLM Rubric Scorer")
     parser.add_argument("--limit", type=int, default=None, help="Limit to N students for fast pilot")
+    parser.add_argument("--batch-size", type=int, default=4, help="Batch size for VLM inference")
     args = parser.parse_args()
 
-    cache = score_sentences_with_vlm(limit=args.limit)
+    cache = score_sentences_with_vlm(limit=args.limit, batch_size=args.batch_size)
     X, y, sids, feat_names = build_student_rubric_features(cache)
     evaluate_vlm_rubric_cv(X, y, sids, feat_names)
 
 
 if __name__ == "__main__":
     main()
-

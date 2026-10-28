@@ -1,0 +1,37 @@
+{
+  "confounds": {
+    "school_only_auroc": 0.54,
+    "grade_only_auroc": 0.5217142857142858,
+    "combined_school_grade_cv_auroc": 0.4803571428571428,
+    "combined_school_grade_cv_auprc": 0.18669166650268898
+  },
+  "cross_school": {
+    "train_a_test_b": {
+      "auroc": 0.6830357142857142,
+      "auprc": 0.407478007797511
+    },
+    "train_b_test_a": {
+      "auroc": 0.7481684981684982,
+      "auprc": 0.5513424513387382
+    },
+    "mean_cross_school_auroc": 0.7156021062271062
+  },
+  "cross_grade_pen_pencil": {
+    "train_pen_test_pencil": {
+      "auroc": 0.6988400994200498,
+      "auprc": 0.34223320211089253
+    },
+    "train_pencil_test_pen": {
+      "auroc": 0.7683946488294314,
+      "auprc": 0.38188369268829914
+    },
+    "mean_cross_grade_auroc": 0.7336173741247406
+  },
+  "permutation_test": {
+    "n_permutations": 50,
+    "mean_null_auroc": 0.5000399999999999,
+    "std_null_auroc": 0.06980689422709373,
+    "max_null_auroc": 0.6644285714285714,
+    "empirical_p_value": 0.0
+  }
+}

@@ -1774,3 +1774,31 @@ flowchart TD
     end
 ```
 
+
+
+### 23.6 Multi-Stream Dual-ViT Consensus & Clinical Fusion Architecture (`baseline/evaluate_exp7_multistream_ensemble.py`)
+
+The multi-stream consensus architecture leverages complementary perceptual mechanisms across vision, language, and geometric layout:
+
+```mermaid
+flowchart TD
+    subgraph Inputs ["Student Handwriting Inputs"]
+        ImgCrops["Native Sentence Crops (Hindi and English)"]
+        TabMetrics["Macro-Page Layout Features (10 BHK z-scores)"]
+    end
+
+    subgraph VisualStreams ["Dual Vision Transformers"]
+        ImgCrops --> DINO["DINOv2-Small (ViT-S/14)<br/>Micro-Stroke Texture and Graphite Density<br/>Standalone AUROC = 0.8440"]
+        ImgCrops --> CLIP["OpenAI CLIP (ViT-B/32)<br/>Macro Stroke Topology and Attention<br/>Standalone AUROC = 0.8027"]
+    end
+
+    subgraph ClinicalVLM ["Clinical Vision-Language Stream"]
+        ImgCrops --> Qwen["Qwen2-VL-2B-Instruct<br/>7-Dimension Pediatric Scoring<br/>(Letter Formation, Spacing, Baseline)"]
+    end
+
+    subgraph ConsensusEngines ["Consensus and Fusion Topologies"]
+        DINO & CLIP --> DualViT["Dual-ViT Soft Consensus<br/>0.60 DINO + 0.40 CLIP<br/>AUROC = 0.8540 | AUPRC = 0.5671"]
+        DINO & CLIP & TabMetrics --> TriStream["Tri-Stream Rank Consensus<br/>DINO + CLIP + Tabular<br/>AUROC = 0.8481 | 77.5% Sens @ 80% Spec"]
+        DINO & CLIP & Qwen & TabMetrics --> FullFusion["All-Inclusive Intermediate Head<br/>(24 DINO + 16 CLIP + 21 VLM + 10 Tab)<br/>AUROC = 0.8411 | 31/40 Positives Detected"]
+    end
+```
