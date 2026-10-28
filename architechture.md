@@ -1744,3 +1744,33 @@ flowchart TD
         StudentMeanStd --> Head["Inner 3-Fold PCA (K=16-32) + Scaled L2 Logistic Regression"]
     end
 ```
+
+
+### 23.5 Multi-Backbone Frozen Representation Architecture (`baseline/extract_bakeoff_backbone_features.py`)
+To isolate representation learning from architectural induction, the unified extractor feeds native-scale $224 \times 224$ tiles through diverse frozen vision backbones:
+
+```mermaid
+flowchart TD
+    subgraph InputTiles ["Native Stroke-Scale Tiles (224x224x3)"]
+        Tile["Clean Ink Mask + Natural Grayscale Shading + Guideline Channel"]
+    end
+
+    subgraph Backbones ["Frozen Vision Foundation Backbones (0 Fine-Tuning)"]
+        Tile --> DINO["DINOv2-Small (ViT-S/14)<br/>Self-Supervised MIM + Distillation<br/>AUROC = 0.8343 / 0.8427"]
+        Tile --> CLIP["OpenAI CLIP (ViT-B/32)<br/>Multimodal Text-Image Contrastive<br/>AUROC = 0.8151"]
+        Tile --> DenseNet["DenseNet201 (CNN-201)<br/>Supervised ImageNet Classification<br/>AUROC = 0.7591"]
+        Tile --> TrOCR["TrOCR-Base (ViT-B/16)<br/>Handwritten OCR Transcription<br/>AUROC = 0.6560"]
+    end
+
+    subgraph PatchPooling ["Spatial Patch-Token Descriptor Engine"]
+        DINO & CLIP & DenseNet & TrOCR --> Tokens["Spatial Tokens (P x D)"]
+        Tokens --> SpatialStats["Extract Spatial Moments:<br/>- μ_spatial (mean across P tokens)<br/>- σ_spatial (std across P tokens)<br/>- g_spatial (GeM power p=3.0)"]
+        SpatialStats --> Desc["Tile Descriptor e_t in R^(3D)"]
+    end
+
+    subgraph LinearHarness ["Unified 5x5 Repeated CV Probe"]
+        Desc --> StudentMeanStd["Student Script Aggregation (Hindi + English)"]
+        StudentMeanStd --> Head["Inner 3-Fold PCA (K=16-32) + Scaled L2 Logistic Regression"]
+    end
+```
+

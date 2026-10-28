@@ -146,3 +146,33 @@ def test_supcon_writer_style_encoder():
     assert not torch.isnan(loss)
 
 
+def test_vlm_json_response_parser():
+    """Verify robust parsing of VLM JSON responses including markdown code blocks."""
+    from baseline.evaluate_exp7_vlm_rubric import parse_vlm_json_response
+
+    # Clean JSON
+    clean_json = '{"legibility": 4.0, "letter_formation": 3.5, "spacing_regularity": 4.5, "size_consistency": 3.0, "baseline_adherence": 2.5, "stroke_fluidity": 4.0, "pressure_uniformity": 3.5}'
+    parsed = parse_vlm_json_response(clean_json)
+    assert parsed is not None
+    assert parsed["legibility"] == 4.0
+    assert parsed["baseline_adherence"] == 2.5
+
+    # Markdown wrapped JSON
+    md_json = '```json\n{\n  "legibility": 2.0,\n  "letter_formation": 2.5,\n  "spacing_regularity": 3.0,\n  "size_consistency": 2.0,\n  "baseline_adherence": 1.5,\n  "stroke_fluidity": 2.0,\n  "pressure_uniformity": 3.0\n}\n```'
+    parsed_md = parse_vlm_json_response(md_json)
+    assert parsed_md is not None
+    assert parsed_md["legibility"] == 2.0
+    assert parsed_md["baseline_adherence"] == 1.5
+
+    # Out-of-bounds score clamping
+    oob_json = '{"legibility": 6.5, "letter_formation": 0.5, "spacing_regularity": 4.5, "size_consistency": 3.0, "baseline_adherence": 2.5, "stroke_fluidity": 4.0, "pressure_uniformity": 3.5}'
+    parsed_oob = parse_vlm_json_response(oob_json)
+    assert parsed_oob is not None
+    assert parsed_oob["legibility"] == 5.0
+    assert parsed_oob["letter_formation"] == 1.0
+
+    # Malformed text
+    assert parse_vlm_json_response("I cannot score this image.") is None
+
+
+

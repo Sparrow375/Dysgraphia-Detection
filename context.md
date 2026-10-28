@@ -1748,3 +1748,30 @@ To systematically answer whether DINOv2's high performance (**0.834–0.843 AURO
   - DenseNet201: [`reports/exp7_densenet201_probe_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp7_densenet201_probe_results.json)
   - TrOCR: [`reports/exp7_trocr_probe_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp7_trocr_probe_results.json)
   - CLIP: [`reports/exp7_clip_probe_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp7_clip_probe_results.json)
+
+
+## Stage 43: Experiment 7 Candidate 4: VLM Clinical Rubric Scorer Engine & Verification (Completed 2026-10-28)
+
+### 1. Motivation & Implementation
+To obtain clinical, pediatric-interpretable feature representations, Candidate 4 was implemented in [aseline/evaluate_exp7_vlm_rubric.py](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/evaluate_exp7_vlm_rubric.py) using the vision-language model \Qwen/Qwen2-VL-2B-Instruct\:
+- Evaluates native-scale sentence crops across 7 clinical handwriting dimensions:
+  1. \legibility\ (1.0 to 5.0)
+  2. \letter_formation\ (1.0 to 5.0)
+  3. \spacing_regularity\ (1.0 to 5.0)
+  4. \size_consistency\ (1.0 to 5.0)
+  5. \aseline_adherence\ (1.0 to 5.0)
+  6. \stroke_fluidity\ (1.0 to 5.0)
+  7. \pressure_uniformity\ (1.0 to 5.0)
+- Enforces strict JSON output formatting with regex-based markdown extraction and bounding-box score clamping ($[1.0, 5.0]$).
+- Features atomic disk caching to \data/features/vlm_rubric_cache.json\ with resume capability.
+- Student aggregation computes mean, standard deviation, and minimum scores across sentences for both scripts (21 dimensions per script).
+
+### 2. Testing & Verification
+- Comprehensive unit test suite in [\	ests/test_exp7_bakeoff.py\](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_exp7_bakeoff.py) expanded to 7 tests.
+- Verified robust handling of clean JSON, markdown-wrapped JSON code fences, out-of-bounds score clamping, and malformed strings.
+- All 7 tests passing in 6.65s (\pytest tests/test_exp7_bakeoff.py\).
+
+### 3. Current State & Next Steps
+- Background download/loading task safely terminated upon user request.
+- Shard 2 and metadata are cached; Shard 1 is partially cached (~2.15 GB / 3.7 GB) and can be resumed with zero data loss.
+- Ready to proceed with pilot scoring (\--limit 20\) and full cohort evaluation upon next session.
