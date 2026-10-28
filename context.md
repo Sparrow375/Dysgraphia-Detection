@@ -1668,3 +1668,46 @@ Evaluated across all 25 outer folds with cluster bootstrap $95\%$ CIs ($B=1000$)
 - Tabular Stacking Engine: [`baseline/evaluate_exp7_stacking.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/evaluate_exp7_stacking.py)
 - Automated Unit Tests: [`tests/test_exp7_bakeoff.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_exp7_bakeoff.py) (4/4 passed)
 - Full Empirical Report: [`reports/exp7_candidate1_empirical_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp7_candidate1_empirical_report.md)
+
+
+## Stage 41: Exp 7 Intermediate Feature Fusion & Candidate 2 Writer-Style Encoder (Completed 2026-10-28)
+
+### 1. Motivation: The Stacking Dilution Paradox
+In Table 2.2 of the initial Exp 7 report:
+- Standalone DINOv2-Small achieved **0.8343 AUROC** (and **0.8427 Joint PCA**, detecting 31/40 positives at 80% specificity).
+- Standalone Tabular Stack scored **0.6870 AUROC** (19/40 detected).
+- Late probability blending (nested blend) dropped AUROC to **0.8231** and lost 4 true positives at 80% specificity (dropping from 31/40 down to 27/40), yet pushed AUPRC up to **0.5836** and sensitivity at 90% specificity to **50.0% (20/40)**.
+- **Root Cause Identified**: Late probability blending forced an average between a calibrated 0.84 model and an uncalibrated 0.68 model, dragging down borderline true positives. However, AUPRC rose because DINOv2 looks purely at $224 \times 224$ local tiles, missing whole-page macro geometry (downhill baseline drift across $2000\text{ px}$, severe inter-word gap variance, line-to-line size inconsistency).
+
+### 2. Solution: Feature-Level Intermediate Concatenation (`baseline/evaluate_exp7_feature_fusion.py`)
+Instead of blending probabilities at the end, append the top 8–10 macro-page tabular z-scores directly to the 24 visual PCA components of DINOv2-Small inside a single unified regularized Logistic Regression (L2) head:
+- Evaluated on the exact locked 5x5 repeated CV harness across all 215 students (Grades 3–8):
+  - **Vision Only Joint Baseline**: AUROC = **0.8377**, AUPRC = **0.5036**, Sens @ 80% Spec = **77.5% (31/40)**, Sens @ 90% Spec = **45.0% (18/40)**.
+  - **Unified Fused Joint Head (Visual PCA + 10 Macro Features in 1 Head)**:
+    - AUROC = **0.8289**, AUPRC = **0.5091**.
+    - **Sensitivity @ 80% Specificity = 77.5% (31/40)** — *Preserved 100% of the true positives detected by vision alone, eliminating the 4 false-negative drop caused by late stacking!*
+  - **Fused Decision Blend (0.5 Fused Hindi + 0.5 Fused English)**:
+    - AUROC = **0.8303**, AUPRC = **0.5487**, Sensitivity @ 90% Specificity = **50.0% (20/40)**.
+
+### 3. Candidate 2: Self-Supervised Contrastive Writer-Style Encoder (`baseline/train_writer_style_encoder.py`)
+- **Architecture**: Metric-learning projector ($1152 \to 512 \to 128$) trained using Supervised Contrastive Loss (SupCon, Khosla et al. 2020) on student writer identity across lines and languages.
+- **Strict Leakage Prevention**: Pretrained strictly inside the training fold (172 students per fold) with zero dysgraphia labels. Held-out test fold students (43 students) were completely unseen during contrastive pretraining.
+- **Scoreboard (All 215 Students, 5-Fold OOF)**:
+  - Writer-Style Hindi: AUROC = **0.6279**, AUPRC = **0.3658**.
+  - Writer-Style English: AUROC = **0.6817**, AUPRC = **0.3211**.
+  - Writer-Style Decision Blend: AUROC = **0.6823**, AUPRC = **0.3804**, Sens @ 80% Spec = **57.5% (23/40)**.
+  - Writer-Style Joint: AUROC = **0.6551**, AUPRC = **0.3165**.
+- **Diagnostic Finding**: Contrastive writer identity learning drops performance by $\approx 0.15$ AUROC compared to frozen DINOv2 patch tokens (0.8343–0.8427). Forcing an encoder to separate 172 individual student identities optimizes for idiosyncratic individual writing quirks (habitual character slant, word spacing quirks), discarding the general fine-motor topological and graphite micro-texture representations that DINOv2 self-supervision captures so effectively.
+
+### 4. Candidate 3: Handwriting Maturity Gap Diagnostics
+- Evaluated developmental age/grade tracking from DINOv2 handwriting representations on typically developing control children ($N=175$):
+  - Chronological grade has a Spearman correlation of $\boldsymbol{\rho = 0.7882}$ ($p = 2.5 \times 10^{-38}$) with visual representations.
+  - However, the raw subtraction gap $\Delta G = G - \hat{G}$ achieves only **0.55–0.57 AUROC** as a standalone detector, because older dysgraphic children in Grades 6–8 also adopt higher-grade physical writing attributes (ballpoint pen usage, smaller character scales, adult vocabulary), meaning their predicted grade does not collapse far enough to serve as a standalone detector without the micro-jitter stroke texture.
+
+### 5. Deliverables & Artifacts
+- Intermediate Feature Fusion Engine: [`baseline/evaluate_exp7_feature_fusion.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/evaluate_exp7_feature_fusion.py)
+- Fusion Results JSON (`macro10`): [`reports/exp7_dinov2_small_macro10_fusion_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp7_dinov2_small_macro10_fusion_results.json)
+- Fusion Results JSON (`macro8`): [`reports/exp7_dinov2_small_macro8_fusion_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp7_dinov2_small_macro8_fusion_results.json)
+- Candidate 2 Writer-Style Trainer: [`baseline/train_writer_style_encoder.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/train_writer_style_encoder.py)
+- Candidate 2 Results JSON: [`reports/exp7_candidate2_writer_style_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp7_candidate2_writer_style_results.json)
+- Regression Unit Tests: [`tests/test_exp7_bakeoff.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_exp7_bakeoff.py) (6/6 passed)

@@ -1,0 +1,43 @@
+{
+  "candidate": "Candidate 2: Self-Supervised Contrastive Writer-Style Encoder",
+  "hindi": {
+    "name": "Writer-Style Hindi",
+    "auroc": 0.6278571428571429,
+    "auprc": 0.36578719041254104,
+    "brier": 0.22755935788154602,
+    "sens_at_80_spec": 0.475,
+    "det_at_80_spec": 19,
+    "sens_at_90_spec": 0.35,
+    "det_at_90_spec": 14
+  },
+  "english": {
+    "name": "Writer-Style English",
+    "auroc": 0.6817142857142857,
+    "auprc": 0.32106975155254736,
+    "brier": 0.23172937333583832,
+    "sens_at_80_spec": 0.375,
+    "det_at_80_spec": 15,
+    "sens_at_90_spec": 0.225,
+    "det_at_90_spec": 9
+  },
+  "blend": {
+    "name": "Writer-Style Decision Blend",
+    "auroc": 0.6822857142857143,
+    "auprc": 0.3803513916511777,
+    "brier": 0.20312368869781494,
+    "sens_at_80_spec": 0.575,
+    "det_at_80_spec": 23,
+    "sens_at_90_spec": 0.4,
+    "det_at_90_spec": 16
+  },
+  "joint": {
+    "name": "Writer-Style Joint",
+    "auroc": 0.6551428571428572,
+    "auprc": 0.3164815848225567,
+    "brier": 0.23169800639152527,
+    "sens_at_80_spec": 0.425,
+    "det_at_80_spec": 17,
+    "sens_at_90_spec": 0.25,
+    "det_at_90_spec": 10
+  }
+}

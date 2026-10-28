@@ -1,0 +1,164 @@
+{
+  "model_tag": "dinov2_small",
+  "feature_set": "macro8",
+  "macro_features": [
+    "baseline_slope_mean_late_minus_early",
+    "baseline_rmse_norm_std",
+    "gap_fraction_above_2h_std",
+    "gap_cv_p90",
+    "gap_mean_median",
+    "components_per_unit_width_std",
+    "component_height_cv_iqr",
+    "rule_offset_std_median"
+  ],
+  "vision_only_joint": {
+    "name": "Vision Only Joint (Baseline)",
+    "auroc": 0.8377142857142857,
+    "auprc": 0.5035821335901611,
+    "brier": 0.13275976479053497,
+    "sens_at_80_spec": 0.775,
+    "det_at_80_spec": 31,
+    "sens_at_90_spec": 0.45,
+    "det_at_90_spec": 18,
+    "auroc_ci": [
+      0.7773652641205302,
+      0.8937215700687272
+    ],
+    "auprc_ci": [
+      0.3611938248396372,
+      0.6572887815107937
+    ],
+    "sens80_ci": [
+      0.575,
+      0.9062681686046511
+    ],
+    "sens90_ci": [
+      0.17647058823529413,
+      0.6976744186046512
+    ],
+    "brier_ci": [
+      0.10456304792314768,
+      0.1658504605293274
+    ]
+  },
+  "fused_hindi": {
+    "name": "Fused Hindi Head (Visual PCA + Tabular)",
+    "auroc": 0.8059999999999999,
+    "auprc": 0.4797131732112944,
+    "brier": 0.14867053925991058,
+    "sens_at_80_spec": 0.65,
+    "det_at_80_spec": 26,
+    "sens_at_90_spec": 0.4,
+    "det_at_90_spec": 16,
+    "auroc_ci": [
+      0.7320574759571765,
+      0.8762771132376395
+    ],
+    "auprc_ci": [
+      0.3460052249186334,
+      0.6439893751282366
+    ],
+    "sens80_ci": [
+      0.5,
+      0.8276108374384236
+    ],
+    "sens90_ci": [
+      0.2647058823529412,
+      0.6597517730496452
+    ],
+    "brier_ci": [
+      0.12297665029764175,
+      0.17659797519445417
+    ]
+  },
+  "fused_english": {
+    "name": "Fused English Head (Visual PCA + Tabular)",
+    "auroc": 0.7277142857142858,
+    "auprc": 0.43379043717753496,
+    "brier": 0.17956304550170898,
+    "sens_at_80_spec": 0.55,
+    "det_at_80_spec": 22,
+    "sens_at_90_spec": 0.325,
+    "det_at_90_spec": 13,
+    "auroc_ci": [
+      0.6331864722157275,
+      0.8133886946386946
+    ],
+    "auprc_ci": [
+      0.2956620263957575,
+      0.6003052252838136
+    ],
+    "sens80_ci": [
+      0.35714285714285715,
+      0.75
+    ],
+    "sens90_ci": [
+      0.16973270440251573,
+      0.5349731663685151
+    ],
+    "brier_ci": [
+      0.15235757417976856,
+      0.20845449566841126
+    ]
+  },
+  "fused_decision_blend": {
+    "name": "Fused Decision Blend (0.5 H + 0.5 E)",
+    "auroc": 0.8247142857142857,
+    "auprc": 0.5415417032138282,
+    "brier": 0.14470596611499786,
+    "sens_at_80_spec": 0.625,
+    "det_at_80_spec": 25,
+    "sens_at_90_spec": 0.475,
+    "det_at_90_spec": 19,
+    "auroc_ci": [
+      0.7511736621816492,
+      0.8885660629780362
+    ],
+    "auprc_ci": [
+      0.39013650340296013,
+      0.6922820661945164
+    ],
+    "sens80_ci": [
+      0.47616071428571427,
+      0.8181818181818182
+    ],
+    "sens90_ci": [
+      0.2893796992481203,
+      0.6668604651162788
+    ],
+    "brier_ci": [
+      0.12503507770597935,
+      0.16549767442047597
+    ]
+  },
+  "fused_joint_head": {
+    "name": "Unified Fused Joint Head (Visual PCA + Tabular)",
+    "auroc": 0.8310000000000001,
+    "auprc": 0.5252068934998549,
+    "brier": 0.13404567539691925,
+    "sens_at_80_spec": 0.775,
+    "det_at_80_spec": 31,
+    "sens_at_90_spec": 0.3,
+    "det_at_90_spec": 12,
+    "auroc_ci": [
+      0.7671414919507522,
+      0.8918335220877022
+    ],
+    "auprc_ci": [
+      0.37767553002173715,
+      0.6754507787793756
+    ],
+    "sens80_ci": [
+      0.6,
+      0.9069767441860465
+    ],
+    "sens90_ci": [
+      0.1590909090909091,
+      0.714363354037267
+    ],
+    "brier_ci": [
+      0.10668910127133131,
+      0.16482754498720167
+    ]
+  }
+}

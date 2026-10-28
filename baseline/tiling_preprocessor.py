@@ -170,3 +170,4 @@ def extract_tiles_from_strip(
         coords.append((0, min(target_height, w_scaled)))
 
     return tiles, coords
+

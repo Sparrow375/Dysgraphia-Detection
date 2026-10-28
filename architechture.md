@@ -1543,3 +1543,116 @@ flowchart TD
    - **DINOv2-Base Standalone**: AUROC = **0.8114**, AUPRC = **0.5821 [0.439, 0.724]** (Hindi Model AUPRC = **0.6052**).
    - **Joint Concatenated Model**: AUROC = **0.8427 [0.785, 0.897]**, Sens @ 80% Spec = **77.5% (31/40)**.
    - **Nested Tabular Stack**: AUROC = **0.8231** ($+0.1361$ over tabular), AUPRC = **0.5836** ($+0.1918$ over tabular), Sens @ 90% Spec = **50.0%** (6 false negatives rescued across Schools A and B).
+
+
+---
+
+## 23. Experiment 7: Frozen-Feature Native Stroke-Scale Tiled ViT Architecture
+
+### 23.1 Clinical & Physical Motivation
+Prior vision architectures deformed full sentence crops ($1800 \times 120\text{ px}$) into square canvases ($224 \times 224$), causing an $8\times$ horizontal compression that flattened letter loops into single-pixel lines and destroyed pencil/pen micro-texture.
+
+Experiment 7 introduces **native stroke-scale line-height tiling** and **patch-token summary statistics** on frozen self-supervised foundation vision transformers:
+
+```mermaid
+flowchart TD
+    subgraph TilingPipeline ["Native Stroke-Scale Tiling Engine (baseline/tiling_preprocessor.py)"]
+        Raw["Raw Grayscale Crop + Clean Ink Mask"] --> WhiteCanvas["White Canvas Strip (H x W x 3)<br/>Ch1: Inverted Ink (0 ink, 255 bg)<br/>Ch2: Natural Grayscale Shading<br/>Ch3: Clean Ink + 0.7 Gray Guideline"]
+        WhiteCanvas --> Rescale["Proportional Scale to H = 224px (1:1 Aspect Ratio)"]
+        Rescale --> Tiles["Overlapping 224x224 Tiles (50% Stride = 112px)<br/>19,284 total tiles across 1,145 tasks"]
+    end
+
+    subgraph FeatureExtractor ["Frozen DINOv2 Patch Statistics (baseline/extract_dinov2_patch_stats.py)"]
+        Tiles --> ViT["Frozen DINOv2-Small / DINOv2-Base<br/>(0 Trainable Parameters)"]
+        ViT --> Patches["Patch Tokens Z_p in R^(256 x D)<br/>(Bypassing Global Semantic [CLS] Token)"]
+        Patches --> Stats["Extract Local Patch Statistics:<br/>- Mean (μ_patch in R^D)<br/>- Std (σ_patch in R^D)<br/>- GeM-pooled (g_patch in R^D, p=3.0)"]
+        Stats --> TileDesc["Tile Descriptor e_t in R^(3D)<br/>(1,152-d for Small, 2,304-d for Base)"]
+    end
+
+    subgraph EvaluationProbe ["5x5 Repeated CV Probe (baseline/evaluate_exp7_probe.py)"]
+        TileDesc --> StudentPool["Student Aggregates per Script:<br/>- Hindi: Mean & Std across Hindi tiles<br/>- English: Mean & Std across English tiles"]
+        StudentPool --> Probe["Linear Probe Head:<br/>- Train Fold PCA (K=16-32, 90% variance)<br/>- Scaled L2 Logistic Regression (C tuned inner CV)"]
+        Probe --> Benchmark["OOF Calibrated Probabilities P_vision<br/>AUROC = 0.8343 (Small) / 0.8427 (Joint)<br/>AUPRC = 0.5633 (Small) / 0.6052 (Base)"]
+    end
+
+    subgraph StackingEngine ["Un-Flattered Tabular Stacking (baseline/evaluate_exp7_stacking.py)"]
+        Benchmark --> Stacker["Nested Inner-Fold Search for α in [0, 1]<br/>+ Fixed 50/50 Rank-Average"]
+        Stacker --> FinalResult["Ensemble Output:<br/>AUROC = 0.8231 (+0.1361 over Tabular)<br/>AUPRC = 0.5836 (+0.1918 over Tabular)<br/>Sens@90%Spec = 50.0% (20/40) | 6 False Negatives Rescued"]
+    end
+```
+
+### 23.2 Mathematical Formulation
+1. **Patch-Level Quality Descriptors**:
+   $$\boldsymbol{\mu}_{\text{patch}} = \frac{1}{P} \sum_{p=1}^P \mathbf{z}_p \in \mathbb{R}^D$$
+   $$\boldsymbol{\sigma}_{\text{patch}} = \sqrt{\frac{1}{P} \sum_{p=1}^P (\mathbf{z}_p - \boldsymbol{\mu}_{\text{patch}})^2 + \epsilon} \in \mathbb{R}^D$$
+   $$\mathbf{g}_{\text{patch}} = \left( \frac{1}{P} \sum_{p=1}^P \max(\mathbf{z}_p, 0)^p \right)^{1/p} \in \mathbb{R}^D \quad (p=3.0)$$
+   $$\mathbf{e}_t = [\boldsymbol{\mu}_{\text{patch}}, \boldsymbol{\sigma}_{\text{patch}}, \mathbf{g}_{\text{patch}}] \in \mathbb{R}^{3D}$$
+
+2. **Student-Level Macro-Distribution**:
+   For each script (Devanagari vs Latin), compute mean and standard deviation across all tiles written by the student:
+   $$\mathbf{x}_{\text{student}}^{\text{script}} = [\text{mean}_t(\mathbf{e}_t), \text{std}_t(\mathbf{e}_t)] \in \mathbb{R}^{6D}$$
+
+3. **Empirical Results (All 215 Students, 5x5 Repeated Cross-Validation)**:
+   - **DINOv2-Small Standalone**: AUROC = **0.8343 [0.759, 0.895]**, AUPRC = **0.5633 [0.413, 0.712]**, Sens @ 80% Spec = **70.0%**, Sens @ 90% Spec = **47.5%**.
+   - **DINOv2-Base Standalone**: AUROC = **0.8114**, AUPRC = **0.5821 [0.439, 0.724]** (Hindi Model AUPRC = **0.6052**).
+   - **Joint Concatenated Model**: AUROC = **0.8427 [0.785, 0.897]**, Sens @ 80% Spec = **77.5% (31/40)**.
+   - **Nested Tabular Stack**: AUROC = **0.8231** ($+0.1361$ over tabular), AUPRC = **0.5836** ($+0.1918$ over tabular), Sens @ 90% Spec = **50.0%** (6 false negatives rescued across Schools A and B).
+
+
+
+### 23.3 Intermediate Feature-Level Fusion Architecture (`baseline/evaluate_exp7_feature_fusion.py`)
+To prevent the dilution of borderline cases caused by late probability blending (where a calibrated 0.84 vision probability is averaged with an uncalibrated 0.68 tabular score), the architecture integrates **intermediate feature concatenation**:
+
+```mermaid
+flowchart LR
+    subgraph VisionBranch ["Micro-Texture Vision Stream (Tiles)"]
+        Tiles["224x224 Native Stroke Tiles"] --> ViT["Frozen DINOv2-Small"]
+        ViT --> PatchTokens["Patch Tokens (256 x D)"]
+        PatchTokens --> PatchStats["[μ, σ, GeM] (3D)"]
+        PatchStats --> StudentPool["Student Pool (Mean + Std)"]
+        StudentPool --> ScalerV["StandardScaler (Fold-Trained)"]
+        ScalerV --> PCA["PCA (K=24, Fold-Trained)"]
+        PCA --> Z_vis["Visual Components Z_vis in R^24"]
+    end
+
+    subgraph TabularBranch ["Macro-Page Geometry Stream (Full Sheet)"]
+        FullSheet["Multi-Line Full Sheet"] --> TabExtract["Macro Tabular Metrics<br/>(Slope drift, Gap CV, Line waviness, Erasures)"]
+        TabExtract --> ScalerT["StandardScaler (Fold-Trained)"]
+        ScalerT --> T_macro["Macro Layout Z-Scores T_macro in R^10"]
+    end
+
+    Z_vis --> Concat["Concatenation [Z_vis, T_macro] in R^34"]
+    T_macro --> Concat
+
+    Concat --> UnifiedHead["Unified Regularized LR Head (L2)<br/>(C tuned via 3-Fold Inner CV, Balanced Weights)"]
+    UnifiedHead --> Pred["Calibrated Probability P_fused<br/>AUROC = 0.8289 | Sens@80%Spec = 77.5% (31/40)<br/>(Preserves 100% of True Positives)"]
+```
+
+### 23.4 Candidate 2: Self-Supervised Contrastive Writer-Style Architecture (`baseline/train_writer_style_encoder.py`)
+```mermaid
+flowchart TD
+    subgraph InputPairs ["Writer-Identity Cross-Script Pairs (Zero Labels)"]
+        T1["Tile 1: Student i (Devanagari Copy)"] --> Desc1["Tile Descriptor e_1 in R^1152"]
+        T2["Tile 2: Student i (Latin Dictation)"] --> Desc2["Tile Descriptor e_2 in R^1152"]
+        T3["Tile 3: Student j != i"] --> Desc3["Tile Descriptor e_3 in R^1152"]
+    end
+
+    subgraph Projector ["Metric Learning Projector Head g_θ"]
+        Desc1 --> MLP1["Linear(1152->512) -> LayerNorm -> GELU -> Linear(512->128) -> L2Norm"]
+        Desc2 --> MLP2["Linear(1152->512) -> LayerNorm -> GELU -> Linear(512->128) -> L2Norm"]
+        Desc3 --> MLP3["Linear(1152->512) -> LayerNorm -> GELU -> Linear(512->128) -> L2Norm"]
+        MLP1 --> Z1["z_1 in S^127"]
+        MLP2 --> Z2["z_2 in S^127"]
+        MLP3 --> Z3["z_3 in S^127"]
+    end
+
+    subgraph Objective ["Supervised Contrastive Loss (SupCon)"]
+        Z1 & Z2 & Z3 --> SupCon["L_SupCon (Pull z_1 and z_2 together, Push z_3 apart)<br/>(Zero Dysgraphia Labels, 172 Train Students per Fold)"]
+    end
+
+    subgraph Downstream ["Frozen Style Evaluation"]
+        Projector -.-> FrozenEnc["Frozen Encoder g_θ*"]
+        FrozenEnc --> StudentStyle["Student Style Vector u_student in R^256"]
+        StudentStyle --> LinearProbe["L2 Logistic Regression Probe<br/>AUROC = 0.6823 | AUPRC = 0.3804"]
+    end
+```

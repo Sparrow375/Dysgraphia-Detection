@@ -92,3 +92,57 @@ def test_cluster_bootstrap_cis_bounds():
     assert cis["auprc_ci"][0] <= cis["auprc_ci"][1]
     assert 0.0 <= cis["auroc_ci"][0] <= 1.0
     assert 0.0 <= cis["auroc_ci"][1] <= 1.0
+
+
+def test_fused_head_intermediate_fusion():
+    """Verify that intermediate fusion of visual PCA and tabular features fits and produces valid probabilities."""
+    from baseline.evaluate_exp7_feature_fusion import tune_and_fit_fused_head
+
+    np.random.seed(42)
+    n_train, n_test, vis_dim, tab_dim = 40, 10, 128, 8
+    X_tr_vis = np.random.randn(n_train, vis_dim).astype(np.float32)
+    X_te_vis = np.random.randn(n_test, vis_dim).astype(np.float32)
+    T_tr_tab = np.random.randn(n_train, tab_dim).astype(np.float32)
+    T_te_tab = np.random.randn(n_test, tab_dim).astype(np.float32)
+    y_tr = np.random.choice([0, 1], size=n_train, p=[0.8, 0.2])
+
+    # Ensure at least two classes
+    y_tr[0] = 0
+    y_tr[1] = 1
+
+    probs = tune_and_fit_fused_head(
+        X_train_vis=X_tr_vis,
+        T_train_tab=T_tr_tab,
+        y_train=y_tr,
+        X_test_vis=X_te_vis,
+        T_test_tab=T_te_tab,
+        k_candidates=[4, 8],
+        c_candidates=[0.1, 1.0],
+        seed=42,
+    )
+    assert len(probs) == n_test
+    assert np.all(probs >= 0.0)
+    assert np.all(probs <= 1.0)
+
+
+def test_supcon_writer_style_encoder():
+    """Verify SupCon loss computation and WriterStyleEncoder normalization."""
+    from baseline.train_writer_style_encoder import SupConLoss, WriterStyleEncoder
+
+    torch.manual_seed(42)
+    encoder = WriterStyleEncoder(in_dim=64, hidden_dim=32, out_dim=16)
+    x = torch.randn(8, 64)
+    z = encoder(x)
+
+    assert z.shape == (8, 16)
+    norms = torch.norm(z, p=2, dim=-1)
+    assert torch.allclose(norms, torch.ones(8), atol=1e-5)
+
+    criterion = SupConLoss(temperature=0.07)
+    labels = torch.tensor([0, 0, 1, 1, 2, 2, 3, 3])
+    loss = criterion(z, labels)
+
+    assert loss.item() > 0.0
+    assert not torch.isnan(loss)
+
+
