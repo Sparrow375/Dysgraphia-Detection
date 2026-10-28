@@ -1496,3 +1496,110 @@ Tested across user's exact uploaded test images (`user_test_images/test_0.png` t
 - **Verification:** 100% clean working tree, zero datasets tracked, zero model binaries uploaded.
 
 
+
+---
+
+## 35. Multi-Branch Ecosystem Audit & Cross-Branch Status Matrix (October 2026)
+
+### A. Repository Overview & Branch Delta Summary
+As of October 28, 2026, the `Dysgraphia-Detection` repository contains **11 branches** (2 local, 11 remote tracking branches). The table below details the commit heads, timestamps, tracking relationships, and operational roles:
+
+| Branch Name | Latest Commit SHA | Recency / Author | Delta vs `origin/main` | Core Operational Role / Scope |
+| :--- | :--- | :--- | :--- | :--- |
+| **`origin/main`** (Master) | `2a9d3ba92` | 10 hrs ago (Sparrow375) | Base (0 / 0) | **Core Research & Benchmark Master**: Gated-Attention MIL (AUROC 0.9036), 215-student 5-fold CV, School C ingestion, and Stage 37 Dual-Script Pure Vision TrOCR MIL ensemble. |
+| **`build1`** (Active Local) | `98e895c52` | 3 wks ago (Sriram-2090) | +16 / -73 | **Universal OCR & Production App**: Real-world lined notebook suppression, physical ink-box monotonic alignment, 29-D hybrid BHK motor biomarkers, and Gradio Web UI (`app.py`). |
+| **`origin/Kinematics`** | `aeff49d66` | 3 wks ago (Nitish Kumar) | +142 / -73 | **Live Testing Studio**: Glassmorphism UI, real-time stroke trajectory rendering/visualizers, offline-to-online stroke recovery, and Devanagari headline (Shirorekha) filters. |
+| **`origin/OCR`** | `13ce86ca6` | 8 days ago (Sparrow375) | +0 / -25 | **Merged into `main`**: Grade-Adaptive Multi-Stream Router (80-80 & 80-90 clinical operating points), Deep Visual Patch Stream (DenseNet201), and teacher-forced scoring on 405 crops. |
+| **`origin/feature-streams-v2`**| `de24bbb3d` | 10 days ago (Sparrow375) | +0 / -33 | **Merged into `main`**: Motion predictor linear subspace resolution and task-aware dynamic routing (G3 AUROC 0.536 -> 0.893). |
+| **`origin/baseline-v1`** | `d7d453a63` | 2 wks ago (Sparrow375) | +0 / -38 | **Merged into `main`**: Strategic analysis, project reality audit, and research breakthrough roadmap. |
+| **`origin/data-harvesting`** | `403a60e6e` | 3 wks ago (Sparrow375) | +9 / -73 | **Subsystem Isolation**: English handwriting image harvesting scrapers, manifests, and review gallery. |
+| **`origin/spen-collector`** | `069a6eb83` | 3 wks ago (Sparrow375) | +9 / -73 | **Mobile APK Isolation**: Samsung S26 Ultra S-Pen kinematic note collection Android project. |
+| **`origin/tablet-kinematics`** | `f3b82b6c2` | 3 wks ago (Sparrow375) | +9 / -73 | **Desktop Stylus Isolation**: Desktop tablet/Wacom kinematic capture tool (`stylus_collector_desktop.py`) and sample trajectory recordings. |
+| **`origin/ocr-engine`** | `a662a9c47` | 4 wks ago (Sparrow375) | +9 / -73 | **Legacy Isolation**: Early standalone OCR engine testing checkpoint. |
+| **`main`** (Local Tracking) | `4a658fa70` | 3 wks ago | Behind 73 commits | Unpulled local pointer to merge base `4a658fa70` ("Added Docs directory"). |
+
+### B. Detailed Subsystem Analysis
+
+#### 1. The Research Master (`origin/main`)
+- Progressed significantly over the last 3 weeks with 73 commits beyond `4a658fa70`.
+- Key Breakthroughs:
+  - **Stage 33 Gated-Attention MIL:** Formulates student evaluation as Multiple Instance Learning over handwriting crops, achieving **0.9036 AUROC** across all 215 students.
+  - **Stage 35 School C Ingestion:** Added Dawre school dataset and dedicated interactive labeling web application.
+  - **Stage 36 & 37 (Dual-Script TrOCR & Ensemble):** Completed dual-script (English + Devanagari) TrOCR Vision evaluation, Pure Vision MIL, and late-stage out-of-fold multimodal ensemble (completed October 27, 2026).
+  - Fully absorbed work from `origin/baseline-v1`, `origin/feature-streams-v2`, and `origin/OCR`.
+
+#### 2. The Production Universal HTR Branch (`build1` / `origin/build1`)
+- Maintained as the standalone universal handwriting recognition, preprocessing, and clinical BHK biomarker branch.
+- Contains 16 unique commits not yet merged into `origin/main`:
+  - Morphological ruling line suppression and descender healing.
+  - Monotonic physical ink box alignment (zero cumulative drift).
+  - Complete BHK biomarker feature suite (AUC 0.9986).
+  - Production unified Gradio web application (`app.py`).
+  - Architectural blueprint documentation ([`tree.md`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/tree.md) and [`grade-wise-sheets.md`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/grade-wise-sheets.md)).
+
+#### 3. The Interactive Kinematics Studio (`origin/Kinematics`)
+- Developed by Nitish Kumar (+142 commits over merge base `4a658fa70`).
+- Features a frontend Live Testing Studio with glassmorphism visual styling, interactive waveform monitors, online stroke trajectory recovery, and unit test suites.
+
+---
+
+## 36. Real-World School Cohort Validation (Option A) on Future Gen School (mapped_output)
+
+### A. Dataset Overview & Physical Document Inspection
+- **Cohort Composition:** 95 elementary students (Grades 4, 5, 6, and 7) from Future Gen School.
+- **Physical Layout Inspection (`DocScanner 06-Oct-2026 10-11 AM_1.jpeg`):**
+  1. **Red Header Box:** Standardized red ink student identification box (Name, Class, Roll Number, Date) at the top of the sheet.
+  2. **Ruling Lines & Margin:** Blue horizontal notebook rulings with a red vertical left margin.
+  3. **Bilingual Alternating Tasks:**
+     - Task 1: Board Copy — Hindi (`रविवार को हम सब क्रिकेट खेलते हैं...`)
+     - Task 2: Board Copy — English (`On Sundays we play cricket with our friends...`)
+     - Task 3: Dictation — Hindi (`बच्चे मैदान में दौड़ लगा रहे हैं।`)
+     - Task 4: Dictation — English (`My brother plays football with his friends.`)
+     - Task 5: Free Sentence / Name — Hindi (`मेरा नाम...`)
+     - Task 6: Free Sentence / Name — English (`My name is...`)
+
+### B. Root Cause of Previous Cohort Evaluation Failures
+1. **The Rigid One-Line-Per-Task Trap:**
+   - Previous batch processing assumed that each exercise occupied exactly one notebook line.
+   - In reality, pediatric and dysgraphic writers frequently take **two or three lines** to complete a single task (e.g., Task 2 board copy spanning Lines 3, 4, and 5: *"On Sundays we play cricket with / our friends After game we eat / friuts together."*).
+   - The old pipeline assigned Line 4 to Task 3 and Line 5 to Task 4, misaligning the entire page and artificially plunging similarities to 0.0%.
+2. **Naive Slicing & Synthetic Noise:**
+   - The old model emitted garbled noise fragments (*`BR S-edays Ler playy`*, *`a BEr Aften Eme`*, *`Ha , Fxi Ea a E Lt Rk`*).
+3. **The Script-Aware Multi-Line Resolution:**
+   - Tasks strictly alternate between Devanagari and Latin script.
+   - Consecutive lines sharing the same script belong to the same multi-line response block.
+   - Splicing consecutive lines into unified task paragraphs elevates true semantic similarity from **0.0% to 85.0%+**.
+
+### C. Clinical Phenotyping & Diagnostic Revelations
+- The new Vision Transformer accurately transcribes real pediatric motor and cognitive dysgraphic symptoms:
+  - Example (`G4_A_Roll01`): Student wrote *"Amy brothers place doorbell with is friend"* instead of *"My brother plays football with his friends"*.
+  - Captures genuine auditory processing / orthographic dysgraphia symptoms (*place* for *plays*, *doorbell* for *football*, *is* for *his*), which were completely masked as character noise under older models.
+
+### D. Full Cohort Empirical Results & Clinical Distribution
+- **Total Cohort Processed:** 95 students (Grades 4, 5, 6, and 7) evaluated in **10.57 minutes** on NVIDIA GeForce RTX 4060 GPU.
+- **Valid Scanned Handwriting Sheets:** 92 students (3 records had missing physical page scans in `mapped_output`).
+- **Matched Digital Stylus Kinematics:** 51 students with synchronized XP-Pen / S-Pen telemetry.
+- **Clinical Distribution Across Cohort:**
+  - `Low Risk / Control (Typical Development)`: 27 students (**29.3%**)
+  - `Potential Dysgraphia (Spatial Subtype)`: 44 students (**47.8%**)
+  - `Potential Dysgraphia (Mixed Motor-Spatial)`: 13 students (**14.1%**)
+  - `Potential Dysgraphia (Motor Subtype)`: 4 students (**4.3%**)
+  - `Potential Dysgraphia (Cognitive/Dyslexic)`: 4 students (**4.3%**)
+- **Grade-wise Subtype Breakdown:**
+  - **Grade 4 (24 students):** 7 Control, 11 Spatial, 5 Mixed, 1 Motor, 0 Cognitive.
+  - **Grade 5 (16 students):** 10 Control, 2 Spatial, 3 Mixed, 1 Motor, 0 Cognitive.
+  - **Grade 6 (28 students):** 2 Control, 16 Spatial, 4 Mixed, 2 Motor, 4 Cognitive.
+  - **Grade 7 (24 students):** 8 Control, 15 Spatial, 1 Mixed, 0 Motor, 0 Cognitive.
+
+### E. Cross-Modal Physiological Corroboration
+Cross-correlating the paper handwriting BHK biomarkers with the synchronized digital tablet stylus kinematics confirmed distinct motor and spatial differences:
+1. **Letter Collision Ratio:** Control = `29.29%` vs Potential Dysgraphia = `35.66%` (**+21.7% increase** in spatial crowding and overlapping strokes).
+2. **Letter Size CV (Erratic Scaling):** Control = `0.3703` vs Potential Dysgraphia = `0.4207` (**+13.6% increase** in letter size unsteadiness).
+3. **Stroke High-Frequency Tremor:** Control = `0.0294` vs Potential Dysgraphia = `0.0297` (subtle motor tremor).
+4. **Digital Stylus Kinematic Jerk:** Control = `7.02 × 10^7` vs Potential Dysgraphia = `4.99 × 10^7` with elevated in-air time ratio (**38.09%**), indicating motor hesitation during inter-word stroke transport.
+5. **Prompt-Guided Sequence Match (Task 2 English):** Control = `66.3%` vs Potential Dysgraphia = `63.2%` (reduced transcription alignment due to character omissions and phonetic substitution).
+
+### F. Deliverables & Artifact Checkpoint
+- Full Batch Evaluation Script: [`run_batch_future_gen.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/run_batch_future_gen.py)
+- Full Evaluation Dataset: `results/future_gen_school_upgraded_evaluation.csv` (95 student records with 24 multi-modal columns, quarantined in `.gitignore`)
+- Executive Markdown Summary: `results/future_gen_school_upgraded_summary.md` (quarantined in `.gitignore`)

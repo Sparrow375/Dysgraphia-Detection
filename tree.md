@@ -822,3 +822,91 @@ Input: Any Random Handwritten Paper Image (Photo / Scan)
                                                                        v
                                                              [GitHub Push to origin/build1]
 ```
+
+---
+
+## 22. Repository Multi-Branch Topology & Lineage Tree
+
+```
+                                  [Common Merge Base]
+                               4a658fa70 ("Added Docs dir")
+                                            |
+         +----------------------------------+----------------------------------+
+         |                                  |                                  |
+         v                                  v                                  v
+ [origin/build1 / build1]           [origin/Kinematics]                 [origin/main]
+   * Active Working Branch            * Live Testing Studio               * Master Research Branch
+   * Universal Ruling Suppression     * Glassmorphism Web Themes          * 73 Commits Ahead
+   * Monotonic Ink Box Alignment      * Online Trajectory Visualizers     * Absorbed:
+   * BHK Motor Biomarkers (AUC 0.998) * Stroke Recovery Validation            - baseline-v1
+   * Unified Gradio App (app.py)      * Shirorekha Devanagari Filters         - feature-streams-v2
+   * tree.md & grade-wise-sheets.md   * (+142 / -73 vs main)                  - OCR (Router, DenseNet)
+   * (+16 / -73 vs main)                                                  * Stages 30-34: Gated-Attention
+         |                                                                  MIL (AUROC 0.9036)
+         |                                                                * Stage 35: School C Ingestion
+         |                                                                * Stages 36-37: Dual-Script
+         |                                                                  TrOCR Vision & Late Ensemble
+         |                                                                  (Updated 10 hrs ago)
+         |
+         +------------------ Isolated Subsystem Branches ------------------+
+         |                                                                 |
+         v                                                                 v
+[origin/data-harvesting]        [origin/spen-collector]          [origin/tablet-kinematics]
+  * Image scrapers & gallery      * Android S-Pen APK project      * Desktop stylus capture tool
+```
+
+---
+
+## 23. Real-World School Cohort Multi-Task Pipeline Tree
+
+```
+[Real Indian School Notebook Sheet (mapped_output: 95 Students, Grades 4–7)]
+                            |
+                            v
+[1. Universal Notebook Cleaning & Orientation (src/preprocessing.py)]
+   * Auto-transposition & manual orientation correction
+   * Red header box (Name, Roll, Class) extraction & isolation
+   * Morphological horizontal opening (k=24x1) ruling line subtraction
+   * Descender healing (1x2 closing) & thin sliver filter (h <= 4px, w >= 15px)
+   * Output: Clean RGB page + Binary Ink Mask (zero ruling lines, zero margin lines)
+                            |
+                            v
+[2. Ink-Density Line Ribbon Segmentation (src/ocr/segmentation.py)]
+   * Bounded horizontal ribbons across baselines (ly..ly+lh, lx..lx+lw)
+   * Ghost line suppression (<180 px ink or <2 components rejected)
+   * Output: 8 to 11 genuine handwritten line strips
+                            |
+                            v
+[3. Script-Aware Multi-Line Task Grouping Engine]
+   * Detects Devanagari vs Latin script for each line
+   * Solves the One-Line-Per-Task Trap:
+       - Automatically groups consecutive lines of the same script into unified task blocks
+       - e.g. Lines 3, 4, 5 (English) -> Combined Task 2 Paragraph:
+         "On Sundays we play cricket with our friends After game we eat friuts together."
+                            |
+         +------------------+------------------+
+         |                                     |
+         v                                     v
+[4. Vision Transformer OCR & Ink Bounding]    [5. Clinical BHK Biomarker Suite]
+   * microsoft/trocr-base-handwritten            * 29-D Spatial & Kinematic Features:
+   * Whole-line contextual beam decoding            - Letter size CV & spacing CV
+   * Monotonic physical ink box alignment           - Letter collision ratio (>22% flag)
+   * Calibrated token confidence badges             - High-frequency stroke tremor
+         |                                     |
+         +------------------+------------------+
+                            |
+                            v
+[6. Prompt-Guided Forced Alignment & Cognitive Profiling (src/ocr/forced_alignment.py)]
+   * Evaluates Character Error Rate (CER) and sequence similarity against grade prompts
+   * Detects mirror & inversion letter reversals (b <-> d, p <-> q, m <-> w)
+   * Distinguishes cognitive orthographic errors ("place doorbell" for "plays football")
+                            |
+                            v
+[7. Multimodal Clinical Synthesis & Screening Output]
+   * Tripartite Subtype Breakdown:
+       - Motor Dysgraphia Score
+       - Spatial Dysgraphia Score
+       - Dyslexic / Spacing Risk Score
+   * Matched Telemetry Fusion (with XP-Pen / S-Pen digital stylus jerk & pressure)
+   * Export to results/future_gen_school_upgraded_evaluation.csv
+```
