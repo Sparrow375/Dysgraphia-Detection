@@ -1,24 +1,61 @@
-# Datasets (large files, not tracked in git)
+# Datasets & Large Asset Directories (not tracked in git)
 Datasets/
 datasets/
 DATASET*
-
-# Pulled isolated branches
+"VV data"/
+VV data/
 build1/
 
-# Scratch & temporary development files
+# Student Handwriting Photos & Rendered Images (1.7 GB+)
+zmapped_output/students/
+outputs/uploads/
+
+# Ground truth benchmark CSV is preserved
+!zmapped_output/ground_truth_kinematics.csv
+
+# Legacy Phase Outputs
+outputs/phase0/
+outputs/phase1/
+outputs/phase2/
+outputs/phase3/
+outputs/cohort_eval/
+outputs/gt_audit/
+
+# Temporary, scratch & archive files
 scratch/
 scraps/
 scraps
 *scrap*
-__pycache__/
-*.pyc
 *.zip
 *.tar
+*.tar.gz
+*.rar
+*.npz
+*.npy
+*.pkl
 .system_generated/
 
-# Kinematics CSV and PNG exports
-kinematics*.csv
-kinematics*.png
-*kinematics*.csv
-*kinematics*.png
+# Python caches & build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# InkSight experiments generated data and raw predictions
+experiments/inksight/data/
+experiments/inksight/predictions/
+experiments/inksight/word.jpg
+experiments/inksight/test_*.py
+experiments/inksight/check_gpu.py
+
+# Virtual environments & IDE
+.venv/
+venv/
+ENV/
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
