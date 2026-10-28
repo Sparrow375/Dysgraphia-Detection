@@ -1,0 +1,185 @@
+{
+  "min_image_side_px": 200,
+  "max_image_side_px": 20000,
+  "min_gray_std": 8.0,
+  "dpi": 0.0,
+  "denoise_method": "nlm",
+  "nlm_h": 6.0,
+  "median_ksize": 3,
+  "gaussian_sigma": 1.0,
+  "bg_kernel_frac": 0.05,
+  "bg_blur_frac": 0.05,
+  "ink_otsu_offset": 0.0,
+  "ink_max_level": 215.0,
+  "ruling_angle_search_deg": 5.0,
+  "line_angle_step_deg": 0.75,
+  "ruling_kernel_frac_width": 0.06,
+  "ruling_close_frac_width": 0.1,
+  "ruling_min_span_frac": 0.4,
+  "ruling_run_tolerance": 1.25,
+  "ruling_band_pad_px": 2,
+  "ruling_smooth_cols": 101,
+  "margin_angle_search_deg": 5.0,
+  "margin_kernel_frac_height": 0.12,
+  "margin_close_frac_height": 0.1,
+  "margin_min_span_frac": 0.4,
+  "margin_run_tolerance": 1.25,
+  "margin_band_pad_px": 2,
+  "margin_smooth_rows": 101,
+  "min_cc_area_px": 15,
+  "residual_line_min_width_frac": 0.015,
+  "residual_line_max_height_factor": 1.6,
+  "skew_search_deg": 6.0,
+  "line_profile_sigma_frac_H": 0.004,
+  "line_thr_frac": 0.04,
+  "line_merge_gap_frac": 0.15,
+  "line_split_height_factor": 1.9,
+  "line_split_valley_frac": 0.35,
+  "line_height_hint_factor": 2.5,
+  "line_min_ink_frac": 0.1,
+  "word_gap_frac": 0.5,
+  "main_comp_min_area_frac": 0.03,
+  "min_lines": 1,
+  "min_words": 3,
+  "ruling_min_lines_for_pitch": 3,
+  "headline_cov": 0.55,
+  "zone_smooth_frac": 0.05,
+  "core_frac": 0.25,
+  "ext_min_ratio": 0.35,
+  "min_zone_word_height_frac": 0.3,
+  "min_words_baseline": 3,
+  "narrow_gap_frac": 0.9,
+  "curv_step_frac": 0.12,
+  "sharp_turn_deg": 75.0,
+  "curv_smooth_px": 3,
+  "min_path_len_frac": 0.3,
+  "collision_overlap_frac": 0.25,
+  "collision_diacritic_area_ratio": 0.1,
+  "thick_factor": 2.0,
+  "thick_blob_min_area_frac": 2.0,
+  "tiny_hole_area_frac": 0.01,
+  "tiny_hole_min_area_px": 4,
+  "smudge_gray_level": 200.0,
+  "smudge_halo_px": 4,
+  "jitter_step_frac": 0.08,
+  "jitter_smooth_px": 3,
+  "jitter_min_turn_deg": 25.0,
+  "width_trim_frac": 0.1,
+  "outlier_z": 3.5,
+  "aspect_extreme": 4.0,
+  "fragment_min_h_frac": 0.25,
+  "anchors": {
+    "writing_size": {
+      "band_lo": 0.4,
+      "band_hi": 1.6,
+      "ramp": 0.5
+    },
+    "non_aligned_left_margin": {
+      "key": "std_norm",
+      "lo": 0.15,
+      "hi": 0.75
+    },
+    "skewed_alignment": {
+      "keys": [
+        [
+          "mean_abs_rel_angle_deg",
+          1.0,
+          5.0
+        ],
+        [
+          "mean_rms_resid_norm",
+          0.08,
+          0.3
+        ]
+      ]
+    },
+    "insufficient_word_spacing": {
+      "keys": [
+        [
+          "frac_gaps_narrow",
+          0.1,
+          0.5
+        ],
+        [
+          "median_gap_norm",
+          1.2,
+          0.6,
+          "invert"
+        ]
+      ]
+    },
+    "sharp_angles": {
+      "key": "sharp_per_10_refh",
+      "lo": 0.5,
+      "hi": 3.0
+    },
+    "broken_links": {
+      "key": "breaks_per_word",
+      "lo": 0.3,
+      "hi": 2.0
+    },
+    "collisions": {
+      "key": "collisions_per_main_comp",
+      "lo": 0.02,
+      "hi": 0.15
+    },
+    "irregular_letter_size": {
+      "key": "mean_line_iqr_over_median",
+      "lo": 0.25,
+      "hi": 0.7
+    },
+    "inconsistent_height_extensions": {
+      "keys": [
+        [
+          "xh_cv_no_ext",
+          0.1,
+          0.35
+        ],
+        [
+          "asc_ext_cv",
+          0.15,
+          0.45
+        ],
+        [
+          "desc_ext_cv",
+          0.15,
+          0.45
+        ]
+      ]
+    },
+    "traced_corrected_letters": {
+      "keys": [
+        [
+          "thick_blobs_per_main_comp",
+          0.02,
+          0.2
+        ],
+        [
+          "tiny_holes_per_main_comp",
+          0.05,
+          0.4
+        ],
+        [
+          "smudge_fraction",
+          0.002,
+          0.03
+        ]
+      ]
+    },
+    "unstable_trace": {
+      "keys": [
+        [
+          "width_cv",
+          0.25,
+          0.6
+        ],
+        [
+          "zigzag_per_refh",
+          0.3,
+          2.0
+        ]
+      ]
+    }
+  },
+  "save_debug_images": true
+}

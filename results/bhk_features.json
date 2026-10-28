@@ -1,0 +1,351 @@
+[
+  {
+    "image": "img2.jpeg",
+    "status": "ok",
+    "reason": "",
+    "features": {
+      "writing_size": {
+        "status": "ok",
+        "raw": {
+          "ref_h_px": 26.0,
+          "median_main_comp_height_px": 22.0,
+          "norm_reference": "ruling_pitch",
+          "norm_reference_px": 38.0,
+          "size_norm": 0.6842105263157895,
+          "size_mm": 2.2013333333333334,
+          "latin_xheight_px": 22.0,
+          "latin_xheight_norm": 0.5789473684210527
+        },
+        "notes": "size_norm = ref_h / ruling pitch (falls back to text-line pitch). Absolute mm only if cfg.dpi is set.",
+        "rule": "v = ref_h / ruling_pitch. score = min(1, d / 0.5) where d = distance of v outside the placeholder band [0.4, 1.6] (0 inside the band). Too small AND too large both score >0.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "size_norm": 0.0
+        },
+        "score": 0.0,
+        "score_status": "scored"
+      },
+      "non_aligned_left_margin": {
+        "status": "ok",
+        "raw": {
+          "n_lines": 7,
+          "left_x_deskewed_px": [
+            121.7,
+            120.5,
+            129.3,
+            107.0,
+            52.8,
+            43.5,
+            37.2
+          ],
+          "std_px": 37.89944879667167,
+          "std_norm": 1.457671107564295,
+          "range_norm": 3.5422758809860047,
+          "drift_per_line_norm": -0.6647902110814864,
+          "total_drift_norm": -3.988741266488918,
+          "mean_distance_to_page_margin_norm": -0.40659340659340654
+        },
+        "notes": "Paragraph indents count as misalignment.",
+        "rule": "score = max over [std_norm: 0 at <= 0.15, 1 at >= 0.75], linear ramp in between. Anchors are placeholders.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "std_norm": 1.0
+        },
+        "score": 1.0,
+        "score_status": "scored"
+      },
+      "skewed_alignment": {
+        "status": "ok",
+        "raw": {
+          "n_lines_fitted": 7,
+          "reference": "ruling",
+          "ruling_angle_deg": 0.19999999999999984,
+          "line_angles_deg": [
+            1.03,
+            0.01,
+            0.48,
+            1.29,
+            -0.06,
+            -4.32,
+            -2.2
+          ],
+          "rel_angles_deg": [
+            0.83,
+            -0.19,
+            0.28,
+            1.09,
+            -0.26,
+            -4.52,
+            -2.4
+          ],
+          "mean_abs_rel_angle_deg": 1.3656529811032965,
+          "std_angle_deg": 1.8668792671404966,
+          "global_text_skew_deg": 0.5,
+          "mean_rms_resid_norm": 0.22331087663769722
+        },
+        "notes": "Baseline = robust (Huber) line through word baseline points (Latin) or headline points (Devanagari). A single global ruling angle is the reference, so perspective differences between rulings add error.",
+        "rule": "score = max over [mean_abs_rel_angle_deg: 0 at <= 1.0, 1 at >= 5.0; mean_rms_resid_norm: 0 at <= 0.08, 1 at >= 0.3], linear ramp in between. Anchors are placeholders.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "mean_abs_rel_angle_deg": 0.09141324527582412,
+          "mean_rms_resid_norm": 0.6514130756258965
+        },
+        "score": 0.6514130756258965,
+        "score_status": "scored"
+      },
+      "insufficient_word_spacing": {
+        "status": "ok",
+        "raw": {
+          "n_gaps": 43,
+          "median_gap_norm": 1.5704859488908438,
+          "mean_gap_norm": 1.566831596627659,
+          "min_gap_norm": 0.5317283158819591,
+          "gap_cv": 0.38202906910317386,
+          "frac_gaps_narrow": 0.16279069767441862,
+          "narrow_threshold_norm": 0.9,
+          "word_split_threshold_norm": 0.5
+        },
+        "notes": "Words closer than word_gap_frac*ref_h are merged by the segmenter, so extremely tight spacing shows up as merged words (fewer gaps) rather than as small gaps.",
+        "rule": "score = max over [frac_gaps_narrow: 0 at <= 0.1, 1 at >= 0.5; median_gap_norm: 0 at >= 1.2, 1 at <= 0.6 (smaller is worse)], linear ramp in between. Anchors are placeholders.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "frac_gaps_narrow": 0.1569767441860465,
+          "median_gap_norm": 0.0
+        },
+        "score": 0.1569767441860465,
+        "score_status": "scored"
+      },
+      "sharp_angles": {
+        "status": "ok",
+        "raw": {
+          "n_sharp": 43,
+          "n_paths": 275,
+          "arm_px": 3,
+          "skeleton_length_norm": 268.15384615384613,
+          "sharp_per_10_refh": 1.6035570854847965,
+          "sharp_per_main_comp": 0.25748502994011974
+        },
+        "notes": "Corners at skeleton junctions are not counted; pen-lift stroke ends are not corners. Angular print-style letters (e.g. 'A', 'E', 'K', Devanagari matras) legitimately produce sharp angles.",
+        "rule": "score = max over [sharp_per_10_refh: 0 at <= 0.5, 1 at >= 3.0], linear ramp in between. Anchors are placeholders.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "sharp_per_10_refh": 0.4414228341939186
+        },
+        "score": 0.4414228341939186,
+        "score_status": "scored"
+      },
+      "broken_links": {
+        "status": "ok",
+        "raw": {
+          "n_words_used": 49,
+          "n_main_pieces": 165,
+          "n_breaks": 116,
+          "breaks_per_word": 2.36734693877551,
+          "frac_words_with_breaks": 0.8163265306122449,
+          "breaks_per_main_comp": 0.703030303030303,
+          "median_break_gap_norm": 0.11538461538461539
+        },
+        "notes": "Every extra connected piece inside a word counts as a break. BHK assumes cursive; print-style writing breaks by design. Ruling removal can also create artificial breaks where strokes sat on the line.",
+        "rule": "score = max over [breaks_per_word: 0 at <= 0.3, 1 at >= 2.0], linear ramp in between. Anchors are placeholders.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "breaks_per_word": 1.0
+        },
+        "score": 1.0,
+        "score_status": "scored"
+      },
+      "collisions": {
+        "status": "ok",
+        "raw": {
+          "n_main_comps": 167,
+          "n_overlaps_within_words": 7,
+          "n_overlaps_between_lines": 0,
+          "collisions_per_main_comp": 0.041916167664670656
+        },
+        "notes": "Proxy only: bounding-box overlap of distinct connected components. Letters that merge into ONE component (touching) cannot be separated without character identity -> manual review recommended.",
+        "rule": "score = max over [collisions_per_main_comp: 0 at <= 0.02, 1 at >= 0.15], linear ramp in between. Anchors are placeholders.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "collisions_per_main_comp": 0.16858590511285118
+        },
+        "score": 0.16858590511285118,
+        "score_status": "scored"
+      },
+      "irregular_letter_size": {
+        "status": "ok",
+        "raw": {
+          "n_lines_used": 7,
+          "per_line_iqr_over_median": [
+            0.557,
+            0.5,
+            0.556,
+            0.652,
+            0.43,
+            0.083,
+            0.341
+          ],
+          "mean_line_iqr_over_median": 0.44554403208084264,
+          "page_height_cv": 0.37670029625589796
+        },
+        "notes": "IQR/median of main-component heights per line (robust to a few ascenders). Cursive words are single components, so this is a word-level, not letter-level, size spread.",
+        "rule": "score = max over [mean_line_iqr_over_median: 0 at <= 0.25, 1 at >= 0.7], linear ramp in between. Anchors are placeholders.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "mean_line_iqr_over_median": 0.4345422935129837
+        },
+        "score": 0.4345422935129837,
+        "score_status": "scored"
+      },
+      "inconsistent_height_extensions": {
+        "status": "ok",
+        "raw": {
+          "n_latin_words": 44,
+          "n_headline_words_excluded": 5,
+          "n_no_ext": 23,
+          "n_asc": 14,
+          "n_desc": 10,
+          "xh_cv_no_ext": 0.2145977024878027,
+          "asc_ext_cv": 0.3579145508165602,
+          "desc_ext_cv": 0.6496110413828476,
+          "xh_median_px": 22.0,
+          "asc_to_xh_median": 0.7358674463937622,
+          "desc_to_xh_median": 0.6736111111111112
+        },
+        "notes": "Zones per word from the row profile; ascender/descender heights are compared across words.",
+        "rule": "score = max over [xh_cv_no_ext: 0 at <= 0.1, 1 at >= 0.35; asc_ext_cv: 0 at <= 0.15, 1 at >= 0.45; desc_ext_cv: 0 at <= 0.15, 1 at >= 0.45], linear ramp in between. Anchors are placeholders.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "xh_cv_no_ext": 0.4583908099512108,
+          "asc_ext_cv": 0.6930485027218672,
+          "desc_ext_cv": 1.0
+        },
+        "score": 1.0,
+        "score_status": "scored"
+      },
+      "atypical_letter_forms": {
+        "status": "requires_review",
+        "raw": {
+          "n_main_comps": 167,
+          "n_shape_outliers": 9,
+          "outlier_frac": 0.05389221556886228,
+          "outlier_comp_ids": [
+            2,
+            11,
+            107,
+            112,
+            117,
+            142,
+            154,
+            160,
+            163
+          ],
+          "descriptor_medians": {
+            "aspect": -0.5753641449035618,
+            "fill": 0.3350383631713555,
+            "solidity": 0.5669291338582677,
+            "holes": 0.0,
+            "endpoints": 2.0
+          }
+        },
+        "notes": "REQUIRES REVIEW: deciding whether a form is atypical needs character identity. Shape-descriptor outliers (robust MAD z-score) are listed only as candidates for a human reviewer; no score is given.",
+        "rule": "No automated score: the BHK item needs character identity / human judgement. Only descriptors and review candidates are reported.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {},
+        "score": null,
+        "score_status": "requires_review"
+      },
+      "ambiguous_letter_forms": {
+        "status": "requires_review",
+        "raw": {
+          "n_extreme_aspect": 16,
+          "extreme_aspect_ids": [
+            9,
+            11,
+            27,
+            32,
+            40,
+            106,
+            118,
+            130,
+            131,
+            140,
+            142,
+            146,
+            154,
+            156,
+            159,
+            160
+          ],
+          "n_stray_fragments": 2,
+          "stray_fragment_ids": [
+            50,
+            66
+          ],
+          "candidate_frac": 0.1016949152542373
+        },
+        "notes": "REQUIRES REVIEW: legibility/ambiguity of a letter cannot be decided without recognising it (and OCR is excluded by design). Components with extreme proportions and stray fragments are only candidates.",
+        "rule": "No automated score: the BHK item needs character identity / human judgement. Only descriptors and review candidates are reported.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {},
+        "score": null,
+        "score_status": "requires_review"
+      },
+      "traced_corrected_letters": {
+        "status": "ok",
+        "raw": {
+          "median_stroke_width_px": 2.0,
+          "median_stroke_width_norm": 0.07692307692307693,
+          "n_thick_blobs": 31,
+          "thick_blobs_per_main_comp": 0.18562874251497005,
+          "n_tiny_holes": 5,
+          "tiny_holes_per_main_comp": 0.029940119760479042,
+          "smudge_fraction": 0.00044429254955570747
+        },
+        "notes": "Proxy: over-written strokes -> locally very thick ink; ink-filled loops -> tiny holes; erasures -> grey smudge away from ink. Heavy pen pressure or JPEG blur can mimic these.",
+        "rule": "score = max over [thick_blobs_per_main_comp: 0 at <= 0.02, 1 at >= 0.2; tiny_holes_per_main_comp: 0 at <= 0.05, 1 at >= 0.4; smudge_fraction: 0 at <= 0.002, 1 at >= 0.03], linear ramp in between. Anchors are placeholders.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "thick_blobs_per_main_comp": 0.9201596806387224,
+          "tiny_holes_per_main_comp": 0.0,
+          "smudge_fraction": 0.0
+        },
+        "score": 0.9201596806387224,
+        "score_status": "scored"
+      },
+      "unstable_trace": {
+        "status": "ok",
+        "raw": {
+          "n_paths_used": 275,
+          "width_cv": 0.1754255922221944,
+          "n_zigzags": 2,
+          "zigzag_per_refh": 0.010931259196972883,
+          "sample_step_px": 2
+        },
+        "notes": "Stroke-width coefficient of variation along skeleton branches + count of alternating heading changes (tremor proxy). Static image only: no pen kinematics are available or used.",
+        "rule": "score = max over [width_cv: 0 at <= 0.25, 1 at >= 0.6; zigzag_per_refh: 0 at <= 0.3, 1 at >= 2.0], linear ramp in between. Anchors are placeholders.",
+        "score_type": "proxy_0_1_uncalibrated (NOT an official BHK score)",
+        "sub_scores": {
+          "width_cv": 0.0,
+          "zigzag_per_refh": 0.0
+        },
+        "score": 0.0,
+        "score_status": "scored"
+      }
+    },
+    "height_px": 605,
+    "width_px": 959,
+    "ink_threshold": 154.0,
+    "n_rulings": 17,
+    "ruling_pitch_px": 38.0,
+    "ruling_thickness_px": 2.0,
+    "ruling_angle_deg": 0.19999999999999984,
+    "n_margin_lines": 1,
+    "n_components": 177,
+    "n_lines": 7,
+    "n_words": 50,
+    "ref_h_px": 26.0,
+    "text_skew_deg": 0.5,
+    "segmentation_ok": true,
+    "seconds": 1.14
+  }
+]
