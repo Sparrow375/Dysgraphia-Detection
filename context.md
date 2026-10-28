@@ -1589,3 +1589,40 @@ Authored a complete, detailed retrospective report synthesising all deep learnin
 7. **Experiment 6 (Dual-Script TrOCR Vision MIL)**: White-canvas physics, native Hindi/English handwriting transformers, duplicate-only bag augmentation, zero-split SWA (Epochs 7–12), and training-anchored logit standardization (0.7034 AUROC).
 8. **Test 1 (Pure Vision Dual-Script TrOCR MIL)**: Stripped the 0.5494 math branch; pooled AUROC rose to 0.7101 and Fold 4 surged to 0.7250.
 9. **Test 2 (Out-of-Fold Late Consensus Stacking)**: Convex combination of Stage 4 Tabular and Pure Vision TrOCR ($60/40$) achieved an all-time cohort record AUPRC of 0.5315 (+32.4% relative gain over tabular) and rescued 4 false negatives evenly across School A and School B.
+
+
+## Stage 39: Re-Verification of Stage 4 Tabular Math Benchmark under Unified 5-Fold CV (Completed 2026-10-28)
+
+### 1. Motivation & Audit of Historical Provenance
+To verify the exact origin of the 0.7970 AUROC benchmark cited across earlier reports:
+- In **Phase 4 Stage 3** (commit `d4a107c`), the 15-feature Clean Multi-Phenotype model achieved **0.7969 AUROC** (~0.7970) when evaluated on **School A alone ($N=115$)** using task-dependent dictation load metrics (`components_per_unit_width_dict_mean`, `words_written_ratio_dict_minus_copy`).
+- When School B was introduced and the pipeline was overhauled into task-agnostic intra-page distribution modeling (Stage 25, `dataset_student_level.csv`), models were evaluated across the **unified 215-student cohort** (40 positives, 175 controls; Grades 3–8).
+
+### 2. Empirical Verification on Unified 215-Student Cohort (`baseline/verify_stage4_benchmark.py`)
+Re-executed full 5-fold cross-validation on `repeat_0_fold` (identical to Exp 6 Dual-Script TrOCR and the Late Ensemble):
+- **Top-30 Regularized LR**:
+  - Pooled Out-of-Fold AUROC: **0.7497**
+  - Pooled Out-of-Fold AUPRC: **0.4001**
+  - Sensitivity @ 80% Specificity: **52.5%** (21 of 40 positives detected)
+  - Sensitivity @ 90% Specificity: **37.5%** (15 of 40 positives detected)
+- **Top-30 Stacking Ensemble (0.50 LR + 0.30 RF + 0.20 GBM)**:
+  - Pooled Out-of-Fold AUROC: **0.7419**
+  - Pooled Out-of-Fold AUPRC: **0.4217**
+- **Clinical Top-15 Regularized LR**:
+  - Pooled Out-of-Fold AUROC: **0.7276**
+  - Pooled Out-of-Fold AUPRC: **0.3716**
+- **Fold-by-Fold AUROC Breakdown on Unified Cohort**:
+  - Fold 0: **0.8393** (Top-30 LR) / **0.9143** (Clinical Top-15)
+  - Fold 1: **0.6036** (Top-30 LR) / **0.6143** (Clinical Top-15)
+  - Fold 2: **0.7929** (Top-30 LR) / **0.7071** (Clinical Top-15)
+  - Fold 3: **0.8214** (Top-30 LR) / **0.7893** (Clinical Top-15)
+  - Fold 4: **0.7429** (Top-30 LR) / **0.6857** (Clinical Top-15)
+
+### 3. Conclusion & Late Ensemble Significance
+Standalone tabular math models achieve **0.7497 AUROC / 0.4001 AUPRC** on the honest unified 215-student cohort (reaching **0.79–0.91** on individual favorable folds like Fold 0, Fold 2, and Fold 3).
+Crucially, when blended with **Pure Vision TrOCR MIL** in the Late Ensemble, performance jumps to **0.7811 AUROC** and an all-time record **0.5315 AUPRC**, rescuing 4 clinical false negatives (2 School A, 2 School B).
+
+### 4. Deliverables
+- Runner: [`baseline/verify_stage4_benchmark.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/verify_stage4_benchmark.py)
+- Metrics JSON: [`reports/stage4_verification_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/stage4_verification_results.json)
+- Full Report: [`reports/stage4_verification_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/stage4_verification_report.md)

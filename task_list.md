@@ -469,6 +469,12 @@
   - [x] 38.3 Document final master scoreboard: Pure Vision TrOCR MIL (AUROC 0.7101) and Late Consensus Ensemble (record AUPRC 0.5315, 4 false negatives rescued across School A and School B).
   - [x] 38.4 Update `context.md`, `task_list.md`, commit and push to git.
 
+- [x] Stage 39: Re-Verification of Stage 4 "Gold Benchmark" Math/Tabular Model under Unified 5-Fold CV:
+  - [x] 39.1 Investigate historical provenance of 0.7970 AUROC across git history and benchmark reports (identified Stage 4 Clean 15 on School A and Clinical Top-15 / Top-30 in `train_tabpfn_benchmark.py`).
+  - [x] 39.2 Implement `baseline/verify_stage4_benchmark.py` running unified 5-fold CV (`repeat_0_fold`) and 5x5 nested CV across all 215 students and reporting fold-by-fold breakdowns.
+  - [x] 39.3 Execute benchmark and analyze exact unified cohort metrics vs School A metrics (Top-30 LR: 0.7497 AUROC; Folds 0, 2, 3 reaching 0.79–0.91; Late Ensemble lifts to 0.7811 AUROC / record 0.5315 AUPRC).
+  - [x] 39.4 Update `context.md`, `task_list.md`, commit and push to git.
+
 ## Completed Sprints
 
 

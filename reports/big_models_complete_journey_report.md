@@ -220,3 +220,4 @@ All evaluations below reflect 5-fold student-stratified cross-validation evaluat
 5. **Avoid Small-Cohort Inner Validation Splits**:
    * Splitting small cohorts into smaller subsets (~5 positives per validation split) introduces high variance that destabilizes early stopping.
    * Training on 100% of available fold data with fixed-epoch cosine annealing and Stochastic Weight Averaging (SWA) reliably secures peak generalization.
+
