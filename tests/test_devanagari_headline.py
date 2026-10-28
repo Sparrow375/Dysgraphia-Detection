@@ -15,7 +15,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from src.branch_a.line_removal import detect_and_remove_ruled_lines
+from src.core.line_removal import detect_and_remove_ruled_lines
 
 
 class TestDevanagariHeadlinePreservation(unittest.TestCase):
