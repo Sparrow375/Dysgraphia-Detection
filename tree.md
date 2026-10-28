@@ -921,11 +921,11 @@ Input: Any Random Handwritten Paper Image (Photo / Scan)
        +------------------------------+------------------------------+
        |                                                             |
        v                                                             v
-[Adaptive Prompt Protocol Engine]              [Universal Preprocessor (src/preprocessing.py)]
-  * Grade 3-7 Board & Dictation Presets          * Aspect & line projection auto-orientation
-  * Classic Pangram Presets                      * Red student header box & teacher margin removal
-  * Custom Teacher / Therapist Prompt            * Morphological blue ruling line suppression (24x1)
-  * Open Free-Writing Mode (No Prompt)           * Descender healing (1x2 closing) & sliver filter
+[Task Modality Protocol Engine]                [Universal Preprocessor (src/preprocessing.py)]
+  * Board Copy Presets (Classroom, Pangram)      * Aspect & line projection auto-orientation
+  * Dictation Presets (Sports, Complex Syntax)   * Red student header box & teacher margin removal
+  * Free Writing / Clinical Standard (BHK)       * Morphological blue ruling line suppression (24x1)
+  * Custom / Open Unconstrained Free-Writing     * Descender healing (1x2 closing) & sliver filter
        |                                         * Output: Clean RGB Document + Binary Ink Mask
        |                                                             |
        |                               +-----------------------------+-----------------------------+
@@ -946,12 +946,12 @@ Input: Any Random Handwritten Paper Image (Photo / Scan)
       +--------------------------------+--------------------------------+
       |                                                                 |
       v                                                                 v
-[FastAPI Backend Endpoints (Port 7860)]        [High-Performance Glassmorphic SPA Frontend]
-  * GET /: Serves responsive web studio          * Google Fonts: Plus Jakarta Sans & JetBrains Mono
-  * GET /api/presets: Prompt syllabus            * Document Upload (Camera, File Drag-and-Drop)
-  * GET /api/showcase/{id}: 1-Click test data    * 1-Click Showcases (Typical G4, Dysgraphia G4, Pangram)
+[FastAPI Backend Endpoints (Port 7860)]        [Clipizo-Inspired Monochrome SPA Studio]
+  * GET /: Serves responsive web studio          * Strict Black & White Palette (Zero Color Bias)
+  * GET /api/presets: Modality syllabus          * Document Upload (Camera, Drag-and-Drop)
+  * GET /api/showcase/{id}: 1-Click test data    * Showcases: Typical Control, Spatial, Pangram, Notes
   * POST /api/analyze: Multi-modal screening     * Multi-Layer Canvas (Raw, Ink Mask, BHK Baselines, Boxes)
-    (GPU Accelerated, TrOCR + BHK Feature Suite) * Executive Verdict Hero & Tripartite Risk Gauges
+    (GPU Accelerated, TrOCR + BHK Feature Suite) * High-Contrast Verdict Hero & Monochrome Gauges
                                                  * Letter-by-Letter "CopyThat" Delta Ribbon (✓, REV, DROP)
                                                  * Objective BHK Motor Biomarker Table
                                                  * 📥 One-Click Printable Clinical Report Card

@@ -1681,3 +1681,38 @@ Cross-correlating the paper handwriting BHK biomarkers with the synchronized dig
 ### C. Verification & Deployment Status
 - **Active Server:** Uvicorn on `http://127.0.0.1:7860`.
 - **Validation Script:** [`scratch/test_api_analyze.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/scratch/test_api_analyze.py) verified 100% end-to-end functionality on GPU with sub-second response times.
+
+---
+
+## 39. Non-Grade-Wise Modality Restructuring & Clipizo-Inspired Monochrome UI Overhaul
+
+### A. Architectural & Paradigm Shift
+- **Elimination of Grade-Wise Prompt Dependencies:**
+  - Standard clinical screening and occupational therapy evaluate children across **Task Modalities** rather than rigid school grade levels.
+  - Reorganized all stimulus reference prompts into 5 distinct clinical modalities:
+    1. **`Board Copy`**: Standard Classroom Paragraph, Classic Pangram ($A \dots Z$ alphabet coverage), Narrative Lesson, Devanagari Hindi Sentence.
+    2. **`Dictation`**: Auditory Sports Sentence (Kinematic speed), Domestic Recall Prompt, Complex Clausal Syntax.
+    3. **`Free Writing`**: Personal Expression / Favorite Game prompt.
+    4. **`Clinical Standard`**: Standard BHK Diagnostic Paragraph.
+    5. **`Custom / Open`**: Custom Target Sentence or Open Unconstrained Free-Writing.
+  - Replaced `student_grade` metadata with `task_modality` in [`app.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/app.py) (with backward compatibility).
+  - Showcase cases restructured from grade tags to clinical task labels (*Typical Control — Board Copy*, *Spatial Dysgraphia — Dictation*, *Ruled Notebook — Line Removal*, *Clinical Notes — Free Writing*).
+
+### B. Clipizo-Inspired Monochrome Design System (`https://clipizo.com/`)
+- **Strict Black & White Palette:**
+  - Removed all blue, cyan, purple, and green colors from the website.
+  - Canvas: `#09090b` / `#000000` with subtle dot grid.
+  - Card & Surface: Deep graphite `#121214` and `#141416` with hairline borders (`#27272a`, `#3f3f46`).
+  - Text Hierarchy: Stark white `#ffffff` primary, `#a1a1aa` secondary, `#71717a` muted, `#52525b` dim.
+  - Buttons: Solid White `#ffffff` with Black text `#000000` (`font-weight: 800`), hover `#e4e4e7` with subtle shadow.
+  - Logo Branding: `CopyThat<span class="signature-dot">.</span>` featuring Clipizo's signature dot styling.
+- **Monochrome Diagnostic Visualization:**
+  - **Verdict Hero:** High-contrast card with stark white warning tag `● AT RISK` (solid white fill with inverted black text) or clean hairline border `✓ CONTROL / TYPICAL`.
+  - **Circular Risk Meters:** Pure monochrome SVG circular gauges (track `#222226`, stroke `#ffffff` or silver).
+  - **CopyThat Delta Ribbon:**
+    - Match: Dark graphite `#18181b` with subtle `✓` indicator.
+    - Reversal: High-contrast inverted chip (`background: #ffffff; color: #000000; font-weight: 800;`) with `REV(b➔d)`.
+    - Omission: Stippled dashed chip `1px dashed #71717a` with `DROP(x)`.
+    - Substitution: Hairline chip `1px solid #52525b` with `SUB(a➔e)`.
+  - **BHK Biomarkers Table:** Minimalist data table with monochrome evaluation tags (`✓ Normal` vs `● Elevated`).
+
