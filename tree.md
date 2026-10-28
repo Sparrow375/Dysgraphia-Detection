@@ -941,19 +941,18 @@ Input: Any Random Handwritten Paper Image (Photo / Scan)
        +-------------------------------+-----------------------------------------------------------+
                                        |
                                        v
-                     [CopyThat Unified Clinical Dashboard (app.py)]
+                     [CopyThat Unified Clinical Studio (FastAPI + Vanilla SPA — app.py)]
                                        |
       +--------------------------------+--------------------------------+
       |                                                                 |
       v                                                                 v
-[Left Column: Document & Visual Layers]        [Right Column: Diagnostic & Scorecard]
-  * Document Upload (Camera, File, Paste)        * Clinical Screening Verdict Banner (At-Risk vs Control)
-  * 1-Click Showcase Buttons (Grade 4            * Tripartite Progress Gauges (Spatial %, Motor %, Cog %)
-    Control, Mixed Dysgraphia, Ruled Pangram)    * Letter-by-Letter "CopyThat" Diagnostic Grid:
-  * Multi-Layer Canvas:                              - Green match chips (✓)
-      - Layer 1: BHK Baselines & Centroids           - Purple Mirror Reversal badges (b➔d)
-      - Layer 2: Cleaned Ink Mask (No Rulings)       - Amber Character Omission badges (DROP)
-      - Layer 3: Physical Word Boxes                 - Orange Substitution badges
-      - Layer 4: Raw Cleaned Color Document      * BHK Numerical Biomarker Table
+[FastAPI Backend Endpoints (Port 7860)]        [High-Performance Glassmorphic SPA Frontend]
+  * GET /: Serves responsive web studio          * Google Fonts: Plus Jakarta Sans & JetBrains Mono
+  * GET /api/presets: Prompt syllabus            * Document Upload (Camera, File Drag-and-Drop)
+  * GET /api/showcase/{id}: 1-Click test data    * 1-Click Showcases (Typical G4, Dysgraphia G4, Pangram)
+  * POST /api/analyze: Multi-modal screening     * Multi-Layer Canvas (Raw, Ink Mask, BHK Baselines, Boxes)
+    (GPU Accelerated, TrOCR + BHK Feature Suite) * Executive Verdict Hero & Tripartite Risk Gauges
+                                                 * Letter-by-Letter "CopyThat" Delta Ribbon (✓, REV, DROP)
+                                                 * Objective BHK Motor Biomarker Table
                                                  * 📥 One-Click Printable Clinical Report Card
 ```
