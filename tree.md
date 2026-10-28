@@ -910,3 +910,50 @@ Input: Any Random Handwritten Paper Image (Photo / Scan)
    * Matched Telemetry Fusion (with XP-Pen / S-Pen digital stylus jerk & pressure)
    * Export to results/future_gen_school_upgraded_evaluation.csv
 ```
+
+---
+
+## 24. CopyThat — Unified Clinical Copy-Task & Diagnostic Studio Architecture
+
+```
+[Student Handwritten Document / Any Random Paper Photo / Ruled Notebook Scan]
+                                      |
+       +------------------------------+------------------------------+
+       |                                                             |
+       v                                                             v
+[Adaptive Prompt Protocol Engine]              [Universal Preprocessor (src/preprocessing.py)]
+  * Grade 3-7 Board & Dictation Presets          * Aspect & line projection auto-orientation
+  * Classic Pangram Presets                      * Red student header box & teacher margin removal
+  * Custom Teacher / Therapist Prompt            * Morphological blue ruling line suppression (24x1)
+  * Open Free-Writing Mode (No Prompt)           * Descender healing (1x2 closing) & sliver filter
+       |                                         * Output: Clean RGB Document + Binary Ink Mask
+       |                                                             |
+       |                               +-----------------------------+-----------------------------+
+       |                               |                                                           |
+       v                               v                                                           v
+[Cognitive Alignment Engine]      [BHK Neuromotor Biomarker Engine]        [Vision Transformer HTR Engine]
+(src/ocr/forced_alignment.py)     (src/bhk_features.py)                    (src/ocr/trocr_engine.py)
+  * Sequence Match Similarity       * Letter Size Inconsistency (CV)         * Line-level contextual TrOCR
+  * Mirror Reversals (b/d, p/q)     * Stroke Micro-Tremor (High-Freq)        * Physical ink-mask monotonic
+  * Character Omissions             * Letter Collisions / Overlaps (>22%)      word bounding boxes
+  * Phonetic Substitutions          * Baseline Slope & Waviness RMSE         * Calibrated token confidences
+       |                               |                                                           |
+       +-------------------------------+-----------------------------------------------------------+
+                                       |
+                                       v
+                     [CopyThat Unified Clinical Dashboard (app.py)]
+                                       |
+      +--------------------------------+--------------------------------+
+      |                                                                 |
+      v                                                                 v
+[Left Column: Document & Visual Layers]        [Right Column: Diagnostic & Scorecard]
+  * Document Upload (Camera, File, Paste)        * Clinical Screening Verdict Banner (At-Risk vs Control)
+  * 1-Click Showcase Buttons (Grade 4            * Tripartite Progress Gauges (Spatial %, Motor %, Cog %)
+    Control, Mixed Dysgraphia, Ruled Pangram)    * Letter-by-Letter "CopyThat" Diagnostic Grid:
+  * Multi-Layer Canvas:                              - Green match chips (✓)
+      - Layer 1: BHK Baselines & Centroids           - Purple Mirror Reversal badges (b➔d)
+      - Layer 2: Cleaned Ink Mask (No Rulings)       - Amber Character Omission badges (DROP)
+      - Layer 3: Physical Word Boxes                 - Orange Substitution badges
+      - Layer 4: Raw Cleaned Color Document      * BHK Numerical Biomarker Table
+                                                 * 📥 One-Click Printable Clinical Report Card
+```

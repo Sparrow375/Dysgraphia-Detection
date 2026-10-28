@@ -1603,3 +1603,39 @@ Cross-correlating the paper handwriting BHK biomarkers with the synchronized dig
 - Full Batch Evaluation Script: [`run_batch_future_gen.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/run_batch_future_gen.py)
 - Full Evaluation Dataset: `results/future_gen_school_upgraded_evaluation.csv` (95 student records with 24 multi-modal columns, quarantined in `.gitignore`)
 - Executive Markdown Summary: `results/future_gen_school_upgraded_summary.md` (quarantined in `.gitignore`)
+
+---
+
+## 37. CopyThat — Unified Clinical Copy-Task & Dysgraphia Diagnostic Studio (Production Web Application)
+
+### A. Architectural Motivation & Paradigm Shift
+- **User Insight & Technical Unification:** Previously, the web application was arbitrarily split into two disjointed tabs ("Universal Paper Screening" and "School Multi-Task Protocol"). However, the core vision preprocessing (adaptive ruling suppression, descender healing, sliver filtering) was already universal across both school notebook sheets and arbitrary papers.
+- **The "CopyThat" Concept:** Clinical dysgraphia screening (such as the standard BHK test, classroom exams, and occupational therapy clinics) is fundamentally a **Copy-Task**:
+  1. The child receives a target reference stimulus/prompt (e.g., board copy, dictation, pangram, or custom teacher prompt).
+  2. The AI compares the written output against this prompt to extract cognitive and orthographic markers (letter reversals, omissions, substitutions) alongside objective neuromotor biomarkers (tremor, collisions, sizing unsteadiness).
+- **Universal Unification:** By merging into a single master studio called **"CopyThat"** ([`app.py`](file:///c:/Users/SRIRAM/Documents/GitHub/Dysgraphia/Dysgraphia-Detection/app.py)), any handwritten paper (ruled school notebooks, 4-line primary sheets, phone camera snapshots, or unguided free-writing) is assessed under a unified, high-performance interface.
+
+### B. Core Features of CopyThat Studio
+1. **Adaptive Prompt Protocol Bar:**
+   - Pre-loaded grade prompts (Grades 3 to 7 board copy, dictation, pangrams).
+   - Custom Prompt Mode: Special educators and clinicians can enter any custom phrase or sentence.
+   - Open / Free-Writing Mode: Transcribes and evaluates neuromotor tremor openly without penalizing unprompted writing.
+2. **Interactive Multi-Layer Image Canvas:**
+   - Integrated tabbed visualizer directly on the document view:
+     - `🔬 BHK Explainability Overlay`: Letters (green), centroids (cyan), fitted baselines (coral).
+     - `✨ Cleaned Ink Mask`: Clean mask with printed notebook ruling lines and margins stripped.
+     - `🎯 Physical Word Bounding Boxes`: Bounded words monotonically mapped to recognized text.
+     - `📸 Raw Cleaned Color`: Deskewed, contrast-normalized input.
+3. **Executive Diagnostic Scorecard:**
+   - Primary clinical verdict banner (Low Risk Control vs Potential Dysgraphia At-Risk) with identified neuromotor markers.
+   - Tripartite progress gauges: **Spatial Layout Risk**, **Neuromotor Tremor Risk**, and **Cognitive/Reversal Risk**.
+4. **Letter-by-Letter "CopyThat" Diagnostic Grid:**
+   - Displays character-level alignment chips: Green for matches (✓), Purple for mirror reversals ($b \leftrightarrow d$, $p \leftrightarrow q$, $m \leftrightarrow w$), Amber for omissions (dropped characters), and Orange for substitutions.
+5. **One-Click Real-World Student Showcases:**
+   - Instant 1-click loading of verified benchmark cases:
+     - 🟢 *Typical Control (Grade 4 Aroshi)*
+     - 🔴 *Spatial Overlap (Grade 4 Roll 09 - 38.9% Collisions & Reversals)*
+     - 📝 *Ruled Notebook Pangram (Cleaned Horizontal Rulings)*
+     - 📋 *Free Clinical Notes (Open Free-Writing Mode)*
+6. **One-Click Printable Clinical Assessment Report:**
+   - Generates an official, beautifully formatted clinical summary card with date, student ID, screening verdict, objective biomarker scores, transcribed text, and therapist recommendations ready for printing or archiving as PDF.
