@@ -175,4 +175,40 @@ def test_vlm_json_response_parser():
     assert parse_vlm_json_response("I cannot score this image.") is None
 
 
+def test_paired_bootstrap_math():
+    """Verify paired bootstrap difference computation and CI logic."""
+    from baseline.compute_paired_bootstrap import paired_bootstrap_test
+
+    np.random.seed(42)
+    y_true = np.array([1]*20 + [0]*80)
+    # Model A has noisy separation (AUC ~0.70)
+    p_a = y_true * 0.2 + np.random.uniform(0.0, 0.8, size=100)
+    # Model B has much stronger separation (AUC ~1.00)
+    p_b = y_true * 0.6 + np.random.uniform(0.0, 0.4, size=100)
+
+    res = paired_bootstrap_test(y_true, p_b, p_a, "Model B", "Model A", n_bootstrap=200, seed=42)
+    assert res["model_a"] == "Model B"
+    assert res["model_b"] == "Model A"
+    assert res["delta_auc"] > 0.20
+    assert res["ci_auc_lower"] < res["ci_auc_upper"]
+
+
+def test_error_analysis_data_structure():
+    """Verify error analysis outputs and cohort integrity."""
+    import json
+    report_file = Path("reports/exp7_error_analysis.json")
+    assert report_file.exists(), "Error analysis JSON report must exist"
+
+    with open(report_file, "r") as f:
+        data = json.load(f)
+
+    assert data["cohort_summary"]["n_total"] == 215
+    assert data["cohort_summary"]["n_positives"] == 40
+    assert data["cohort_summary"]["n_controls"] == 175
+    assert data["false_negatives_summary"]["dino_fns_count"] == 9
+    assert data["false_negatives_summary"]["all_models_fns_count"] == 3
+    assert len(data["persistent_false_positives_top10"]) == 10
+
+
+
 

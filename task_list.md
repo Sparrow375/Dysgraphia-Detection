@@ -1,6 +1,53 @@
 # Task List — Workstream A
 
-## Active Sprint: Phase 4 Modeling and Evaluation
+## Active Sprint: Experiment 7 Post-Bakeoff: Error Analysis, Pipeline Freeze & Protocols
+
+### Objectives
+1. **Error Analysis (`baseline/error_analysis_exp7.py`)**:
+   - Systematically inspect the out-of-fold predictions on all 215 students across all evaluated visual and tabular models.
+   - Profile the persistent False Negatives (positives missed by vision models at 80% specificity).
+   - Profile the persistent False Positives (controls scoring in top 20% across models).
+   - Perform statistical factor clustering (grade distribution, pen vs pencil, School A vs B, line count deficit, Hindi vs English script divergence).
+   - Determine whether the misses reflect systematic engineering opportunities (faint ink, low line count) or an empirical label ceiling (borderline peer-screening labels).
+   - Export structured `reports/exp7_error_analysis.json` and diagnostic `reports/exp7_error_analysis.md`.
+2. **Pipeline Freeze Document (`docs/PIPELINE_FREEZE.md`)**:
+   - Write down the exact frozen configuration: preprocessing, native stroke tiling, backbone (`dinov2_vits14`), descriptor pooling ($D=4608$), and probe ($PCA_{K=24} + L_2$ Logistic Regression).
+   - Write down the frozen Dual-ViT ensemble (Fixed 50/50 Rank Average with `CLIP-ViT-B/32`).
+   - Seal the cohort: specify that any future school data is an untuned one-shot holdout test.
+3. **Pre-commit Remaining Variants Protocol (`docs/REMAINING_VARIANTS_PROTOCOL.md`)**:
+   - Record the exact 4 remaining exploratory variants: Intermediate DINOv2 layers, DINOv2-Base, SigLIP 2, and DINOv2 on squashed crops.
+   - Establish strict paired-bootstrap acceptance criterion ($\Delta \text{AUROC} > 0$ with lower bound of 95% CI $> 0$).
+4. **Testing, Memory Updates & Git Push**:
+   - Verify all test suites (`pytest tests/test_exp7_bakeoff.py`).
+   - Update `context.md` (Stage 45) and `architechture.md`.
+   - Git commit and push to `origin/main`.
+
+### Sprint Tasks
+- [x] Task 1: Comprehensive Qualitative & Quantitative Error Analysis (`baseline/error_analysis_exp7.py`)
+  - [x] 1.1 Assemble out-of-fold model predictions with student metadata (grade, school, tool, line count, BHK features).
+  - [x] 1.2 Identify and profile persistent False Negatives and False Positives at 80% specificity.
+  - [x] 1.3 Statistical factor breakdown (grade, school, pencil/pen, line count, script asymmetry).
+  - [x] 1.4 Generate `reports/exp7_error_analysis.json` and `reports/exp7_error_analysis.md`.
+- [x] Task 2: Formal Pipeline Freeze Document (`docs/PIPELINE_FREEZE.md`)
+  - [x] 2.1 Document exact frozen primary model and preprocessing.
+  - [x] 2.2 Document frozen 50/50 rank ensemble.
+  - [x] 2.3 Define one-shot external holdout protocol.
+- [x] Task 3: Pre-Commit Remaining Exploration Variants Protocol (`docs/REMAINING_VARIANTS_PROTOCOL.md`)
+  - [x] 3.1 Pre-commit 4 hypothesis variants.
+  - [x] 3.2 Define paired-bootstrap decision rule.
+- [x] Task 4: Testing, Documentation & Git Synchronization
+  - [x] 4.1 Run unit test suite.
+  - [x] 4.2 Update `context.md` and `architechture.md`.
+  - [x] 4.3 Git commit and push to `origin/main`.
+
+---
+
+## Completed Sprints
+
+<details>
+<summary>Phase 4 Modeling and Evaluation (Completed 2026-10-28)</summary>
+
+## Previous Sprint: Phase 4 Modeling and Evaluation
 
 ### Objectives
 1. Build robust nested cross-validation and evaluation framework (`models/cv.py`, `models/evaluator.py`):
@@ -484,6 +531,8 @@
   - [x] 40.6 Implement `tests/test_exp7_bakeoff.py` (unit tests covering tiling, patch stats, 5x5 leakage-free evaluation, and stacking).
   - [x] 40.7 Execute pre-extraction, CV probe, attention-MIL, and tabular stacking benchmarks; analyze metrics and generate artifacts.
   - [x] 40.8 Update `context.md`, `architechture.md`, commit and push to git.
+
+</details>
 
 ## Completed Sprints
 

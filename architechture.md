@@ -1802,3 +1802,35 @@ flowchart TD
         DINO & CLIP & Qwen & TabMetrics --> FullFusion["All-Inclusive Intermediate Head<br/>(24 DINO + 16 CLIP + 21 VLM + 10 Tab)<br/>AUROC = 0.8411 | 31/40 Positives Detected"]
     end
 ```
+
+### 23.7 Frozen Pipeline Architecture & One-Shot Evaluation Protocol (`docs/PIPELINE_FREEZE.md`)
+
+Following the Experiment 7 representation bake-off, paired bootstrap audits, shortcut falsification tests, and qualitative/quantitative error analyses across all 215 students, the screening pipeline is **strictly locked and frozen**:
+
+```mermaid
+flowchart TD
+    subgraph PipelineFreeze ["Frozen Primary Screening Engine (Zero Fine-Tuning)"]
+        Raw["Input Handwriting Scans<br/>(Hindi & English Native Tasks)"] --> Tiler["Native Stroke Tiling Engine<br/>224x224 non-overlapping, 150 DPI<br/>Ch0: Otsu Mask | Ch1: Optical Density | Ch2: Rule Field"]
+        Tiler --> DINO_Frozen["DINOv2-Small (ViT-S/14, 21M params)<br/>TorchHub: facebookresearch/dinov2<br/>Patch Tokens: 256 x 384"]
+        DINO_Frozen --> Moments["Spatial Descriptor Engine<br/>Tile: [μ_spatial, σ_spatial, GeM_p3] in R^1152<br/>Student: [μ_tiles, σ_tiles] per script in R^2304<br/>Joint Multilingual: [Hindi, English] in R^4608"]
+        Moments --> Probe["Linear Classification Probe<br/>StandardScaler -> PCA(K=24) -> LogisticRegression(C=0.1, L2, balanced)"]
+        Probe --> RiskScore["Calibrated Risk Probability p_dino<br/>5x5 CV AUROC = 0.8427 | Sens@80%Spec = 77.5% (31/40)"]
+    end
+
+    subgraph EnsembleOption ["Frozen Consensus Ensemble (Optional)"]
+        Raw --> CLIP_Frozen["OpenAI CLIP ViT-B/32<br/>Frozen Patches -> R^3072 Descriptor -> PCA(24) -> LR(C=0.1)"]
+        CLIP_Frozen --> ClipScore["Risk Probability p_clip"]
+        RiskScore & ClipScore --> RankConsensus["Dual-ViT Fixed 50/50 Rank Consensus<br/>S_consensus = 0.50 * Rank(p_dino)/N + 0.50 * Rank(p_clip)/N<br/>AUROC = 0.8549 | Sens@80%Spec = 75.0%"]
+    end
+
+    subgraph SealedProtocol ["One-Shot External Holdout Protocol (School C / D)"]
+        NewScans["New School Scans<br/>(Sealed Holdout)"] --> Tiler
+        Probe -.->|"Frozen Weights & Scaler"| ApplyHoldout["Single Forward Pass Scoring<br/>(Zero Retraining, Zero Iterative Tuning)"]
+        ApplyHoldout --> ExternalScore["One-Shot External Clinical Score"]
+    end
+```
+
+**Key Architectural Rules:**
+1. **Zero Contamination**: The 215 students form the final reference training cohort. Any external school data is scored in a strictly sealed, one-shot pass.
+2. **Pre-Committed Hypothesis Variants (`docs/REMAINING_VARIANTS_PROTOCOL.md`)**: Exactly 4 variants (Intermediate DINOv2 layers, DINOv2-Base, SigLIP 2, Squashed DINOv2) are pre-registered. A variant is only adopted if its paired-bootstrap lower bound vs DINOv2-Small is strictly positive ($\text{CI}_{95\%}^{\text{lower}}(\Delta \text{AUROC}) > 0$).
+

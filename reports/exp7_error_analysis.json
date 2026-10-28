@@ -1,0 +1,502 @@
+{
+  "cohort_summary": {
+    "n_total": 215,
+    "n_positives": 40,
+    "n_controls": 175,
+    "base_rate": 0.186
+  },
+  "thresholds_at_80_spec": {
+    "DINOv2-Small (Joint)": 0.3459,
+    "Dual-ViT 50/50 Rank": 0.6786,
+    "OpenAI CLIP (Blend)": 0.443,
+    "DenseNet201 (Tiled)": 0.4589,
+    "Stage 4 Tabular Stack": 0.506
+  },
+  "thresholds_at_90_spec": {
+    "DINOv2-Small (Joint)": 0.6188,
+    "Dual-ViT 50/50 Rank": 0.7884,
+    "OpenAI CLIP (Blend)": 0.5656,
+    "DenseNet201 (Tiled)": 0.5314,
+    "Stage 4 Tabular Stack": 0.6378
+  },
+  "false_negatives_summary": {
+    "dino_fns_count": 9,
+    "clip_fns_count": 9,
+    "dual_vit_fns_count": 9,
+    "tabular_fns_count": 19,
+    "both_vit_fns_count": 4,
+    "all_vision_fns_count": 4,
+    "all_models_fns_count": 3,
+    "rescued_by_clip_count": 5,
+    "rescued_by_tab_count": 2,
+    "unanimous_tps_count": 19
+  },
+  "false_positives_summary": {
+    "dino_fps_count": 35,
+    "clip_fps_count": 35,
+    "dual_vit_fps_count": 19,
+    "all_models_fps_count": 7
+  },
+  "factor_breakdown_fn_vs_tp": {
+    "grade": {
+      "fn_mean": 5.333333333333333,
+      "tp_mean": 4.967741935483871,
+      "p_value": 0.5957235537342117
+    },
+    "pencil_fraction": {
+      "fn": 0.7777777777777778,
+      "tp": 0.41935483870967744,
+      "p_value": 0.1273861273861274
+    },
+    "school_a_fraction": {
+      "fn": 0.6666666666666666,
+      "tp": 0.5806451612903226,
+      "p_value": 0.7170948037821104
+    },
+    "line_count": {
+      "fn_mean": 5.0,
+      "tp_mean": 5.451612903225806,
+      "p_value": 0.2102900378130077
+    },
+    "components_per_unit_width": {
+      "fn_mean": 0.7242655318382268,
+      "tp_mean": 0.9174033910672754,
+      "p_value": 0.1637032788562396
+    },
+    "gap_mean": {
+      "fn_mean": -0.42956298289111217,
+      "tp_mean": 0.2582193179307566,
+      "p_value": 0.8459146965233685
+    }
+  },
+  "factor_breakdown_fp_vs_tn": {
+    "grade": {
+      "fp_mean": 5.057142857142857,
+      "tn_mean": 5.207142857142857,
+      "p_value": 0.6160932910187245
+    },
+    "pencil_fraction": {
+      "fp": 0.6,
+      "tn": 0.7142857142857143,
+      "p_value": 0.22107915638098624
+    },
+    "school_a_fraction": {
+      "fp": 0.5714285714285714,
+      "tn": 0.5071428571428571,
+      "p_value": 0.5720900252413719
+    },
+    "line_count": {
+      "fp_mean": 5.428571428571429,
+      "tn_mean": 5.292857142857143,
+      "p_value": 0.5480438396938838
+    },
+    "components_per_unit_width": {
+      "fp_mean": 0.8444078353678529,
+      "tn_mean": 0.6898483546367775,
+      "p_value": 0.005117520124263287
+    },
+    "gap_mean": {
+      "fp_mean": -0.2546906504836098,
+      "tn_mean": 0.5608405217842042,
+      "p_value": 0.5924501753429879
+    }
+  },
+  "dino_false_negatives": [
+    {
+      "student_id": "SCHB_G8_IMG_20261007_104901",
+      "school": "school_b",
+      "grade": 8,
+      "roll": -1,
+      "tool": "pencil",
+      "lines": 4,
+      "dino_prob": 0.0707,
+      "clip_prob": 0.4916,
+      "dual_vit_rank": 0.5814,
+      "tabular_prob": 0.3249,
+      "consensus_pct": 0.5628,
+      "fragmentation_bhk": 0.3404,
+      "gap_bhk": 2.1689
+    },
+    {
+      "student_id": "G4_A_Roll23",
+      "school": "school_a",
+      "grade": 4,
+      "roll": 23,
+      "tool": "pen",
+      "lines": 5,
+      "dino_prob": 0.0784,
+      "clip_prob": 0.4028,
+      "dual_vit_rank": 0.514,
+      "tabular_prob": 0.2905,
+      "consensus_pct": 0.4977,
+      "fragmentation_bhk": 1.0671,
+      "gap_bhk": 1.2444
+    },
+    {
+      "student_id": "SCHB_G4_IMG_20261007_100335",
+      "school": "school_b",
+      "grade": 4,
+      "roll": -1,
+      "tool": "pen",
+      "lines": 4,
+      "dino_prob": 0.1115,
+      "clip_prob": 0.2335,
+      "dual_vit_rank": 0.4279,
+      "tabular_prob": 0.4615,
+      "consensus_pct": 0.5147,
+      "fragmentation_bhk": 0.6951,
+      "gap_bhk": 1.4873
+    },
+    {
+      "student_id": "G5_A_Roll07",
+      "school": "school_a",
+      "grade": 5,
+      "roll": 7,
+      "tool": "pencil",
+      "lines": 6,
+      "dino_prob": 0.1259,
+      "clip_prob": 0.1341,
+      "dual_vit_rank": 0.3442,
+      "tabular_prob": 0.548,
+      "consensus_pct": 0.4884,
+      "fragmentation_bhk": 1.0431,
+      "gap_bhk": 1.071
+    },
+    {
+      "student_id": "G7_A_Roll12",
+      "school": "school_a",
+      "grade": 7,
+      "roll": 12,
+      "tool": "pencil",
+      "lines": 6,
+      "dino_prob": 0.1662,
+      "clip_prob": 0.0598,
+      "dual_vit_rank": 0.286,
+      "tabular_prob": 0.1033,
+      "consensus_pct": 0.2202,
+      "fragmentation_bhk": 0.791,
+      "gap_bhk": -0.9231
+    },
+    {
+      "student_id": "G3_A_Roll19",
+      "school": "school_a",
+      "grade": 3,
+      "roll": 19,
+      "tool": "pencil",
+      "lines": 4,
+      "dino_prob": 0.223,
+      "clip_prob": 0.6355,
+      "dual_vit_rank": 0.7326,
+      "tabular_prob": 0.3235,
+      "consensus_pct": 0.662,
+      "fragmentation_bhk": 0.2908,
+      "gap_bhk": -1.2489
+    },
+    {
+      "student_id": "G3_A_Roll12",
+      "school": "school_a",
+      "grade": 3,
+      "roll": 12,
+      "tool": "pencil",
+      "lines": 4,
+      "dino_prob": 0.2415,
+      "clip_prob": 0.6048,
+      "dual_vit_rank": 0.7349,
+      "tabular_prob": 0.66,
+      "consensus_pct": 0.7783,
+      "fragmentation_bhk": 0.4828,
+      "gap_bhk": -8.0167
+    },
+    {
+      "student_id": "G7_A_Roll06",
+      "school": "school_a",
+      "grade": 7,
+      "roll": 6,
+      "tool": "pencil",
+      "lines": 6,
+      "dino_prob": 0.254,
+      "clip_prob": 0.4508,
+      "dual_vit_rank": 0.6651,
+      "tabular_prob": 0.4005,
+      "consensus_pct": 0.6512,
+      "fragmentation_bhk": 0.9895,
+      "gap_bhk": -0.3171
+    },
+    {
+      "student_id": "SCHB_G7_IMG_20261007_105422",
+      "school": "school_b",
+      "grade": 7,
+      "roll": -1,
+      "tool": "pencil",
+      "lines": 6,
+      "dino_prob": 0.3421,
+      "clip_prob": 0.4476,
+      "dual_vit_rank": 0.7,
+      "tabular_prob": 0.2526,
+      "consensus_pct": 0.5953,
+      "fragmentation_bhk": 0.8184,
+      "gap_bhk": 0.668
+    }
+  ],
+  "hardest_false_negatives_both_vit": [
+    {
+      "student_id": "G4_A_Roll23",
+      "school": "school_a",
+      "grade": 4,
+      "roll": 23,
+      "tool": "pen",
+      "lines": 5,
+      "dino_prob": 0.0784,
+      "clip_prob": 0.4028,
+      "dual_vit_rank": 0.514,
+      "tabular_prob": 0.2905,
+      "consensus_pct": 0.4977,
+      "fragmentation_bhk": 1.0671,
+      "gap_bhk": 1.2444
+    },
+    {
+      "student_id": "SCHB_G4_IMG_20261007_100335",
+      "school": "school_b",
+      "grade": 4,
+      "roll": -1,
+      "tool": "pen",
+      "lines": 4,
+      "dino_prob": 0.1115,
+      "clip_prob": 0.2335,
+      "dual_vit_rank": 0.4279,
+      "tabular_prob": 0.4615,
+      "consensus_pct": 0.5147,
+      "fragmentation_bhk": 0.6951,
+      "gap_bhk": 1.4873
+    },
+    {
+      "student_id": "G5_A_Roll07",
+      "school": "school_a",
+      "grade": 5,
+      "roll": 7,
+      "tool": "pencil",
+      "lines": 6,
+      "dino_prob": 0.1259,
+      "clip_prob": 0.1341,
+      "dual_vit_rank": 0.3442,
+      "tabular_prob": 0.548,
+      "consensus_pct": 0.4884,
+      "fragmentation_bhk": 1.0431,
+      "gap_bhk": 1.071
+    },
+    {
+      "student_id": "G7_A_Roll12",
+      "school": "school_a",
+      "grade": 7,
+      "roll": 12,
+      "tool": "pencil",
+      "lines": 6,
+      "dino_prob": 0.1662,
+      "clip_prob": 0.0598,
+      "dual_vit_rank": 0.286,
+      "tabular_prob": 0.1033,
+      "consensus_pct": 0.2202,
+      "fragmentation_bhk": 0.791,
+      "gap_bhk": -0.9231
+    }
+  ],
+  "hardest_false_negatives_all_models": [
+    {
+      "student_id": "G4_A_Roll23",
+      "school": "school_a",
+      "grade": 4,
+      "roll": 23,
+      "tool": "pen",
+      "lines": 5,
+      "dino_prob": 0.0784,
+      "clip_prob": 0.4028,
+      "dual_vit_rank": 0.514,
+      "tabular_prob": 0.2905,
+      "consensus_pct": 0.4977,
+      "fragmentation_bhk": 1.0671,
+      "gap_bhk": 1.2444
+    },
+    {
+      "student_id": "SCHB_G4_IMG_20261007_100335",
+      "school": "school_b",
+      "grade": 4,
+      "roll": -1,
+      "tool": "pen",
+      "lines": 4,
+      "dino_prob": 0.1115,
+      "clip_prob": 0.2335,
+      "dual_vit_rank": 0.4279,
+      "tabular_prob": 0.4615,
+      "consensus_pct": 0.5147,
+      "fragmentation_bhk": 0.6951,
+      "gap_bhk": 1.4873
+    },
+    {
+      "student_id": "G7_A_Roll12",
+      "school": "school_a",
+      "grade": 7,
+      "roll": 12,
+      "tool": "pencil",
+      "lines": 6,
+      "dino_prob": 0.1662,
+      "clip_prob": 0.0598,
+      "dual_vit_rank": 0.286,
+      "tabular_prob": 0.1033,
+      "consensus_pct": 0.2202,
+      "fragmentation_bhk": 0.791,
+      "gap_bhk": -0.9231
+    }
+  ],
+  "persistent_false_positives_top10": [
+    {
+      "student_id": "SCHB_G3_IMG_20261007_101651",
+      "school": "school_b",
+      "grade": 3,
+      "roll": -1,
+      "tool": "pencil",
+      "lines": 3,
+      "dino_prob": 0.9111,
+      "clip_prob": 0.8638,
+      "dual_vit_rank": 0.9721,
+      "tabular_prob": 0.4746,
+      "consensus_pct": 0.8822,
+      "fragmentation_bhk": 1.0165,
+      "gap_bhk": 0.8679
+    },
+    {
+      "student_id": "G7_A_Roll09",
+      "school": "school_a",
+      "grade": 7,
+      "roll": 9,
+      "tool": "pen",
+      "lines": 6,
+      "dino_prob": 0.8619,
+      "clip_prob": 0.8488,
+      "dual_vit_rank": 0.9605,
+      "tabular_prob": 0.4266,
+      "consensus_pct": 0.8605,
+      "fragmentation_bhk": 0.7392,
+      "gap_bhk": -0.4448
+    },
+    {
+      "student_id": "G7_A_Roll23",
+      "school": "school_a",
+      "grade": 7,
+      "roll": 23,
+      "tool": "pencil",
+      "lines": 6,
+      "dino_prob": 0.8844,
+      "clip_prob": 0.7505,
+      "dual_vit_rank": 0.9419,
+      "tabular_prob": 0.6886,
+      "consensus_pct": 0.9194,
+      "fragmentation_bhk": 1.1542,
+      "gap_bhk": -0.2089
+    },
+    {
+      "student_id": "G3_A_Roll05",
+      "school": "school_a",
+      "grade": 3,
+      "roll": 5,
+      "tool": "pencil",
+      "lines": 4,
+      "dino_prob": 0.7554,
+      "clip_prob": 0.8176,
+      "dual_vit_rank": 0.9326,
+      "tabular_prob": 0.7916,
+      "consensus_pct": 0.9349,
+      "fragmentation_bhk": 0.287,
+      "gap_bhk": -31.3778
+    },
+    {
+      "student_id": "SCHB_G6_IMG_20261007_102238",
+      "school": "school_b",
+      "grade": 6,
+      "roll": -1,
+      "tool": "pencil",
+      "lines": 6,
+      "dino_prob": 0.6581,
+      "clip_prob": 0.8507,
+      "dual_vit_rank": 0.9186,
+      "tabular_prob": 0.4155,
+      "consensus_pct": 0.8264,
+      "fragmentation_bhk": 0.5866,
+      "gap_bhk": 2.0733
+    },
+    {
+      "student_id": "G3_A_Roll02",
+      "school": "school_a",
+      "grade": 3,
+      "roll": 2,
+      "tool": "pencil",
+      "lines": 4,
+      "dino_prob": 0.8611,
+      "clip_prob": 0.6688,
+      "dual_vit_rank": 0.9186,
+      "tabular_prob": 0.3858,
+      "consensus_pct": 0.8155,
+      "fragmentation_bhk": 0.7076,
+      "gap_bhk": -0.2053
+    },
+    {
+      "student_id": "G3_A_Roll23",
+      "school": "school_a",
+      "grade": 3,
+      "roll": 23,
+      "tool": "pencil",
+      "lines": 4,
+      "dino_prob": 0.659,
+      "clip_prob": 0.7731,
+      "dual_vit_rank": 0.9047,
+      "tabular_prob": 0.4158,
+      "consensus_pct": 0.8186,
+      "fragmentation_bhk": 0.6728,
+      "gap_bhk": 0.8488
+    },
+    {
+      "student_id": "G3_A_Roll20",
+      "school": "school_a",
+      "grade": 3,
+      "roll": 20,
+      "tool": "pencil",
+      "lines": 4,
+      "dino_prob": 0.8426,
+      "clip_prob": 0.5726,
+      "dual_vit_rank": 0.8907,
+      "tabular_prob": 0.164,
+      "consensus_pct": 0.6605,
+      "fragmentation_bhk": 0.463,
+      "gap_bhk": 1.6728
+    },
+    {
+      "student_id": "SCHB_G4_IMG_20261007_100325",
+      "school": "school_b",
+      "grade": 4,
+      "roll": -1,
+      "tool": "pen",
+      "lines": 5,
+      "dino_prob": 0.7478,
+      "clip_prob": 0.5856,
+      "dual_vit_rank": 0.8791,
+      "tabular_prob": 0.8844,
+      "consensus_pct": 0.9147,
+      "fragmentation_bhk": 0.7404,
+      "gap_bhk": 0.4846
+    },
+    {
+      "student_id": "G4_A_Roll20",
+      "school": "school_a",
+      "grade": 4,
+      "roll": 20,
+      "tool": "pen",
+      "lines": 6,
+      "dino_prob": 0.5039,
+      "clip_prob": 0.86,
+      "dual_vit_rank": 0.8767,
+      "tabular_prob": 0.5668,
+      "consensus_pct": 0.8465,
+      "fragmentation_bhk": 1.3569,
+      "gap_bhk": -0.4545
+    }
+  ]
+}

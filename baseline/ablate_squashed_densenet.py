@@ -7,6 +7,7 @@ Frozen DenseNet201 -> Native Tiling (224x224 patches) -> 5x5 CV Ridge Probe
 """
 
 import time
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -22,7 +23,13 @@ import torchvision.transforms as T
 DATA_DIR = "data/sentence_crops_dataset"
 INDEX_CSV = f"{DATA_DIR}/sentences_index.csv"
 
+CACHE_NPZ = "data/features/exp7_densenet201_squashed.npz"
+
 def extract_squashed_densenet():
+    if Path(CACHE_NPZ).exists():
+        d = np.load(CACHE_NPZ)
+        return d["X_student"], d["y_student"], d["student_ids"]
+
     df = pd.read_csv(INDEX_CSV)
     print(f"Extracting squashed features for {len(df)} sentences...")
 
@@ -75,7 +82,8 @@ def extract_squashed_densenet():
     X_student = np.array(student_feats, dtype=np.float32)
     y_student = np.array(labels, dtype=np.int64)
 
-    print(f"Extraction complete! Student feature shape: {X_student.shape}")
+    np.savez_compressed(CACHE_NPZ, X_student=X_student, y_student=y_student, student_ids=student_ids)
+    print(f"Extraction complete and cached to {CACHE_NPZ}! Student feature shape: {X_student.shape}")
     return X_student, y_student, student_ids
 
 def run_probe(X, y, student_ids):
