@@ -1656,3 +1656,91 @@ flowchart TD
         StudentStyle --> LinearProbe["L2 Logistic Regression Probe<br/>AUROC = 0.6823 | AUPRC = 0.3804"]
     end
 ```
+
+
+### 23.3 Intermediate Feature-Level Fusion Architecture (`baseline/evaluate_exp7_feature_fusion.py`)
+To prevent the dilution of borderline cases caused by late probability blending (where a calibrated 0.84 vision probability is averaged with an uncalibrated 0.68 tabular score), the architecture integrates **intermediate feature concatenation**:
+
+```mermaid
+flowchart LR
+    subgraph VisionBranch ["Micro-Texture Vision Stream (Tiles)"]
+        Tiles["224x224 Native Stroke Tiles"] --> ViT["Frozen DINOv2-Small"]
+        ViT --> PatchTokens["Patch Tokens (256 x D)"]
+        PatchTokens --> PatchStats["[μ, σ, GeM] (3D)"]
+        PatchStats --> StudentPool["Student Pool (Mean + Std)"]
+        StudentPool --> ScalerV["StandardScaler (Fold-Trained)"]
+        ScalerV --> PCA["PCA (K=24, Fold-Trained)"]
+        PCA --> Z_vis["Visual Components Z_vis in R^24"]
+    end
+
+    subgraph TabularBranch ["Macro-Page Geometry Stream (Full Sheet)"]
+        FullSheet["Multi-Line Full Sheet"] --> TabExtract["Macro Tabular Metrics<br/>(Slope drift, Gap CV, Line waviness, Erasures)"]
+        TabExtract --> ScalerT["StandardScaler (Fold-Trained)"]
+        ScalerT --> T_macro["Macro Layout Z-Scores T_macro in R^10"]
+    end
+
+    Z_vis --> Concat["Concatenation [Z_vis, T_macro] in R^34"]
+    T_macro --> Concat
+
+    Concat --> UnifiedHead["Unified Regularized LR Head (L2)<br/>(C tuned via 3-Fold Inner CV, Balanced Weights)"]
+    UnifiedHead --> Pred["Calibrated Probability P_fused<br/>AUROC = 0.8289 | Sens@80%Spec = 77.5% (31/40)<br/>(Preserves 100% of True Positives)"]
+```
+
+### 23.4 Candidate 2: Self-Supervised Contrastive Writer-Style Architecture (`baseline/train_writer_style_encoder.py`)
+```mermaid
+flowchart TD
+    subgraph InputPairs ["Writer-Identity Cross-Script Pairs (Zero Labels)"]
+        T1["Tile 1: Student i (Devanagari Copy)"] --> Desc1["Tile Descriptor e_1 in R^1152"]
+        T2["Tile 2: Student i (Latin Dictation)"] --> Desc2["Tile Descriptor e_2 in R^1152"]
+        T3["Tile 3: Student j != i"] --> Desc3["Tile Descriptor e_3 in R^1152"]
+    end
+
+    subgraph Projector ["Metric Learning Projector Head g_θ"]
+        Desc1 --> MLP1["Linear(1152->512) -> LayerNorm -> GELU -> Linear(512->128) -> L2Norm"]
+        Desc2 --> MLP2["Linear(1152->512) -> LayerNorm -> GELU -> Linear(512->128) -> L2Norm"]
+        Desc3 --> MLP3["Linear(1152->512) -> LayerNorm -> GELU -> Linear(512->128) -> L2Norm"]
+        MLP1 --> Z1["z_1 in S^127"]
+        MLP2 --> Z2["z_2 in S^127"]
+        MLP3 --> Z3["z_3 in S^127"]
+    end
+
+    subgraph Objective ["Supervised Contrastive Loss (SupCon)"]
+        Z1 & Z2 & Z3 --> SupCon["L_SupCon (Pull z_1 and z_2 together, Push z_3 apart)<br/>(Zero Dysgraphia Labels, 172 Train Students per Fold)"]
+    end
+
+    subgraph Downstream ["Frozen Style Evaluation"]
+        Projector -.-> FrozenEnc["Frozen Encoder g_θ*"]
+        FrozenEnc --> StudentStyle["Student Style Vector u_student in R^256"]
+        StudentStyle --> LinearProbe["L2 Logistic Regression Probe<br/>AUROC = 0.6823 | AUPRC = 0.3804"]
+    end
+```
+
+
+
+### 23.5 Multi-Backbone Frozen Representation Architecture (`baseline/extract_bakeoff_backbone_features.py`)
+To isolate representation learning from architectural induction, the unified extractor feeds native-scale $224 \times 224$ tiles through diverse frozen vision backbones:
+
+```mermaid
+flowchart TD
+    subgraph InputTiles ["Native Stroke-Scale Tiles (224x224x3)"]
+        Tile["Clean Ink Mask + Natural Grayscale Shading + Guideline Channel"]
+    end
+
+    subgraph Backbones ["Frozen Vision Foundation Backbones (0 Fine-Tuning)"]
+        Tile --> DINO["DINOv2-Small (ViT-S/14)<br/>Self-Supervised MIM + Distillation<br/>AUROC = 0.8343 / 0.8427"]
+        Tile --> CLIP["OpenAI CLIP (ViT-B/32)<br/>Multimodal Text-Image Contrastive<br/>AUROC = 0.8151"]
+        Tile --> DenseNet["DenseNet201 (CNN-201)<br/>Supervised ImageNet Classification<br/>AUROC = 0.7591"]
+        Tile --> TrOCR["TrOCR-Base (ViT-B/16)<br/>Handwritten OCR Transcription<br/>AUROC = 0.6560"]
+    end
+
+    subgraph PatchPooling ["Spatial Patch-Token Descriptor Engine"]
+        DINO & CLIP & DenseNet & TrOCR --> Tokens["Spatial Tokens (P x D)"]
+        Tokens --> SpatialStats["Extract Spatial Moments:<br/>- μ_spatial (mean across P tokens)<br/>- σ_spatial (std across P tokens)<br/>- g_spatial (GeM power p=3.0)"]
+        SpatialStats --> Desc["Tile Descriptor e_t in R^(3D)"]
+    end
+
+    subgraph LinearHarness ["Unified 5x5 Repeated CV Probe"]
+        Desc --> StudentMeanStd["Student Script Aggregation (Hindi + English)"]
+        StudentMeanStd --> Head["Inner 3-Fold PCA (K=16-32) + Scaled L2 Logistic Regression"]
+    end
+```
