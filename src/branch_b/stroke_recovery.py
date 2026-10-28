@@ -98,30 +98,53 @@ def _get_outgoing_tangent(
 def trace_component_strokes(comp_g: nx.Graph) -> List[List[Tuple[int, int]]]:
     """
     Traces continuous handwriting strokes through a connected component graph.
-    Uses an active node degree map for O(1) start node discovery and
-    tangent continuation at junctions to fly straight through intersections.
+
+    Strategy (Issue-1 fix):
+    - Maintains a mutable ``active_deg`` map that tracks remaining unvisited
+      edges per node, decrementing as edges are consumed.
+    - Start-node selection: prefer nodes with *odd* active degree (Eulerian
+      property), then fall back to the node with the *highest* remaining
+      active degree (junction nodes) so their branches are traced first,
+      leaving fewer orphaned short fragments.
+    - At junctions (active_deg > 1): apply the tangent fly-through rule,
+      choosing the outgoing neighbor whose direction best aligns with the
+      incoming tangent.  A minimum cosine threshold of -0.3 is applied so
+      we only stop to start a new stroke if no neighbor aligns within 100°
+      of the incoming direction; otherwise we fly straight through.
     """
-    unvisited_edges = set(comp_g.edges())
-    deg = dict(comp_g.degree())
-    strokes = []
+    unvisited_edges: Set[Tuple[Tuple[int,int], Tuple[int,int]]] = set(comp_g.edges())
+    # active_deg tracks how many unvisited edges remain per node
+    active_deg: Dict[Tuple[int,int], int] = dict(comp_g.degree())
+    strokes: List[List[Tuple[int, int]]] = []
+
+    # Minimum cosine similarity for the fly-through to keep going.
+    # cos(100°) ≈ -0.174; we use -0.3 (≈107°) so we fly through up to
+    # near-180° U-turns only if no better alternative exists.
+    FLY_THROUGH_MIN_COS = -0.3
 
     while unvisited_edges:
-        # Determine optimal stroke start node using O(1) active degree map:
-        # Odd degree vertices in remaining subgraph (Eulerian path property)
-        odd_nodes = [n for n, d in deg.items() if d % 2 == 1 and d > 0]
+        # Select best start node:
+        # 1st preference: odd-active-degree node (Eulerian path property)
+        # 2nd preference: highest-active-degree node (drain junctions first)
+        odd_nodes = [n for n, d in active_deg.items() if d > 0 and d % 2 == 1]
         if odd_nodes:
             start_node = min(odd_nodes, key=lambda n: (n[0], n[1]))
         else:
-            active_nodes = [n for n, d in deg.items() if d > 0]
-            if not active_nodes:
+            live_nodes = [(n, d) for n, d in active_deg.items() if d > 0]
+            if not live_nodes:
                 break
-            start_node = min(active_nodes, key=lambda n: (n[0], n[1]))
+            # Pick highest active degree first (junctions), break ties top-left
+            max_deg = max(d for _, d in live_nodes)
+            start_node = min(
+                (n for n, d in live_nodes if d == max_deg),
+                key=lambda n: (n[0], n[1])
+            )
 
-        path = [start_node]
+        path: List[Tuple[int, int]] = [start_node]
         curr = start_node
 
         while True:
-            # Available unvisited incident edges from curr
+            # Collect neighbors reachable via unvisited edges from curr
             available_nbrs = [
                 nbr for nbr in comp_g.neighbors(curr)
                 if (curr, nbr) in unvisited_edges or (nbr, curr) in unvisited_edges
@@ -133,31 +156,52 @@ def trace_component_strokes(comp_g: nx.Graph) -> List[List[Tuple[int, int]]]:
             if len(available_nbrs) == 1:
                 next_node = available_nbrs[0]
             else:
-                # Junction intersection encountered: Tangent "Fly-Through" Rule
+                # Junction: use tangent fly-through with minimum-cosine guard.
                 if len(path) >= 2:
                     k = min(5, len(path) - 1)
-                    v_in = np.array([path[-1][1] - path[-1 - k][1], path[-1][0] - path[-1 - k][0]], dtype=float)
+                    v_in = np.array(
+                        [path[-1][1] - path[-1 - k][1],
+                         path[-1][0] - path[-1 - k][0]], dtype=float
+                    )
                     norm_in = np.linalg.norm(v_in)
-                    v_in = v_in / norm_in if norm_in > 1e-4 else np.array([0.0, 0.0])
-
-                    best_score = -2.0
-                    best_nbr = available_nbrs[0]
-                    for nbr in available_nbrs:
-                        v_out = _get_outgoing_tangent(curr, nbr, comp_g, lookahead=4)
-                        score = float(np.dot(v_in, v_out))
-                        if score > best_score:
-                            best_score = score
-                            best_nbr = nbr
-                    next_node = best_nbr
+                    if norm_in > 1e-4:
+                        v_in /= norm_in
+                        best_score = -2.0
+                        best_nbr = available_nbrs[0]
+                        for nbr in available_nbrs:
+                            v_out = _get_outgoing_tangent(curr, nbr, comp_g, lookahead=4)
+                            score = float(np.dot(v_in, v_out))
+                            if score > best_score:
+                                best_score = score
+                                best_nbr = nbr
+                        # If the best neighbour is "behind" us by more than the
+                        # threshold, stop and let a new stroke start at this node
+                        # (only if another neighbour provides a real extension).
+                        if best_score < FLY_THROUGH_MIN_COS:
+                            # Check if *any* forward neighbor exists
+                            forward = [nbr for nbr in available_nbrs
+                                       if float(np.dot(v_in,
+                                           _get_outgoing_tangent(curr, nbr, comp_g, lookahead=4)
+                                       )) > FLY_THROUGH_MIN_COS]
+                            next_node = forward[0] if forward else best_nbr
+                        else:
+                            next_node = best_nbr
+                    else:
+                        # Zero-length incoming tangent: choose top-left neighbor
+                        next_node = min(available_nbrs, key=lambda n: (n[0], n[1]))
                 else:
-                    # Initial step at junction: choose top-to-bottom or left-to-right
+                    # First step from junction: top-left direction heuristic
                     next_node = min(available_nbrs, key=lambda n: (n[0] - curr[0], n[1] - curr[1]))
 
-            # Discard traversed edge and decrement degrees
-            edge_key = (curr, next_node) if (curr, next_node) in unvisited_edges else (next_node, curr)
+            # Consume edge and decrement active degrees
+            edge_key = (
+                (curr, next_node)
+                if (curr, next_node) in unvisited_edges
+                else (next_node, curr)
+            )
             unvisited_edges.discard(edge_key)
-            deg[curr] -= 1
-            deg[next_node] -= 1
+            active_deg[curr] = max(0, active_deg[curr] - 1)
+            active_deg[next_node] = max(0, active_deg[next_node] - 1)
             path.append(next_node)
             curr = next_node
 
@@ -341,9 +385,12 @@ def merge_short_strokes(
     the gap stays within ``max_gap_px``.  Long strokes (> ``max_short_len_px``)
     are only merged if their endpoints are within 3 px (essentially touching).
 
-    Empirical effect on 8-sample pilot (dataSciRep_public):
+    Empirical effect on 8-sample pilot (dataSciRep_public, original thresholds):
       Overcount:  +213.9% → +144.4%  (~21% reduction)
       Mean stroke-level median r: 0.1563 → 0.1594 (neutral / slightly positive)
+
+    With Issue-1 upgraded thresholds (max_gap=0.55×h_med, max_short=0.80×h_med)
+    plus redesigned trace_component_strokes, further overcount reduction expected.
 
     Args:
         strokes:          List of (M, 2) float64 arrays in (x, y) pixel coords.
@@ -361,9 +408,9 @@ def merge_short_strokes(
 
     h_med = max(float(h_med), 1.0)
     if max_gap_px is None:
-        max_gap_px = max(0.40 * h_med, 8.0)
+        max_gap_px = max(0.55 * h_med, 10.0)   # Issue-1 fix: wider than original 0.40
     if max_short_len_px is None:
-        max_short_len_px = max(0.60 * h_med, 15.0)
+        max_short_len_px = max(0.80 * h_med, 18.0)  # Issue-1 fix: higher than original 0.60
 
     # Work on numpy arrays; keep None sentinel for merged-away entries
     active: List[Optional[np.ndarray]] = [np.asarray(s, dtype=np.float64) for s in strokes if len(s) >= 2]

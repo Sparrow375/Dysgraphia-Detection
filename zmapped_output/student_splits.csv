@@ -1,0 +1,138 @@
+school,student_id,grade,section,roll_number,split
+Future Gen,FG_G4_A_Roll01,4,A,1,test
+Future Gen,FG_G4_A_Roll04,4,A,4,train
+Future Gen,FG_G4_A_Roll06,4,A,6,train
+Future Gen,FG_G4_A_Roll09,4,A,9,train
+Future Gen,FG_G4_A_Roll11,4,A,11,train
+Future Gen,FG_G4_A_Roll12,4,A,12,test
+Future Gen,FG_G4_A_Roll13,4,A,13,train
+Future Gen,FG_G4_A_Roll14,4,A,14,train
+Future Gen,FG_G4_A_Roll15,4,A,15,train
+Future Gen,FG_G4_A_Roll16,4,A,16,train
+Future Gen,FG_G4_A_Roll18,4,A,18,train
+Future Gen,FG_G4_A_Roll19,4,A,19,test
+Future Gen,FG_G4_A_Roll20,4,A,20,train
+Future Gen,FG_G4_A_Roll21,4,A,21,train
+Future Gen,FG_G4_A_Roll22,4,A,22,train
+Future Gen,FG_G4_A_Roll23,4,A,23,train
+Future Gen,FG_G4_A_Roll24,4,A,24,train
+Future Gen,FG_G4_A_Roll25,4,A,25,train
+Future Gen,FG_G4_A_Roll26,4,A,26,train
+Future Gen,FG_G5_A_Roll01,5,A,1,train
+Future Gen,FG_G5_A_Roll02,5,A,2,train
+Future Gen,FG_G5_A_Roll03,5,A,3,train
+Future Gen,FG_G5_A_Roll04,5,A,4,train
+Future Gen,FG_G5_A_Roll05,5,A,5,train
+Future Gen,FG_G5_A_Roll06,5,A,6,train
+Future Gen,FG_G5_A_Roll07,5,A,7,test
+Future Gen,FG_G5_A_Roll08,5,A,8,test
+Future Gen,FG_G5_A_Roll09,5,A,9,train
+Future Gen,FG_G5_A_Roll10,5,A,10,train
+Future Gen,FG_G5_A_Roll13,5,A,13,train
+Future Gen,FG_G5_A_Roll14,5,A,14,train
+Future Gen,FG_G5_A_Roll15,5,A,15,train
+Future Gen,FG_G5_A_Roll16,5,A,16,test
+Future Gen,FG_G6_A_Roll01,6,A,1,train
+Future Gen,FG_G6_A_Roll02,6,A,2,train
+Future Gen,FG_G6_A_Roll03,6,A,3,train
+Future Gen,FG_G6_A_Roll04,6,A,4,train
+Future Gen,FG_G6_A_Roll07,6,A,7,train
+Future Gen,FG_G6_A_Roll08,6,A,8,test
+Future Gen,FG_G6_A_Roll09,6,A,9,train
+Future Gen,FG_G6_A_Roll10,6,A,10,test
+Future Gen,FG_G6_A_Roll11,6,A,11,train
+Future Gen,FG_G6_A_Roll13,6,A,13,train
+Future Gen,FG_G6_A_Roll14,6,A,14,test
+Future Gen,FG_G6_A_Roll15,6,A,15,train
+Future Gen,FG_G6_A_Roll16,6,A,16,train
+Future Gen,FG_G6_A_Roll175,6,A,175,test
+Future Gen,FG_G6_A_Roll18,6,A,18,train
+Future Gen,FG_G6_A_Roll20,6,A,20,train
+Future Gen,FG_G6_A_Roll22,6,A,22,train
+Future Gen,FG_G6_A_Roll23,6,A,23,train
+Future Gen,FG_G6_A_Roll28,6,A,28,train
+Future Gen,FG_G6_A_Roll29,6,A,29,train
+Future Gen,FG_G6_A_Roll30,6,A,30,train
+Future Gen,FG_G7_A_Roll01,7,A,1,train
+Future Gen,FG_G7_A_Roll06,7,A,6,train
+Future Gen,FG_G7_A_Roll07,7,A,7,test
+Future Gen,FG_G7_A_Roll08,7,A,8,train
+Future Gen,FG_G7_A_Roll09,7,A,9,train
+Future Gen,FG_G7_A_Roll10,7,A,10,train
+Future Gen,FG_G7_A_Roll11,7,A,11,train
+Future Gen,FG_G7_A_Roll13,7,A,13,train
+Future Gen,FG_G7_A_Roll15,7,A,15,train
+Future Gen,FG_G7_A_Roll16,7,A,16,train
+Future Gen,FG_G7_A_Roll18,7,A,18,test
+Future Gen,FG_G7_A_Roll21,7,A,21,test
+Future Gen,FG_G7_A_Roll22,7,A,22,train
+Future Gen,FG_G7_A_Roll24,7,A,24,train
+Kanyashala,KS_G4_A_Roll01,4,A,1,test
+Kanyashala,KS_G4_A_Roll02,4,A,2,train
+Kanyashala,KS_G4_A_Roll07,4,A,7,test
+Kanyashala,KS_G4_A_Roll08,4,A,8,train
+Kanyashala,KS_G4_A_Roll09,4,A,9,test
+Kanyashala,KS_G4_A_Roll10,4,A,10,train
+Kanyashala,KS_G4_A_Roll11,4,A,11,train
+Kanyashala,KS_G4_A_Roll14,4,A,14,train
+Kanyashala,KS_G4_A_Roll18,4,A,18,train
+Kanyashala,KS_G4_A_Roll19,4,A,19,train
+Kanyashala,KS_G4_B_Roll02,4,B,2,train
+Kanyashala,KS_G4_B_Roll03,4,B,3,train
+Kanyashala,KS_G4_B_Roll04,4,B,4,train
+Kanyashala,KS_G4_B_Roll06,4,B,6,train
+Kanyashala,KS_G4_B_Roll12,4,B,12,train
+Kanyashala,KS_G4_B_Roll15,4,B,15,train
+Kanyashala,KS_G4_B_Roll16,4,B,16,train
+Kanyashala,KS_G4_B_Roll17,4,B,17,train
+Kanyashala,KS_G4_B_Roll20,4,B,20,test
+Kanyashala,KS_G4_B_Roll21,4,B,21,train
+Kanyashala,KS_G4_B_Roll22,4,B,22,train
+Kanyashala,KS_G4_B_Roll23,4,B,23,train
+Kanyashala,KS_G4_B_Roll30,4,B,30,train
+Kanyashala,KS_G5_A_Roll01,5,A,1,train
+Kanyashala,KS_G5_A_Roll02,5,A,2,train
+Kanyashala,KS_G5_A_Roll06,5,A,6,test
+Kanyashala,KS_G5_A_Roll07,5,A,7,test
+Kanyashala,KS_G5_A_Roll10,5,A,10,train
+Kanyashala,KS_G5_A_Roll11,5,A,11,train
+Kanyashala,KS_G5_A_Roll13,5,A,13,train
+Kanyashala,KS_G5_A_Roll15,5,A,15,train
+Kanyashala,KS_G5_A_Roll16,5,A,16,train
+Kanyashala,KS_G5_A_Roll17,5,A,17,train
+Kanyashala,KS_G5_A_Roll18,5,A,18,train
+Kanyashala,KS_G5_A_Roll19,5,A,19,train
+Kanyashala,KS_G5_B_Roll05,5,B,5,train
+Kanyashala,KS_G5_B_Roll08,5,B,8,test
+Kanyashala,KS_G5_B_Roll09,5,B,9,train
+Kanyashala,KS_G5_B_Roll10,5,B,10,train
+Kanyashala,KS_G6_A_Roll01,6,A,1,train
+Kanyashala,KS_G6_A_Roll07,6,A,7,test
+Kanyashala,KS_G6_A_Roll09,6,A,9,train
+Kanyashala,KS_G6_A_Roll11,6,A,11,train
+Kanyashala,KS_G6_B_Roll01,6,B,1,test
+Kanyashala,KS_G6_B_Roll02,6,B,2,train
+Kanyashala,KS_G6_B_Roll03,6,B,3,train
+Kanyashala,KS_G6_B_Roll05,6,B,5,train
+Kanyashala,KS_G6_B_Roll06,6,B,6,train
+Kanyashala,KS_G6_B_Roll08,6,B,8,train
+Kanyashala,KS_G6_B_Roll10,6,B,10,train
+Kanyashala,KS_G6_B_Roll12,6,B,12,train
+Kanyashala,KS_G7_A_Roll01,7,A,1,train
+Kanyashala,KS_G7_B_Roll01,7,B,1,train
+Kanyashala,KS_G7_B_Roll02,7,B,2,train
+Kanyashala,KS_G7_B_Roll03,7,B,3,train
+Kanyashala,KS_G7_B_Roll04,7,B,4,train
+Kanyashala,KS_G7_B_Roll05,7,B,5,test
+Kanyashala,KS_G7_B_Roll06,7,B,6,train
+Kanyashala,KS_G7_B_Roll07,7,B,7,train
+Kanyashala,KS_G7_B_Roll08,7,B,8,train
+Kanyashala,KS_G7_B_Roll09,7,B,9,train
+Kanyashala,KS_G7_B_Roll10,7,B,10,test
+Kanyashala,KS_G7_B_Roll11,7,B,11,train
+Kanyashala,KS_G7_B_Roll12,7,B,12,train
+Kanyashala,KS_G7_B_Roll13,7,B,13,test
+Kanyashala,KS_G7_B_Roll15,7,B,15,train
+Kanyashala,KS_G7_B_Roll16,7,B,16,train
+Kanyashala,KS_G7_B_Roll17,7,B,17,train
+Kanyashala,KS_G7_B_Roll19,7,B,19,train

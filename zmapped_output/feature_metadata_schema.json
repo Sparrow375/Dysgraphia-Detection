@@ -1,0 +1,101 @@
+{
+  "config": {
+    "sampling_rate_hz": 100.0,
+    "butterworth_order": 4,
+    "cutoff_nominal_hz": 10.0,
+    "cutoff_sensitivity_hz": [
+      8.0,
+      10.0,
+      12.0
+    ],
+    "tremor_band_hz": [
+      4.0,
+      8.0
+    ],
+    "total_band_hz": [
+      0.5,
+      20.0
+    ]
+  },
+  "config_hash": "84dd71ae0057b005",
+  "features": [
+    {
+      "name": "kin_mean_velocity",
+      "gt_col": "gt_mean_velocity_norm",
+      "photo_estimable": true,
+      "units": "H_med/s"
+    },
+    {
+      "name": "kin_peak_velocity",
+      "gt_col": "gt_peak_velocity_norm",
+      "photo_estimable": true,
+      "units": "H_med/s"
+    },
+    {
+      "name": "kin_velocity_skewness",
+      "gt_col": "gt_velocity_skewness",
+      "photo_estimable": true,
+      "units": "dimensionless"
+    },
+    {
+      "name": "kin_nvi_rate",
+      "gt_col": "gt_nvi_rate",
+      "photo_estimable": true,
+      "units": "inversions/s"
+    },
+    {
+      "name": "kin_nvi_per_stroke",
+      "gt_col": "gt_nvi_per_stroke",
+      "photo_estimable": true,
+      "units": "inversions/stroke"
+    },
+    {
+      "name": "kin_nvi_per_h_med",
+      "gt_col": "gt_nvi_per_h_med",
+      "photo_estimable": true,
+      "units": "1/H_med"
+    },
+    {
+      "name": "kin_jerk_metric",
+      "gt_col": "gt_jerk_metric",
+      "photo_estimable": true,
+      "units": "H_med^2/s^5"
+    },
+    {
+      "name": "kin_dimensionless_jerk",
+      "gt_col": "gt_dimensionless_jerk",
+      "photo_estimable": true,
+      "units": "dimensionless"
+    },
+    {
+      "name": "kin_spatial_roughness_4_8hz",
+      "gt_col": "gt_spatial_roughness_4_8hz",
+      "photo_estimable": true,
+      "units": "ratio [0,1]"
+    },
+    {
+      "name": "kin_pen_lift_count",
+      "gt_col": "gt_pen_lift_count",
+      "photo_estimable": true,
+      "units": "count"
+    },
+    {
+      "name": "kin_mean_stroke_length",
+      "gt_col": "gt_mean_stroke_length",
+      "photo_estimable": true,
+      "units": "H_med units"
+    },
+    {
+      "name": "kin_ink_width_ratio_mean",
+      "gt_col": "gt_pressure_norm_mean",
+      "photo_estimable": false,
+      "units": "norm pressure (descriptive only)"
+    },
+    {
+      "name": "kin_ink_width_ratio_std",
+      "gt_col": "gt_pressure_norm_std",
+      "photo_estimable": false,
+      "units": "norm pressure std (descriptive only)"
+    }
+  ]
+}
