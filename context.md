@@ -1570,3 +1570,22 @@ Balanced 50/50 cross-school rescue (2 School A, 2 School B) proves true visual g
 - Pure Vision ROC/PR Plot: [`reports/exp6_pure_vision_roc_pr_curve.png`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp6_pure_vision_roc_pr_curve.png)
 - Late Ensemble Engine: [`baseline/evaluate_late_ensemble.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/evaluate_late_ensemble.py)
 - Late Ensemble Results JSON: [`reports/late_ensemble_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/late_ensemble_results.json)
+
+
+## Stage 38: Comprehensive Deep Learning Journey Report (Experiments 1–6, Tests 1 & 2) (Completed 2026-10-28)
+
+### 1. Retrospective Synthesis & Report Deliverable
+Authored a complete, detailed retrospective report synthesising all deep learning ("The Big Models") experiments from Experiment 1 to the present:
+- **Repository Report**: [`reports/big_models_complete_journey_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/big_models_complete_journey_report.md)
+- **User Artifact**: `big_models_complete_journey_report.md` in the user artifact workspace.
+
+### 2. Trajectory of Experiments Covered
+1. **Experiment 1 (Raw ImageNet CNNs - ResNet50/ConvNeXt)**: Learned classroom shadows and notebook lines; failed cross-school domain transfer (~0.55 AUROC).
+2. **Experiment 2 (Binarized White-Ink-on-Black Line CNN)**: Suffered from instance-label noise and inverted canvas distribution mismatch; plateaued at ~0.62 AUROC.
+3. **Experiment 3 (Gated-Attention MIL on DenseNet201)**: Solved line-level aggregation via weakly supervised attention pooling; high inter-fold variance.
+4. **Experiment 4 (Multimodal MIL + Auxiliary TrOCR Legibility Head)**: Breakthrough in Folds 4 & 5 (0.9036 AUROC / 0.7543 AUPRC); uncalibrated cross-fold logits pulled 215-student pooled AUROC down to 0.6720.
+5. **Experiment 5 (In-Place SpecAugment & Cutouts)**: Catastrophic in-place sentence destruction and 5-positive early stopping collapse in Fold 3.
+6. **Phase 1 Ablation (4-Way Modality Audit)**: Discovered that line-level math features inside neural MIL scored only 0.5494 AUROC, acting as noise in the visual attention gate.
+7. **Experiment 6 (Dual-Script TrOCR Vision MIL)**: White-canvas physics, native Hindi/English handwriting transformers, duplicate-only bag augmentation, zero-split SWA (Epochs 7–12), and training-anchored logit standardization (0.7034 AUROC).
+8. **Test 1 (Pure Vision Dual-Script TrOCR MIL)**: Stripped the 0.5494 math branch; pooled AUROC rose to 0.7101 and Fold 4 surged to 0.7250.
+9. **Test 2 (Out-of-Fold Late Consensus Stacking)**: Convex combination of Stage 4 Tabular and Pure Vision TrOCR ($60/40$) achieved an all-time cohort record AUPRC of 0.5315 (+32.4% relative gain over tabular) and rescued 4 false negatives evenly across School A and School B.

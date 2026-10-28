@@ -463,6 +463,12 @@
   - [x] 37.4 Verify Late Ensemble breakthrough: AUROC reaches 0.7811, AUPRC surges to cohort record 0.5315 (+32.4% gain), and 4 false negatives rescued across School A and School B (`G4_A_Roll17`, `G6_A_Roll14`, `SCHB_G4_IMG_20261007_100621`, `SCHB_G7_IMG_20261007_105436`).
   - [x] 37.5 Update `context.md`, `architechture.md`, `task_list.md`, and commit/push to git.
 
+- [x] Stage 38: Comprehensive Deep Learning Journey Report (Experiments 1–6, Tests 1 & 2):
+  - [x] 38.1 Author comprehensive retrospective and empirical synthesis across all deep learning architectures (`reports/big_models_complete_journey_report.md` and user artifact).
+  - [x] 38.2 Detail failures, discoveries, and lessons: ImageNet visual noise, inverted canvas distribution mismatch, instance label noise, in-place sentence destruction, 5-positive early stopping collapse, and line-level math attention pollution.
+  - [x] 38.3 Document final master scoreboard: Pure Vision TrOCR MIL (AUROC 0.7101) and Late Consensus Ensemble (record AUPRC 0.5315, 4 false negatives rescued across School A and School B).
+  - [x] 38.4 Update `context.md`, `task_list.md`, commit and push to git.
+
 ## Completed Sprints
 
 
