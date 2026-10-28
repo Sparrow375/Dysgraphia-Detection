@@ -1,6 +1,53 @@
 # Task List — Workstream A
 
-## Active Sprint: Experiment 7 Post-Bakeoff: Error Analysis, Pipeline Freeze & Protocols
+## Active Sprint: Experiment 7 Squeeze, True External Holdout (School C) & Production Wiring
+
+### Objectives
+1. **Squeeze Cached .npz Files (`baseline/squeeze_tile_pooling_exp7.py`)**:
+   - Add Tile-Level 90th-Percentile ($p90$) and Generalized Mean ($GeM, p=3$) to capture peak breakdown tiles.
+   - Add Tile-to-Tile Delta ($|e_{t+1} - e_t|$) to capture motor fatigue and erratic jumps across adjacent tiles.
+   - Fix Dual-ViT blend tail shift: use logit-standardization and calibrated rank-averaging to boost Sensitivity @ 90% Specificity from 45% toward 55–60%+.
+   - Run 5x5 repeated CV on all 215 students and compute paired bootstrap differences.
+2. **True External Holdout on 47 Uncropped School C Student Sheets (`baseline/evaluate_school_c_holdout.py`)**:
+   - Automated whole-sheet line slicing + native $224 \times 224$ tiling on 47 School C sheets (5 positives, 42 controls).
+   - Zero manual crop box intervention.
+   - Apply locked frozen pipeline from the 215 reference cohort in a single forward pass.
+   - Compute true external holdout AUROC, AUPRC, Sens@80%Spec, and Sens@90%Spec.
+3. **Wire Champion into Production & Dysfluency Heatmap Overlay**:
+   - Replace legacy grade-hacked ensemble in `pipeline/main_pipeline.py` with unified Dual-ViT + Macro Tabular champion.
+   - Implement tile-level linear attribution in `qa/app.py` to project Ridge weights onto tiles and render interactive Dysfluency Heatmap Overlays.
+4. **Paper Packaging, Tests & Git**:
+   - Structure paper manuscript outline in `docs/PAPER_MANUSCRIPT_EXP7.md`.
+   - Verify unit test suite (`pytest tests/test_exp7_bakeoff.py`).
+   - Update `context.md` (Stage 46), `architechture.md`, commit and push to `origin/main`.
+
+### Sprint Tasks
+- [x] Task 1: Squeeze Cached .npz Files (Breakdown Pooling + Logit-Standardized Dual-ViT)
+  - [x] 1.1 Implement `baseline/squeeze_tile_pooling_exp7.py` extracting [Mean, Std, p90, GeM, Delta] from cached tiles.
+  - [x] 1.2 Implement logit-standardized and rank-calibrated Dual-ViT blending.
+  - [x] 1.3 Benchmark under 5x5 repeated CV on 215 students and calculate paired bootstrap against baseline (AUROC 0.8564, Sens@90%Spec boosted to 52.5%).
+- [x] Task 2: True External Holdout on 47 Uncropped School C Student Sheets
+  - [x] 2.1 Implement automated line-slicer + native $224 \times 224$ tiler (`pipeline/process_dataset.py --school school_c`).
+  - [x] 2.2 Run frozen DINOv2 and CLIP backbones on 47 School C sheets without manual crop boxes.
+  - [x] 2.3 Apply frozen 215-student reference scaler, PCA, and probe in a single forward pass (`baseline/evaluate_school_c_processed.py`).
+  - [x] 2.4 Evaluate zero-shot external holdout metrics on the 5 positives and 42 controls (0.6476 AUROC, 0.2272 AUPRC).
+- [x] Task 3: Wire Champion into Production & Dysfluency Heatmap Overlay
+  - [x] 3.1 Upgrade `pipeline/main_pipeline.py` with unified Dual-ViT + Macro Tabular model (`fit_champion_vision()`, `screen_student_champion()`).
+  - [x] 3.2 Implement tile-level attribution (`exp7_dino_attribution_weights.npy`) and Dysfluency Heatmap Overlay in `qa/app.py` & `qa/inspection.py`.
+- [x] Task 4: Paper Packaging, Testing, Memory Updates & Git Synchronization
+  - [x] 4.1 Structure paper manuscript outline (`docs/PAPER_MANUSCRIPT_EXP7.md`).
+  - [x] 4.2 Run unit test suite (16/16 tests passing).
+  - [x] 4.3 Update `context.md` (Stage 46) and `architechture.md` (Section 23.8).
+  - [x] 4.4 Git commit and push to `origin/main`.
+
+---
+
+## Completed Sprints
+
+<details>
+<summary>Experiment 7 Post-Bakeoff: Error Analysis, Pipeline Freeze & Protocols (Completed 2026-10-28)</summary>
+
+## Previous Sprint: Experiment 7 Post-Bakeoff: Error Analysis, Pipeline Freeze & Protocols
 
 ### Objectives
 1. **Error Analysis (`baseline/error_analysis_exp7.py`)**:
@@ -39,6 +86,8 @@
   - [x] 4.1 Run unit test suite.
   - [x] 4.2 Update `context.md` and `architechture.md`.
   - [x] 4.3 Git commit and push to `origin/main`.
+
+</details>
 
 ---
 

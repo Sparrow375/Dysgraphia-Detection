@@ -118,3 +118,17 @@ def test_cohort_screening_batch(fitted_pipeline):
         "BORDERLINE_MONITORING",
         "TIER_2_REFERRAL",
     })
+
+
+def test_champion_dual_vit_screening(fitted_pipeline):
+    """Test champion Dual-ViT screening and tile attribution integration."""
+    res = fitted_pipeline.screen_student_champion("SCHB_G4_IMG_20261007_100013")
+    assert isinstance(res, ScreeningResult)
+    assert res.route_taken == "champion_dual_vit_consensus"
+    assert res.p_dual_vit is not None
+    assert 0.0 <= res.p_dual_vit <= 1.0
+    assert res.p_dino is not None
+    assert res.p_clip is not None
+    summary_txt = res.summary()
+    assert "Dual-ViT" in summary_txt
+    assert "Rank Consensus" in summary_txt

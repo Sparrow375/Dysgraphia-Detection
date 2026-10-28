@@ -16,7 +16,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
@@ -157,6 +157,47 @@ def generate_task_overlays(
 
     cv2.imwrite(str(baseline_path), vis_base)
 
+    # 6. Dysfluency Attribution Heatmap Overlay
+    heatmap_path = student_dir / f"{task_id}_heatmap.png"
+    vis_heat = cv2.cvtColor(crop_gray, cv2.COLOR_GRAY2BGR)
+    try:
+        w_path = REPO_ROOT / "data" / "features" / "exp7_dino_attribution_weights.npy"
+        tiles_npz_path = REPO_ROOT / "data" / "features" / "exp7_dinov2_small_tiles.npz"
+        school = s_data.get("school", "school_a")
+        sid = s_data.get("student_id", student_dir.name)
+        tuid = f"{sid}_{task_id}"
+        rendered = False
+        if w_path.exists() and tiles_npz_path.exists():
+            W_attr = np.load(w_path)
+            d_tiles = np.load(tiles_npz_path, mmap_mode="r")
+            t_uids = d_tiles["tile_task_uids"]
+            m_t = t_uids == tuid
+            if np.any(m_t):
+                t_descs = d_tiles["tile_descriptors"][m_t]
+                scores = t_descs @ W_attr
+                n_t = len(scores)
+                h_map = np.zeros((bh, bw), dtype=np.float32)
+                win_w = bw / float(n_t)
+                for ti, sc in enumerate(scores):
+                    x1 = int(ti * win_w)
+                    x2 = int((ti + 1) * win_w)
+                    h_map[:, x1:x2] = sc
+                h_norm = cv2.normalize(h_map, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+                color_map = cv2.applyColorMap(h_norm, cv2.COLORMAP_JET)
+                vis_heat = cv2.addWeighted(vis_heat, 0.60, color_map, 0.40, 0)
+                rendered = True
+        if not rendered:
+            grad_x = cv2.Sobel(crop_gray, cv2.CV_32F, 1, 0, ksize=3)
+            grad_y = cv2.Sobel(crop_gray, cv2.CV_32F, 0, 1, ksize=3)
+            grad_mag = np.sqrt(grad_x**2 + grad_y**2)
+            grad_blur = cv2.GaussianBlur(grad_mag, (25, 25), 0)
+            grad_norm = cv2.normalize(grad_blur, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+            color_map = cv2.applyColorMap(grad_norm, cv2.COLORMAP_JET)
+            vis_heat = cv2.addWeighted(vis_heat, 0.65, color_map, 0.35, 0)
+        cv2.imwrite(str(heatmap_path), vis_heat)
+    except Exception as e:
+        logger.warning("Could not generate dysfluency heatmap for %s: %s", task_id, e)
+
     # Return relative URL endpoints
     school = s_data.get("school", "school_a")
     sid = s_data.get("student_id", student_dir.name)
@@ -168,6 +209,7 @@ def generate_task_overlays(
         "rule_mask_url": f"/files/processed/{school}/{sid}/{task_id}_rule_mask.png?t={timestamp}",
         "skeleton_url": f"/files/processed/{school}/{sid}/{task_id}_skeleton.png?t={timestamp}",
         "baseline_url": f"/files/processed/{school}/{sid}/{task_id}_baseline.png?t={timestamp}",
+        "heatmap_url": f"/files/processed/{school}/{sid}/{task_id}_heatmap.png?t={timestamp}",
         "endpoints_count": int(skel_res["graph"]["endpoint_count"]),
         "junctions_count": int(skel_res["graph"]["junction_count"]),
         "rule_pixels": int(crop_rule_mask.sum()),
@@ -258,8 +300,9 @@ def compute_task_inspection_features(
     return feature_cards
 
 
-def inspect_student_pipeline(student_dir: Path) -> Dict[str, Any]:
+def inspect_student_pipeline(student_dir: Union[Path, str]) -> Dict[str, Any]:
     """Inspect full preprocessing and feature extraction pipeline for a student."""
+    student_dir = Path(student_dir)
     page_path = student_dir / "page_normalized.png"
     if not page_path.exists():
         return {"error": "page_normalized.png missing"}

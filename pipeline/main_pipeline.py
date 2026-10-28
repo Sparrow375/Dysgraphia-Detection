@@ -38,6 +38,7 @@ if str(WORKSPACE_ROOT) not in sys.path:
 
 import numpy as np
 import pandas as pd
+from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
@@ -82,6 +83,10 @@ class ScreeningResult:
     clinical_action: str = "No clinical follow-up required"
     is_dysgraphia_suspected: bool = False
     is_pencil: Optional[bool] = None
+    p_dino: Optional[float] = None
+    p_clip: Optional[float] = None
+    p_dual_vit: Optional[float] = None
+    tile_attributions: Optional[List[float]] = None
     key_risk_factors: List[Dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -111,13 +116,19 @@ class ScreeningResult:
             f"Overall Status: {status_icon} [{self.tier_label}]",
             f"Calibrated Dysgraphia Risk: {self.p_dysgraphia:.1%}",
             f"Writing Instrument Detected: {tool_desc}",
+        ]
+        if self.p_dual_vit is not None:
+            p_d = f"{self.p_dino:.1%}" if self.p_dino is not None else "N/A"
+            p_c = f"{self.p_clip:.1%}" if self.p_clip is not None else "N/A"
+            lines.append(f"Visual Architecture: Dual-ViT 50/50 Rank Consensus: {self.p_dual_vit:.1%} (DINOv2: {p_d}, CLIP: {p_c})")
+        lines.extend([
             f"Architecture: Unified Task-Agnostic Multi-Stream Meta-Learner",
             f"Multi-Stream Breakdown:",
             f"  • Stream 1 (Geometry & Intra-Page Volatility): {s1:.1%} (Weight: {self.stream_weights_used.get('stream_1_geometry', 0.0):.2f})",
             f"  • Stream 2 (Tool-Calibrated Width/Pressure):   {s2:.1%} (Weight: {self.stream_weights_used.get('stream_2_texture', 0.0):.2f})",
             f"  • Stream 3 (Prompt-Free TrOCR Legibility):     {s3:.1%} (Weight: {self.stream_weights_used.get('stream_3_ocr', 0.0):.2f})",
             f"Clinical Recommendation: {self.clinical_action}",
-        ]
+        ])
         if self.key_risk_factors:
             lines.append("Key Biomarkers & Risk Indicators:")
             for rf in self.key_risk_factors[:5]:
@@ -167,6 +178,18 @@ class DysgraphiaScreeningPipeline:
         )
         self.cascade_engine.theta_triage = tier1_threshold
         self.cascade_engine.theta_referral = tier2_threshold
+
+        # Champion Dual-ViT Visual Model
+        self.champion_fitted: bool = False
+        self.scaler_dino: Optional[StandardScaler] = None
+        self.pca_dino: Optional[PCA] = None
+        self.clf_dino: Optional[LogisticRegression] = None
+        self.scaler_clip: Optional[StandardScaler] = None
+        self.pca_clip: Optional[PCA] = None
+        self.clf_clip: Optional[LogisticRegression] = None
+        self.p_dino_ref: Optional[np.ndarray] = None
+        self.p_clip_ref: Optional[np.ndarray] = None
+        self.W_attribution: Optional[np.ndarray] = None
 
         self.is_fitted: bool = False
         self._df_all_students: Optional[pd.DataFrame] = None
@@ -398,6 +421,130 @@ class DysgraphiaScreeningPipeline:
             student_id=student_id,
             school=school,
             label=label,
+        )
+
+    def fit_champion_vision(self) -> DysgraphiaScreeningPipeline:
+        """Fit the Champion Dual-ViT (DINOv2 + CLIP) probes on reference cohort."""
+        dino_npz = WORKSPACE_ROOT / "data" / "features" / "exp7_dinov2_small_tiles.npz"
+        clip_npz = WORKSPACE_ROOT / "data" / "features" / "exp7_clip_tiles.npz"
+        attr_npy = WORKSPACE_ROOT / "data" / "features" / "exp7_dino_attribution_weights.npy"
+
+        if not dino_npz.exists() or not clip_npz.exists():
+            logger.warning("Champion feature caches not found, skipping vision probe fitting.")
+            return self
+
+        logger.info("Fitting Champion Dual-ViT Probes on 215-student reference cohort...")
+        d_ref = np.load(dino_npz)
+        c_ref = np.load(clip_npz)
+        X_dino = d_ref["joint_student_features"]
+        X_clip = c_ref["joint_student_features"]
+        y_ref = d_ref["student_labels"]
+
+        # DINOv2 Probe
+        self.scaler_dino = StandardScaler().fit(X_dino)
+        self.pca_dino = PCA(n_components=24, random_state=self.random_state).fit(self.scaler_dino.transform(X_dino))
+        self.clf_dino = LogisticRegression(C=0.1, class_weight="balanced", random_state=self.random_state)
+        self.clf_dino.fit(self.pca_dino.transform(self.scaler_dino.transform(X_dino)), y_ref)
+        self.p_dino_ref = self.clf_dino.predict_proba(self.pca_dino.transform(self.scaler_dino.transform(X_dino)))[:, 1]
+
+        # CLIP Probe
+        self.scaler_clip = StandardScaler().fit(X_clip)
+        self.pca_clip = PCA(n_components=24, random_state=self.random_state).fit(self.scaler_clip.transform(X_clip))
+        self.clf_clip = LogisticRegression(C=0.1, class_weight="balanced", random_state=self.random_state)
+        self.clf_clip.fit(self.pca_clip.transform(self.scaler_clip.transform(X_clip)), y_ref)
+        self.p_clip_ref = self.clf_clip.predict_proba(self.pca_clip.transform(self.scaler_clip.transform(X_clip)))[:, 1]
+
+        if attr_npy.exists():
+            self.W_attribution = np.load(attr_npy)
+
+        self.champion_fitted = True
+        logger.info("Champion Dual-ViT Probes fitted successfully.")
+        return self
+
+    def screen_student_champion(self, student_id: str) -> ScreeningResult:
+        """Screen student with the unified Champion Dual-ViT + Tabular pipeline."""
+        if not self.is_fitted:
+            self.fit()
+        if not self.champion_fitted:
+            self.fit_champion_vision()
+
+        base_res = self.screen_student(student_id)
+
+        dino_npz = WORKSPACE_ROOT / "data" / "features" / "exp7_dinov2_small_tiles.npz"
+        clip_npz = WORKSPACE_ROOT / "data" / "features" / "exp7_clip_tiles.npz"
+
+        p_dino = None
+        p_clip = None
+        p_dual = None
+        tile_attr = None
+
+        if self.champion_fitted and dino_npz.exists() and clip_npz.exists():
+            d_ref = np.load(dino_npz, mmap_mode="r")
+            c_ref = np.load(clip_npz, mmap_mode="r")
+            sids = d_ref["student_ids"]
+            m = sids == student_id
+            if np.any(m):
+                idx = np.where(m)[0][0]
+                x_dino = d_ref["joint_student_features"][idx : idx + 1]
+                x_clip = c_ref["joint_student_features"][idx : idx + 1]
+                p_dino = float(self.clf_dino.predict_proba(self.pca_dino.transform(self.scaler_dino.transform(x_dino)))[0, 1])
+                p_clip = float(self.clf_clip.predict_proba(self.pca_clip.transform(self.scaler_clip.transform(x_clip)))[0, 1])
+                r_dino = float(np.mean(self.p_dino_ref <= p_dino))
+                r_clip = float(np.mean(self.p_clip_ref <= p_clip))
+                p_dual = 0.50 * r_dino + 0.50 * r_clip
+
+                # Tile attribution scores if tile descriptors are cached
+                if self.W_attribution is not None:
+                    t_uids = d_ref["tile_task_uids"]
+                    m_stu = np.char.startswith(t_uids.astype(str), f"{student_id}_")
+                    if np.any(m_stu):
+                        t_descs = d_ref["tile_descriptors"][m_stu]
+                        tile_attr = (t_descs @ self.W_attribution).tolist()
+
+        final_risk = p_dual if p_dual is not None else base_res.p_dysgraphia
+
+        # Tier decision from calibrated thresholds
+        if final_risk >= self.tier2_threshold:
+            tier = ScreeningTier.TIER_2_REFERRAL
+            tier_label = "Tier 2 Specialist Referral"
+            clinical_action = (
+                "Formal occupational therapy (OT) and neurodevelopmental evaluation indicated. "
+                "Significant visual stroke topology and graphomotor breakdown detected."
+            )
+            is_suspected = True
+        elif final_risk >= self.tier1_threshold:
+            tier = ScreeningTier.BORDERLINE_MONITORING
+            tier_label = "Borderline / Progress Monitoring"
+            clinical_action = (
+                "Tier 1 classroom accommodations and 4-week structured handwriting progress monitoring. "
+                "Re-screen at 4 weeks before specialist referral."
+            )
+            is_suspected = True
+        else:
+            tier = ScreeningTier.TIER_1_RULE_OUT
+            tier_label = "Cleared / Safe Rule-Out"
+            clinical_action = "No dysgraphia signs detected. Typical visual motor development."
+            is_suspected = False
+
+        return ScreeningResult(
+            student_id=student_id,
+            grade=base_res.grade,
+            school=base_res.school,
+            label_ground_truth=base_res.label_ground_truth,
+            p_dysgraphia=final_risk,
+            stream_probabilities=base_res.stream_probabilities,
+            stream_weights_used=base_res.stream_weights_used,
+            route_taken="champion_dual_vit_consensus",
+            screening_tier=tier,
+            tier_label=tier_label,
+            clinical_action=clinical_action,
+            is_dysgraphia_suspected=is_suspected,
+            is_pencil=base_res.is_pencil,
+            p_dino=p_dino,
+            p_clip=p_clip,
+            p_dual_vit=p_dual,
+            tile_attributions=tile_attr,
+            key_risk_factors=base_res.key_risk_factors,
         )
 
     def screen_cohort(

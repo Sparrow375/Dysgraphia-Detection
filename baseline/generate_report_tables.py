@@ -63,3 +63,4 @@ def generate_markdown_scoreboard():
 
 if __name__ == "__main__":
     generate_markdown_scoreboard()
+

@@ -72,3 +72,4 @@ Whenever any of the four pre-committed variants is executed:
 2. Out-of-fold probability vectors must be merged into `data/features/exp7_all_models_oof_probs.npz`.
 3. Paired bootstrap statistics must be generated via `baseline/compute_paired_bootstrap.py` and appended to `reports/exp7_paired_bootstrap_results.json`.
 4. Scoreboards must be generated directly from the JSON files via `baseline/generate_report_tables.py`.
+

@@ -119,3 +119,4 @@ When new school cohorts arrive (e.g. School C / School D):
    - AUROC and AUPRC against external ground truth.
    - Sensitivity at the frozen operational 80% and 90% specificity thresholds ($0.3459$ and $0.6188$ for DINOv2; $0.6786$ and $0.7884$ for Dual-ViT).
 4. **No Iterative Tweaking**: Any hyperparameter search or weight adjustments based on new school test scores invalidates the holdout.
+

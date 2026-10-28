@@ -1,0 +1,412 @@
+{
+  "n_total": 47,
+  "n_positives": 5,
+  "dino": {
+    "auroc": 0.6286,
+    "auprc": 0.1592,
+    "sens_at_80": 0.2,
+    "tp_at_80": 1,
+    "sens_at_90": 0.0,
+    "tp_at_90": 0,
+    "n_pos": 5,
+    "n_neg": 42
+  },
+  "clip": {
+    "auroc": 0.6381,
+    "auprc": 0.3251,
+    "sens_at_80": 0.2,
+    "tp_at_80": 1,
+    "sens_at_90": 0.2,
+    "tp_at_90": 1,
+    "n_pos": 5,
+    "n_neg": 42
+  },
+  "dual_vit": {
+    "auroc": 0.6476,
+    "auprc": 0.2272,
+    "sens_at_80": 0.2,
+    "tp_at_80": 1,
+    "sens_at_90": 0.2,
+    "tp_at_90": 1,
+    "n_pos": 5,
+    "n_neg": 42
+  },
+  "students": [
+    {
+      "student_id": "SCHC_G3_IMG_20261010_102012",
+      "label": 0,
+      "dino_prob": 0.0754,
+      "clip_prob": 0.7741,
+      "dual_score": 0.6512,
+      "tiles": 38
+    },
+    {
+      "student_id": "SCHC_G3_IMG_20261010_102024",
+      "label": 1,
+      "dino_prob": 0.065,
+      "clip_prob": 0.2806,
+      "dual_score": 0.4163,
+      "tiles": 42
+    },
+    {
+      "student_id": "SCHC_G3_IMG_20261010_102035",
+      "label": 0,
+      "dino_prob": 0.0022,
+      "clip_prob": 0.5327,
+      "dual_score": 0.407,
+      "tiles": 52
+    },
+    {
+      "student_id": "SCHC_G3_IMG_20261010_102047",
+      "label": 0,
+      "dino_prob": 0.0412,
+      "clip_prob": 0.7895,
+      "dual_score": 0.614,
+      "tiles": 55
+    },
+    {
+      "student_id": "SCHC_G3_IMG_20261010_102057",
+      "label": 0,
+      "dino_prob": 0.2363,
+      "clip_prob": 0.8398,
+      "dual_score": 0.7372,
+      "tiles": 42
+    },
+    {
+      "student_id": "SCHC_G3_IMG_20261010_102108",
+      "label": 0,
+      "dino_prob": 0.4388,
+      "clip_prob": 0.698,
+      "dual_score": 0.7419,
+      "tiles": 48
+    },
+    {
+      "student_id": "SCHC_G3_IMG_20261010_102121",
+      "label": 0,
+      "dino_prob": 0.1892,
+      "clip_prob": 0.5296,
+      "dual_score": 0.5907,
+      "tiles": 34
+    },
+    {
+      "student_id": "SCHC_G3_IMG_20261010_102130",
+      "label": 0,
+      "dino_prob": 0.8747,
+      "clip_prob": 0.6263,
+      "dual_score": 0.807,
+      "tiles": 40
+    },
+    {
+      "student_id": "SCHC_G4_IMG_20261010_101832",
+      "label": 0,
+      "dino_prob": 0.0011,
+      "clip_prob": 0.4439,
+      "dual_score": 0.3558,
+      "tiles": 80
+    },
+    {
+      "student_id": "SCHC_G4_IMG_20261010_101843",
+      "label": 0,
+      "dino_prob": 0.012,
+      "clip_prob": 0.7773,
+      "dual_score": 0.5674,
+      "tiles": 71
+    },
+    {
+      "student_id": "SCHC_G4_IMG_20261010_101854",
+      "label": 0,
+      "dino_prob": 0.001,
+      "clip_prob": 0.3306,
+      "dual_score": 0.2977,
+      "tiles": 66
+    },
+    {
+      "student_id": "SCHC_G4_IMG_20261010_101905",
+      "label": 0,
+      "dino_prob": 0.393,
+      "clip_prob": 0.6095,
+      "dual_score": 0.6907,
+      "tiles": 68
+    },
+    {
+      "student_id": "SCHC_G4_IMG_20261010_101920",
+      "label": 0,
+      "dino_prob": 0.0011,
+      "clip_prob": 0.2746,
+      "dual_score": 0.2767,
+      "tiles": 82
+    },
+    {
+      "student_id": "SCHC_G4_IMG_20261010_101931",
+      "label": 0,
+      "dino_prob": 0.0042,
+      "clip_prob": 0.2864,
+      "dual_score": 0.314,
+      "tiles": 82
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101417",
+      "label": 0,
+      "dino_prob": 0.0035,
+      "clip_prob": 0.2826,
+      "dual_score": 0.3093,
+      "tiles": 72
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101427",
+      "label": 0,
+      "dino_prob": 0.35,
+      "clip_prob": 0.3182,
+      "dual_score": 0.5558,
+      "tiles": 75
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101437",
+      "label": 1,
+      "dino_prob": 0.2602,
+      "clip_prob": 0.8583,
+      "dual_score": 0.7512,
+      "tiles": 85
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101447",
+      "label": 0,
+      "dino_prob": 0.0103,
+      "clip_prob": 0.5529,
+      "dual_score": 0.4558,
+      "tiles": 73
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101500",
+      "label": 0,
+      "dino_prob": 0.006,
+      "clip_prob": 0.4983,
+      "dual_score": 0.4186,
+      "tiles": 84
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101511",
+      "label": 0,
+      "dino_prob": 0.0055,
+      "clip_prob": 0.2294,
+      "dual_score": 0.286,
+      "tiles": 94
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101545",
+      "label": 0,
+      "dino_prob": 0.026,
+      "clip_prob": 0.2805,
+      "dual_score": 0.3791,
+      "tiles": 69
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101558",
+      "label": 0,
+      "dino_prob": 0.0318,
+      "clip_prob": 0.5447,
+      "dual_score": 0.493,
+      "tiles": 51
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101611",
+      "label": 0,
+      "dino_prob": 0.0058,
+      "clip_prob": 0.4542,
+      "dual_score": 0.4023,
+      "tiles": 100
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101621",
+      "label": 0,
+      "dino_prob": 0.3526,
+      "clip_prob": 0.21,
+      "dual_score": 0.4907,
+      "tiles": 91
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101633",
+      "label": 0,
+      "dino_prob": 0.0032,
+      "clip_prob": 0.2433,
+      "dual_score": 0.2791,
+      "tiles": 62
+    },
+    {
+      "student_id": "SCHC_G5_IMG_20261010_101650",
+      "label": 0,
+      "dino_prob": 0.0043,
+      "clip_prob": 0.149,
+      "dual_score": 0.2163,
+      "tiles": 78
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101113",
+      "label": 0,
+      "dino_prob": 0.0928,
+      "clip_prob": 0.2658,
+      "dual_score": 0.4209,
+      "tiles": 88
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101126",
+      "label": 0,
+      "dino_prob": 0.0034,
+      "clip_prob": 0.3897,
+      "dual_score": 0.3605,
+      "tiles": 85
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101138",
+      "label": 0,
+      "dino_prob": 0.0023,
+      "clip_prob": 0.2598,
+      "dual_score": 0.2837,
+      "tiles": 97
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101155",
+      "label": 0,
+      "dino_prob": 0.0005,
+      "clip_prob": 0.3546,
+      "dual_score": 0.2977,
+      "tiles": 101
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101206",
+      "label": 0,
+      "dino_prob": 0.0064,
+      "clip_prob": 0.3146,
+      "dual_score": 0.3442,
+      "tiles": 79
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101218",
+      "label": 0,
+      "dino_prob": 0.0007,
+      "clip_prob": 0.1219,
+      "dual_score": 0.1512,
+      "tiles": 109
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101229",
+      "label": 0,
+      "dino_prob": 0.0016,
+      "clip_prob": 0.2444,
+      "dual_score": 0.2651,
+      "tiles": 78
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101240",
+      "label": 0,
+      "dino_prob": 0.1781,
+      "clip_prob": 0.8088,
+      "dual_score": 0.7093,
+      "tiles": 84
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101252",
+      "label": 0,
+      "dino_prob": 0.0996,
+      "clip_prob": 0.4626,
+      "dual_score": 0.5163,
+      "tiles": 108
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101302",
+      "label": 0,
+      "dino_prob": 0.0295,
+      "clip_prob": 0.3209,
+      "dual_score": 0.4,
+      "tiles": 115
+    },
+    {
+      "student_id": "SCHC_G6_IMG_20261010_101313",
+      "label": 1,
+      "dino_prob": 0.0055,
+      "clip_prob": 0.3904,
+      "dual_score": 0.3721,
+      "tiles": 75
+    },
+    {
+      "student_id": "SCHC_G7_IMG_20261010_100758",
+      "label": 0,
+      "dino_prob": 0.0623,
+      "clip_prob": 0.8072,
+      "dual_score": 0.6419,
+      "tiles": 89
+    },
+    {
+      "student_id": "SCHC_G7_IMG_20261010_100811",
+      "label": 0,
+      "dino_prob": 0.2455,
+      "clip_prob": 0.6976,
+      "dual_score": 0.6814,
+      "tiles": 91
+    },
+    {
+      "student_id": "SCHC_G7_IMG_20261010_100831",
+      "label": 0,
+      "dino_prob": 0.1608,
+      "clip_prob": 0.3749,
+      "dual_score": 0.5163,
+      "tiles": 84
+    },
+    {
+      "student_id": "SCHC_G7_IMG_20261010_100840",
+      "label": 1,
+      "dino_prob": 0.0187,
+      "clip_prob": 0.6049,
+      "dual_score": 0.5,
+      "tiles": 99
+    },
+    {
+      "student_id": "SCHC_G7_IMG_20261010_100856",
+      "label": 0,
+      "dino_prob": 0.4253,
+      "clip_prob": 0.6587,
+      "dual_score": 0.7186,
+      "tiles": 69
+    },
+    {
+      "student_id": "SCHC_G7_IMG_20261010_100906",
+      "label": 0,
+      "dino_prob": 0.0065,
+      "clip_prob": 0.1595,
+      "dual_score": 0.2395,
+      "tiles": 102
+    },
+    {
+      "student_id": "SCHC_G7_IMG_20261010_100915",
+      "label": 0,
+      "dino_prob": 0.0047,
+      "clip_prob": 0.2033,
+      "dual_score": 0.2651,
+      "tiles": 92
+    },
+    {
+      "student_id": "SCHC_G7_IMG_20261010_100928",
+      "label": 0,
+      "dino_prob": 0.0037,
+      "clip_prob": 0.1946,
+      "dual_score": 0.2558,
+      "tiles": 98
+    },
+    {
+      "student_id": "SCHC_G7_IMG_20261010_100940",
+      "label": 1,
+      "dino_prob": 0.1278,
+      "clip_prob": 0.5179,
+      "dual_score": 0.5581,
+      "tiles": 69
+    },
+    {
+      "student_id": "SCHC_G7_IMG_20261010_101006",
+      "label": 0,
+      "dino_prob": 0.0201,
+      "clip_prob": 0.5758,
+      "dual_score": 0.4907,
+      "tiles": 56
+    }
+  ]
+}
