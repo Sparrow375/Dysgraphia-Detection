@@ -1489,3 +1489,57 @@ graph TD
    | `G6_A_Roll14` | School A | 6 | **Dysgraphic** | 0.532 (FN) | **0.867** | **0.666 (TP)** | Vision flags crushed letter loops and jitter |
    | `SCHB_G4_IMG_20261007_100621` | School B | 4 | **Dysgraphic** | 0.345 (FN) | **0.789** | **0.523 (TP)** | Rescued via Latin cursive stroke tremors |
    | `SCHB_G7_IMG_20261007_105436` | School B | 7 | **Dysgraphic** | 0.496 (FN) | **0.573** | **0.526 (TP)** | Rescued via high stroke optical density variance |
+
+
+---
+
+## 23. Experiment 7: Frozen-Feature Native Stroke-Scale Tiled ViT Architecture
+
+### 23.1 Clinical & Physical Motivation
+Prior vision architectures deformed full sentence crops ($1800 \times 120\text{ px}$) into square canvases ($224 \times 224$), causing an $8\times$ horizontal compression that flattened letter loops into single-pixel lines and destroyed pencil/pen micro-texture.
+
+Experiment 7 introduces **native stroke-scale line-height tiling** and **patch-token summary statistics** on frozen self-supervised foundation vision transformers:
+
+```mermaid
+flowchart TD
+    subgraph TilingPipeline ["Native Stroke-Scale Tiling Engine (baseline/tiling_preprocessor.py)"]
+        Raw["Raw Grayscale Crop + Clean Ink Mask"] --> WhiteCanvas["White Canvas Strip (H x W x 3)<br/>Ch1: Inverted Ink (0 ink, 255 bg)<br/>Ch2: Natural Grayscale Shading<br/>Ch3: Clean Ink + 0.7 Gray Guideline"]
+        WhiteCanvas --> Rescale["Proportional Scale to H = 224px (1:1 Aspect Ratio)"]
+        Rescale --> Tiles["Overlapping 224x224 Tiles (50% Stride = 112px)<br/>19,284 total tiles across 1,145 tasks"]
+    end
+
+    subgraph FeatureExtractor ["Frozen DINOv2 Patch Statistics (baseline/extract_dinov2_patch_stats.py)"]
+        Tiles --> ViT["Frozen DINOv2-Small / DINOv2-Base<br/>(0 Trainable Parameters)"]
+        ViT --> Patches["Patch Tokens Z_p in R^(256 x D)<br/>(Bypassing Global Semantic [CLS] Token)"]
+        Patches --> Stats["Extract Local Patch Statistics:<br/>- Mean (μ_patch in R^D)<br/>- Std (σ_patch in R^D)<br/>- GeM-pooled (g_patch in R^D, p=3.0)"]
+        Stats --> TileDesc["Tile Descriptor e_t in R^(3D)<br/>(1,152-d for Small, 2,304-d for Base)"]
+    end
+
+    subgraph EvaluationProbe ["5x5 Repeated CV Probe (baseline/evaluate_exp7_probe.py)"]
+        TileDesc --> StudentPool["Student Aggregates per Script:<br/>- Hindi: Mean & Std across Hindi tiles<br/>- English: Mean & Std across English tiles"]
+        StudentPool --> Probe["Linear Probe Head:<br/>- Train Fold PCA (K=16-32, 90% variance)<br/>- Scaled L2 Logistic Regression (C tuned inner CV)"]
+        Probe --> Benchmark["OOF Calibrated Probabilities P_vision<br/>AUROC = 0.8343 (Small) / 0.8427 (Joint)<br/>AUPRC = 0.5633 (Small) / 0.6052 (Base)"]
+    end
+
+    subgraph StackingEngine ["Un-Flattered Tabular Stacking (baseline/evaluate_exp7_stacking.py)"]
+        Benchmark --> Stacker["Nested Inner-Fold Search for α in [0, 1]<br/>+ Fixed 50/50 Rank-Average"]
+        Stacker --> FinalResult["Ensemble Output:<br/>AUROC = 0.8231 (+0.1361 over Tabular)<br/>AUPRC = 0.5836 (+0.1918 over Tabular)<br/>Sens@90%Spec = 50.0% (20/40) | 6 False Negatives Rescued"]
+    end
+```
+
+### 23.2 Mathematical Formulation
+1. **Patch-Level Quality Descriptors**:
+   $$\boldsymbol{\mu}_{\text{patch}} = \frac{1}{P} \sum_{p=1}^P \mathbf{z}_p \in \mathbb{R}^D$$
+   $$\boldsymbol{\sigma}_{\text{patch}} = \sqrt{\frac{1}{P} \sum_{p=1}^P (\mathbf{z}_p - \boldsymbol{\mu}_{\text{patch}})^2 + \epsilon} \in \mathbb{R}^D$$
+   $$\mathbf{g}_{\text{patch}} = \left( \frac{1}{P} \sum_{p=1}^P \max(\mathbf{z}_p, 0)^p \right)^{1/p} \in \mathbb{R}^D \quad (p=3.0)$$
+   $$\mathbf{e}_t = [\boldsymbol{\mu}_{\text{patch}}, \boldsymbol{\sigma}_{\text{patch}}, \mathbf{g}_{\text{patch}}] \in \mathbb{R}^{3D}$$
+
+2. **Student-Level Macro-Distribution**:
+   For each script (Devanagari vs Latin), compute mean and standard deviation across all tiles written by the student:
+   $$\mathbf{x}_{\text{student}}^{\text{script}} = [\text{mean}_t(\mathbf{e}_t), \text{std}_t(\mathbf{e}_t)] \in \mathbb{R}^{6D}$$
+
+3. **Empirical Results (All 215 Students, 5x5 Repeated Cross-Validation)**:
+   - **DINOv2-Small Standalone**: AUROC = **0.8343 [0.759, 0.895]**, AUPRC = **0.5633 [0.413, 0.712]**, Sens @ 80% Spec = **70.0%**, Sens @ 90% Spec = **47.5%**.
+   - **DINOv2-Base Standalone**: AUROC = **0.8114**, AUPRC = **0.5821 [0.439, 0.724]** (Hindi Model AUPRC = **0.6052**).
+   - **Joint Concatenated Model**: AUROC = **0.8427 [0.785, 0.897]**, Sens @ 80% Spec = **77.5% (31/40)**.
+   - **Nested Tabular Stack**: AUROC = **0.8231** ($+0.1361$ over tabular), AUPRC = **0.5836** ($+0.1918$ over tabular), Sens @ 90% Spec = **50.0%** (6 false negatives rescued across Schools A and B).

@@ -475,6 +475,16 @@
   - [x] 39.3 Execute benchmark and analyze exact unified cohort metrics vs School A metrics (Top-30 LR: 0.7497 AUROC; Folds 0, 2, 3 reaching 0.79–0.91; Late Ensemble lifts to 0.7811 AUROC / record 0.5315 AUPRC).
   - [x] 39.4 Update `context.md`, `task_list.md`, commit and push to git.
 
+- [x] Stage 40: Experiment 7 — Frozen-Feature Representation Bake-Off (Candidate 1: DINOv2 Tiled Patch Stats & Harness):
+  - [x] 40.1 Implement `baseline/tiling_preprocessor.py` (proportional line-height scale to 224px, 50% stride 224x224 tiles on white canvas, ruled lines removed).
+  - [x] 40.2 Implement `baseline/extract_dinov2_patch_stats.py` (`dinov2-small` and `dinov2-base`, patch-level mean, std, GeM-pooled stats, disk caching to `.npz`).
+  - [x] 40.3 Implement `baseline/evaluate_exp7_probe.py` (5x5 repeated CV harness, two-tier Hindi/English/Combined reporting, PCA K=16-32 + scaled regularized LR, cluster bootstrap 95% CIs).
+  - [x] 40.4 Implement `baseline/exp7_attention_mil.py` (Gated Attention-MIL on uncompressed tile embeddings vs plain pooling).
+  - [x] 40.5 Implement `baseline/evaluate_exp7_stacking.py` (Fixed rank-average and nested inner-fold grid search stacking with Stage 4 Tabular model).
+  - [x] 40.6 Implement `tests/test_exp7_bakeoff.py` (unit tests covering tiling, patch stats, 5x5 leakage-free evaluation, and stacking).
+  - [x] 40.7 Execute pre-extraction, CV probe, attention-MIL, and tabular stacking benchmarks; analyze metrics and generate artifacts.
+  - [x] 40.8 Update `context.md`, `architechture.md`, commit and push to git.
+
 ## Completed Sprints
 
 

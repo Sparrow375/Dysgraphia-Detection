@@ -1,0 +1,5 @@
+Model Pipeline,AUROC,AUROC 95% CI,Δ AUROC,AUPRC,AUPRC 95% CI,Δ AUPRC,Sens @ 80% Spec,Sens @ 90% Spec
+Standalone Tabular Model (Stage 4 Stack),0.687,"[0.583, 0.781]",-,0.3919,"[0.254, 0.551]",-,47.5% (19/40),32.5% (13/40)
+Standalone Vision Model (dinov2_small),0.8343,"[0.759, 0.895]",+0.1473,0.5633,"[0.413, 0.712]",+0.1714,70.0% (28/40),47.5% (19/40)
+Fixed 50/50 Rank-Average Blend (Zero-Parameter),0.7936,"[0.709, 0.872]",+0.1066,0.5698,"[0.410, 0.719]",+0.1779,62.5% (25/40),50.0% (20/40)
+Nested Inner-Fold Search Blend (Un-Flattered),0.8231,"[0.746, 0.892]",+0.1361,0.5836,"[0.438, 0.730]",+0.1918,67.5% (27/40),50.0% (20/40)

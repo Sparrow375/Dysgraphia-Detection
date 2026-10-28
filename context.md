@@ -1626,3 +1626,45 @@ Crucially, when blended with **Pure Vision TrOCR MIL** in the Late Ensemble, per
 - Runner: [`baseline/verify_stage4_benchmark.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/verify_stage4_benchmark.py)
 - Metrics JSON: [`reports/stage4_verification_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/stage4_verification_results.json)
 - Full Report: [`reports/stage4_verification_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/stage4_verification_report.md)
+
+## Stage 40: Experiment 7 — Frozen-Feature Representation Bake-Off (Candidate 1: DINOv2 Tiled Patch Stats & Harness) (Completed 2026-10-28)
+
+### 1. Architectural Concept & Native Stroke-Scale Tiling
+To overcome the severe $8\times$ horizontal squashing of previous vision attempts (where wide lines were deformed into $224 \times 224$ squares, destroying letter loops and ascenders):
+1. **Aspect-Preserving Line-Height Tiling (`baseline/tiling_preprocessor.py`)**:
+   - Preserved $1:1$ stroke aspect ratio by proportionally scaling line height to $224\text{ px}$.
+   - Sliced $224 \times 224$ square tiles with $50\%$ overlap (step $= 112\text{ px}$) along the sentence trajectory on clean white canvas with ruled lines erased as in Exp 6.
+2. **Patch-Token Quality Statistics (`baseline/extract_dinov2_patch_stats.py`)**:
+   - For frozen DINOv2 (`dinov2-small` $D=384$ and `dinov2-base` $D=768$), bypassed the global semantic `[CLS]` token and extracted patch-level summary statistics:
+     $$\mathbf{e}_t = [\boldsymbol{\mu}_{\text{patch}}, \boldsymbol{\sigma}_{\text{patch}}, \mathbf{g}_{\text{patch}}] \in \mathbb{R}^{3D} \quad (\text{GeM } p=3.0)$$
+   - Pre-cached all $19,284$ tiles across $1,145$ tasks to `data/features/exp7_dinov2_small_tiles.npz` (83.69 MB) and `data/features/exp7_dinov2_base_tiles.npz` (166.86 MB).
+
+### 2. Empirical Benchmark Results (5x5 Repeated CV, All 215 Students OOF)
+Evaluated across all 25 outer folds with cluster bootstrap $95\%$ CIs ($B=1000$):
+- **DINOv2-Small Standalone Probe**:
+  - Decision Blend ($0.5\text{ Hindi} + 0.5\text{ English}$): AUROC = **0.8343 [0.759, 0.895]**, AUPRC = **0.5633 [0.413, 0.712]**, Sens @ 80% Spec = **70.0% (28/40)**, Sens @ 90% Spec = **47.5% (19/40)**.
+  - Joint Multilingual Model: AUROC = **0.8427 [0.785, 0.897]**, Sens @ 80% Spec = **77.5% (31/40)**.
+  - Hindi Model: AUROC = **0.8151**, AUPRC = **0.4882**.
+  - English Model: AUROC = **0.7330**, AUPRC = **0.4543**.
+- **DINOv2-Base Standalone Probe**:
+  - Hindi Model: AUROC = **0.8104**, AUPRC = **0.6052 [0.461, 0.740]** (Highest Hindi precision).
+  - Decision Blend: AUROC = **0.8114**, AUPRC = **0.5821 [0.439, 0.724]**.
+- **Learned Attention-MIL vs Linear Probe (`baseline/exp7_attention_mil.py`)**:
+  - Attention-MIL on raw tile bags: AUROC = **0.6939**, AUPRC = **0.3229**.
+  - Confirms the core hypothesis: On $172$ students per training fold, plain regularized pooling (**0.8343–0.8427 AUROC**) decisively beats learned neural pooling (+0.14 AUROC advantage) by preventing attention weight overfitting.
+- **Un-Flattered Tabular Stacking Benchmark (`baseline/evaluate_exp7_stacking.py`)**:
+  - Tabular Model Alone: AUROC = **0.6870**, AUPRC = **0.3919**.
+  - Standalone DINOv2-Small: AUROC = **0.8343**, AUPRC = **0.5633**.
+  - Fixed 50/50 Rank-Average Blend: AUROC = **0.7936** ($+0.1066$), AUPRC = **0.5698** ($+0.1779$), Sens @ 90% Spec = **50.0% (20/40)**.
+  - Nested Inner-Fold Search Blend: AUROC = **0.8231** ($+0.1361$), AUPRC = **0.5836** ($+0.1918$), Sens @ 80% Spec = **67.5% (27/40)**.
+  - **6 False Negatives Rescued**: `G3_A_Roll12`, `SCHB_G3_IMG_20261007_101635`, `SCHB_G4_IMG_20261007_100632`, `SCHB_G5_IMG_20261007_101020`, `SCHB_G6_IMG_20261007_102039`, `SCHB_G7_IMG_20261007_105512` (rescued across G3–G7 and both schools).
+
+### 3. Deliverables & Artifacts
+- Tiling Preprocessor: [`baseline/tiling_preprocessor.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/tiling_preprocessor.py)
+- Feature Extractor: [`baseline/extract_dinov2_patch_stats.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/extract_dinov2_patch_stats.py)
+- Feature Archives: `data/features/exp7_dinov2_small_tiles.npz` (83.69 MB), `data/features/exp7_dinov2_base_tiles.npz` (166.86 MB)
+- 5x5 CV Probe Engine: [`baseline/evaluate_exp7_probe.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/evaluate_exp7_probe.py)
+- Attention-MIL Engine: [`baseline/exp7_attention_mil.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/exp7_attention_mil.py)
+- Tabular Stacking Engine: [`baseline/evaluate_exp7_stacking.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/baseline/evaluate_exp7_stacking.py)
+- Automated Unit Tests: [`tests/test_exp7_bakeoff.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/tests/test_exp7_bakeoff.py) (4/4 passed)
+- Full Empirical Report: [`reports/exp7_candidate1_empirical_report.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp7_candidate1_empirical_report.md)
