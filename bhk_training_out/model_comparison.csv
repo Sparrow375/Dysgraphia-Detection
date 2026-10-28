@@ -1,0 +1,6 @@
+model,r2,mae,rmse
+Random Forest (ensemble - bagging),0.7308,0.0263,0.0332
+Gradient Boosting (ensemble - boosting),0.8372,0.0192,0.0258
+SVM RBF Kernel (kernel method),0.577,0.0339,0.0418
+Ridge Regression (linear L2),0.9918,0.0015,0.0035
+K-Nearest Neighbours (instance-based),0.6454,0.0303,0.0384

@@ -1,0 +1,6 @@
+Classifier,Accuracy,Precision,Recall,F1,ROC_AUC
+Random Forest,0.9333333333333332,0.9333333333333332,1.0,0.96,
+Gradient Boosting,1.0,1.0,1.0,1.0,
+Support Vector Machine (RBF),0.7,0.7,1.0,0.8133333333333332,
+Logistic Regression,0.8666666666666666,0.8666666666666666,1.0,0.9199999999999999,
+K-Nearest Neighbors,0.7,0.7,1.0,0.8133333333333332,
