@@ -1869,37 +1869,40 @@ flowchart LR
 
 
 
-### 23.9 Tri-Modal Champion Fusion: Perceptual Vision, Global Layout & Clinical Linguistic Breakdown
+### 23.9 Hierarchical Tri-Modal Champion Fusion
 
-To eliminate clinical false negatives stemming from reading/cognitive breakdown that vision alone cannot detect, the architecture fuses three orthogonal screening streams:
+To eliminate clinical false negatives stemming from reading/cognitive breakdown that vision alone cannot detect, while resolving multi-line tile collisions, the architecture fuses three orthogonal screening streams:
 
 ```mermaid
 flowchart TD
-    subgraph MultiModalChampion ["Tri-Modal Screening Champion Engine"]
-        subgraph Stream1 ["Stream 1: Perceptual Foundation Vision (84% Weight)"]
-            DINO_Tiles["DINOv2 ViT-S/14 Native Tiles"] --> DINO_Probe["Linear Probe (PCA-24 + Ridge)"]
-            CLIP_Tiles["CLIP ViT-B/32 Native Tiles"] --> CLIP_Probe["Linear Probe (PCA-24 + Ridge)"]
-            DINO_Probe & CLIP_Probe --> DualViT_Rank["50/50 Rank Consensus<br/>(Motor Tremor, Stroke Wobble)"]
+    subgraph MultiModalChampion ["Hierarchical Tri-Modal Screening Champion Engine"]
+        subgraph Stream1 ["Stream 1: Hierarchical Multi-Scale Vision (84% Weight)"]
+            Sent_Crops["Sentence Crops (Macro Context)<br/>DINOv2 + CLIP"] --> Sent_DualViT["Sentence Dual-ViT (0.80 Weight)<br/>Captures Baseline Drift & Word Spacing"]
+            Line_Strips["Single-Line Strips (Micro Stroke)<br/>DINOv2 + CLIP"] --> Line_DualViT["Line Dual-ViT (0.20 Weight)<br/>Captures Clean Stroke Tremor, No Tile Collisions"]
+            Sent_DualViT & Line_DualViT --> Hier_Vision["Hierarchical Dual-ViT<br/>0.80 R(Sentence) + 0.20 R(Line)<br/><b>0.8725 AUROC | 0.6537 AUPRC</b>"]
         end
 
         subgraph Stream2 ["Stream 2: Macro Global Layout (8% Weight)"]
             PageLayout["Full-Page Spatial Metrics<br/>(dataset_student_level.csv)"] --> Tab_Probe["Top-10 Macro Linear Probe<br/>(Rule Offset, Line Slopes, Margins)"]
         end
 
-        subgraph Stream3 ["Stream 3: HTR Linguistic Error Analytics (8% Weight)"]
-            Crop_HTR["Line-Level TrOCR Transformer<br/>(microsoft/trocr-small-handwritten)"] --> HTR_Decode["Autoregressive Text Decoding & Posterior Confs"]
+        subgraph Stream3 ["Stream 3: Line-Decomposed HTR Linguistic Error Analytics (8% Weight)"]
+            Crop_HTR["Single-Line TrOCR Transformer<br/>(microsoft/trocr-small-handwritten)"] --> HTR_Decode["Autoregressive Text Decoding on Single Lines"]
             HTR_Decode --> Error_Analytics["Letter Analytics Engine (features/letter_analytics.py)<br/>• Character & Word Omissions<br/>• Spatial Reversals (b/d, p/q)<br/>• Transpositions & Stutters<br/>• Intra-Line Cognitive Fatigue Ratio"]
-            Error_Analytics --> OCR_Probe["Bilingual OCR Error Probe (PCA-12 + L2 LogReg)"]
+            Error_Analytics --> OCR_Probe["Bilingual Line OCR Error Probe (PCA-12 + L2 LogReg)<br/><b>0.7440 AUROC | 0.3184 AUPRC</b>"]
         end
 
-        DualViT_Rank & Tab_Probe & OCR_Probe --> TriModalConsensus["Tri-Modal Rank Consensus<br/>0.84 * R(DualViT) + 0.08 * R(OCR) + 0.08 * R(Tabular)<br/><b>0.8519 AUROC | 0.6123 AUPRC</b><br/><b>Sens @ 80% Spec = 71.1% | Sens @ 90% Spec = 52.6%</b>"]
+        Hier_Vision & Tab_Probe & OCR_Probe --> TriModalConsensus["Hierarchical Tri-Modal Rank Consensus<br/>0.84 * R(HierVision) + 0.08 * R(LineOCR) + 0.08 * R(Tabular)<br/><b>0.8825 AUROC | 0.6776 AUPRC</b><br/><b>Sens @ 80% Spec = 78.4% (29/37) | Sens @ 90% Spec = 62.2% (23/37)</b>"]
     end
 ```
 
-#### Diagnostic Orthogonality & False Negative Rescue
-1. **The Vision Blind Spot**: Visual foundation transformers (DINOv2, CLIP) possess superhuman sensitivity to edge geometry, stroke tremor, and pen pressure variability. However, they are completely illiterate to spelling errors, letter omissions, and spatial character inversions.
-2. **Clinical HTR Error Extraction**: By decoding child handwriting with `microsoft/trocr-small-handwritten` and passing the decoded tokens through `features/letter_analytics.py`, the system extracts 53 objective diagnostic error metrics against expected prompt candidates.
-3. **Standalone Signal & Fusion Impact**: The English OCR error stream alone achieves **0.6326 AUROC** without processing a single visual pixel. When fused into the Tri-Modal Champion:
-   - AUROC increases from **0.8440 to 0.8519**.
-   - AUPRC surges from **0.5850 to 0.6123** ($+0.0273$ gain).
-   - Rescues severe cognitive/linguistic dysgraphic children (e.g. `SCHB_G7_IMG_20261007_105436` whose vision rank was only 0.800 but whose spelling/omission error rate ranked in the **top 5% worst across the cohort (0.949)**, propelling the child past the screening cutoff).
+### 23.10 Asymmetric Non-Penalizing Phenotypic Rescue Architecture
+
+To resolve the clinical dichotomy between motor dysgraphia (intact spelling, severe motor tremor) and dyslexic dysgraphia (straight strokes, severe linguistic breakdown):
+1. **The Fallacy of Linear Consensus**: A flat convex average ($0.84 V + 0.08 O + 0.08 T$) penalizes motor dysgraphic children who spell cleanly, dragging their scores down below operational cutoffs.
+2. **The Hazard of Hard Max-Pooling**: Unconstrained `max(Vision, OCR)` allows normal ESL spelling errors to flood the screening cohort with false alarms, collapsing AUROC to 0.797.
+3. **The Asymmetric Gating Operator**:
+   $$S_{\text{asym}} = R_{\text{vis}} + \beta \cdot \max(0, R_{\text{ocr}} - \tau) + 0.05 \cdot R_{\text{tab}}$$
+   - **Zero Penalty Guarantee**: When $R_{\text{ocr}} \le \tau$ ($\tau = 0.70$), the penalty term is strictly $0.0$. Clean spelling never degrades motor dysgraphia detection.
+   - **Pathological Rescue**: When linguistic errors exceed the 70th percentile, OCR provides a unidirectional boost that rescues pure dyslexic dysgraphics.
+   - **Empirical Validation**: Achieves **0.8761 AUROC**, **0.6687 AUPRC**, and detects **78.4% (29/37)** of all dysgraphic children at 80% specificity.

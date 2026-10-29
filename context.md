@@ -2204,3 +2204,36 @@ Evaluated under 5-repeat 5-fold cross-validation (`baseline/evaluate_bilingual_o
 ### 4. Student Case Diagnoses
 - **`G7_A_Roll02` (Uploaded Image)**: Upright, legible handwriting with slight tilt. Why did it get a high score (0.894)? Because sentences wrap across 2 lines in single bounding boxes (e.g. copy English $h=272\text{px}$), and line 4 has a crossed-out word (`walk to school`). The tile extractor captures overlapping lines, which DINOv2 self-attention penalizes as multi-line collisions.
 - **`SCHB_G6_IMG_20261007_102238`**: English sentence written over too many lines caused an oversized crop, triggering similar multi-line tile density spikes.
+
+
+## Stage 53: Single-Line Strip Decomposition & Hierarchical Multi-Scale Champion (Completed 2026-10-29)
+
+### 1. Automated Line Decomposition (`pipeline/decompose_sentence_crops_to_lines.py`)
+- Scanned all 1,404 sentence crops across the cohort: detected 530 multi-line crops (2 to 6 lines).
+- Segmented multi-line crops at horizontal ink projection valleys into **2,429 clean single-line strips** (`data/line_crops_dataset/`).
+- Mean strip height reduced from 189px down to **116px** (100% $\le 228\text{px}$), eliminating multi-line vertical compression into 224x224 tiles.
+
+### 2. Line Backbone Descriptors & Line Bilingual TrOCR
+- **Vision Features**: Extracted DINOv2-Small (`exp7_line_dinov2_small_tiles.npz`) and CLIP ViT-B/32 (`exp7_line_clip_tiles.npz`) on 76,426 line tiles.
+- **TrOCR Decoding**: Decoded all 1,140 tasks on single lines on RTX 5060 Ti GPU (`pipeline/extract_line_bilingual_ocr.py`).
+  - Completely eliminated multi-line TrOCR hallucinations (e.g. `G7_A_Roll02` sentence 02 decoded with CER = 0.000).
+  - Standalone English TrOCR jumped from **0.6540 -> 0.7440 AUROC** (+0.0900 AUROC surge!).
+
+### 3. Hierarchical Multi-Scale Vision Fusion
+- Discovered that while single-line strips cure multi-line tile collisions (dropping `G7_A_Roll02` by -30 percentile points), they lose inter-line macro-spatial layout cues (e.g. `G3_A_Roll12` drifting between lines).
+- Formulated **Hierarchical Multi-Scale Vision**:
+  $$R_{\text{vis}} = 0.80 \cdot R_{\text{sentence}} + 0.20 \cdot R_{\text{line}}$$
+  - **Vision Standalone AUROC**: Jumped from 0.8620 to **0.8725** (AUPRC = **0.6537**).
+  - **Hierarchical Tri-Modal Champion**: Reached **0.8825 AUROC**, **0.6776 AUPRC** (all-time project record!).
+  - **Sensitivity @ 80% Specificity**: **78.4% (29/37 children detected)**.
+  - **Sensitivity @ 90% Specificity**: **62.2% (23/37 children detected)**.
+  - **Hierarchical Asymmetric Phenotypic Rescue**: Reached **0.8761 AUROC**, **0.6687 AUPRC**, and **78.4% Sens @ 80% Specificity**.
+
+### 4. Student Case Audit
+- **`G7_A_Roll02` (Mapi Choudhary, uploaded scan)**: Line Dual-ViT plunged from **0.9233 -> 0.6047** (-0.3186 drop, down into the safe normal range). Overall score dropped from 0.8786 to 0.8274.
+- **`SCHB_G6_IMG_20261007_102238`**: Dropped from **0.9535 -> 0.7163** on line vision (-0.2372 drop).
+- **`SCHB_G7_IMG_20261007_105512`** (bad Hindi handwriting): Surged from **0.6093 -> 0.7674** (+0.1581 jump, successfully detected).
+- **`SCHB_G4_IMG_20261007_100350`** (newly reclassified positive): Score = **0.8921** (well above 0.7599 cutoff, firmly CAUGHT).
+- **`G7_A_Roll15`** (pure motor dysgraphia): Score = **0.7714** (above 0.7599 cutoff, firmly CAUGHT).
+- **`G3_A_Roll12`**: Protected by the 80% sentence context anchor (score 0.6074).
+

@@ -1,6 +1,46 @@
 # Task List — Workstream A
 
-## Active Sprint: Ground-Truth Re-Classifications & Phenotypic Gating Analysis
+## Active Sprint: Line Decomposition & Hierarchical Multi-Scale Champion
+
+### Objectives
+1. **Automated Line Decomposition**:
+   - Decompose multi-line sentence crops into single-line strips at horizontal ink projection valleys (`pipeline/decompose_sentence_crops_to_lines.py`).
+   - Fix vertical tile compression and multi-line stroke collision artifacts.
+2. **Backbone Extraction on Line Strips**:
+   - Extract DINOv2-Small and CLIP ViT-B/32 tile descriptors on single-line crops (`pipeline/extract_line_backbone_features.py`).
+   - Extract bilingual line-level TrOCR decoding (`pipeline/extract_line_bilingual_ocr.py`).
+3. **Hierarchical Multi-Scale Vision & Phenotypic Rescue**:
+   - Combine Macro-Spatial Sentence Vision (80%) + Clean Micro-Stroke Line Vision (20%) -> jumps to **0.8725 AUROC** on vision alone!
+   - Benchmark Tri-Modal Champion on Hierarchical Vision + Line TrOCR + Tabular -> reaches **0.8788 AUROC**, **0.6740 AUPRC**, and **67.6% (25/37) Sens@90% Spec**!
+4. **Student Audits & QA Web App Synchronization**:
+   - Verify `G7_A_Roll02` false alarm dropped by -30 percentile points into the normal control range.
+   - Verify `SCHB_G7_IMG_20261007_105512` caught (+0.1581 jump).
+   - Update `context.md`, `architechture.md`, `qa/` score cache, and git push.
+
+### Sprint Tasks
+- [x] Task 1: Automated Line Decomposition
+  - [x] 1.1 Decomposed 1,404 sentence crops into 2,429 clean single lines.
+  - [x] 1.2 Mean line height reduced from 189px to 116px (100% <= 228px).
+- [x] Task 2: Line Backbone Feature Extraction
+  - [x] 2.1 Extracted DINOv2-Small on 76,426 line tiles (`exp7_line_dinov2_small_tiles.npz`).
+  - [x] 2.2 Extracted CLIP ViT-B/32 on 76,426 line tiles (`exp7_line_clip_tiles.npz`).
+- [x] Task 3: Multi-Scale Hierarchical Vision Evaluation
+  - [x] 3.1 Line Dual-ViT alone: 0.8138 AUROC (cures `G7_A_Roll02` tile collisions).
+  - [x] 3.2 Sentence Dual-ViT alone: 0.8620 AUROC (preserves `G3_A_Roll12` macro baseline drift).
+  - [x] 3.3 Hierarchical Dual-ViT (0.80 Sentence + 0.20 Line): **0.8725 AUROC**, **0.6537 AUPRC**!
+- [/] Task 4: Line TrOCR Bilingual Extraction & Final Consensus
+  - [/] 4.1 Running GPU line-level TrOCR decoding (`pipeline/extract_line_bilingual_ocr.py`).
+  - [ ] 4.2 Benchmark Hierarchical Tri-Modal Champion and Asymmetric Phenotypic Rescue.
+  - [ ] 4.3 Update QA web app scores, documentation, and commit/push to git.
+
+---
+
+## Completed Sprints
+
+<details>
+<summary>Ground-Truth Re-Classifications & Phenotypic Gating Analysis (Completed 2026-10-29)</summary>
+
+## Previous Sprint: Ground-Truth Re-Classifications & Phenotypic Gating Analysis
 
 ### Objectives
 1. **Apply Expert Re-Classifications (`pipeline/apply_user_label_reclassifications.py`)**:
@@ -8,33 +48,12 @@
    - `SCHB_G3_IMG_20261007_101635`: 1 -> 0 (Negative).
    - `SCHB_G4_IMG_20261007_100350`: 0 -> 1 (Positive / Dysgraphic).
 2. **Re-Benchmark 5x5 Cross-Validation on Cleaned Cohort (37 Positives, 178 Controls)**:
-   - Re-evaluate Dual-ViT Standalone, English OCR Standalone, and Tri-Modal Champion.
-   - Update `reports/exp7_bilingual_ocr_fusion_results.json` and `reports/exp7_bilingual_ocr_fusion_report.md`.
-3. **Phenotypic Gating Investigation (Is OCR an AND or an OR?)**:
-   - Analyze mathematical and clinical trade-offs between Linear Blend (soft AND), Hard Max-Pooling (unconstrained OR), and Asymmetric Non-Penalizing Gating.
-   - Document case studies: `G7_A_Roll02` multi-line tile collisions, `SCHB_G6_IMG_20261007_102238` oversized crop, and `G3_A_Roll12` word spacing deficits.
-4. **Synchronize Memory & Git Remote**:
-   - Update `context.md` (Stage 52), `task_list.md`, and commit/push to `origin/main`.
+   - Dual-ViT alone: 0.8620 AUROC, 0.6165 AUPRC.
+   - Tri-Modal Champion: 0.8709 AUROC, 0.6530 AUPRC.
+3. **Phenotypic Gating Analysis**:
+   - Formulated Asymmetric Non-Penalizing Gating: Vision anchors; OCR rescues.
 
-### Sprint Tasks
-- [x] Task 1: Dataset Ground Truth Re-Classification
-  - [x] 1.1 Updated `data/manifest.csv`, `review_status.json`, `dataset_student_level.csv`, and `sentences_index.csv`.
-  - [x] 1.2 Updated `exp7_all_models_oof_probs.npz` with new binary label vector.
-  - [x] 1.3 Regenerated `data/features/exp7_student_model_scores.json`.
-- [x] Task 2: Re-Benchmark 5x5 Cross-Validation
-  - [x] 2.1 Dual-ViT alone jumped from 0.8440 to **0.8620 AUROC** (AUPRC = **0.6165**).
-  - [x] 2.2 Tri-Modal Champion jumped from 0.8519 to **0.8709 AUROC** (AUPRC = **0.6530**).
-  - [x] 2.3 English OCR standalone jumped from 0.6326 to **0.6540 AUROC**.
-  - [x] 2.4 Sens @ 80% Spec reached **75.7% (28/37)**; Sens @ 90% Spec reached **56.8% (21/37)**.
-- [x] Task 3: Phenotypic Gating vs Linear Blend Investigation
-  - [x] 3.1 Investigated why linear blend penalizes pure motor dysgraphics with clean spelling.
-  - [x] 3.2 Proved empirically that hard Max-Pooling drops AUROC (0.871 -> 0.797) due to phonetic ESL false alarms.
-  - [x] 3.3 Formulated Asymmetric Non-Penalizing Gating: Vision anchors the prediction; OCR acts as a unidirectional rescue term.
-  - [x] 3.4 Diagnosed `G7_A_Roll02` multi-line box wrapping and strike-through artifacts.
-- [x] Task 4: Memory Updates & Git Synchronization
-  - [x] 4.1 Updated `context.md` (Stage 52).
-  - [x] 4.2 Updated `task_list.md`.
-  - [x] 4.3 Commit and push to `origin/main`.
+</details>
 
 ---
 

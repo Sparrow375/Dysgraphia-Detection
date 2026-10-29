@@ -52,3 +52,5 @@ qa/*.html
 scratch/
 *.npz
 
+data/line_crops_dataset/
+data/line_crops_dataset.zip
