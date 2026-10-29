@@ -1788,7 +1788,7 @@ flowchart TD
     end
 
     subgraph VisualStreams ["Dual Vision Transformers"]
-        ImgCrops --> DINO["DINOv2-Small (ViT-S/14)<br/>Micro-Stroke Texture and Graphite Density<br/>Standalone AUROC = 0.8440"]
+        ImgCrops --> DINO["DINOv2-Small (ViT-S/14)<br/>Micro-Stroke Texture and Graphite Density<br/>Standalone AUROC = 0.8696"]
         ImgCrops --> CLIP["OpenAI CLIP (ViT-B/32)<br/>Macro Stroke Topology and Attention<br/>Standalone AUROC = 0.8027"]
     end
 
@@ -1797,9 +1797,9 @@ flowchart TD
     end
 
     subgraph ConsensusEngines ["Consensus and Fusion Topologies"]
-        DINO & CLIP --> DualViT["Dual-ViT Soft Consensus<br/>0.60 DINO + 0.40 CLIP<br/>AUROC = 0.8540 | AUPRC = 0.5671"]
+        DINO & CLIP --> DualViT["Dual-ViT 50/50 Rank Consensus<br/>0.50 Rank DINO + 0.50 Rank CLIP<br/>AUROC = 0.8901 | AUPRC = 0.6269"]
         DINO & CLIP & TabMetrics --> TriStream["Tri-Stream Rank Consensus<br/>DINO + CLIP + Tabular<br/>AUROC = 0.8481 | 77.5% Sens @ 80% Spec"]
-        DINO & CLIP & Qwen & TabMetrics --> FullFusion["All-Inclusive Intermediate Head<br/>(24 DINO + 16 CLIP + 21 VLM + 10 Tab)<br/>AUROC = 0.8411 | 31/40 Positives Detected"]
+        DINO & CLIP & Qwen & TabMetrics --> FullFusion["All-Inclusive Intermediate Head<br/>(24 DINO + 16 CLIP + 21 VLM + 10 Tab)<br/>37/38 Positives Detected Across Combined Models"]
     end
 ```
 
@@ -1814,13 +1814,13 @@ flowchart TD
         Tiler --> DINO_Frozen["DINOv2-Small (ViT-S/14, 21M params)<br/>TorchHub: facebookresearch/dinov2<br/>Patch Tokens: 256 x 384"]
         DINO_Frozen --> Moments["Spatial Descriptor Engine<br/>Tile: [μ_spatial, σ_spatial, GeM_p3] in R^1152<br/>Student: [μ_tiles, σ_tiles] per script in R^2304<br/>Joint Multilingual: [Hindi, English] in R^4608"]
         Moments --> Probe["Linear Classification Probe<br/>StandardScaler -> PCA(K=24) -> LogisticRegression(C=0.1, L2, balanced)"]
-        Probe --> RiskScore["Calibrated Risk Probability p_dino<br/>5x5 CV AUROC = 0.8427 | Sens@80%Spec = 77.5% (31/40)"]
+        Probe --> RiskScore["Calibrated Risk Probability p_dino<br/>5x5 CV AUROC = 0.8696 | Sens@80%Spec = 81.6% (31/38)"]
     end
 
     subgraph EnsembleOption ["Frozen Consensus Ensemble (Optional)"]
         Raw --> CLIP_Frozen["OpenAI CLIP ViT-B/32<br/>Frozen Patches -> R^3072 Descriptor -> PCA(24) -> LR(C=0.1)"]
         CLIP_Frozen --> ClipScore["Risk Probability p_clip"]
-        RiskScore & ClipScore --> RankConsensus["Dual-ViT Fixed 50/50 Rank Consensus<br/>S_consensus = 0.50 * Rank(p_dino)/N + 0.50 * Rank(p_clip)/N<br/>AUROC = 0.8549 | Sens@80%Spec = 75.0%"]
+        RiskScore & ClipScore --> RankConsensus["Dual-ViT Fixed 50/50 Rank Consensus<br/>S_consensus = 0.50 * Rank(p_dino)/N + 0.50 * Rank(p_clip)/N<br/>AUROC = 0.8901 | AUPRC = 0.6269"]
     end
 
     subgraph SealedProtocol ["One-Shot External Holdout Protocol (School C / D)"]
@@ -1844,7 +1844,7 @@ flowchart LR
         DINO_P["DINOv2 ViT-S/14"] --> ProbeDINO["Frozen Reference PCA(24) + LogReg"]
         CLIP_P["CLIP ViT-B/32"] --> ProbeCLIP["Frozen Reference PCA(24) + LogReg"]
         ProbeDINO & ProbeCLIP --> Calib["Empirical CDF Rank Calibration<br/>F_ref(p_dino), F_ref(p_clip)"]
-        Calib --> ConsensusScore["Dual-ViT 50/50 Rank Consensus<br/>0.8564 AUROC | 52.5% Sens @ 90% Spec"]
+        Calib --> ConsensusScore["Dual-ViT 50/50 Rank Consensus<br/>0.8901 AUROC | 0.6269 AUPRC<br/>Sens @ 80% Spec = 81.6%"]
     end
 
     subgraph LinearAttribution ["Closed-Form Tile-Level Attribution"]

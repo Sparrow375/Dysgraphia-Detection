@@ -49,7 +49,7 @@ def generate_markdown_scoreboard():
         ("6", "DenseNet201 (CNN-201)", "Tiled 50/50 Decision Blend", dense_blend["auroc"], dense_blend["auprc"], f"{dense_blend['sens80']*100:.1f}% ({dense_blend['det80']}/40)", f"{dense_blend['sens90']*100:.1f}% ({dense_blend['det90']}/40)", "exp7_densenet201_probe.json"),
         ("7", "Stage 4 Tabular Stack", "30 Handcrafted BHK Features", tab_comp["auc_b"], tab_comp["ap_b"], "47.5% (19/40)", "37.5% (15/40)", "exp7_paired_bootstrap.json"),
         ("8", "DenseNet201 (CNN-201)", "Squashed Sentence Ablation", dense_sq["auc_b"], dense_sq["ap_b"], "50.0% (20/40)", "37.5% (15/40)", "exp7_paired_bootstrap.json"),
-        ("9", "Writer-Style Encoder", "SupCon Metric Learning", writer["blend"]["auroc"], writer["blend"]["auprc"], f"{writer['blend']['sens80']*100:.1f}%", f"{writer['blend']['sens90']*100:.1f}%", "exp7_candidate2_writer_style.json"),
+        ("9", "Writer-Style Encoder", "SupCon Metric Learning", writer["blend"]["auroc"], writer["blend"]["auprc"], f"{writer['blend']['sens_at_80_spec']*100:.1f}% ({writer['blend']['det_at_80_spec']}/40)", f"{writer['blend']['sens_at_90_spec']*100:.1f}% ({writer['blend']['det_at_90_spec']}/40)", "exp7_candidate2_writer_style_results.json"),
         ("10", "Microsoft TrOCR-Base", "50/50 Decision Blend", trocr_blend["auroc"], trocr_blend["auprc"], f"{trocr_blend['sens80']*100:.1f}% ({trocr_blend['det80']}/40)", f"{trocr_blend['sens90']*100:.1f}% ({trocr_blend['det90']}/40)", "exp7_trocr_probe.json"),
         ("11", "Candidate 4 VLM Rubric", "Qwen2-VL-2B Pediatric Rubric", vlm["auroc"], vlm["auprc"], f"{vlm['sens_at_80_spec']*100:.1f}% ({vlm['det_at_80_spec']}/40)", f"{vlm['sens_at_90_spec']*100:.1f}% ({vlm['det_at_90_spec']}/40)", "exp7_vlm_rubric.json"),
     ]

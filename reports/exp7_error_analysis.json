@@ -1,104 +1,104 @@
 {
   "cohort_summary": {
     "n_total": 215,
-    "n_positives": 40,
-    "n_controls": 175,
-    "base_rate": 0.186
+    "n_positives": 38,
+    "n_controls": 177,
+    "base_rate": 0.1767
   },
   "thresholds_at_80_spec": {
-    "DINOv2-Small (Joint)": 0.3459,
-    "Dual-ViT 50/50 Rank": 0.6786,
-    "OpenAI CLIP (Blend)": 0.443,
-    "DenseNet201 (Tiled)": 0.4589,
-    "Stage 4 Tabular Stack": 0.506
+    "DINOv2-Small (Joint)": 0.3431,
+    "Dual-ViT 50/50 Rank": 0.673,
+    "OpenAI CLIP (Blend)": 0.4423,
+    "DenseNet201 (Tiled)": 0.4566,
+    "Stage 4 Tabular Stack": 0.5046
   },
   "thresholds_at_90_spec": {
-    "DINOv2-Small (Joint)": 0.6188,
+    "DINOv2-Small (Joint)": 0.6128,
     "Dual-ViT 50/50 Rank": 0.7884,
-    "OpenAI CLIP (Blend)": 0.5656,
-    "DenseNet201 (Tiled)": 0.5314,
-    "Stage 4 Tabular Stack": 0.6378
+    "OpenAI CLIP (Blend)": 0.5655,
+    "DenseNet201 (Tiled)": 0.5312,
+    "Stage 4 Tabular Stack": 0.6377
   },
   "false_negatives_summary": {
-    "dino_fns_count": 9,
-    "clip_fns_count": 9,
-    "dual_vit_fns_count": 9,
-    "tabular_fns_count": 19,
-    "both_vit_fns_count": 4,
-    "all_vision_fns_count": 4,
-    "all_models_fns_count": 3,
+    "dino_fns_count": 7,
+    "clip_fns_count": 7,
+    "dual_vit_fns_count": 7,
+    "tabular_fns_count": 17,
+    "both_vit_fns_count": 2,
+    "all_vision_fns_count": 2,
+    "all_models_fns_count": 1,
     "rescued_by_clip_count": 5,
     "rescued_by_tab_count": 2,
     "unanimous_tps_count": 19
   },
   "false_positives_summary": {
-    "dino_fps_count": 35,
-    "clip_fps_count": 35,
+    "dino_fps_count": 36,
+    "clip_fps_count": 36,
     "dual_vit_fps_count": 19,
     "all_models_fps_count": 7
   },
   "factor_breakdown_fn_vs_tp": {
     "grade": {
-      "fn_mean": 5.333333333333333,
+      "fn_mean": 5.285714285714286,
       "tp_mean": 4.967741935483871,
-      "p_value": 0.5957235537342117
+      "p_value": 0.7286168364474808
     },
     "pencil_fraction": {
-      "fn": 0.7777777777777778,
+      "fn": 0.8571428571428571,
       "tp": 0.41935483870967744,
-      "p_value": 0.1273861273861274
+      "p_value": 0.08968058968058967
     },
     "school_a_fraction": {
-      "fn": 0.6666666666666666,
+      "fn": 0.5714285714285714,
       "tp": 0.5806451612903226,
-      "p_value": 0.7170948037821104
+      "p_value": 1.0
     },
     "line_count": {
-      "fn_mean": 5.0,
+      "fn_mean": 4.857142857142857,
       "tp_mean": 5.451612903225806,
-      "p_value": 0.2102900378130077
+      "p_value": 0.16878863005756684
     },
     "components_per_unit_width": {
-      "fn_mean": 0.7242655318382268,
+      "fn_mean": 0.665754314463787,
       "tp_mean": 0.9174033910672754,
-      "p_value": 0.1637032788562396
+      "p_value": 0.07008922798396483
     },
     "gap_mean": {
-      "fn_mean": -0.42956298289111217,
+      "fn_mean": -0.5982049096267901,
       "tp_mean": 0.2582193179307566,
-      "p_value": 0.8459146965233685
+      "p_value": 0.7965957267427854
     }
   },
   "factor_breakdown_fp_vs_tn": {
     "grade": {
-      "fp_mean": 5.057142857142857,
-      "tn_mean": 5.207142857142857,
-      "p_value": 0.6160932910187245
+      "fp_mean": 5.027777777777778,
+      "tn_mean": 5.219858156028369,
+      "p_value": 0.5135794411636478
     },
     "pencil_fraction": {
-      "fp": 0.6,
-      "tn": 0.7142857142857143,
-      "p_value": 0.22107915638098624
+      "fp": 0.5833333333333334,
+      "tn": 0.7163120567375887,
+      "p_value": 0.15750605000892665
     },
     "school_a_fraction": {
-      "fp": 0.5714285714285714,
-      "tn": 0.5071428571428571,
-      "p_value": 0.5720900252413719
+      "fp": 0.5833333333333334,
+      "tn": 0.5106382978723404,
+      "p_value": 0.4605433293319903
     },
     "line_count": {
-      "fp_mean": 5.428571428571429,
-      "tn_mean": 5.292857142857143,
-      "p_value": 0.5480438396938838
+      "fp_mean": 5.444444444444445,
+      "tn_mean": 5.290780141843972,
+      "p_value": 0.46725658061535336
     },
     "components_per_unit_width": {
-      "fp_mean": 0.8444078353678529,
-      "tn_mean": 0.6898483546367775,
-      "p_value": 0.005117520124263287
+      "fp_mean": 0.8492042340882017,
+      "tn_mean": 0.6909205747882692,
+      "p_value": 0.0034491132916753407
     },
     "gap_mean": {
-      "fp_mean": -0.2546906504836098,
-      "tn_mean": 0.5608405217842042,
-      "p_value": 0.5924501753429879
+      "fp_mean": -0.25742122833104997,
+      "tn_mean": 0.5616456171925358,
+      "p_value": 0.4784326823283237
     }
   },
   "dino_false_negatives": [
@@ -116,21 +116,6 @@
       "consensus_pct": 0.5628,
       "fragmentation_bhk": 0.3404,
       "gap_bhk": 2.1689
-    },
-    {
-      "student_id": "G4_A_Roll23",
-      "school": "school_a",
-      "grade": 4,
-      "roll": 23,
-      "tool": "pen",
-      "lines": 5,
-      "dino_prob": 0.0784,
-      "clip_prob": 0.4028,
-      "dual_vit_rank": 0.514,
-      "tabular_prob": 0.2905,
-      "consensus_pct": 0.4977,
-      "fragmentation_bhk": 1.0671,
-      "gap_bhk": 1.2444
     },
     {
       "student_id": "SCHB_G4_IMG_20261007_100335",
@@ -161,21 +146,6 @@
       "consensus_pct": 0.4884,
       "fragmentation_bhk": 1.0431,
       "gap_bhk": 1.071
-    },
-    {
-      "student_id": "G7_A_Roll12",
-      "school": "school_a",
-      "grade": 7,
-      "roll": 12,
-      "tool": "pencil",
-      "lines": 6,
-      "dino_prob": 0.1662,
-      "clip_prob": 0.0598,
-      "dual_vit_rank": 0.286,
-      "tabular_prob": 0.1033,
-      "consensus_pct": 0.2202,
-      "fragmentation_bhk": 0.791,
-      "gap_bhk": -0.9231
     },
     {
       "student_id": "G3_A_Roll19",
@@ -240,21 +210,6 @@
   ],
   "hardest_false_negatives_both_vit": [
     {
-      "student_id": "G4_A_Roll23",
-      "school": "school_a",
-      "grade": 4,
-      "roll": 23,
-      "tool": "pen",
-      "lines": 5,
-      "dino_prob": 0.0784,
-      "clip_prob": 0.4028,
-      "dual_vit_rank": 0.514,
-      "tabular_prob": 0.2905,
-      "consensus_pct": 0.4977,
-      "fragmentation_bhk": 1.0671,
-      "gap_bhk": 1.2444
-    },
-    {
       "student_id": "SCHB_G4_IMG_20261007_100335",
       "school": "school_b",
       "grade": 4,
@@ -283,39 +238,9 @@
       "consensus_pct": 0.4884,
       "fragmentation_bhk": 1.0431,
       "gap_bhk": 1.071
-    },
-    {
-      "student_id": "G7_A_Roll12",
-      "school": "school_a",
-      "grade": 7,
-      "roll": 12,
-      "tool": "pencil",
-      "lines": 6,
-      "dino_prob": 0.1662,
-      "clip_prob": 0.0598,
-      "dual_vit_rank": 0.286,
-      "tabular_prob": 0.1033,
-      "consensus_pct": 0.2202,
-      "fragmentation_bhk": 0.791,
-      "gap_bhk": -0.9231
     }
   ],
   "hardest_false_negatives_all_models": [
-    {
-      "student_id": "G4_A_Roll23",
-      "school": "school_a",
-      "grade": 4,
-      "roll": 23,
-      "tool": "pen",
-      "lines": 5,
-      "dino_prob": 0.0784,
-      "clip_prob": 0.4028,
-      "dual_vit_rank": 0.514,
-      "tabular_prob": 0.2905,
-      "consensus_pct": 0.4977,
-      "fragmentation_bhk": 1.0671,
-      "gap_bhk": 1.2444
-    },
     {
       "student_id": "SCHB_G4_IMG_20261007_100335",
       "school": "school_b",
@@ -330,21 +255,6 @@
       "consensus_pct": 0.5147,
       "fragmentation_bhk": 0.6951,
       "gap_bhk": 1.4873
-    },
-    {
-      "student_id": "G7_A_Roll12",
-      "school": "school_a",
-      "grade": 7,
-      "roll": 12,
-      "tool": "pencil",
-      "lines": 6,
-      "dino_prob": 0.1662,
-      "clip_prob": 0.0598,
-      "dual_vit_rank": 0.286,
-      "tabular_prob": 0.1033,
-      "consensus_pct": 0.2202,
-      "fragmentation_bhk": 0.791,
-      "gap_bhk": -0.9231
     }
   ],
   "persistent_false_positives_top10": [

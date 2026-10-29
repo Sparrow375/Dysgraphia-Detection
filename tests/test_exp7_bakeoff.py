@@ -203,10 +203,10 @@ def test_error_analysis_data_structure():
         data = json.load(f)
 
     assert data["cohort_summary"]["n_total"] == 215
-    assert data["cohort_summary"]["n_positives"] == 40
-    assert data["cohort_summary"]["n_controls"] == 175
-    assert data["false_negatives_summary"]["dino_fns_count"] == 9
-    assert data["false_negatives_summary"]["all_models_fns_count"] == 3
+    assert data["cohort_summary"]["n_positives"] == 38
+    assert data["cohort_summary"]["n_controls"] == 177
+    assert data["false_negatives_summary"]["dino_fns_count"] == 7
+    assert data["false_negatives_summary"]["all_models_fns_count"] == 1
     assert len(data["persistent_false_positives_top10"]) == 10
 
 

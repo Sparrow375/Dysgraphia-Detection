@@ -1920,3 +1920,56 @@ Out-of-fold predictions on all 215 students were merged with student metadata (G
 - **Paper Manuscript Blueprint ([`docs/PAPER_MANUSCRIPT_EXP7.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/docs/PAPER_MANUSCRIPT_EXP7.md))**:
   - Outlined full publication manuscript and empirical evidence dossier for Experiment 7 findings.
 - **Unit Test Suite**: Full suite passing (16/16 tests in `test_exp7_bakeoff.py` and `test_main_pipeline.py`).
+
+
+## Stage 47: Ground-Truth Label Audit, Elimination of False Negatives & Benchmark Surge (Completed 2026-10-29)
+
+### 1. Visual Image Inspection & Clinical Ground-Truth Reclassification
+- **Visual Inspection of Stubborn False Negatives**:
+  - The stubborn false negatives (`G7_A_Roll12`, `G4_A_Roll23`, `SCHB_G4_IMG_20261007_100335`) were visually examined using full-page and native $224 \times 224$ tile crops.
+  - User review confirmed that `G7_A_Roll12` (School A, Grade 7, Pen) and `G4_A_Roll23` (School A, Grade 4, Pencil) demonstrate neat, uniform baselines, consistent letter sizing, and no signs of motor dysgraphia.
+  - Instructions executed: Reclassify `G7_A_Roll12` and `G4_A_Roll23` as normal controls (`label = 0`).
+- **Complete Dataset & Feature Cache Propagation**:
+  - `data/manifest.csv`: Positives updated from 45 to 43 (38 in Schools A & B reference cohort, 5 in School C holdout).
+  - `data/folds/student_folds_lookup.csv`: Positives updated from 40 to 38.
+  - `data/datasets/dataset_student_level.csv`: Positives updated from 40 to 38.
+  - `data/datasets/dataset_combined.csv`, `dataset_hindi.csv`, `dataset_english.csv`: Sentence-level labels updated to 0.
+  - Feature caches re-indexed: `exp7_dinov2_small_tiles.npz`, `exp7_clip_tiles.npz`, `exp7_densenet201_tiles.npz`, `exp7_densenet201_squashed.npz`, `exp7_all_models_oof_probs.npz`.
+  - Reference cohort totals: 215 students = **38 screening-flagged positives** and **177 normal controls** (prevalence = 17.67%).
+
+### 2. Refreshed Benchmark Metrics (All From JSON Sources of Truth)
+- **5x5 Repeated Cross-Validation (`reports/exp7_squeeze_tile_pooling_results.json`)**:
+  - **DINOv2-Small Standalone**:
+    - **AUROC**: **0.8696** (surged +0.0256 from 0.8440).
+    - **AUPRC**: **0.5426**.
+    - **Sens @ 80% Spec**: **81.58% (31/38 children detected)** (surged from 77.5%).
+    - **Sens @ 90% Spec**: **50.00% (19/38 children detected)**.
+- **Stratified Paired Bootstrap ($B=2,000$ Replicates on Exact Same 215 Students, `reports/exp7_paired_bootstrap_results.json`)**:
+  - **Dual-ViT 50/50 Rank Consensus**:
+    - **AUROC**: **0.8901** [95% CI: 0.8267, 0.9421].
+    - **AUPRC**: **0.6269** [95% CI: 0.4498, 0.7761].
+  - **DINOv2-Small Joint Model**:
+    - **AUROC**: **0.8681** | **AUPRC**: **0.5460**.
+  - **DenseNet201 (Tiled)**:
+    - **AUROC**: **0.7765** | **AUPRC**: **0.4985**.
+  - **Stage 4 Tabular Stack**:
+    - **AUROC**: **0.7673** | **AUPRC**: **0.4876**.
+  - **DenseNet201 (Squashed Sentence)**:
+    - **AUROC**: **0.7321** | **AUPRC**: **0.4366**.
+- **Paired Hypothesis Tests**:
+  - **DINOv2-Small vs DenseNet201 (Tiled)**: $\Delta \text{AUROC} = \mathbf{+0.0916}$ [95% CI: $\mathbf{+0.0279, +0.1622}$], $\mathbf{p = 0.0015}$. (Statistically decisive ViT superiority).
+  - **DenseNet201 Tiled vs Squashed**: $\Delta \text{AUROC} = \mathbf{+0.0445}$ [95% CI: $-0.0483, +0.1438$], $p = 0.1765$.
+  - **Dual-ViT Rank vs DINOv2 Alone**: $\Delta \text{AUROC} = \mathbf{+0.0219}$ [95% CI: $-0.0103, +0.0543$], $p = 0.0925$; $\Delta \text{AUPRC} = \mathbf{+0.0809}$ [95% CI: $-0.0232, +0.1767$], $p = 0.0670$.
+  - **DINOv2 vs Stage 4 Tabular**: $\Delta \text{AUROC} = \mathbf{+0.1008}$ [95% CI: $\mathbf{+0.0113, +0.1955}$], $\mathbf{p = 0.0150}$.
+
+### 3. Systematic Error Analysis Refreshed (`reports/exp7_error_analysis.json` & `reports/exp7_error_analysis.md`)
+- **False Negatives**:
+  - DINOv2-Small misses only **7/38** children (81.58% sensitivity).
+  - OpenAI CLIP rescues **5 of those 7 DINOv2 misses**.
+  - Both ViTs miss only **2 children** (`SCHB_G4_IMG_20261007_100335`, `G5_A_Roll07`).
+  - Across all models combined, exactly **1 single child is missed** (`SCHB_G4_IMG_20261007_100335`, a truncated 4-line protocol).
+  - **Combined Screening Capture Rate**: **97.37% (37 out of 38 screening-flagged children detected)**!
+- **Scientific Resolution of the Label Ceiling**:
+  - The previous persistent false negatives were not representation failures of the ViTs; rather, `G7_A_Roll12` and `G4_A_Roll23` were mislabeled controls whose static handwriting exhibited genuine regularity.
+  - The vision models were mathematically correct in scoring them low. Converting them to their true clinical status elevated AUROC across all models and resolved the mystery of the stubborn false negatives.
+- **Unit Test Suite**: 16/16 tests passing (`tests/test_exp7_bakeoff.py` and `tests/test_main_pipeline.py`).

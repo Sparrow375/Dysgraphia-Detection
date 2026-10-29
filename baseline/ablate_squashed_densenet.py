@@ -27,7 +27,7 @@ CACHE_NPZ = "data/features/exp7_densenet201_squashed.npz"
 
 def extract_squashed_densenet():
     if Path(CACHE_NPZ).exists():
-        d = np.load(CACHE_NPZ)
+        d = np.load(CACHE_NPZ, allow_pickle=True)
         return d["X_student"], d["y_student"], d["student_ids"]
 
     df = pd.read_csv(INDEX_CSV)

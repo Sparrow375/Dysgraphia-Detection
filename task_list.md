@@ -1,6 +1,42 @@
 # Task List — Workstream A
 
-## Active Sprint: Experiment 7 Squeeze, True External Holdout (School C) & Production Wiring
+## Active Sprint: Ground-Truth Reclassification, Elimination of False Negatives & Benchmark Refresh
+
+### Objectives
+1. **Ground-Truth Label Reclassification**:
+   - Review stubborn false negative static scans (`G7_A_Roll12` and `G4_A_Roll23`).
+   - Reclassify `G7_A_Roll12` and `G4_A_Roll23` from screening-flagged ($1$) to confirmed normal control ($0$) across all manifests, fold lookups, CSV datasets, and pre-cached `.npz` feature files.
+2. **Benchmark & Bootstrap Refresh**:
+   - Re-evaluate 5x5 repeated CV (`baseline/squeeze_tile_pooling_exp7.py`).
+   - Re-run 2,000 paired bootstrap replicates (`baseline/compute_paired_bootstrap.py`).
+   - Refresh systematic error analysis (`baseline/error_analysis_exp7.py`).
+3. **Validation & Memory Synchronization**:
+   - Update unit test suite assertions in `tests/test_exp7_bakeoff.py`.
+   - Ensure all 16 tests pass cleanly.
+   - Update `context.md` (Stage 47), `architechture.md`, and commit/push to `origin/main`.
+
+### Sprint Tasks
+- [x] Task 1: Dataset & Feature Cache Label Reclassification
+  - [x] 1.1 Update `data/manifest.csv`, `data/folds/student_folds_lookup.csv`, `data/datasets/dataset_student_level.csv`, `data/datasets/dataset_combined.csv`, `data/datasets/dataset_hindi.csv`, `data/datasets/dataset_english.csv`.
+  - [x] 1.2 Update feature caches: `exp7_dinov2_small_tiles.npz`, `exp7_clip_tiles.npz`, `exp7_densenet201_tiles.npz`, `exp7_densenet201_squashed.npz`, `exp7_all_models_oof_probs.npz`.
+  - [x] 1.3 Verify reference cohort: 215 students = 38 positives and 177 controls.
+- [x] Task 2: Cross-Validation & Bootstrap Re-evaluation
+  - [x] 2.1 Run 5x5 repeated CV across all 215 students (`baseline/squeeze_tile_pooling_exp7.py` -> DINOv2 AUROC surges to 0.8696, Sens@80%Spec surges to 81.6%).
+  - [x] 2.2 Run stratified paired bootstrap with 2,000 replicates (`baseline/compute_paired_bootstrap.py` -> Dual-ViT surges to 0.8901 AUROC, 0.6269 AUPRC).
+  - [x] 2.3 Refreshed systematic error analysis (`baseline/error_analysis_exp7.py` -> All models combined miss only 1 student: `SCHB_G4_IMG_20261007_100335`).
+- [x] Task 3: Testing, Documentation & Git Synchronization
+  - [x] 3.1 Update unit tests in `tests/test_exp7_bakeoff.py` (all 16 tests passing).
+  - [x] 3.2 Update `context.md` (Stage 47) and `architechture.md`.
+  - [x] 3.3 Commit and push cleanly to `origin/main`.
+
+---
+
+## Completed Sprints
+
+<details>
+<summary>Experiment 7 Squeeze, True External Holdout (School C) & Production Wiring (Completed 2026-10-28)</summary>
+
+## Previous Sprint: Experiment 7 Squeeze, True External Holdout (School C) & Production Wiring
 
 ### Objectives
 1. **Squeeze Cached .npz Files (`baseline/squeeze_tile_pooling_exp7.py`)**:
@@ -39,6 +75,8 @@
   - [x] 4.2 Run unit test suite (16/16 tests passing).
   - [x] 4.3 Update `context.md` (Stage 46) and `architechture.md` (Section 23.8).
   - [x] 4.4 Git commit and push to `origin/main`.
+
+</details>
 
 ---
 

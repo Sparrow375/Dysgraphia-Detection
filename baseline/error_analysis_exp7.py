@@ -309,15 +309,19 @@ def generate_markdown_report(res: Dict[str, Any], df: pd.DataFrame, model_labels
     md_lines = []
     md_lines.append("# Experiment 7: Systematic Qualitative & Quantitative Error Analysis")
     md_lines.append("\n**Harness Freeze & Diagnostic Audit across all 215 Unified Cohort Students**\n")
-    md_lines.append(f"**Date:** 2026-10-28 | **Cohort:** 215 Students (40 Screening-Flagged Positives, 175 Normal Controls)\n")
+    n_pos = int(df["y_true"].sum())
+    n_neg = len(df) - n_pos
+    md_lines.append(f"**Date:** 2026-10-29 | **Cohort:** 215 Students ({n_pos} Screening-Flagged Positives, {n_neg} Normal Controls)\n")
 
     md_lines.append("## 1. Executive Diagnostic Findings\n")
+    dino_tp = n_pos - res['false_negatives_summary']['dino_fns_count']
+    dino_sens = dino_tp / n_pos if n_pos > 0 else 0.0
     md_lines.append(
         "1. **The 'Empirical Label Ceiling' vs Engineering Targets**:\n"
-        "   - Across all 40 screening-flagged students, **31 are detected at 80% specificity** by DINOv2-Small (77.5% sensitivity).\n"
-        "   - When combining DINOv2 with OpenAI CLIP, **5 of the 9 DINOv2 misses are rescued by CLIP** (e.g., `G3_A_Roll12`, `G3_A_Roll19`, `G7_A_Roll06`, `SCHB_G7_IMG_...`, `SCHB_G8_IMG_...`).\n"
-        f"   - **Only {res['false_negatives_summary']['both_vit_fns_count']} students** are missed by both ViTs, and **only {res['false_negatives_summary']['all_models_fns_count']} students** (`G4_A_Roll23`, `G7_A_Roll12`, `SCHB_G4_IMG_20261007_100335`) are missed across all vision and tabular models combined.\n"
-        "   - **Diagnosis**: The misses do **not** form a single engineering failure mode (such as pencil vs pen, low line count, or image resolution). Rather, they represent borderline screening-flagged children who display neat handwriting in the provided tasks but were originally flagged by teachers/stylus during peer screening.\n"
+        f"   - Across all {n_pos} screening-flagged students, **{dino_tp} are detected at 80% specificity** by DINOv2-Small ({dino_sens*100:.1f}% sensitivity).\n"
+        f"   - When combining DINOv2 with OpenAI CLIP, **{res['false_negatives_summary']['rescued_by_clip_count']} of the {res['false_negatives_summary']['dino_fns_count']} DINOv2 misses are rescued by CLIP**.\n"
+        f"   - **Only {res['false_negatives_summary']['both_vit_fns_count']} students** are missed by both ViTs, and **only {res['false_negatives_summary']['all_models_fns_count']} student(s)** are missed across all vision and tabular models combined.\n"
+        "   - **Diagnosis**: The misses do **not** form a systematic engineering failure mode (such as pencil vs pen or image resolution). Rather, they represent borderline screening-flagged children who display neat handwriting in the provided tasks but were originally flagged by teachers/stylus during peer screening.\n"
     )
 
     md_lines.append(
@@ -360,11 +364,12 @@ def generate_markdown_report(res: Dict[str, Any], df: pd.DataFrame, model_labels
             f"{r['dino_prob']:.4f} | {r['clip_prob']:.4f} | {r['dual_vit_rank']:.4f} | {r['tabular_prob']:.4f} | {status_str} |"
         )
 
-    md_lines.append("\n> [!NOTE]\n> Notice that out of 9 DINOv2 misses, **5 are rescued by CLIP** and **2 are rescued by Tabular**. Only 3 students are missed by every single model in the benchmark.\n")
+    n_hard = len(res["hardest_false_negatives_all_models"])
+    md_lines.append(f"\n> [!NOTE]\n> Out of {len(res['dino_false_negatives'])} DINOv2 misses, **{res['false_negatives_summary']['rescued_by_clip_count']} are rescued by CLIP** and **{res['false_negatives_summary']['rescued_by_tab_count']} are rescued by Tabular**. Only {n_hard} student(s) remain missed across all evaluated models.\n")
 
-    md_lines.append("## 3. The 3 Hardest False Negatives (Missed Across All Models)\n")
+    md_lines.append(f"## 3. Persistent Hard False Negatives ({n_hard} Student(s) Missed Across All Models)\n")
     md_lines.append(
-        "A deep inspection of the three students missed by all representations reveals the physiological and data reasons for their scores:\n"
+        "A deep inspection of the students missed by all representations reveals the physiological and data reasons for their scores:\n"
     )
     for r in res["hardest_false_negatives_all_models"]:
         md_lines.append(f"### Student `{r['student_id']}` (Grade {r['grade']}, {r['school']}, {r['tool']})")

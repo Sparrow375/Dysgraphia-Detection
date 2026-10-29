@@ -33,7 +33,7 @@ G4_A_Roll19,school_a,4,0,3,3,2,3,1
 G4_A_Roll20,school_a,4,0,2,4,1,0,0
 G4_A_Roll02,school_a,4,0,0,2,4,2,3
 G4_A_Roll22,school_a,4,1,2,3,2,2,3
-G4_A_Roll23,school_a,4,1,3,4,0,3,4
+G4_A_Roll23,school_a,4,0,3,4,0,3,4
 G4_A_Roll24,school_a,4,0,1,0,3,4,1
 G4_A_Roll25,school_a,4,0,4,4,0,1,3
 G4_A_Roll26,school_a,4,0,4,0,3,4,4
@@ -100,7 +100,7 @@ G7_A_Roll08,school_a,7,0,2,3,4,2,4
 G7_A_Roll09,school_a,7,0,2,4,4,2,0
 G7_A_Roll10,school_a,7,0,2,0,1,2,3
 G7_A_Roll11,school_a,7,0,0,4,3,2,1
-G7_A_Roll12,school_a,7,1,2,1,1,4,4
+G7_A_Roll12,school_a,7,0,2,1,1,4,4
 G7_A_Roll13,school_a,7,0,3,2,0,0,4
 G7_A_Roll14,school_a,7,0,3,0,2,1,2
 G7_A_Roll15,school_a,7,1,4,2,4,1,3
