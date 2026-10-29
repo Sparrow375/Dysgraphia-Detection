@@ -212,3 +212,30 @@ def test_error_analysis_data_structure():
 
 
 
+
+
+def test_bilingual_ocr_student_features_structure():
+    """Verify bilingual OCR extraction and multimodal fusion cache integrity."""
+    import json
+    import numpy as np
+
+    cache_json = Path("data/features/trocr_cache.json")
+    assert cache_json.exists(), "TrOCR cache must exist"
+    with open(cache_json, "r", encoding="utf-8") as f:
+        cache = json.load(f)
+    assert len(cache) == 1404, f"Expected 1404 cache entries, found {len(cache)}"
+
+    ocr_npz = Path("data/features/exp7_bilingual_ocr_student_features.npz")
+    assert ocr_npz.exists(), "Bilingual OCR student features NPZ must exist"
+    data = np.load(ocr_npz)
+    assert len(data["student_ids"]) == 215
+    assert len(data["student_labels"]) == 215
+    assert data["X_hindi_ocr"].shape == (215, 162)
+    assert data["X_english_ocr"].shape == (215, 162)
+    assert data["X_joint_ocr"].shape == (215, 324)
+
+    fusion_json = Path("reports/exp7_bilingual_ocr_fusion_results.json")
+    assert fusion_json.exists(), "Fusion results JSON must exist"
+    with open(fusion_json, "r", encoding="utf-8") as f:
+        f_res = json.load(f)
+    assert f_res["multimodal_fusion"]["tri_modal_champion"]["metrics"]["auroc"] >= 0.840

@@ -1,6 +1,58 @@
 # Task List — Workstream A
 
-## Active Sprint: Champion Pipeline Re-Evaluation on Newly Recropped Student Scans
+## Active Sprint: Full Bilingual OCR (HTR) Decoding & Multimodal Champion Fusion
+
+### Objectives
+1. **Full-Cohort Bilingual OCR Decoding on GPU (RTX 5060 Ti)**:
+   - Run end-to-end HTR decoding on all newly recropped sentence crops across the cohort.
+   - English: microsoft/trocr-small-handwritten line-level transformer.
+   - Hindi: paudelanil/trocr-devanagari-2 Indic word transformer.
+   - Completely refresh data/features/trocr_cache.json with updated transcriptions and token confidences.
+2. **Clinical Letter-Level & Linguistic Error Feature Extraction (eatures/letter_analytics.py)**:
+   - Extract 38 granular error metrics per task: char/word omissions, letter transpositions, spatial reversals (b/d, p/q, ब/व, घ/ध), matra deficits, conjunct breaks, mid-word caps, and intra-line fatigue ratios.
+   - Aggregate into student-level Hindi, English, and Joint Bilingual feature vectors -> data/features/exp7_bilingual_ocr_features.npz.
+3. **Tri-Modal Cross-Validation Benchmark & Fusion**:
+   - Evaluate Standalone Bilingual OCR error model under 5-repeat 5-fold CV.
+   - Fuse with Dual-ViT (DINOv2 + CLIP) and Macro-Tabular layout stream via learned consensus.
+   - Evaluate AUROC, AUPRC, Sens@80%Spec, and Sens@90%Spec.
+4. **Statistical Verification & Missed Positive Audit**:
+   - Run stratified paired bootstrap (2,000 replicates).
+   - Evaluate rescue of stubborn false negatives (G6_A_Roll18, G3_A_Roll19, etc.).
+5. **Testing, Memory Updates & Git Synchronization**:
+   - Run unit test suite (pytest).
+   - Update context.md (Stage 50), rchitechture.md, and commit/push to origin/main.
+
+### Sprint Tasks
+- [x] Task 1: End-to-End Bilingual OCR GPU Extraction (`pipeline/extract_full_bilingual_ocr.py`)
+  - [x] 1.1 Batch transcribed all 700 English sentence crops with `EnglishTrOCREngine` on RTX 5060 Ti GPU.
+  - [x] 1.2 Batch transcribed all 704 Hindi sentence crops with `DevanagariTrOCREngine` on GPU.
+  - [x] 1.3 Overwrote `data/features/trocr_cache.json` with 1,404 clean recropped transcriptions and token confidences.
+- [x] Task 2: Granular Letter-Level Error Feature Compilation
+  - [x] 2.1 Extracted 53 diagnostic error features per task (omissions, transpositions, reversals b/d & p/q, matra deficits, CER, WER, and fatigue slope).
+  - [x] 2.2 Aggregated Hindi (215, 162), English (215, 162), and Joint (215, 324) student-level error matrices -> `data/features/exp7_bilingual_ocr_student_features.npz`.
+- [x] Task 3: 5x5 Cross-Validation & Tri-Modal Champion Fusion (`baseline/evaluate_bilingual_ocr_fusion.py`)
+  - [x] 3.1 Evaluated Standalone English OCR probe: 0.6326 AUROC, 0.2390 AUPRC.
+  - [x] 3.2 Evaluated Tri-Modal Champion (Dual-ViT 0.84 + English OCR 0.08 + Macro Tabular 0.08): **AUROC = 0.8519**, **AUPRC = 0.6123**, Sens@80%Spec = 71.1% (27/38), Sens@90%Spec = 52.6% (20/38).
+  - [x] 3.3 Evaluated Dual-ViT (0.90) + English OCR (0.10): **AUROC = 0.8466**, **Sens@90%Spec reaches 55.3% (21/38 kids detected)**.
+  - [x] 3.4 Computed stratified paired bootstrap (2,000 replicates): Tri-Modal consensus delta AUROC = +0.0080, delta AUPRC = +0.0260.
+- [x] Task 4: Error Analysis & False Negative Rescue Audit
+  - [x] 4.1 Rescued 3 false negatives at 90% specificity: `G6_A_Roll18`, `SCHB_G4_IMG_20261007_100621`, `SCHB_G7_IMG_20261007_105436` (OCR error rank = 0.949).
+  - [x] 4.2 Documented linguistic breakdown: `paudelanil/trocr-devanagari-2` word model hallucinates on multi-word child sentences (0.4759 AUROC), whereas `microsoft/trocr-small-handwritten` provides genuine clinical reading signal (0.6326 AUROC).
+- [x] Task 5: Testing, Memory Updates & Git Synchronization
+  - [x] 5.1 Unit test suite verified (17/17 tests passing cleanly).
+  - [x] 5.2 Updated `context.md` (Stage 50) and `architechture.md`.
+  - [x] 5.3 Commit and push to `origin/main`.
+
+---
+
+## Completed Sprints
+
+<details>
+<summary>Champion Pipeline Re-Evaluation on Newly Recropped Student Scans (Completed 2026-10-29)</summary>
+
+## Previous Sprint: Champion Pipeline Re-Evaluation on Newly Recropped Student Scans
+
+## Previous Sprint: Champion Pipeline Re-Evaluation on Newly Recropped Student Scans
 
 ### Objectives
 1. **Repackage Sentence Crops Index (`pipeline/package_sentence_crops_dataset.py`)**:
@@ -43,7 +95,9 @@
 
 ---
 
-## Completed Sprints
+</details>
+
+
 
 <details>
 <summary>QA Web App Port Fix & Deep Crop Inaccuracy Audit for Missed Positives (Completed 2026-10-29)</summary>

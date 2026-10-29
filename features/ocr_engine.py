@@ -162,9 +162,10 @@ class EnglishTrOCREngine:
         self.processor = TrOCRProcessor.from_pretrained(model_name)
         self.model = VisionEncoderDecoderModel.from_pretrained(model_name)
         if hasattr(self.model.config, "decoder"):
-            self.model.config.pad_token_id = getattr(self.model.config.decoder, "pad_token_id", None)
-            self.model.config.decoder_start_token_id = getattr(self.model.config.decoder, "decoder_start_token_id", None)
-            self.model.config.eos_token_id = getattr(self.model.config.decoder, "eos_token_id", None)
+            self.model.config.pad_token_id = getattr(self.model.config.decoder, "pad_token_id", None) or self.tokenizer.pad_token_id or 1
+            dec_start = getattr(self.model.config.decoder, "decoder_start_token_id", None) or self.tokenizer.bos_token_id or self.tokenizer.cls_token_id or 0
+            self.model.config.decoder_start_token_id = dec_start
+            self.model.config.eos_token_id = getattr(self.model.config.decoder, "eos_token_id", None) or self.tokenizer.eos_token_id or 2
         self.model.to(self.device)
         self.model.eval()
 
@@ -353,9 +354,10 @@ class DevanagariTrOCREngine:
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = VisionEncoderDecoderModel.from_pretrained(model_name)
         if hasattr(self.model.config, "decoder"):
-            self.model.config.pad_token_id = getattr(self.model.config.decoder, "pad_token_id", None)
-            self.model.config.decoder_start_token_id = getattr(self.model.config.decoder, "decoder_start_token_id", None)
-            self.model.config.eos_token_id = getattr(self.model.config.decoder, "eos_token_id", None)
+            self.model.config.pad_token_id = getattr(self.model.config.decoder, "pad_token_id", None) or self.tokenizer.pad_token_id or 1
+            dec_start = getattr(self.model.config.decoder, "decoder_start_token_id", None) or self.tokenizer.bos_token_id or self.tokenizer.cls_token_id or 0
+            self.model.config.decoder_start_token_id = dec_start
+            self.model.config.eos_token_id = getattr(self.model.config.decoder, "eos_token_id", None) or self.tokenizer.eos_token_id or 2
         self.model.to(self.device)
         self.model.eval()
 

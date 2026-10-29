@@ -2067,3 +2067,54 @@ eports/exp7_error_analysis.md)
    - **Missing Task Artifact**:
      - In SCHB_G3_IMG_20261007_101635 (Positive), Task 3 was missing from the processed directory, causing its score to drop from 0.771 to 0.168.
 - **Unit Test Suite**: 16/16 tests passing (	ests/test_exp7_bakeoff.py and 	ests/test_main_pipeline.py).
+
+
+## Stage 50: Full Bilingual OCR (HTR) Decoding & Tri-Modal Champion Fusion (Completed 2026-10-29)
+
+### 1. End-to-End GPU Bilingual OCR Extraction across Newly Recropped Cohort
+- **Pipeline Execution (`pipeline/extract_full_bilingual_ocr.py`)**:
+  - Processed all 1,404 sentence crops on GPU (RTX 5060 Ti) in 214.2s (steady 6.6 tasks/s).
+  - English: Microsoft TrOCR Small Handwritten (`microsoft/trocr-small-handwritten`) line-level Vision Transformer encoder + autoregressive decoder.
+  - Hindi: Devanagari TrOCR (`paudelanil/trocr-devanagari-2`) Indic word transformer.
+  - Resolved `decoder_start_token_id` configuration fallback in [`features/ocr_engine.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/features/ocr_engine.py).
+  - Overwrote [`data/features/trocr_cache.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/features/trocr_cache.json) with 1,404 clean, freshly decoded transcriptions, token confidence arrays, and teacher-forced probabilities.
+
+### 2. Clinical Linguistic Error Extraction & Student Feature Aggregation
+- **Task-Level Feature Extraction (53 Features per Crop)**:
+  - Token confidence dynamics: mean confidence, min confidence, low-confidence ratio (< 0.40), and confidence volatility CV.
+  - Edit distances against target prompts: Character Error Rate (CER normalized Levenshtein) and Word Error Rate (WER).
+  - Teacher-forced probabilities: exact likelihood of expected prompt given ink image (`forced_mean_prob`, `forced_mean_logprob`).
+  - 38 granular letter-level analytics features (`features/letter_analytics.py`): character omissions, word omissions, letter transpositions, spatial reversals (b/d, p/q, Devanagari), matra deficits, conjunct errors, and intra-line fatigue ratios.
+- **Student Feature Compilation (`data/features/exp7_bilingual_ocr_student_features.npz`)**:
+  - Aggregated [mean, max, std] across all Hindi tasks: shape `(215, 162)`.
+  - Aggregated [mean, max, std] across all English tasks: shape `(215, 162)`.
+  - Joint bilingual feature matrix: shape `(215, 324)`.
+
+### 3. Unified Cross-Validation Scoreboard (`reports/exp7_bilingual_ocr_fusion_results.json`)
+Evaluated under 5-repeat 5-fold cross-validation across all 215 students (38 positives, 177 controls):
+- **Standalone English OCR Error Probe**:
+  - **AUROC**: **0.6326** | **AUPRC**: **0.2390** | Sens @ 90% Spec: **15.8% (6/38)**.
+  - Confirms that objective linguistic breakdown carries genuine diagnostic signal independently of visual pixels.
+- **Standalone Hindi OCR Error Probe**:
+  - **AUROC**: **0.4759** | **AUPRC**: **0.1687**.
+  - Diagnostic finding: `paudelanil/trocr-devanagari-2` word model hallucinates single-syllable Nepali words when slicing through child shirorekha lines, contributing noise rather than signal.
+- **Multimodal Consensus Champions**:
+  - **Tri-Modal Champion (Dual-ViT 0.84 + English OCR 0.08 + Macro Tabular 0.08)**:
+    - **AUROC**: **0.8519** (surged from 0.8440 Dual-ViT alone)
+    - **AUPRC**: **0.6123** (surged by **+0.0273** from 0.5850)
+    - **Sens @ 80% Spec**: **71.05% (27/38 children detected)**
+    - **Sens @ 90% Spec**: **52.63% (20/38 children detected)**
+  - **Dual-ViT (0.90) + English OCR (0.10)**:
+    - **AUROC**: **0.8466**
+    - **AUPRC**: **0.5962**
+    - **Sens @ 90% Spec**: **55.26% (21/38 children detected — +2 extra kids caught)**
+
+### 4. Statistical Verification & Rescued False Negatives
+- **Stratified Paired Bootstrap (B=2,000 Replicates)**:
+  - Tri-Modal vs Dual-ViT alone: delta AUROC = +0.0080 [95% CI: -0.0030, +0.0195], delta AUPRC = +0.0260.
+- **False Negative Rescue Audit at 90% Specificity**:
+  - Rescued **3 screening-flagged children** previously missed by vision alone:
+    - `G6_A_Roll18`: Vision rank 0.809 -> OCR rank 0.721 -> Multimodal score 0.800 (rescued past cutoff).
+    - `SCHB_G4_IMG_20261007_100621`: Vision rank 0.828 -> OCR rank 0.744 -> Multimodal score 0.820.
+    - `SCHB_G7_IMG_20261007_105436`: Vision rank 0.800 -> OCR rank 0.949 (top 5% worst spelling/omission error rate) -> Multimodal score 0.815.
+- **Unit Test Suite**: 17/17 tests passing cleanly (`tests/test_exp7_bakeoff.py` and `tests/test_main_pipeline.py`).

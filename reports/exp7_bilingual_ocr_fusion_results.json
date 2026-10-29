@@ -1,0 +1,163 @@
+{
+  "cohort_summary": {
+    "n_total": 215,
+    "n_positives": 38,
+    "n_controls": 177
+  },
+  "standalone_models": {
+    "dual_vit_50_50_rank": {
+      "auroc": 0.8439637228664881,
+      "auprc": 0.5850186794989263,
+      "brier": 0.22785690426826477,
+      "sens_at_80": 0.6842105263157895,
+      "det_at_80": 26,
+      "sens_at_90": 0.5,
+      "det_at_90": 19
+    },
+    "dinov2_small": {
+      "auroc": 0.8102884329467737,
+      "auprc": 0.5503873485395226,
+      "brier": 0.13791052997112274,
+      "sens_at_80": 0.6578947368421053,
+      "det_at_80": 25,
+      "sens_at_90": 0.47368421052631576,
+      "det_at_90": 18
+    },
+    "english_ocr_alone": {
+      "auroc": 0.6326196848052333,
+      "auprc": 0.2390145067630575,
+      "brier": 0.23481759428977966,
+      "sens_at_80": 0.2894736842105263,
+      "det_at_80": 11,
+      "sens_at_90": 0.15789473684210525,
+      "det_at_90": 6
+    },
+    "hindi_ocr_alone": {
+      "auroc": 0.47591436217662797,
+      "auprc": 0.16868499059667194,
+      "brier": 0.2519620954990387,
+      "sens_at_80": 0.18421052631578946,
+      "det_at_80": 7,
+      "sens_at_90": 0.05263157894736842,
+      "det_at_90": 2
+    },
+    "bilingual_ocr_joint": {
+      "auroc": 0.5732976509069283,
+      "auprc": 0.2151951197423616,
+      "brier": 0.2372632771730423,
+      "sens_at_80": 0.23684210526315788,
+      "det_at_80": 9,
+      "sens_at_90": 0.18421052631578946,
+      "det_at_90": 7
+    },
+    "macro_tabular_top30": {
+      "auroc": 0.7673208444840915,
+      "auprc": 0.48760096028491956,
+      "brier": 0.16469497978687286,
+      "sens_at_80": 0.5789473684210527,
+      "det_at_80": 22,
+      "sens_at_90": 0.3684210526315789,
+      "det_at_90": 14
+    }
+  },
+  "multimodal_fusion": {
+    "tri_modal_champion": {
+      "weights": {
+        "dual_vit": 0.84,
+        "english_ocr": 0.08,
+        "macro_tabular": 0.08
+      },
+      "metrics": {
+        "auroc": 0.8519179304192686,
+        "auprc": 0.6122749815080907,
+        "brier": 0.22687527537345886,
+        "sens_at_80": 0.7105263157894737,
+        "det_at_80": 27,
+        "sens_at_90": 0.5263157894736842,
+        "det_at_90": 20
+      },
+      "paired_bootstrap_vs_dual_vit": {
+        "delta_auroc_mean": 0.00804936068986024,
+        "delta_auroc_ci_low": -0.0029753939934583805,
+        "delta_auroc_ci_high": 0.019476657746060003,
+        "delta_auprc_mean": 0.026017240959959456,
+        "p_value": 0.163
+      }
+    },
+    "dual_vit_plus_english_ocr": {
+      "weights": {
+        "dual_vit": 0.9,
+        "english_ocr": 0.1
+      },
+      "metrics": {
+        "auroc": 0.8465655664585192,
+        "auprc": 0.5962329367311802,
+        "brier": 0.22941219806671143,
+        "sens_at_80": 0.7105263157894737,
+        "det_at_80": 27,
+        "sens_at_90": 0.5526315789473685,
+        "det_at_90": 21
+      },
+      "paired_bootstrap_vs_dual_vit": {
+        "delta_auroc_mean": 0.0026540291406482314,
+        "delta_auroc_ci_low": -0.006541778174249169,
+        "delta_auroc_ci_high": 0.01196848052334221,
+        "delta_auprc_mean": 0.012099653229041213,
+        "p_value": 0.589
+      }
+    },
+    "high_sens_tri_modal": {
+      "weights": {
+        "dual_vit": 0.8,
+        "english_ocr": 0.12,
+        "macro_tabular": 0.08
+      },
+      "metrics": {
+        "auroc": 0.8508771929824561,
+        "auprc": 0.6010626914422863,
+        "brier": 0.22547367215156555,
+        "sens_at_80": 0.7105263157894737,
+        "det_at_80": 27,
+        "sens_at_90": 0.5263157894736842,
+        "det_at_90": 20
+      }
+    }
+  },
+  "rescue_audit": {
+    "dual_vit_missed_count": 19,
+    "dual_ocr_missed_count": 17,
+    "tri_modal_missed_count": 18,
+    "rescued_students_by_ocr": [
+      "G6_A_Roll18",
+      "SCHB_G4_IMG_20261007_100621",
+      "SCHB_G7_IMG_20261007_105436"
+    ],
+    "rescued_students_by_tri": [
+      "SCHB_G4_IMG_20261007_100621",
+      "SCHB_G7_IMG_20261007_105436"
+    ],
+    "rescue_details": [
+      {
+        "student_id": "G6_A_Roll18",
+        "dual_rank": 0.8093023300170898,
+        "ocr_rank": 0.7209302186965942,
+        "blend_score": 0.8004651069641113,
+        "cutoff_90": 0.8002790212631226
+      },
+      {
+        "student_id": "SCHB_G4_IMG_20261007_100621",
+        "dual_rank": 0.8279069662094116,
+        "ocr_rank": 0.7441860437393188,
+        "blend_score": 0.8195348381996155,
+        "cutoff_90": 0.8002790212631226
+      },
+      {
+        "student_id": "SCHB_G7_IMG_20261007_105436",
+        "dual_rank": 0.800000011920929,
+        "ocr_rank": 0.9488372206687927,
+        "blend_score": 0.8148837089538574,
+        "cutoff_90": 0.8002790212631226
+      }
+    ]
+  }
+}
