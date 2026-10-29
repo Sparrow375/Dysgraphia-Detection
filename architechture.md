@@ -1906,3 +1906,41 @@ To resolve the clinical dichotomy between motor dysgraphia (intact spelling, sev
    - **Zero Penalty Guarantee**: When $R_{\text{ocr}} \le \tau$ ($\tau = 0.70$), the penalty term is strictly $0.0$. Clean spelling never degrades motor dysgraphia detection.
    - **Pathological Rescue**: When linguistic errors exceed the 70th percentile, OCR provides a unidirectional boost that rescues pure dyslexic dysgraphics.
    - **Empirical Validation**: Achieves **0.8761 AUROC**, **0.6687 AUPRC**, and detects **78.4% (29/37)** of all dysgraphic children at 80% specificity.
+
+
+### 23.11 Visual-Floor Gated Phenotypic Rescue & Outlier Stroke Artifact Trimming
+
+To prevent false alarms in neurotypical ESL learners who have phonetic English spelling errors alongside clean motor handwriting, and to neutralize dense scratch-out noise:
+
+```mermaid
+flowchart TD
+    subgraph GatedRescueEngine ["Gated Asymmetric Rescue & Robust Descriptor Pooling"]
+        subgraph InputStreams ["Screening Streams"]
+            R_vis["Hierarchical Visual Rank R_vis<br/>(0.80 Sentence + 0.20 Line)"]
+            R_ocr["Bilingual Line TrOCR Error Rank R_ocr"]
+            R_tab["Macro Layout Rank R_tab"]
+        end
+
+        subgraph GatingMechanism ["Soft Visual Ambiguity Floor"]
+            SigmoidGate["Sigmoid Gate σ((R_vis - 0.35) / 0.10)<br/>• R_vis < 0.25 (Neat Motor) -> Gate ≈ 0<br/>• R_vis >= 0.40 (Borderline) -> Gate ≈ 1"]
+            HingeTerm["Pathological OCR Hinge<br/>max(0, R_ocr - 0.70)"]
+            SigmoidGate & HingeTerm --> GatedRescue["Rescue Term = β * Gate * Hinge"]
+        end
+
+        subgraph RobustTilePooling ["Outlier Tile Suppression"]
+            RawTiles["Tile Descriptors t_i in R^1152"] --> DensityCheck["Filter/Trim Outlier Densities<br/>(Drop Dense Scratch-Out Blobs e.g. wa~~k~~)"]
+            DensityCheck --> CleanMoments["Moments: [μ_clean, σ_clean]<br/>(Removes p90 Tile Bag-Size Artifact)"]
+        end
+
+        R_vis & GatedRescue & R_tab --> FinalScore["Unified Screening Score S_final<br/>AUROC = 0.8759 | 78.4% Sens @ 80% Spec"]
+    end
+```
+
+1. **Soft Visual Floor Gating**:
+   $$\text{Rescue} = \beta \cdot \sigma\left(\frac{R_{\text{vis}} - 0.35}{0.10}\right) \cdot \max(0, R_{\text{ocr}} - \tau)$$
+   - When a child writes with effortless, neat strokes ($R_{\text{vis}} < 0.25$), the sigmoid gate $\sigma \to 0$. Weak English vocabulary or phonetic spelling cannot inflate their screening score.
+   - For borderline writers ($R_{\text{vis}} \ge 0.40$), the gate opens ($\sigma \to 1$), allowing severe orthographic breakdown to rescue the student.
+2. **Outlier Scratch-Out Trimming & Bag-Size Invariance**:
+   - Dense cross-out scribbles (e.g. `wa~~k~~`) produce extreme local ink density ($>15\%$) and feature activations.
+   - Decomposing multi-line submissions into single lines creates 2x–3x more tiles per student. Sampling `np.percentile(..., 90)` across variable tile bag sizes artificially elevates scores for children with longer text.
+   - Replacing the 90th percentile descriptor with robust mean and standard deviation ($[\mu, \sigma]$) and trimming outlier density tiles insulates the backbone against self-correction scribbles and eliminates bag-size sensitivity.

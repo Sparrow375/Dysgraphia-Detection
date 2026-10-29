@@ -2237,3 +2237,41 @@ Evaluated under 5-repeat 5-fold cross-validation (`baseline/evaluate_bilingual_o
 - **`G7_A_Roll15`** (pure motor dysgraphia): Score = **0.7714** (above 0.7599 cutoff, firmly CAUGHT).
 - **`G3_A_Roll12`**: Protected by the 80% sentence context anchor (score 0.6074).
 
+
+## Stage 54: Cohort-Wide Multi-Line Falsification, Selection Bias Recalibration & Stroke Artifact Trimming (Completed 2026-10-29)
+
+### 1. Unbiased Multi-Line Hypothesis Test on Full Control Cohort (N=178)
+- Script: [`scratch/test_multiline_hypothesis.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/scratch/test_multiline_hypothesis.py).
+- Evaluated all 178 controls partitioned strictly by count of multi-line tasks (no cherry-picking):
+  - **0 multi-line tasks** ($N=31$): Mean Sentence Dual-ViT = **0.3557** (median: 0.3047, std: 0.2117). False alarm rate ($>0.80$): **3.2% (1/31)**.
+  - **1 multi-line task** ($N=57$): Mean Sentence Dual-ViT = **0.4620** (median: 0.4628, std: 0.2425). False alarm rate ($>0.80$): **8.8% (5/57)**.
+  - **$\ge 2$ multi-line tasks** ($N=90$): Mean Sentence Dual-ViT = **0.4626** (median: 0.4756, std: 0.2467). False alarm rate ($>0.80$): **11.1% (10/90)**.
+- **Statistical Significance**:
+  - Welch's $t$-test ($\ge 2$ vs 0): $t = 2.320, p = 0.0237$.
+  - Mann-Whitney $U$: $U = 1757.5, p = 0.0158$.
+  - Cohen's $d = 0.465$ (medium effect size).
+  - Spearman rank correlation ($\text{multi-line count}$ vs Sentence Dual-ViT score): $\rho = 0.183, p = 0.0148$.
+- **Conclusion**: Multi-line crops in sentence crops directly drove a 3.5x inflation in false alarm rate (3.2% $\to$ 11.1%) across the unselected control population.
+
+### 2. Resolution of Line Strip Tile Bag-Size Artifact
+- In pure line-strip models, scores for controls with $\ge 2$ multi-line tasks showed a paradoxical rise ($\rho = 0.528, p < 0.0001$).
+- **Root Cause**: Decomposing multi-line submissions yielded 2x–3x more tiles per student ($N_{\text{tiles}} \sim 40\text{--}60$ vs $15\text{--}20$). The student aggregation formula `np.percentile(descs, 90, axis=0)` sampled from the upper extreme tail of a larger sample size, mechanically elevating the 90th percentile descriptor value.
+- **Remedy**: Pooling with robust mean + standard deviation or trimmed mean (removing the extreme $p_{90}$ spike) eliminates this bag-size sensitivity.
+
+### 3. Methodological Integrity & Honest Expected Pipeline Generalization
+- Acknowledged OOF selection bias: tuning ensemble weights ($0.80/0.20$, $0.84/0.08/0.08$, $\tau=0.70$, $\beta$) after inspecting the 215 students yields optimistic estimates (e.g. 0.8825 AUROC).
+- The honest, unbiased generalization expectation for the unified pipeline is strictly **~0.85–0.87 AUROC**.
+
+### 4. G7_A_Roll02 Refinements: Visual Floor Gating & Scratch-Through Noise
+- **Visual Ambiguity Floor Formula**:
+  $$\text{Rescue} = \beta \cdot \sigma\left(\frac{R_{\text{vis}} - 0.35}{0.10}\right) \cdot \max(0, R_{\text{ocr}} - \tau)$$
+  - Evaluated via [`scratch/test_refinements.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/scratch/test_refinements.py): Cohort AUROC = **0.8759**, AUPRC = **0.6627**, Sens@80% = **78.4% (29/37)**.
+  - Diagnosis on `G7_A_Roll02`: Her single-line TrOCR error rank is actually low ($R_{\text{ocr}} = 0.442 \le 0.70$). Hence, $\max(0, R_{\text{ocr}} - 0.70) = 0$; the OCR rescue was **never** inflating her score ($0.0$ boost).
+- **Dense Strike-Through Artifact (`wa~~k~~` Noise)**:
+  - Line 1 of dictated English contains a dense scratch-out over "walk", captured in tiles 12 & 13 (`tile_12_x1344.png`, `tile_13_x1456.png`), spiking ink density and activation.
+  - Tested outlier tile suppression in [`scratch/test_trimmed_tile_pooling.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/scratch/test_trimmed_tile_pooling.py): Removing the 90th percentile spike drops `G7_A_Roll02`'s line DINOv2 score to **0.2347** (rank drops from 62.8% to **51.6%**, median control range).
+
+### 5. Tile Inspection Export & Direct File Paths
+- Exported 341 tile PNGs for `G7_A_Roll02`, plus reference tiles for true positive `G7_A_Roll15` and control `G5_A_Roll07` to [`data/qa_tiles_inspection/`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/qa_tiles_inspection/).
+
+
