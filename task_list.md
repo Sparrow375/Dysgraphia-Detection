@@ -1,5 +1,48 @@
 # Task List — Workstream A
 
+## Active Sprint: Comprehensive Error Analysis & QA Web App Multimodal Integration
+
+### Objectives
+1. **Full-Cohort Error Analysis on Unified Model (215 Students)**:
+   - Rank and audit all 38 screening-flagged positives and top 20 non-dysgraphic controls.
+   - Categorize false negatives into Hard Misses (missed at 80% & 90% spec) and Soft Misses (caught at 80%, missed at 90%).
+   - Identify clinical and visual root causes for each failure mode.
+2. **Export Multimodal Score & Status Cache (`pipeline/export_student_model_scores.py`)**:
+   - Compute student-level out-of-fold scores, percentiles, and classification flags for all 215 students.
+   - Save to `data/features/exp7_student_model_scores.json`.
+3. **QA Web App Live Integration (`qa/app.py`, `qa/web/index.html`, `qa/web/app.js`)**:
+   - Add live error analysis filters: `⚠️ Missed Positives (18 False Negatives)` and `🚨 High-Scoring Controls (Top 20 False Alarms)`.
+   - Embed real-time Model Scorecard on the right inspector panel with component ranks (Dual-ViT, English OCR, DINOv2, Tabular).
+   - Display Tri-Modal score and operational status tags in student dropdown list.
+4. **Comprehensive Documentation & Git Synchronization**:
+   - Generate `reports/exp7_deep_error_analysis_report.md`.
+   - Update `context.md` (Stage 51) and push to `origin/main`.
+
+### Sprint Tasks
+- [x] Task 1: Comprehensive Error Analysis & Statistical Classification
+  - [x] 1.1 Audited all 38 positives: 11 Hard Misses (scores 0.362–0.654), 7 Soft Misses (scores 0.713–0.761).
+  - [x] 1.2 Audited top 20 false alarm controls (scores 0.790–0.935).
+  - [x] 1.3 Identified root causes: inter-line bounding box collision (`G4_A_Roll13`), Grade 3 developmental messiness (`SCHB_G3_IMG_20261007_101651`), kinematic vs spatial dysgraphia dissociation (`G4_A_Roll09`), and grade-differentiated test prompts.
+  - [x] 1.4 Generated detailed clinical markdown report: `reports/exp7_deep_error_analysis_report.md`.
+- [x] Task 2: Multimodal Score Export Pipeline (`pipeline/export_student_model_scores.py`)
+  - [x] 2.1 Generated `data/features/exp7_student_model_scores.json` across all 215 students.
+- [x] Task 3: QA Web App Live Integration
+  - [x] 3.1 Patched `qa/app.py` to serve live model scores in `/api/students` and `/api/student/<sid>`.
+  - [x] 3.2 Patched `qa/web/index.html` and `qa/web/app.js` with dedicated Missed Positives and High-Scoring Controls filters.
+  - [x] 3.3 Embedded real-time Model Scorecard in student metadata panel.
+  - [x] 3.4 Verified server running on `http://127.0.0.1:8090` (Task ID `task-3096`).
+- [x] Task 4: Memory Updates & Git Synchronization
+  - [x] 4.1 Updated `context.md` (Stage 51).
+  - [x] 4.2 Updated `task_list.md`.
+  - [x] 4.3 Commit and push to `origin/main`.
+
+---
+
+## Completed Sprints
+
+<details>
+<summary>Full Bilingual OCR (HTR) Decoding & Multimodal Champion Fusion (Completed 2026-10-29)</summary>
+
 ## Active Sprint: Full Bilingual OCR (HTR) Decoding & Multimodal Champion Fusion
 
 ### Objectives
@@ -45,7 +88,9 @@
 
 ---
 
-## Completed Sprints
+
+
+</details>
 
 <details>
 <summary>Champion Pipeline Re-Evaluation on Newly Recropped Student Scans (Completed 2026-10-29)</summary>

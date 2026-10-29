@@ -49,7 +49,8 @@
                     <label>Status:</label>
                     <select id="statusFilter" class="select-input">
                         <option value="all">All Students</option>
-                        <option value="missed_positives">⚠️ Missed Positives (False Negatives)</option>
+                        <option value="missed_positives">⚠️ Missed Positives (18 False Negatives)</option>
+                        <option value="false_alarms">🚨 High-Scoring Controls (Top 20 False Alarms)</option>
                         <option value="needs_review">Needs Review</option>
                         <option value="verified">Verified</option>
                         <option value="unlabeled">Unlabeled</option>
@@ -150,6 +151,20 @@
                     </div>
                     <div class="meta-notes">
                         <input type="text" id="studentNotes" class="text-input" placeholder="Notes for this student..."/>
+                    </div>
+                    <!-- Multimodal Model Evaluation Card -->
+                    <div id="modelScoreBox" style="margin-top: 12px; padding: 10px; border-radius: 6px; background: #0f172a; border: 1px solid #1e293b; display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-weight: 700; font-size: 13px; color: #38bdf8;">Tri-Modal Champion</span>
+                            <span id="modelTriScore" style="font-weight: 800; font-size: 14px; color: #f8fafc;">---</span>
+                        </div>
+                        <div id="modelStatusBanner" style="font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-align: center; margin-bottom: 8px;">---</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
+                            <div style="background: #1e293b; padding: 4px 6px; border-radius: 4px;"><span style="color:#94a3b8;">Dual-ViT:</span> <strong id="modelDualRank" style="color:#38bdf8;">--</strong></div>
+                            <div style="background: #1e293b; padding: 4px 6px; border-radius: 4px;"><span style="color:#94a3b8;">En-OCR:</span> <strong id="modelOcrRank" style="color:#a855f7;">--</strong></div>
+                            <div style="background: #1e293b; padding: 4px 6px; border-radius: 4px;"><span style="color:#94a3b8;">DINOv2:</span> <strong id="modelDinoRank" style="color:#e2e8f0;">--</strong></div>
+                            <div style="background: #1e293b; padding: 4px 6px; border-radius: 4px;"><span style="color:#94a3b8;">Layout:</span> <strong id="modelTabRank" style="color:#e2e8f0;">--</strong></div>
+                        </div>
                     </div>
                 </div>
 

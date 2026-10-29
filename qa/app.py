@@ -31,6 +31,19 @@ from pipeline.segment import segment_words_devanagari, segment_words_english
 WEB_DIR = REPO_ROOT / "qa" / "web"
 DATA_DIR = REPO_ROOT / "data"
 MANIFEST_PATH = DATA_DIR / "manifest.csv"
+SCORES_PATH = DATA_DIR / "features" / "exp7_student_model_scores.json"
+
+
+def load_all_student_scores() -> Dict[str, Any]:
+    """Load cached multimodal model scores for cohort error analysis."""
+    if not SCORES_PATH.exists():
+        return {}
+    try:
+        with open(SCORES_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get("students", {})
+    except Exception:
+        return {}
 
 
 def get_student_manifest_row(student_id: str) -> Optional[pd.Series]:
@@ -126,6 +139,7 @@ async def api_get_students(request: web.Request) -> web.Response:
         df = df[df["school"] == school_filter]
 
     df = df.sort_values(by=["school", "grade", "roll_number", "student_id"])
+    all_scores = load_all_student_scores()
 
     students = []
     for _, row in df.iterrows():
@@ -156,6 +170,7 @@ async def api_get_students(request: web.Request) -> web.Response:
         expected = 4 if grade == 3 else 6
         status = "verified" if is_verified else ("complete" if json_count == expected else "review_needed")
 
+        scores = all_scores.get(sid, {})
         students.append({
             "student_id": sid,
             "school": school,
@@ -168,6 +183,16 @@ async def api_get_students(request: web.Request) -> web.Response:
             "verified": is_verified,
             "status": status,
             "notes": notes,
+            "tri_score": scores.get("tri_score"),
+            "tri_rank": scores.get("tri_rank"),
+            "dual_rank": scores.get("dual_rank"),
+            "ocr_rank": scores.get("ocr_rank"),
+            "dino_rank": scores.get("dino_rank"),
+            "tab_rank": scores.get("tab_rank"),
+            "tool": scores.get("tool", "unknown"),
+            "is_missed_positive": scores.get("is_missed_positive", False),
+            "is_false_alarm": scores.get("is_false_alarm", False),
+            "classification_90": scores.get("classification_90", ""),
         })
 
     return web.json_response({"students": students})
@@ -259,6 +284,7 @@ async def api_get_student_detail(request: web.Request) -> web.Response:
         "sentences": sentences,
         "verified": bool(status_data.get("verified", False)),
         "notes": str(status_data.get("notes", "")),
+        "model_scores": load_all_student_scores().get(sid, {}),
     })
 
 

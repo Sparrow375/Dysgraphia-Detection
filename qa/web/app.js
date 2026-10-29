@@ -113,6 +113,13 @@
         metaTasksCount: document.getElementById('metaTasksCount'),
         metaWordsCount: document.getElementById('metaWordsCount'),
         studentNotes: document.getElementById('studentNotes'),
+        modelScoreBox: document.getElementById('modelScoreBox'),
+        modelTriScore: document.getElementById('modelTriScore'),
+        modelStatusBanner: document.getElementById('modelStatusBanner'),
+        modelDualRank: document.getElementById('modelDualRank'),
+        modelOcrRank: document.getElementById('modelOcrRank'),
+        modelDinoRank: document.getElementById('modelDinoRank'),
+        modelTabRank: document.getElementById('modelTabRank'),
         
         editorCard: document.getElementById('editorCard'),
         editorStatus: document.getElementById('editorStatus'),
@@ -341,7 +348,9 @@
         }
 
         if (state.statusFilter === 'missed_positives') {
-            filtered = filtered.filter(s => MISSED_POSITIVES_SET.has(s.student_id));
+            filtered = filtered.filter(s => s.is_missed_positive || MISSED_POSITIVES_SET.has(s.student_id));
+        } else if (state.statusFilter === 'false_alarms') {
+            filtered = filtered.filter(s => s.is_false_alarm);
         } else if (state.statusFilter === 'needs_review') {
             filtered = filtered.filter(s => !s.verified);
         } else if (state.statusFilter === 'verified') {
@@ -369,11 +378,17 @@
             const opt = document.createElement('option');
             opt.value = s.student_id;
             const posBadge = s.label === 1 ? ' [At-Risk]' : (s.label === 0 ? ' [Normal]' : ' [?]');
-            const isMissed = MISSED_POSITIVES_SET.has(s.student_id);
-            const missedBadge = isMissed ? ' ⚠️[FN]' : '';
+            let flagBadge = '';
+            if (s.is_missed_positive || MISSED_POSITIVES_SET.has(s.student_id)) {
+                flagBadge = ' ⚠️[MISSED]';
+            } else if (s.is_false_alarm) {
+                flagBadge = ' 🚨[FALSE ALARM]';
+            }
+            const scoreStr = (s.tri_score !== undefined && s.tri_score !== null) ? ` [Tri: ${s.tri_score.toFixed(3)}]` : '';
+            const toolStr = (s.tool && s.tool !== 'unknown') ? ` (${s.tool})` : '';
             const verBadge = s.verified ? ' [✓]' : '';
             const schPrefix = state.schoolFilter === 'all' ? `[${s.school === 'school_b' ? 'B' : 'A'}] ` : '';
-            opt.textContent = `${schPrefix}${s.student_id} (G${s.grade} R${s.roll_number})${posBadge}${verBadge}`;
+            opt.textContent = `${schPrefix}${s.student_id} (G${s.grade} R${s.roll_number}${toolStr})${scoreStr}${posBadge}${flagBadge}${verBadge}`;
             el.studentSelect.appendChild(opt);
         });
 
@@ -445,6 +460,40 @@
         } else {
             el.verifyBtn.classList.remove('is-verified');
             el.verifyBtn.innerHTML = '<span class="icon">&#10003;</span> Mark Verified';
+        }
+
+        // Render Model Scores Box
+        const ms = data.model_scores || {};
+        if (ms && ms.tri_score !== undefined && el.modelScoreBox) {
+            el.modelScoreBox.style.display = 'block';
+            el.modelTriScore.textContent = `${ms.tri_score.toFixed(3)} (${(ms.tri_rank * 100).toFixed(1)}%tile)`;
+            
+            const isMissed = ms.is_missed_positive;
+            const isFalseAlarm = ms.is_false_alarm;
+            if (isMissed) {
+                el.modelStatusBanner.style.background = '#7f1d1d';
+                el.modelStatusBanner.style.color = '#fecaca';
+                el.modelStatusBanner.textContent = '⚠️ MISSED POSITIVE (Below 90% Spec Cutoff)';
+            } else if (isFalseAlarm) {
+                el.modelStatusBanner.style.background = '#7c2d12';
+                el.modelStatusBanner.style.color = '#fed7aa';
+                el.modelStatusBanner.textContent = '🚨 FALSE ALARM CONTROL (Above 90% Spec Cutoff)';
+            } else if (curLabel === 1) {
+                el.modelStatusBanner.style.background = '#14532d';
+                el.modelStatusBanner.style.color = '#bbf7d0';
+                el.modelStatusBanner.textContent = '✓ CAUGHT POSITIVE (Above Cutoff)';
+            } else {
+                el.modelStatusBanner.style.background = '#1e293b';
+                el.modelStatusBanner.style.color = '#94a3b8';
+                el.modelStatusBanner.textContent = '✓ CORRECT NORMAL CONTROL';
+            }
+
+            el.modelDualRank.textContent = ms.dual_rank !== undefined ? `${(ms.dual_rank * 100).toFixed(1)}%` : '--';
+            el.modelOcrRank.textContent = ms.ocr_rank !== undefined ? `${(ms.ocr_rank * 100).toFixed(1)}%` : '--';
+            el.modelDinoRank.textContent = ms.dino_rank !== undefined ? `${(ms.dino_rank * 100).toFixed(1)}%` : '--';
+            el.modelTabRank.textContent = ms.tab_rank !== undefined ? `${(ms.tab_rank * 100).toFixed(1)}%` : '--';
+        } else if (el.modelScoreBox) {
+            el.modelScoreBox.style.display = 'none';
         }
     }
 

@@ -2118,3 +2118,51 @@ Evaluated under 5-repeat 5-fold cross-validation across all 215 students (38 pos
     - `SCHB_G4_IMG_20261007_100621`: Vision rank 0.828 -> OCR rank 0.744 -> Multimodal score 0.820.
     - `SCHB_G7_IMG_20261007_105436`: Vision rank 0.800 -> OCR rank 0.949 (top 5% worst spelling/omission error rate) -> Multimodal score 0.815.
 - **Unit Test Suite**: 17/17 tests passing cleanly (`tests/test_exp7_bakeoff.py` and `tests/test_main_pipeline.py`).
+
+
+## Stage 51: Comprehensive Error Analysis & QA Web App Multimodal Integration (Completed 2026-10-29)
+
+### 1. Unified Cohort Error Analysis Audit (`reports/exp7_deep_error_analysis_report.md`)
+Conducted a systematic audit of all 38 screening-flagged positives and 177 non-dysgraphic controls under the Tri-Modal Champion (Dual-ViT 0.84 + English OCR 0.08 + Tabular 0.08):
+- **Operating Thresholds**:
+  - **High Sensitivity (80% Specificity)**: Threshold = **0.6967** | Sensitivity = **71.1% (27/38 detected)** | 11 Hard Misses.
+  - **High Precision (90% Specificity)**: Threshold = **0.7902** | Sensitivity = **52.6% (20/38 detected)** | 18 Missed (11 Hard Misses + 7 Soft Misses).
+
+### 2. Breakdown of the 18 Missed Positives (False Negatives)
+- **11 Hard Misses (Missed at both 80% and 90% Specificity, Scores 0.362 – 0.654)**:
+  1. `G6_A_Roll28` (0.362, Rank 34.4%): Very light, uniform pencil writing; straight baselines; easily read by TrOCR and vision backbones.
+  2. `G4_A_Roll09` (0.389, Rank 38.6%): Exceptionally neat penmanship (Dual-ViT bottom 30%). Clinical candidate for *kinematic/temporal dysgraphia* (high pause duration, slow speed, pain) rather than visual/spatial dysgraphia.
+  3. `SCHB_G8_IMG_20261007_104901` (0.428, Rank 42.8%): Grade 8 student with mature handwriting; only 4 tasks present; TrOCR achieved 99.5th percentile cleanliness.
+  4. `G5_A_Roll07` (0.479, Rank 47.0%): Rescued from 0.078 post-recropping, but high OCR confidence (95%) keeps consensus below cutoff.
+  5. `SCHB_G4_IMG_20261007_100335` (0.511, Rank 51.6%): Massive OCR error rate (93.0th percentile worst), but normal vision score (45.6%) dilutes consensus.
+  6. `SCHB_G3_IMG_20261007_101635` (0.548, Rank 56.7%): Incomplete sheet (only 3 tasks completed: T1, T2, T4); missing 3 entire tasks.
+  7. `SCHB_G7_IMG_20261007_105512` (0.598), `SCHB_G6_IMG_20261007_102039` (0.618), `G7_A_Roll06` (0.642), `G3_A_Roll12` (0.647), `SCHB_G4_IMG_20261007_100148` (0.654).
+- **7 Soft Misses (Borderline Positives, Caught at 80% Specificity, Scores 0.713 – 0.761 vs 0.790 Cutoff)**:
+  - `G3_A_Roll15` (0.713, OCR Rank 89.8%), `G6_A_Roll26` (0.714, OCR Rank 87.4%), `G6_A_Roll27` (0.750, OCR Rank 80.0%), `SCHB_G7_IMG_20261007_105422` (0.753, OCR Rank 78.6%), `G3_A_Roll19` (0.755, Dual-ViT 81.9%), `G6_A_Roll18` (0.756, Dual-ViT 80.9%, OCR 72.1%), `G7_A_Roll15` (0.761, DINOv2 94.0% severe micro-tremor).
+
+### 3. Breakdown of Top False Alarm Controls (High-Scoring Controls)
+Top false alarms exceed 0.790 at 90% specificity:
+- `SCHB_G3_IMG_20261007_101651` (0.935, DualR 95.3%, OCRR 99.1%): Grade 3 developmental disorganization flagged by both vision and language.
+- `G3_A_Roll05` (0.921, DualR 98.6%, DinoR 99.1%): Faint pencil pressure and heavy erasure smudges mimicking stroke fragmentation.
+- `SCHB_G4_IMG_20261007_100350` (0.909), `G7_A_Roll23` (0.898), `G7_A_Roll02` (0.894).
+- `G4_A_Roll13` (0.885, DualR 90.7%): Inter-line box overlap of 18px creates artificial stroke collision in tile extractor.
+- `SCHB_G6_IMG_20261007_102238` (0.881), `G6_A_Roll03` (0.860), `G6_A_Roll12` (0.854), `G3_A_Roll23` (0.851), `G3_A_Roll04` (0.847).
+
+### 4. Key Diagnostic Discovery: Grade-Differentiated Prompts
+Analysis of `trocr_cache.json` revealed that physical test sheets used grade-differentiated prompts:
+- Grade 3: "My mother cooks food in the kitchen..."
+- Grade 4: "On Sundays we play cricket with our friends..."
+- Grade 5: "We went to the market to buy fresh vegetables..."
+- Grade 6: "Rain falls from the clouds and fills the rivers and lakes..."
+- Grade 7: "The quick brown fox jumps over the lazy dog..."
+- Grade 8: "Today he wrote biology exam..."
+Because `sentences_index.csv` had previously hardcoded target prompts to Grade 4 text, string edit metrics were comparing Grade 5/6/7/8 kids against Grade 4 text. Despite this mismatch, TrOCR token confidence and perplexity alone provided 0.6326 AUROC.
+
+### 5. QA Web App Upgrades (`qa/app.py`, `qa/web/index.html`, `qa/web/app.js`)
+- Generated unified score and status cache: [`data/features/exp7_student_model_scores.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/features/exp7_student_model_scores.json).
+- Added dedicated filter dropdown options:
+  - `⚠️ Missed Positives (18 False Negatives)`: Instantly lists all 18 false negatives.
+  - `🚨 High-Scoring Controls (Top 20 False Alarms)`: Instantly lists top false alarm controls.
+- Upgraded student dropdown format: Displays student ID, grade, roll, writing tool, Tri-Modal score, and operational status tag.
+- Added live Model Scorecard card to student metadata panel: Shows Tri-Modal score, cohort percentile rank, status banner, Dual-ViT vision rank, English OCR error rank, DINOv2 rank, and tabular rank.
+- QA server verified running on `http://127.0.0.1:8090` (Task ID `task-3096`).
