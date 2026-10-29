@@ -318,6 +318,67 @@ def get_student_ground_truth(student_id: str, script: str = "S1") -> Optional[Di
         return None
 
 
+def generate_panel5_dinov2_attention(
+    image_input: Union[str, os.PathLike, np.ndarray]
+) -> str:
+    """
+    Panel 5: Frozen DINOv2 ViT-S/14 Foreground Ink Patch Activation Heatmap
+    Shows the 37x37 patch grid over the handwriting ink, revealing spatial attention
+    focused on motor control cues (ink pooling, hesitation, edge tapering, roughness).
+    """
+    fig, ax = plt.subplots(figsize=(6.5, 4.8), facecolor='#0f172a')
+    ax.set_facecolor('#0f172a')
+
+    try:
+        from src.branch_b.dinov2_extractor import extract_ink_masked_dinov2_features
+        from scipy.ndimage import zoom
+        dino_res = extract_ink_masked_dinov2_features(image_input)
+        att_map = dino_res["patch_attention_map"]  # (37, 37)
+        mask = dino_res["active_patches_mask"]      # (37, 37)
+        clean_bin = dino_res["clean_binary"]        # (518, 518)
+
+        # Upsample attention map to 518x518 with bilinear interpolation
+        scale = 518.0 / 37.0
+        att_full = zoom(att_map, (scale, scale), order=1)
+        att_full = (att_full - np.min(att_full)) / max(np.max(att_full) - np.min(att_full), 1e-6)
+
+        # Base background
+        rgb_disp = np.full((518, 518, 3), [15/255, 23/255, 42/255], dtype=np.float32)
+
+        # Apply plasma colormap to active ink regions
+        cmap = plt.cm.get_cmap('plasma')
+        colored_att = cmap(att_full)[:, :, :3]
+
+        # Blend on ink
+        ink_mask_3d = np.stack([clean_bin > 0] * 3, axis=-1)
+        rgb_disp = np.where(ink_mask_3d, colored_att, rgb_disp)
+
+        ax.imshow(rgb_disp)
+
+        # Overlay subtle 37x37 grid lines
+        for g_idx in range(0, 519, 14):
+            ax.axvline(g_idx, color='#334155', linestyle='-', linewidth=0.4, alpha=0.3)
+            ax.axhline(g_idx, color='#334155', linestyle='-', linewidth=0.4, alpha=0.3)
+
+        active_cnt = int(np.sum(mask))
+        ax.set_title(
+            f"DINOv2 ViT-S/14 Foreground Ink Activation\nActive Ink Patches: {active_cnt}/1369 (Coverage >4%)",
+            color='#f8fafc', fontsize=9, fontweight='bold'
+        )
+        ax.text(
+            10, 505,
+            "Dense 384-D Patch Embeddings -> In-Fold PCA (k=8..32) + Ridge/Trees Fusion",
+            color='#94a3b8', fontsize=7, backgroundcolor='#0f172abb'
+        )
+    except Exception as e:
+        ax.text(0.5, 0.5, f"DINOv2 Feature Map\n(Available via PyTorch/CUDA)\n{str(e)[:50]}", 
+                color='#38bdf8', ha='center', va='center', fontsize=9)
+
+    ax.axis('off')
+    plt.tight_layout()
+    return fig_to_base64(fig)
+
+
 def harmonize_and_visualize(
     image_input: Union[str, os.PathLike, np.ndarray],
     script: str = "S1",
@@ -328,6 +389,7 @@ def harmonize_and_visualize(
     Main entry point for UI & API:
     Executes complete physical extraction, regression prediction,
     and returns both the 13 canonical estimates AND the 4 diagnostic base64 overlay images.
+    and returns both the 13 canonical estimates AND the 5 diagnostic base64 overlay images.
     """
     engine = HarmonizationEngine()
     arr_gray, clean_binary, h_med, doc_type = engine._preprocess_image(image_input)
@@ -348,7 +410,8 @@ def harmonize_and_visualize(
         script=script,
         grade=grade,
         raw_n_strokes=extracted["n_strokes"],
-        raw_total_arc=extracted["total_arc_norm"]
+        raw_total_arc=extracted["total_arc_norm"],
+        dino_vec=extracted.get("dino_vec", None)
     )
 
     # Reconstruct dynamic arrays for visualization
@@ -359,10 +422,12 @@ def harmonize_and_visualize(
     opt_dict = extract_photometric_cross_sections(arr_gray, strokes_np, h_med=h_med)
 
     # Generate 4 diagnostic figures
+    # Generate 5 diagnostic figures
     p1_img = generate_panel1_normalization(arr_gray, clean_binary, h_med, doc_type)
     p2_img = generate_panel2_skeleton_and_graph(clean_binary, cg, strokes_np, h_med)
     p3_img = generate_panel3_velocity_heatmap(clean_binary, strokes_np, dt_res, h_med)
     p4_img = generate_panel4_tremor_and_width(tremor_dict, opt_dict, h_med)
+    p5_img = generate_panel5_dinov2_attention(image_input)
 
     # Ground truth lookup if student ID provided or detected
     gt_data = None
@@ -387,6 +452,7 @@ def harmonize_and_visualize(
             "panel2": p2_img,
             "panel3": p3_img,
             "panel4": p4_img,
+            "panel5": p5_img
         },
         "ground_truth": gt_data
     }
