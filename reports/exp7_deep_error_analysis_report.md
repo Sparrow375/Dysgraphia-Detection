@@ -164,3 +164,4 @@ The QA Web App (`http://127.0.0.1:8090`) is updated with live filtering and scor
      - Dual-ViT, English OCR, DINOv2, and Tabular component percentile ranks.
 5. **Adjusting Crops**:
    - You can drag box boundaries to eliminate inter-line overlap (e.g. on `G4_A_Roll13`) and hit **Save & Recrop** (Hotkey: `S`).
+

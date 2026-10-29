@@ -2166,3 +2166,41 @@ Because `sentences_index.csv` had previously hardcoded target prompts to Grade 4
 - Upgraded student dropdown format: Displays student ID, grade, roll, writing tool, Tri-Modal score, and operational status tag.
 - Added live Model Scorecard card to student metadata panel: Shows Tri-Modal score, cohort percentile rank, status banner, Dual-ViT vision rank, English OCR error rank, DINOv2 rank, and tabular rank.
 - QA server verified running on `http://127.0.0.1:8090` (Task ID `task-3096`).
+
+
+## Stage 52: Ground-Truth Re-Classifications & Phenotypic Gating Architecture (Completed 2026-10-29)
+
+### 1. User-Directed Ground Truth Re-Classifications
+Synchronized across all manifest, review status, datasets, crop indices, and feature archives via [`pipeline/apply_user_label_reclassifications.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/pipeline/apply_user_label_reclassifications.py):
+1. **`G5_A_Roll07`** (School A, Grade 5, Pencil): Reclassified from Positive (1) -> Negative (0).
+2. **`SCHB_G3_IMG_20261007_101635`** (School B, Grade 3, Pencil): Reclassified from Positive (1) -> Negative (0).
+3. **`SCHB_G4_IMG_20261007_100350`** (School B, Grade 4, Pencil): Reclassified from Control (0) -> Positive (1). (The model had already assigned it a 0.9095 score [94th percentile worst in cohort]; confirmed by visual inspection as true dysgraphia).
+
+### 2. Multi-Modal Benchmark Leap on Cleaned Cohort (37 Positives, 178 Controls)
+Evaluated under 5-repeat 5-fold cross-validation (`baseline/evaluate_bilingual_ocr_fusion.py`):
+- **Dual-ViT Vision Champion Standalone**:
+  - AUROC: **0.8620** (jumped from 0.8440) | AUPRC: **0.6165** | Sens @ 90% Spec: **56.8% (21/37)**.
+- **English OCR Standalone**:
+  - AUROC: **0.6540** (jumped from 0.6326) | AUPRC: **0.2462**.
+- **Tri-Modal Champion (Dual-ViT 0.84 + EnOCR 0.08 + Tabular 0.08)**:
+  - AUROC: **0.8709** (jumped from 0.8519) | AUPRC: **0.6530** (jumped from 0.6123).
+  - Sens @ 80% Spec: **75.7% (28/37 children detected)**.
+  - Sens @ 90% Spec: **56.8% (21/37 children detected)**.
+- **Dual-ViT + English OCR (0.90 / 0.10)**:
+  - AUROC: **0.8659** | AUPRC: **0.6287** | Sens @ 90% Spec reaches **59.5% (22/37 children detected)**.
+
+### 3. Deep Clinical & Mathematical Resolution: Is OCR an "AND" or an "OR"?
+- **The Linear Blend Compromise ("Soft AND")**:
+  - A weighted linear combination $0.84 \cdot R_{\text{vision}} + 0.08 \cdot R_{\text{ocr}} + 0.08 \cdot R_{\text{tab}}$ operates as an arithmetic mean.
+  - If a child has **pure motor dysgraphia** with clean orthography, their low OCR error rate slightly penalizes their total score.
+  - If a child has **pure dyslexic dysgraphia** with high OCR error (e.g. `SCHB_G4_IMG_20261007_100335` at 93.0th percentile), but straight pen strokes, the heavy vision weight dilutes their score, causing them to be missed.
+- **The Hard "OR" Failure**:
+  - An unconstrained `max(Vision, OCR)` drops AUROC from 0.871 down to 0.797 because normal bilingual kids who make phonetic ESL spelling mistakes get pushed to the top as false alarms.
+- **The Optimal Clinical Solution: Asymmetric Non-Penalizing Gating**:
+  - Vision is the foundational anchor.
+  - Clean spelling should NEVER penalize a motor dysgraphic child ($R_{\text{vision}} \ge 0.85$).
+  - Linguistic breakdown acts as an asymmetric rescue term only when OCR error exceeds a high pathological threshold ($\tau \ge 0.80$), rescuing dyslexic dysgraphics without inflating normal controls.
+
+### 4. Student Case Diagnoses
+- **`G7_A_Roll02` (Uploaded Image)**: Upright, legible handwriting with slight tilt. Why did it get a high score (0.894)? Because sentences wrap across 2 lines in single bounding boxes (e.g. copy English $h=272\text{px}$), and line 4 has a crossed-out word (`walk to school`). The tile extractor captures overlapping lines, which DINOv2 self-attention penalizes as multi-line collisions.
+- **`SCHB_G6_IMG_20261007_102238`**: English sentence written over too many lines caused an oversized crop, triggering similar multi-line tile density spikes.

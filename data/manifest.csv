@@ -50,7 +50,7 @@ G5_A_Roll03,school_a,Future Gen,5,A,3,0.0,paper+stylus,MATCHED,IMG_20261006_1015
 G5_A_Roll04,school_a,Future Gen,5,A,4,0.0,paper+stylus,MATCHED,IMG_20261006_101631.jpg,data/school_a/raw/grade 5/IMG_20261006_101631.jpg,False
 G5_A_Roll05,school_a,Future Gen,5,A,5,1.0,paper+stylus,MATCHED,IMG_20261006_101647.jpg,data/school_a/raw/grade 5/IMG_20261006_101647.jpg,False
 G5_A_Roll06,school_a,Future Gen,5,A,6,0.0,paper+stylus,MATCHED,IMG_20261006_101700.jpg,data/school_a/raw/grade 5/IMG_20261006_101700.jpg,False
-G5_A_Roll07,school_a,Future Gen,5,A,7,1.0,paper+stylus,MATCHED,IMG_20261006_101721.jpg,data/school_a/raw/grade 5/IMG_20261006_101721.jpg,False
+G5_A_Roll07,school_a,Future Gen,5,A,7,0.0,expert_manual_review,MATCHED,IMG_20261006_101721.jpg,data/school_a/raw/grade 5/IMG_20261006_101721.jpg,False
 G5_A_Roll08,school_a,Future Gen,5,A,8,0.0,paper+stylus,MATCHED,IMG_20261006_101734.jpg,data/school_a/raw/grade 5/IMG_20261006_101734.jpg,False
 G5_A_Roll09,school_a,Future Gen,5,A,9,0.0,paper+stylus,MATCHED,IMG_20261006_101758.jpg,data/school_a/raw/grade 5/IMG_20261006_101758.jpg,False
 G5_A_Roll10,school_a,Future Gen,5,A,10,0.0,paper+stylus,MATCHED,IMG_20261006_101814.jpg,data/school_a/raw/grade 5/IMG_20261006_101814.jpg,False
@@ -116,7 +116,7 @@ G7_A_Roll24,school_a,Future Gen,7,A,24,0.0,paper+stylus,MATCHED,IMG_20261006_101
 G7_A_Roll25,school_a,Future Gen,7,A,25,0.0,paper+stylus,MATCHED,IMG_20261006_101040.jpg,data/school_a/raw/Grade 7/IMG_20261006_101040.jpg,False
 SCHB_G3_IMG_20261007_101611,school_b,Kanyashala,3,unassigned,-1,0.0,manual_review_web_app_control,HELD_OUT,IMG_20261007_101611.jpg,data/school_b/raw/Grade 3/IMG_20261007_101611.jpg,True
 SCHB_G3_IMG_20261007_101621,school_b,Kanyashala,3,unassigned,-1,0.0,manual_review_web_app_control,HELD_OUT,IMG_20261007_101621.jpg,data/school_b/raw/Grade 3/IMG_20261007_101621.jpg,True
-SCHB_G3_IMG_20261007_101635,school_b,Kanyashala,3,unassigned,-1,1.0,manual_review_web_app,HELD_OUT,IMG_20261007_101635.jpg,data/school_b/raw/Grade 3/IMG_20261007_101635.jpg,True
+SCHB_G3_IMG_20261007_101635,school_b,Kanyashala,3,unassigned,-1,0.0,expert_manual_review,HELD_OUT,IMG_20261007_101635.jpg,data/school_b/raw/Grade 3/IMG_20261007_101635.jpg,True
 SCHB_G3_IMG_20261007_101645,school_b,Kanyashala,3,unassigned,-1,1.0,manual_review_web_app,HELD_OUT,IMG_20261007_101645.jpg,data/school_b/raw/Grade 3/IMG_20261007_101645.jpg,True
 SCHB_G3_IMG_20261007_101651,school_b,Kanyashala,3,unassigned,-1,0.0,manual_review_web_app_control,HELD_OUT,IMG_20261007_101651.jpg,data/school_b/raw/Grade 3/IMG_20261007_101651.jpg,True
 SCHB_G3_IMG_20261007_101659,school_b,Kanyashala,3,unassigned,-1,0.0,manual_review_web_app_control,HELD_OUT,IMG_20261007_101659.jpg,data/school_b/raw/Grade 3/IMG_20261007_101659.jpg,True
@@ -142,7 +142,7 @@ SCHB_G4_IMG_20261007_100303,school_b,Kanyashala,4,unassigned,-1,0.0,manual_revie
 SCHB_G4_IMG_20261007_100314,school_b,Kanyashala,4,unassigned,-1,0.0,manual_review_web_app_control,HELD_OUT,IMG_20261007_100314.jpg,data/school_b/raw/Grade 4/IMG_20261007_100314.jpg,True
 SCHB_G4_IMG_20261007_100325,school_b,Kanyashala,4,unassigned,-1,0.0,manual_review_web_app_control,HELD_OUT,IMG_20261007_100325.jpg,data/school_b/raw/Grade 4/IMG_20261007_100325.jpg,True
 SCHB_G4_IMG_20261007_100335,school_b,Kanyashala,4,unassigned,-1,1.0,manual_review_web_app,HELD_OUT,IMG_20261007_100335.jpg,data/school_b/raw/Grade 4/IMG_20261007_100335.jpg,True
-SCHB_G4_IMG_20261007_100350,school_b,Kanyashala,4,unassigned,-1,0.0,manual_review_web_app_control,HELD_OUT,IMG_20261007_100350.jpg,data/school_b/raw/Grade 4/IMG_20261007_100350.jpg,True
+SCHB_G4_IMG_20261007_100350,school_b,Kanyashala,4,unassigned,-1,1.0,expert_manual_review,HELD_OUT,IMG_20261007_100350.jpg,data/school_b/raw/Grade 4/IMG_20261007_100350.jpg,True
 SCHB_G4_IMG_20261007_100402,school_b,Kanyashala,4,unassigned,-1,0.0,manual_review_web_app_control,HELD_OUT,IMG_20261007_100402.jpg,data/school_b/raw/Grade 4/IMG_20261007_100402.jpg,True
 SCHB_G4_IMG_20261007_100411,school_b,Kanyashala,4,unassigned,-1,0.0,manual_review_web_app_control,HELD_OUT,IMG_20261007_100411.jpg,data/school_b/raw/Grade 4/IMG_20261007_100411.jpg,True
 SCHB_G4_IMG_20261007_100422,school_b,Kanyashala,4,unassigned,-1,0.0,manual_review_web_app_control,HELD_OUT,IMG_20261007_100422.jpg,data/school_b/raw/Grade 4/IMG_20261007_100422.jpg,True
