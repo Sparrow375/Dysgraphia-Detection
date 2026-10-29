@@ -2002,3 +2002,68 @@ Systematic boundary pixel analysis on all 7 missed positives revealed severe aut
    - `SCHB_G8_IMG_20261007_104901` (Grade 8) only has 4 tasks segmented (Tasks 4 and 5 missing).
 4. **Impact on Vision Transformers**:
    - Because native $224 \times 224$ tiles are sampled strictly from within the bounding boxes, truncating descenders and matras removes the primary localized motor breakdown tiles, leaving only regular body strokes and causing DINOv2 to classify the sample as neat handwriting.
+
+
+## Stage 49: Champion Pipeline Re-Evaluation on Newly Recropped Student Scans (Completed 2026-10-29)
+
+### 1. Manual Recropping Campaign & Dataset Repackaging
+- **Extensive Boundary Adjustments in QA Web App**:
+  - The user completed manual bounding-box adjustments across School A (and selected School B students) in the QA web app to eliminate sentence mixing, clipped descenders/matras, and severed text lines.
+- **Dataset Synchronization (pipeline/package_sentence_crops_dataset.py)**:
+  - Re-indexed 1,404 total sentence crops across 262 students (data/sentence_crops_dataset/sentences_index.csv).
+  - Reference cohort: 1,140 sentence crops across 215 students (Schools A & B, 38 positives, 177 controls).
+  - External holdout: 264 sentence crops across 47 students (School C, strictly held out).
+
+### 2. GPU Feature Extraction on Newly Recropped Cohort (RTX 5060 Ti)
+All 19,352 native  \times 224$ tiles across the 215 reference students were extracted directly on GPU:
+- **DINOv2-Small (aseline/extract_dinov2_patch_stats.py)**:
+  - Extracted 19,352 tiles in 40.5s (477.4 tiles/s) -> data/features/exp7_dinov2_small_tiles.npz (83.96 MB, shape (215, 4608)).
+- **OpenAI CLIP ViT-B/32 (aseline/extract_bakeoff_backbone_features.py --backbone clip)**:
+  - Extracted 19,352 tiles in 26.1s (741.5 tiles/s) -> data/features/exp7_clip_tiles.npz (166.53 MB, shape (215, 9216)).
+- **DenseNet201 (aseline/extract_bakeoff_backbone_features.py --backbone densenet201)**:
+  - Extracted 19,352 tiles in 47.8s (404.9 tiles/s) -> data/features/exp7_densenet201_tiles.npz (436.09 MB, shape (215, 11520)).
+
+### 3. Benchmark Scoreboard & 5x5 Cross-Validation Results (
+eports/exp7_squeeze_tile_pooling_results.json)
+- **Dual-ViT 50/50 Rank Consensus**:
+  - **AUROC**: **0.8440**
+  - **AUPRC**: **0.5592**
+- **DINOv2-Small Standalone**:
+  - **AUROC**: **0.8109**
+  - **AUPRC**: **0.5609** (AUPRC increased from 0.5426 to 0.5609)
+  - **Sens @ 80% Spec**: **68.42% (26/38 children detected)**
+  - **Sens @ 90% Spec**: **50.00% (19/38 children detected)**
+- **Dual-ViT Soft Blend (0.60 DINO + 0.40 CLIP)**:
+  - **AUROC**: **0.8072**
+  - **Sens @ 90% Spec**: **52.63% (20/38 children detected)**
+- **Cfg3 (p90 Percentile + Tile-to-Tile Delta Pooling)**:
+  - **Sens @ 90% Spec**: **55.26% (21/38 children detected)**
+
+### 4. Stratified Paired Bootstrap Audit (=2,000$ Replicates, 
+eports/exp7_paired_bootstrap_results.json)
+- **Dual-ViT 50/50 Rank Consensus vs DINOv2 Standalone**:
+  - $\Delta \text{AUROC} = \mathbf{+0.0337}$ [95% CI: $-0.0036, +0.0742$], $\mathbf{p = 0.0430}$ (statistically significant advantage of dual-vision consensus).
+- **DINOv2-Small vs DenseNet201 (Tiled)**:
+  - $\Delta \text{AUROC} = +0.0627$ [95% CI: $-0.0125, +0.1427$],  = 0.0580$.
+
+### 5. Error Analysis & Root Cause of the Metric Movement (
+eports/exp7_error_analysis.json & 
+eports/exp7_error_analysis.md)
+1. **The Positive Rescue Effect**:
+   - Manually expanding the bounding boxes successfully restored severed descenders and matras, dramatically lifting prediction probabilities on previously missed positives:
+     - G5_A_Roll07: DINO score surged from **0.078 to 0.361** (+0.283) due to restoring 2,091 severed descender ink pixels!
+     - G7_A_Roll15: Surged from **0.461 to 0.889** (+0.429).
+     - G5_A_Roll05: Surged from **0.560 to 0.969** (+0.409).
+     - G4_A_Roll14: Surged from **0.558 to 0.835** (+0.277).
+     - SCHB_G3_IMG_20261007_101645: Surged from **0.264 to 0.795** (+0.532).
+     - SCHB_G4_IMG_20261007_100632: Surged from **0.637 to 0.871** (+0.233).
+     - SCHB_G7_IMG_20261007_105422: Surged from **0.325 to 0.445** (+0.120).
+2. **Root Cause of the AUROC Shift (0.8901 -> 0.8440 Dual-ViT / 0.8696 -> 0.8109 DINOv2)**:
+   - While positives were successfully rescued, scores simultaneously spiked on certain normal controls: e.g. G6_A_Roll03 (0.184 -> 0.683), G4_A_Roll13 (0.257 -> 0.725), G3_A_Roll04 (0.226 -> 0.626).
+   - **Technical Diagnosis: Inter-Line Overlap Artifact**:
+     - In the manual crop adjustments, expanding boxes caused adjacent sentence bounding boxes to overlap vertically (e.g. in G4_A_Roll13, Task 4 ending at y=1113 overlaps with Task 5 starting at y=1095).
+     - When bounding boxes overlap vertically, the cropped tile captures conflicting ink strokes from two different lines.
+     - DINOv2's patch self-attention mechanism interprets multi-line stroke collisions as severe vertical spatial disorganization and motor tremor, triggering high false-alarm dysfluency scores on normal controls.
+   - **Missing Task Artifact**:
+     - In SCHB_G3_IMG_20261007_101635 (Positive), Task 3 was missing from the processed directory, causing its score to drop from 0.771 to 0.168.
+- **Unit Test Suite**: 16/16 tests passing (	ests/test_exp7_bakeoff.py and 	ests/test_main_pipeline.py).

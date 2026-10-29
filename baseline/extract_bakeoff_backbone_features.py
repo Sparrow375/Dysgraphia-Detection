@@ -125,8 +125,9 @@ def extract_backbone_features(
 
     model = BackboneWrapper(backbone_name, device=device)
 
-    # Load dataset index
+    # Load dataset index (reference cohort: School A + School B)
     df_index = pd.read_csv(INDEX_CSV)
+    df_index = df_index[df_index["school"].isin(["school_a", "school_b"])].copy()
     logger.info("Loading tiles across %d sentence tasks...", len(df_index))
 
     # Preprocessing ImageNet normalization constants

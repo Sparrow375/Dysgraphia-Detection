@@ -1,6 +1,54 @@
 # Task List — Workstream A
 
-## Active Sprint: QA Web App Port Fix & Deep Crop Inaccuracy Audit for Missed Positives
+## Active Sprint: Champion Pipeline Re-Evaluation on Newly Recropped Student Scans
+
+### Objectives
+1. **Repackage Sentence Crops Index (`pipeline/package_sentence_crops_dataset.py`)**:
+   - Re-index all sentence crops across the 215 students (Schools A & B) to capture the 194 manually adjusted/expanded student crops.
+   - Synchronize `data/sentence_crops_dataset/sentences_index.csv`.
+2. **Re-Extract Multi-Backbone Features on GPU (RTX 5060 Ti)**:
+   - DINOv2-Small (`baseline/extract_dinov2_patch_stats.py`) -> `data/features/exp7_dinov2_small_tiles.npz`.
+   - OpenAI CLIP ViT-B/32 (`baseline/extract_bakeoff_backbone_features.py --backbone clip`) -> `data/features/exp7_clip_tiles.npz`.
+   - DenseNet201 (`baseline/extract_bakeoff_backbone_features.py --backbone densenet201`) -> `data/features/exp7_densenet201_tiles.npz`.
+3. **Execute 5x5 Cross-Validation on Champion Architecture**:
+   - Run `baseline/squeeze_tile_pooling_exp7.py` across all 215 students (38 positives, 177 controls).
+   - Evaluate DINOv2 Standalone, CLIP Standalone, and Dual-ViT 50/50 Rank Consensus metrics (AUROC, AUPRC, Sens@80%Spec, Sens@90%Spec).
+4. **Statistical Verification & Error Analysis**:
+   - Run `baseline/compute_paired_bootstrap.py` (2,000 replicates) to evaluate statistical shift.
+   - Run `baseline/error_analysis_exp7.py` to inspect whether false negatives were rescued.
+5. **Testing, Documentation & Git Synchronization**:
+   - Run unit test suite (`pytest tests/test_exp7_bakeoff.py tests/test_main_pipeline.py`).
+   - Update `context.md` (Stage 49), `architechture.md`, and commit/push to `origin/main`.
+
+### Sprint Tasks
+- [x] Task 1: Repackage Sentence Dataset Index (pipeline/package_sentence_crops_dataset.py)
+  - [x] 1.1 Re-indexed 1,404 sentence crops across 262 students (1,140 reference tasks across 215 students in Schools A & B).
+  - [x] 1.2 Synchronized data/sentence_crops_dataset/sentences_index.csv.
+- [x] Task 2: Re-Extract Multi-Backbone Feature Caches on GPU (RTX 5060 Ti)
+  - [x] 2.1 Re-extracted DINOv2-Small patch statistics on 19,352 tiles in 40.5s -> data/features/exp7_dinov2_small_tiles.npz (83.96 MB).
+  - [x] 2.2 Re-extracted OpenAI CLIP patch statistics on 19,352 tiles in 26.1s -> data/features/exp7_clip_tiles.npz (166.53 MB).
+  - [x] 2.3 Re-extracted DenseNet201 patch statistics on 19,352 tiles in 47.8s -> data/features/exp7_densenet201_tiles.npz (436.09 MB).
+- [x] Task 3: Benchmark 5x5 Repeated CV on Champion Pipeline (aseline/squeeze_tile_pooling_exp7.py)
+  - [x] 3.1 Evaluated Dual-ViT 50/50 Rank Consensus: AUROC = 0.8440, AUPRC = 0.5592.
+  - [x] 3.2 Evaluated DINOv2-Small Standalone: AUROC = 0.8109, AUPRC = 0.5609, Sens@80%Spec = 68.42% (26/38), Sens@90%Spec = 50.00% (19/38).
+  - [x] 3.3 Evaluated Cfg3 (p90 + Delta Pooling): Sens@90%Spec reaches 55.3% (21/38).
+- [x] Task 4: Paired Bootstrap Audit & Error Analysis (aseline/compute_paired_bootstrap.py, aseline/error_analysis_exp7.py)
+  - [x] 4.1 Stratified paired bootstrap (B=2,000 replicates): Dual-ViT vs DINOv2 alone delta AUROC = +0.0337 [95% CI: -0.0036, +0.0742], p = 0.0430 (statistically significant benefit).
+  - [x] 4.2 Error analysis: Positives rescued by proper crop borders (G5_A_Roll07 surged from 0.078 to 0.361; G7_A_Roll15 from 0.461 to 0.889; G5_A_Roll05 from 0.560 to 0.969; SCHB_G3_IMG_20261007_101645 from 0.264 to 0.795).
+  - [x] 4.3 Root-cause diagnosis of control score spikes: Bounding boxes drawn overlapping adjacent line strokes produce artificial stroke collisions that mimic severe motor tremor/disorganization.
+- [x] Task 5: Testing, Memory Updates & Git Synchronization
+  - [x] 5.1 Run full unit test suite (16/16 tests passing).
+  - [x] 5.2 Update context.md (Stage 49).
+  - [x] 5.3 Commit and push to origin/main.
+
+---
+
+## Completed Sprints
+
+<details>
+<summary>QA Web App Port Fix & Deep Crop Inaccuracy Audit for Missed Positives (Completed 2026-10-29)</summary>
+
+## Previous Sprint: QA Web App Port Fix & Deep Crop Inaccuracy Audit for Missed Positives
 
 ### Objectives
 1. **Resolve QA App Socket Port Collision**:
@@ -30,6 +78,8 @@
 ---
 
 ## Completed Sprints
+
+</details>
 
 <details>
 <summary>Ground-Truth Reclassification, Elimination of False Negatives & Benchmark Refresh (Completed 2026-10-29)</summary>

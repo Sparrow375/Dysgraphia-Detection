@@ -108,8 +108,9 @@ def extract_features_for_cohort(
         param.requires_grad = False
     model.to(device)
 
-    # Load dataset index
+    # Load dataset index (reference cohort: School A + School B)
     df_index = pd.read_csv(INDEX_CSV)
+    df_index = df_index[df_index["school"].isin(["school_a", "school_b"])].copy()
     if limit is not None and limit > 0:
         unique_students = df_index["student_id"].unique()[:limit]
         df_index = df_index[df_index["student_id"].isin(unique_students)].copy()
