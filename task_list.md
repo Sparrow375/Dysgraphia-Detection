@@ -1,6 +1,40 @@
 # Task List — Workstream A
 
-## Active Sprint: Ground-Truth Reclassification, Elimination of False Negatives & Benchmark Refresh
+## Active Sprint: QA Web App Port Fix & Deep Crop Inaccuracy Audit for Missed Positives
+
+### Objectives
+1. **Resolve QA App Socket Port Collision**:
+   - Diagnose `OSError: [Errno 10048]` preventing `qa/app.py` from launching.
+   - Terminate orphaned process and add `find_available_port()` auto-fallback to `qa/app.py`.
+   - Ensure the server is actively serving at `http://127.0.0.1:8090`.
+2. **Dedicated Missed-Positive Inspection Mode in QA Web UI**:
+   - Add `⚠️ Missed Positives (False Negatives)` filter to `qa/web/index.html` and `qa/web/app.js`.
+   - Enable instantaneous selection and live interactive bounding-box adjustment for all 7 false negatives.
+3. **Deep Crop Inaccuracy Audit (`reports/missed_positives_crop_audit.md`)**:
+   - Conduct systematic boundary pixel and full-page projection analysis across all 7 false negatives.
+   - Quantify severed descenders/ascenders, horizontal word truncation, multi-line overlaps, and missing task lines.
+
+### Sprint Tasks
+- [x] Task 1: QA App Socket & CLI Enhancement
+  - [x] 1.1 Stop orphaned process (PID 332) and add automatic port fallback in `qa/app.py`.
+  - [x] 1.2 Launch QA daemon server on `http://127.0.0.1:8090`.
+- [x] Task 2: Dedicated QA Web UI Inspection Filter
+  - [x] 2.1 Add `missed_positives` filter option in `qa/web/index.html`.
+  - [x] 2.2 Add `MISSED_POSITIVES_SET` and filter handling in `qa/web/app.js`.
+- [x] Task 3: Comprehensive Crop Inaccuracy Audit
+  - [x] 3.1 Execute boundary pixel contact analysis on all 7 missed positives (`reports/missed_positives_crop_audit.md`).
+  - [x] 3.2 Document severed matras/descenders, left word truncation, and missing tasks.
+  - [x] 3.3 Verify unit test suite (16/16 tests passing).
+  - [x] 3.4 Update `context.md` (Stage 48) and commit/push to `origin/main`.
+
+---
+
+## Completed Sprints
+
+<details>
+<summary>Ground-Truth Reclassification, Elimination of False Negatives & Benchmark Refresh (Completed 2026-10-29)</summary>
+
+## Previous Sprint: Ground-Truth Reclassification, Elimination of False Negatives & Benchmark Refresh
 
 ### Objectives
 1. **Ground-Truth Label Reclassification**:
@@ -32,6 +66,8 @@
 ---
 
 ## Completed Sprints
+
+</details>
 
 <details>
 <summary>Experiment 7 Squeeze, True External Holdout (School C) & Production Wiring (Completed 2026-10-28)</summary>

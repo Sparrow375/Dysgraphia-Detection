@@ -610,8 +610,26 @@ def create_app() -> web.Application:
     return app
 
 
+def find_available_port(start_port: int = 8090, max_attempts: int = 10) -> int:
+    """Find first available port starting from start_port."""
+    import socket
+    for p in range(start_port, start_port + max_attempts):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            if s.connect_ex(("127.0.0.1", p)) != 0:
+                return p
+    return start_port
+
+
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Dysgraphia QA and Adjustment App")
+    parser.add_argument("--port", type=int, default=None, help="Port to bind (default: 8090 with auto-fallback)")
+    args = parser.parse_args()
+
+    env_port = int(os.environ.get("PORT", 8090))
+    target_port = args.port if args.port is not None else env_port
+    port = find_available_port(target_port) if args.port is None else target_port
+
     app = create_app()
-    port = int(os.environ.get("PORT", 8090))
     print(f"Starting Dysgraphia QA & Adjustment App on http://127.0.0.1:{port}")
     web.run_app(app, host="127.0.0.1", port=port)

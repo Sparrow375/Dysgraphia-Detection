@@ -1973,3 +1973,32 @@ Out-of-fold predictions on all 215 students were merged with student metadata (G
   - The previous persistent false negatives were not representation failures of the ViTs; rather, `G7_A_Roll12` and `G4_A_Roll23` were mislabeled controls whose static handwriting exhibited genuine regularity.
   - The vision models were mathematically correct in scoring them low. Converting them to their true clinical status elevated AUROC across all models and resolved the mystery of the stubborn false negatives.
 - **Unit Test Suite**: 16/16 tests passing (`tests/test_exp7_bakeoff.py` and `tests/test_main_pipeline.py`).
+
+
+## Stage 48: QA Web App Port Fix & Deep Crop Inaccuracy Audit for Missed Positives (Completed 2026-10-29)
+
+### 1. QA Web App Port Fix & Enhanced Missed-Positive Inspection Mode
+- **Port Conflict Diagnostic**:
+  - `python qa/app.py` failed with `OSError: [Errno 10048]` because an earlier background instance (PID 332) was already bound to port 8090.
+  - Stopped PID 332 and updated [`qa/app.py`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/qa/app.py) with `find_available_port(target_port)` auto-fallback and `--port` CLI argument support to prevent future bind collisions.
+  - QA server launched and actively serving at `http://127.0.0.1:8090`.
+- **Dedicated Missed-Positive Filter in QA Web App**:
+  - Updated [`qa/web/index.html`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/qa/web/index.html) and [`qa/web/app.js`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/qa/web/app.js) with a dedicated filter option: `⚠️ Missed Positives (False Negatives)`.
+  - Instantly filters the cohort down to the 7 false negatives (`SCHB_G8_IMG_...`, `SCHB_G4_IMG_...`, `G5_A_Roll07`, `G3_A_Roll19`, `G3_A_Roll12`, `G7_A_Roll06`, `SCHB_G7_IMG_...`) for live canvas dragging, box resizing, recropping, and feature inspection.
+
+### 2. Deep Geometric & Boundary Crop Audit ([`reports/missed_positives_crop_audit.md`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/missed_positives_crop_audit.md))
+Systematic boundary pixel analysis on all 7 missed positives revealed severe automated crop inaccuracies across all cases:
+1. **Vertical Boundary Slicing (Severed Matras & Descenders)**:
+   - Dysgraphic handwriting features erratic vertical oscillations, floating matras, and low descenders. The automated bounding boxes cut directly through these defining stroke features:
+     - `G5_A_Roll07`: Task 3 has **2,091 ink px** sliced off at the bottom border; Task 2 has **1,121 ink px** cut at the top border.
+     - `SCHB_G4_IMG_20261007_100335`: Task 1 has **2,159 ink px** sliced off at the bottom border; Task 4 is only 99px tall, compressing the stroke field.
+     - `SCHB_G7_IMG_20261007_105422`: Task 5 has **4,171 ink px** sliced off at the bottom border.
+     - `G7_A_Roll06`: Task 5 has **1,260 ink px** sliced at the bottom and **981 ink px** at the top.
+2. **Horizontal Word Truncation (Missing Text)**:
+   - `G3_A_Roll12`: Task 1 bounding box starts at $x=759$ (halfway across the 2,000px page width), cutting the first half of the Hindi sentence entirely out of the crop.
+   - `SCHB_G8_IMG_20261007_104901`: Task 6 clips 525 px on the left margin and 303 px on the right.
+3. **Missing Tasks / Truncated Extraction**:
+   - `SCHB_G4_IMG_20261007_100335` (Grade 4) only has 4 tasks segmented (Tasks 5 and 6 missing).
+   - `SCHB_G8_IMG_20261007_104901` (Grade 8) only has 4 tasks segmented (Tasks 4 and 5 missing).
+4. **Impact on Vision Transformers**:
+   - Because native $224 \times 224$ tiles are sampled strictly from within the bounding boxes, truncating descenders and matras removes the primary localized motor breakdown tiles, leaving only regular body strokes and causing DINOv2 to classify the sample as neat handwriting.

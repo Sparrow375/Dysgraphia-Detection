@@ -31,6 +31,16 @@
         cropViewMode: 'gray', // 'gray' | 'clean'
     };
 
+        const MISSED_POSITIVES_SET = new Set([
+        'SCHB_G8_IMG_20261007_104901',
+        'SCHB_G4_IMG_20261007_100335',
+        'G5_A_Roll07',
+        'G3_A_Roll19',
+        'G3_A_Roll12',
+        'G7_A_Roll06',
+        'SCHB_G7_IMG_20261007_105422'
+    ]);
+
     const standardTasks = [
         { id: 'sentence_01_copy_hindi', name: 'copy_hindi', script: 'devanagari' },
         { id: 'sentence_02_copy_english', name: 'copy_english', script: 'latin' },
@@ -330,7 +340,9 @@
             filtered = filtered.filter(s => s.grade === g);
         }
 
-        if (state.statusFilter === 'needs_review') {
+        if (state.statusFilter === 'missed_positives') {
+            filtered = filtered.filter(s => MISSED_POSITIVES_SET.has(s.student_id));
+        } else if (state.statusFilter === 'needs_review') {
             filtered = filtered.filter(s => !s.verified);
         } else if (state.statusFilter === 'verified') {
             filtered = filtered.filter(s => s.verified);
@@ -357,6 +369,8 @@
             const opt = document.createElement('option');
             opt.value = s.student_id;
             const posBadge = s.label === 1 ? ' [At-Risk]' : (s.label === 0 ? ' [Normal]' : ' [?]');
+            const isMissed = MISSED_POSITIVES_SET.has(s.student_id);
+            const missedBadge = isMissed ? ' ⚠️[FN]' : '';
             const verBadge = s.verified ? ' [✓]' : '';
             const schPrefix = state.schoolFilter === 'all' ? `[${s.school === 'school_b' ? 'B' : 'A'}] ` : '';
             opt.textContent = `${schPrefix}${s.student_id} (G${s.grade} R${s.roll_number})${posBadge}${verBadge}`;
