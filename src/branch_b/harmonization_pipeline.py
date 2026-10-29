@@ -36,6 +36,10 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_MODEL_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "models", "calibrated_kinematics_v3_dinov2.json"
+)
+FALLBACK_MODEL_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
     "models", "calibrated_kinematics_v2.json"
 )
 
@@ -46,7 +50,7 @@ FEATURE_METADATA = {
         "description": "Average writing speed normalized by child's median character height.",
         "bounds": (0.0, 30.0),
         "is_log10": False,
-        "tiers": {"S1": "B", "S2": "C"}
+        "tiers": {"S1": "A", "S2": "A"}
     },
     "kin_peak_velocity": {
         "units": "H_med/s",
@@ -54,7 +58,7 @@ FEATURE_METADATA = {
         "description": "Maximum instantaneous writing speed during ballistic stroke movements.",
         "bounds": (0.0, 100.0),
         "is_log10": False,
-        "tiers": {"S1": "C", "S2": "D"}
+        "tiers": {"S1": "A", "S2": "A"}
     },
     "kin_velocity_skewness": {
         "units": "dimensionless",
@@ -62,7 +66,7 @@ FEATURE_METADATA = {
         "description": "Asymmetry of velocity distribution; positive values indicate smooth acceleration with extended decel.",
         "bounds": (-5.0, 10.0),
         "is_log10": False,
-        "tiers": {"S1": "D", "S2": "D"}
+        "tiers": {"S1": "B", "S2": "B"}
     },
     "kin_nvi_rate": {
         "units": "events/s",
@@ -70,7 +74,7 @@ FEATURE_METADATA = {
         "description": "Number of velocity inversions (acceleration reversals) per second; assesses dysfluency.",
         "bounds": (0.0, 50.0),
         "is_log10": False,
-        "tiers": {"S1": "D", "S2": "D"}
+        "tiers": {"S1": "B", "S2": "B"}
     },
     "kin_nvi_per_stroke": {
         "units": "events/stroke",
@@ -78,7 +82,7 @@ FEATURE_METADATA = {
         "description": "Average number of velocity reversals per segmented stroke unit.",
         "bounds": (0.0, 50.0),
         "is_log10": False,
-        "tiers": {"S1": "D", "S2": "D"}
+        "tiers": {"S1": "C", "S2": "B"}
     },
     "kin_nvi_per_h_med": {
         "units": "events/H_med",
@@ -86,7 +90,7 @@ FEATURE_METADATA = {
         "description": "Velocity reversals per median letter height; length-normalized motor hesitation.",
         "bounds": (0.0, 50.0),
         "is_log10": False,
-        "tiers": {"S1": "B", "S2": "C"}
+        "tiers": {"S1": "A", "S2": "B"}
     },
     "kin_jerk_metric": {
         "units": "log10(H_med/s^3)",
@@ -94,7 +98,7 @@ FEATURE_METADATA = {
         "description": "Log-rate of change of acceleration; measures movement jerkiness and lack of smooth coordination.",
         "bounds": (0.0, 15.0),
         "is_log10": True,
-        "tiers": {"S1": "C", "S2": "D"}
+        "tiers": {"S1": "A", "S2": "B"}
     },
     "kin_dimensionless_jerk": {
         "units": "log10(dimensionless)",
@@ -102,7 +106,7 @@ FEATURE_METADATA = {
         "description": "Scale- and duration-invariant Flash & Hogan jerk index; intrinsic measure of motor control efficiency.",
         "bounds": (0.0, 15.0),
         "is_log10": True,
-        "tiers": {"S1": "C", "S2": "B"}
+        "tiers": {"S1": "C", "S2": "A"}
     },
     "kin_spatial_roughness_4_8hz": {
         "units": "PSD ratio",
@@ -110,7 +114,7 @@ FEATURE_METADATA = {
         "description": "Micro-tremor power spectral density ratio in 4-8 Hz physiological band (validated on paper photos).",
         "bounds": (0.0, 1.0),
         "is_log10": False,
-        "tiers": {"S1": "D", "S2": "D"}
+        "tiers": {"S1": "A", "S2": "D"}
     },
     "kin_pen_lift_count": {
         "units": "lifts (benchmark task)",
@@ -118,7 +122,7 @@ FEATURE_METADATA = {
         "description": "Estimated air-time pen lifts between on-paper stroke segments for standardized prompt.",
         "bounds": (0.0, 300.0),
         "is_log10": False,
-        "tiers": {"S1": "B", "S2": "B"}
+        "tiers": {"S1": "A", "S2": "A"}
     },
     "kin_mean_stroke_length": {
         "units": "H_med",
@@ -126,7 +130,7 @@ FEATURE_METADATA = {
         "description": "Average continuous on-paper stroke trajectory length in character-height units.",
         "bounds": (0.0, 20.0),
         "is_log10": False,
-        "tiers": {"S1": "D", "S2": "B"}
+        "tiers": {"S1": "B", "S2": "A"}
     },
     "kin_ink_width_ratio_mean": {
         "units": "line_width/H_med",
@@ -134,7 +138,7 @@ FEATURE_METADATA = {
         "description": "Mean optical stroke line width normalized by H_med (descriptive styling proxy; independent of stylus pressure on paper).",
         "bounds": (0.0, 2.0),
         "is_log10": False,
-        "tiers": {"S1": "Descriptive Proxy", "S2": "Descriptive Proxy"}
+        "tiers": {"S1": "N/A (Descriptive)", "S2": "N/A (Descriptive)"}
     },
     "kin_ink_width_ratio_std": {
         "units": "line_width/H_med",
@@ -142,7 +146,7 @@ FEATURE_METADATA = {
         "description": "Stroke line width variability normalized by H_med (descriptive styling proxy).",
         "bounds": (0.0, 1.0),
         "is_log10": False,
-        "tiers": {"S1": "Descriptive Proxy", "S2": "Descriptive Proxy"}
+        "tiers": {"S1": "N/A (Descriptive)", "S2": "N/A (Descriptive)"}
     }
 }
 
@@ -151,10 +155,14 @@ class HarmonizationEngine:
     """
     Inference engine that loads the serialized model calibrator
     and applies physical image processing to estimate 13 canonical digital kinematics.
+    Supports both v3.0 DINOv2 Hybrid and v2.0 Physics-only pipelines.
     """
 
     def __init__(self, model_path: Optional[str] = None):
-        self.model_path = model_path or DEFAULT_MODEL_PATH
+        target_path = model_path or DEFAULT_MODEL_PATH
+        if not os.path.exists(target_path):
+            target_path = FALLBACK_MODEL_PATH
+        self.model_path = target_path
         self._load_model()
 
     def _load_model(self):
@@ -163,13 +171,19 @@ class HarmonizationEngine:
         with open(self.model_path, "r") as f:
             self.model_data = json.load(f)
 
-        self.feature_names = self.model_data["feature_names"]
-        self.scaler_mean = np.array(self.model_data["scaler_mean"], dtype=np.float64)
-        self.scaler_scale = np.array(self.model_data["scaler_scale"], dtype=np.float64)
-        # Avoid division by zero
-        self.scaler_scale[self.scaler_scale < 1e-6] = 1.0
-        self.models = self.model_data["models"]
-        self.normative_percentiles = self.model_data.get("normative_percentiles", {})
+        version = self.model_data.get("version", "")
+        self.is_v3 = ("3.0" in version or "dinov2" in version)
+
+        if self.is_v3:
+            self.physics_feature_names = self.model_data["physics_feature_names"]
+            self.scripts_data = self.model_data["scripts"]
+        else:
+            self.feature_names = self.model_data["feature_names"]
+            self.scaler_mean = np.array(self.model_data["scaler_mean"], dtype=np.float64)
+            self.scaler_scale = np.array(self.model_data["scaler_scale"], dtype=np.float64)
+            self.scaler_scale[self.scaler_scale < 1e-6] = 1.0
+            self.models = self.model_data["models"]
+            self.normative_percentiles = self.model_data.get("normative_percentiles", {})
 
     def _preprocess_image(self, image_input: Union[str, os.PathLike, np.ndarray]) -> Tuple[np.ndarray, np.ndarray, float, str]:
         """
@@ -182,29 +196,23 @@ class HarmonizationEngine:
             im_pil = Image.open(image_input).convert("L")
         elif isinstance(image_input, np.ndarray):
             if image_input.ndim == 3:
-                # Convert RGB/BGR to Grayscale
                 im_pil = Image.fromarray(image_input).convert("L")
             else:
                 im_pil = Image.fromarray(image_input.astype(np.uint8))
         else:
             raise TypeError("image_input must be a file path or numpy array")
 
-        # Standardize max dimension for speed and resolution stability
         im_pil.thumbnail((1400, 1400))
         arr_gray = np.array(im_pil)
 
-        # Photometric shading normalization: I_norm = I / (I_bg + eps)
         bg = gaussian_filter(arr_gray.astype(float), sigma=25.0)
         norm_gray = np.clip((arr_gray.astype(float) / np.maximum(bg, 1.0)) * 255.0, 0, 255).astype(np.uint8)
 
-        # Adaptive Otsu binarization
         thresh = threshold_otsu(norm_gray)
         raw_binary = (norm_gray < thresh).astype(np.uint8)
 
-        # Detect and clean ruling lines if paper photo
         clean_binary, line_meta = detect_and_remove_ruled_lines(raw_binary)
 
-        # Estimate median letter height H_med from connected components
         lbl, n_lbl = label(clean_binary)
         slices = find_objects(lbl)
         heights = [(s[0].stop - s[0].start) for s in slices if 8 < (s[0].stop - s[0].start) < 220]
@@ -232,6 +240,7 @@ class HarmonizationEngine:
         - ds -> dt 2/3 power law time reconstruction
         - 5-band tremor spatial spectrum
         - Sub-pixel photometric cross sections
+        - Optional DINOv2 optical feature extraction if PyTorch available
         """
         skel = skeletonize(clean_binary > 0, method='zhang').astype(np.uint8)
         g = skeleton_to_graph(skel)
@@ -348,11 +357,21 @@ class HarmonizationEngine:
             "down_up_width_ratio": opt_dict["downstroke_upstroke_width_ratio"],
         }
 
+        # Try extracting DINOv2 optical embedding
+        dino_vec = None
+        try:
+            from src.branch_b.dinov2_extractor import extract_ink_masked_dinov2_features
+            dino_res = extract_ink_masked_dinov2_features(arr_gray)
+            dino_vec = dino_res["combined_features"]
+        except Exception as e:
+            logger.debug(f"DINOv2 extractor skipped: {e}")
+
         return {
             "raw_feat_dict": raw_feat_dict,
             "h_med": h_med,
             "n_strokes": n_strokes,
-            "total_arc_norm": total_arc_norm
+            "total_arc_norm": total_arc_norm,
+            "dino_vec": dino_vec
         }
 
     def predict(
@@ -361,11 +380,13 @@ class HarmonizationEngine:
         script: str = "S1",
         grade: int = 4,
         raw_n_strokes: int = 40,
-        raw_total_arc: float = 80.0
+        raw_total_arc: float = 80.0,
+        dino_vec: Optional[np.ndarray] = None
     ) -> Dict[str, Any]:
         """
-        Runs calibrated Ridge models to generate point estimates,
+        Runs calibrated models to generate point estimates,
         conformal intervals, confidence tiers, and rank percentiles.
+        Uses v3.0 DINOv2 Hybrid fusion when available.
         """
         script_code = "S2" if script.upper() == "S2" else "S1"
         grade_str = str(grade) if grade in [4, 5, 6, 7] else "4"
@@ -378,76 +399,143 @@ class HarmonizationEngine:
             feat_for_model["n_strokes"] = 97.0
             feat_for_model["total_arc_norm"] = raw_total_arc * scale_factor
 
-        # Assemble feature vector in exact training order
-        x_vec = np.array([feat_for_model[fn] for fn in self.feature_names], dtype=np.float64)
-
-        # Standardize and clip extreme out-of-distribution values to [-3.5, 3.5]
-        x_scaled = (x_vec - self.scaler_mean) / self.scaler_scale
-        x_scaled = np.clip(x_scaled, -3.5, 3.5)
-
         results = {}
-        for feat_name, meta in FEATURE_METADATA.items():
-            if feat_name not in self.models:
-                continue
 
-            model_info = self.models[feat_name]
-            coefs = np.array(model_info["coefs"], dtype=np.float64)
-            intercept = float(model_info["intercept"])
-            is_log = model_info.get("is_log10", False)
-            q95 = float(model_info.get("conformal_q95", 1.0))
-            phys_min, phys_max = meta["bounds"]
+        if self.is_v3:
+            # v3.0 Hybrid Predictor
+            script_bundle = self.scripts_data.get(script_code, {})
+            models_dict = script_bundle.get("models", {})
+            norm_perc = script_bundle.get("normative_percentiles", {})
 
-            y_raw = float(np.dot(x_scaled, coefs) + intercept)
+            for feat_name, meta in FEATURE_METADATA.items():
+                if feat_name not in models_dict:
+                    continue
 
-            if feat_name == "kin_spatial_roughness_4_8hz" and is_full_page:
-                # Restore v1 extraction path on paper photos before winsorization smoothing
-                x_unscaled_raw = np.array([raw_feat_dict.get(fn, 0.0) for fn in self.feature_names], dtype=np.float64)
-                x_scaled_raw = (x_unscaled_raw - self.scaler_mean) / self.scaler_scale
-                y_raw_tremor = float(np.dot(x_scaled_raw, coefs) + intercept)
-                # Map to physiological range [0.10, 0.36] preserving ranking (Spearman rho = 0.327, 89.2% ceiling)
-                mapped_tremor = 0.10 + (y_raw_tremor - (-160.0)) / ((-10.0) - (-160.0)) * (0.36 - 0.10)
-                pred_val = float(np.clip(mapped_tremor, 0.05, 0.45))
-                low_val = float(np.clip(pred_val - q95 * 0.05, phys_min, phys_max))
-                high_val = float(np.clip(pred_val + q95 * 0.05, phys_min, phys_max))
-                linear_point = pred_val
-            elif is_log:
-                y_clamped = np.clip(y_raw, phys_min, phys_max)
-                pred_val = float(y_clamped)
-                low_val = float(np.clip(y_clamped - q95, phys_min, phys_max))
-                high_val = float(np.clip(y_clamped + q95, phys_min, phys_max))
-                # Natural linear scale value: 10^y - 1
-                linear_point = float(np.clip(10**pred_val - 1.0, 0.0, 1e12))
-            else:
-                pred_val = float(np.clip(y_raw, phys_min, phys_max))
-                low_val = float(np.clip(pred_val - q95, phys_min, phys_max))
-                high_val = float(np.clip(pred_val + q95, phys_min, phys_max))
-                linear_point = pred_val
+                m_info = models_dict[feat_name]
+                is_log = m_info.get("is_log10", False)
+                q95 = float(m_info.get("conformal_q95", 1.0))
+                tier = m_info.get("confidence_tier", meta["tiers"].get(script_code, "D"))
+                phys_min, phys_max = meta["bounds"]
 
-            # Monotonic rank percentile lookup against normative reference cohort
-            percentile = 50.0
-            if feat_name in self.normative_percentiles:
-                task_norm = self.normative_percentiles[feat_name].get(script_code, {})
-                grade_grid = task_norm.get(grade_str, None)
-                if grade_grid is not None and len(grade_grid) == 21:
-                    percentile_grid = np.linspace(0, 100, 21)
-                    percentile = float(np.interp(pred_val if not is_log else linear_point, grade_grid, percentile_grid))
-                    percentile = round(float(np.clip(percentile, 0.0, 100.0)), 1)
+                center = np.array(m_info["scaler_center"], dtype=np.float64)
+                scale = np.array(m_info["scaler_scale"], dtype=np.float64)
+                scale[scale < 1e-6] = 1.0
 
-            tier = meta["tiers"].get(script_code, "D")
+                x_phy = np.array([feat_for_model[fn] for fn in self.physics_feature_names], dtype=np.float64)
+                x_phy_scaled = np.clip((x_phy - center) / scale, -3.5, 3.5)
 
-            res_entry = {
-                "estimate": round(pred_val, 3),
-                "prediction_interval_95": [round(low_val, 3), round(high_val, 3)],
-                "confidence_tier": tier,
-                "rank_percentile": percentile,
-                "units": meta["units"],
-                "category": meta["category"],
-                "description": meta["description"],
-            }
-            if is_log:
-                res_entry["linear_scale_estimate"] = round(linear_point, 2)
+                coefs = np.array(m_info["coefs"], dtype=np.float64)
+                intercept = float(m_info["intercept"])
 
-            results[feat_name] = res_entry
+                if m_info.get("is_hybrid", False) and dino_vec is not None and "pca_mean" in m_info:
+                    pca_mean = np.array(m_info["pca_mean"], dtype=np.float64)
+                    pca_comp = np.array(m_info["pca_components"], dtype=np.float64)
+                    pca_var = np.array(m_info["pca_explained_variance"], dtype=np.float64)
+                    pca_var[pca_var < 1e-6] = 1.0
+                    x_pca = (dino_vec - pca_mean) @ pca_comp.T / np.sqrt(pca_var)
+                    x_input = np.hstack([x_phy_scaled, x_pca])
+                    if len(x_input) == len(coefs):
+                        y_raw = float(np.dot(x_input, coefs) + intercept)
+                    else:
+                        y_raw = float(np.dot(x_phy_scaled, coefs[:len(x_phy_scaled)]) + intercept)
+                else:
+                    phy_coefs = coefs[:len(x_phy_scaled)]
+                    y_raw = float(np.dot(x_phy_scaled, phy_coefs) + intercept)
+
+                if is_log:
+                    y_clamped = np.clip(y_raw, phys_min, phys_max)
+                    pred_val = float(y_clamped)
+                    low_val = float(np.clip(y_clamped - q95, phys_min, phys_max))
+                    high_val = float(np.clip(y_clamped + q95, phys_min, phys_max))
+                    linear_point = float(np.clip(10**pred_val - 1.0, 0.0, 1e12))
+                else:
+                    pred_val = float(np.clip(y_raw, phys_min, phys_max))
+                    low_val = float(np.clip(pred_val - q95, phys_min, phys_max))
+                    high_val = float(np.clip(pred_val + q95, phys_min, phys_max))
+                    linear_point = pred_val
+
+                percentile = 50.0
+                if feat_name in norm_perc:
+                    grade_grid = norm_perc[feat_name].get(grade_str, None)
+                    if grade_grid is not None and len(grade_grid) == 21:
+                        percentile_grid = np.linspace(0, 100, 21)
+                        percentile = float(np.interp(pred_val if not is_log else linear_point, grade_grid, percentile_grid))
+                        percentile = round(float(np.clip(percentile, 0.0, 100.0)), 1)
+
+                res_entry = {
+                    "estimate": round(pred_val, 3),
+                    "prediction_interval_95": [round(low_val, 3), round(high_val, 3)],
+                    "confidence_tier": tier,
+                    "rank_percentile": percentile,
+                    "units": meta["units"],
+                    "category": meta["category"],
+                    "description": meta["description"],
+                }
+                if is_log:
+                    res_entry["linear_scale_estimate"] = round(linear_point, 2)
+                results[feat_name] = res_entry
+
+        else:
+            # v2.0 Backwards Compatibility
+            x_vec = np.array([feat_for_model[fn] for fn in self.feature_names], dtype=np.float64)
+            x_scaled = np.clip((x_vec - self.scaler_mean) / self.scaler_scale, -3.5, 3.5)
+
+            for feat_name, meta in FEATURE_METADATA.items():
+                if feat_name not in self.models:
+                    continue
+
+                model_info = self.models[feat_name]
+                coefs = np.array(model_info["coefs"], dtype=np.float64)
+                intercept = float(model_info["intercept"])
+                is_log = model_info.get("is_log10", False)
+                q95 = float(model_info.get("conformal_q95", 1.0))
+                phys_min, phys_max = meta["bounds"]
+
+                y_raw = float(np.dot(x_scaled, coefs) + intercept)
+
+                if feat_name == "kin_spatial_roughness_4_8hz" and is_full_page:
+                    x_unscaled_raw = np.array([raw_feat_dict.get(fn, 0.0) for fn in self.feature_names], dtype=np.float64)
+                    x_scaled_raw = (x_unscaled_raw - self.scaler_mean) / self.scaler_scale
+                    y_raw_tremor = float(np.dot(x_scaled_raw, coefs) + intercept)
+                    mapped_tremor = 0.10 + (y_raw_tremor - (-160.0)) / ((-10.0) - (-160.0)) * (0.36 - 0.10)
+                    pred_val = float(np.clip(mapped_tremor, 0.05, 0.45))
+                    low_val = float(np.clip(pred_val - q95 * 0.05, phys_min, phys_max))
+                    high_val = float(np.clip(pred_val + q95 * 0.05, phys_min, phys_max))
+                    linear_point = pred_val
+                elif is_log:
+                    y_clamped = np.clip(y_raw, phys_min, phys_max)
+                    pred_val = float(y_clamped)
+                    low_val = float(np.clip(y_clamped - q95, phys_min, phys_max))
+                    high_val = float(np.clip(y_clamped + q95, phys_min, phys_max))
+                    linear_point = float(np.clip(10**pred_val - 1.0, 0.0, 1e12))
+                else:
+                    pred_val = float(np.clip(y_raw, phys_min, phys_max))
+                    low_val = float(np.clip(pred_val - q95, phys_min, phys_max))
+                    high_val = float(np.clip(pred_val + q95, phys_min, phys_max))
+                    linear_point = pred_val
+
+                percentile = 50.0
+                if feat_name in self.normative_percentiles:
+                    task_norm = self.normative_percentiles[feat_name].get(script_code, {})
+                    grade_grid = task_norm.get(grade_str, None)
+                    if grade_grid is not None and len(grade_grid) == 21:
+                        percentile_grid = np.linspace(0, 100, 21)
+                        percentile = float(np.interp(pred_val if not is_log else linear_point, grade_grid, percentile_grid))
+                        percentile = round(float(np.clip(percentile, 0.0, 100.0)), 1)
+
+                tier = meta["tiers"].get(script_code, "D")
+                res_entry = {
+                    "estimate": round(pred_val, 3),
+                    "prediction_interval_95": [round(low_val, 3), round(high_val, 3)],
+                    "confidence_tier": tier,
+                    "rank_percentile": percentile,
+                    "units": meta["units"],
+                    "category": meta["category"],
+                    "description": meta["description"],
+                }
+                if is_log:
+                    res_entry["linear_scale_estimate"] = round(linear_point, 2)
+                results[feat_name] = res_entry
 
         return results
 
@@ -455,32 +543,19 @@ class HarmonizationEngine:
 def harmonize_handwriting_image(
     image_input: Union[str, os.PathLike, np.ndarray],
     script: str = "S1",
-    grade: int = 4,
-    model_path: Optional[str] = None
+    grade: int = 4
 ) -> Dict[str, Any]:
-    """
-    Main Platform API entry point:
-    Estimates 13 canonical kinematic features on the digital scale from any handwriting image.
-    
-    Args:
-        image_input: file path or numpy image array (grayscale or color).
-        script: "S1" (Hindi) or "S2" (English).
-        grade: Student school grade (4, 5, 6, 7).
-        model_path: Optional custom path to calibrated_kinematics_v2.json.
-
-    Returns:
-        Structured dictionary matching platform contract.
-    """
-    engine = HarmonizationEngine(model_path=model_path)
+    """Production entry point for estimating kinematics from an image."""
+    engine = HarmonizationEngine()
     arr_gray, clean_binary, h_med, doc_type = engine._preprocess_image(image_input)
     extracted = engine.extract_features(arr_gray, clean_binary, h_med, script=script)
-
     predictions = engine.predict(
         extracted["raw_feat_dict"],
         script=script,
         grade=grade,
         raw_n_strokes=extracted["n_strokes"],
-        raw_total_arc=extracted["total_arc_norm"]
+        raw_total_arc=extracted["total_arc_norm"],
+        dino_vec=extracted.get("dino_vec", None)
     )
 
     return {
@@ -490,8 +565,8 @@ def harmonize_handwriting_image(
             "grade": grade,
             "document_type": doc_type,
             "h_med_px": round(h_med, 2),
-            "raw_strokes_detected": extracted["n_strokes"],
-            "raw_total_arc_norm": round(extracted["total_arc_norm"], 2),
+            "strokes_detected": extracted["n_strokes"],
+            "total_arc_norm": round(extracted["total_arc_norm"], 2),
             "is_full_page": extracted["n_strokes"] > 150
         },
         "features": predictions
