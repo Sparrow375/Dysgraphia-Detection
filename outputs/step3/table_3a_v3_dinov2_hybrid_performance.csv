@@ -1,0 +1,27 @@
+Script,Feature,Category,Base_Pearson_r,Base_Spearman_rho,Base_Tier,Hybrid_Model,Hybrid_Pearson_r,Hybrid_r_95CI,Hybrid_Spearman_rho,Hybrid_rho_95CI,Hybrid_Tier,Net_Lift_rho,Conformal_q95
+S1 (Hindi),kin_mean_velocity,Kinematic Target,0.473,0.615,A,hybrid_tree_k12,0.631,"[0.535, 0.725]",0.666,"[0.556, 0.760]",A,0.051,1.27
+S1 (Hindi),kin_peak_velocity,Kinematic Target,0.056,0.424,B,hybrid_tree_k12,0.574,"[0.480, 0.678]",0.708,"[0.611, 0.784]",A,0.283,17.951
+S1 (Hindi),kin_velocity_skewness,Kinematic Target,0.011,-0.014,D,hybrid_tree_k12,0.335,"[0.175, 0.513]",0.476,"[0.334, 0.608]",B,0.489,1.985
+S1 (Hindi),kin_nvi_rate,Kinematic Target,0.084,0.039,D,hybrid_hgb_k12,0.707,"[0.612, 0.796]",0.584,"[0.440, 0.703]",B,0.544,4.137
+S1 (Hindi),kin_nvi_per_stroke,Kinematic Target,-0.095,0.079,D,hybrid_hgb_k12,0.266,"[0.087, 0.428]",0.384,"[0.213, 0.538]",C,0.306,15.84
+S1 (Hindi),kin_nvi_per_h_med,Kinematic Target,0.184,0.527,B,hybrid_ridge_k24,0.51,"[0.346, 0.655]",0.648,"[0.518, 0.761]",A,0.121,12.188
+S1 (Hindi),kin_jerk_metric,Kinematic Target,0.475,0.435,B,hybrid_ridge_k6,0.558,"[0.538, 0.828]",0.784,"[0.705, 0.849]",A,0.349,0.818
+S1 (Hindi),kin_dimensionless_jerk,Kinematic Target,-0.124,0.22,D,hybrid_tree_k12,0.354,"[0.208, 0.486]",0.396,"[0.233, 0.529]",C,0.176,1.881
+S1 (Hindi),kin_spatial_roughness_4_8hz,Kinematic Target,0.261,0.179,D,hybrid_blend,0.548,"[0.448, 0.692]",0.608,"[0.482, 0.715]",A,0.429,0.137
+S1 (Hindi),kin_pen_lift_count,Kinematic Target,0.327,0.652,A,hybrid_ridge_k32,0.693,"[0.659, 0.811]",0.772,"[0.682, 0.846]",A,0.121,15.989
+S1 (Hindi),kin_mean_stroke_length,Kinematic Target,0.79,0.431,B,hybrid_ridge_k24,0.827,"[0.486, 0.935]",0.59,"[0.459, 0.695]",B,0.159,0.601
+S1 (Hindi),kin_ink_width_ratio_mean,Descriptive Only,0.137,0.646,N/A (Descriptive),hybrid_blend,0.711,"[0.602, 0.843]",0.818,"[0.739, 0.877]",N/A (Descriptive),0.172,1.386
+S1 (Hindi),kin_ink_width_ratio_std,Descriptive Only,0.227,0.181,N/A (Descriptive),hybrid_tree_k12,0.763,"[0.668, 0.839]",0.711,"[0.604, 0.789]",N/A (Descriptive),0.53,0.079
+S2 (English),kin_mean_velocity,Kinematic Target,0.407,0.435,B,hybrid_ridge_k24,0.576,"[0.453, 0.678]",0.638,"[0.516, 0.735]",A,0.203,1.71
+S2 (English),kin_peak_velocity,Kinematic Target,0.327,0.427,B,hybrid_blend,0.577,"[0.485, 0.665]",0.667,"[0.559, 0.746]",A,0.24,10.569
+S2 (English),kin_velocity_skewness,Kinematic Target,-0.064,-0.027,D,hybrid_ridge_k32,0.373,"[0.227, 0.528]",0.402,"[0.246, 0.543]",B,0.429,1.221
+S2 (English),kin_nvi_rate,Kinematic Target,0.127,0.208,D,hybrid_ridge_k24,0.568,"[0.407, 0.701]",0.563,"[0.421, 0.683]",B,0.355,2.726
+S2 (English),kin_nvi_per_stroke,Kinematic Target,0.592,0.542,B,hybrid_ridge_k24,0.612,"[0.444, 0.750]",0.567,"[0.423, 0.689]",B,0.025,8.662
+S2 (English),kin_nvi_per_h_med,Kinematic Target,0.293,0.401,B,hybrid_ridge_k24,0.344,"[0.245, 0.481]",0.513,"[0.369, 0.630]",B,0.113,6.187
+S2 (English),kin_jerk_metric,Kinematic Target,0.14,0.242,D,hybrid_ridge_k24,0.455,"[0.316, 0.600]",0.506,"[0.352, 0.640]",B,0.264,0.961
+S2 (English),kin_dimensionless_jerk,Kinematic Target,0.656,0.641,A,hybrid_blend,0.694,"[0.580, 0.793]",0.674,"[0.550, 0.778]",A,0.032,1.711
+S2 (English),kin_spatial_roughness_4_8hz,Kinematic Target,-0.071,-0.052,D,hybrid_ridge_k16,0.171,"[-0.053, 0.414]",0.227,"[0.056, 0.391]",D,0.279,0.192
+S2 (English),kin_pen_lift_count,Kinematic Target,0.781,0.714,A,hybrid_ridge_k32,0.86,"[0.808, 0.897]",0.805,"[0.711, 0.870]",A,0.09,12.657
+S2 (English),kin_mean_stroke_length,Kinematic Target,0.31,0.615,A,hybrid_ridge_k32,0.765,"[0.678, 0.837]",0.786,"[0.679, 0.857]",A,0.171,1.166
+S2 (English),kin_ink_width_ratio_mean,Descriptive Only,0.487,0.824,N/A (Descriptive),hybrid_ridge_k24,0.886,"[0.791, 0.944]",0.891,"[0.818, 0.937]",N/A (Descriptive),0.067,0.867
+S2 (English),kin_ink_width_ratio_std,Descriptive Only,-0.074,0.594,N/A (Descriptive),hybrid_ridge_k24,0.871,"[0.824, 0.909]",0.862,"[0.806, 0.904]",N/A (Descriptive),0.269,0.062

@@ -1,0 +1,27 @@
+Script,Feature,Category,Base_Spearman_rho,Base_Tier,Hybrid_Spearman_rho,Hybrid_Tier,Net_Lift_rho,Hybrid_Model
+S1 (Hindi),kin_mean_velocity,Kinematic Target,0.615,A,0.666,A,0.051,hybrid_tree_k12
+S1 (Hindi),kin_peak_velocity,Kinematic Target,0.424,B,0.708,A,0.283,hybrid_tree_k12
+S1 (Hindi),kin_velocity_skewness,Kinematic Target,-0.014,D,0.476,B,0.489,hybrid_tree_k12
+S1 (Hindi),kin_nvi_rate,Kinematic Target,0.039,D,0.584,B,0.544,hybrid_hgb_k12
+S1 (Hindi),kin_nvi_per_stroke,Kinematic Target,0.079,D,0.384,C,0.306,hybrid_hgb_k12
+S1 (Hindi),kin_nvi_per_h_med,Kinematic Target,0.527,B,0.648,A,0.121,hybrid_ridge_k24
+S1 (Hindi),kin_jerk_metric,Kinematic Target,0.435,B,0.784,A,0.349,hybrid_ridge_k6
+S1 (Hindi),kin_dimensionless_jerk,Kinematic Target,0.22,D,0.396,C,0.176,hybrid_tree_k12
+S1 (Hindi),kin_spatial_roughness_4_8hz,Kinematic Target,0.179,D,0.608,A,0.429,hybrid_blend
+S1 (Hindi),kin_pen_lift_count,Kinematic Target,0.652,A,0.772,A,0.121,hybrid_ridge_k32
+S1 (Hindi),kin_mean_stroke_length,Kinematic Target,0.431,B,0.59,B,0.159,hybrid_ridge_k24
+S1 (Hindi),kin_ink_width_ratio_mean,Descriptive Only,0.646,N/A (Descriptive),0.818,N/A (Descriptive),0.172,hybrid_blend
+S1 (Hindi),kin_ink_width_ratio_std,Descriptive Only,0.181,N/A (Descriptive),0.711,N/A (Descriptive),0.53,hybrid_tree_k12
+S2 (English),kin_mean_velocity,Kinematic Target,0.435,B,0.638,A,0.203,hybrid_ridge_k24
+S2 (English),kin_peak_velocity,Kinematic Target,0.427,B,0.667,A,0.24,hybrid_blend
+S2 (English),kin_velocity_skewness,Kinematic Target,-0.027,D,0.402,B,0.429,hybrid_ridge_k32
+S2 (English),kin_nvi_rate,Kinematic Target,0.208,D,0.563,B,0.355,hybrid_ridge_k24
+S2 (English),kin_nvi_per_stroke,Kinematic Target,0.542,B,0.567,B,0.025,hybrid_ridge_k24
+S2 (English),kin_nvi_per_h_med,Kinematic Target,0.401,B,0.513,B,0.113,hybrid_ridge_k24
+S2 (English),kin_jerk_metric,Kinematic Target,0.242,D,0.506,B,0.264,hybrid_ridge_k24
+S2 (English),kin_dimensionless_jerk,Kinematic Target,0.641,A,0.674,A,0.032,hybrid_blend
+S2 (English),kin_spatial_roughness_4_8hz,Kinematic Target,-0.052,D,0.227,D,0.279,hybrid_ridge_k16
+S2 (English),kin_pen_lift_count,Kinematic Target,0.714,A,0.805,A,0.09,hybrid_ridge_k32
+S2 (English),kin_mean_stroke_length,Kinematic Target,0.615,A,0.786,A,0.171,hybrid_ridge_k32
+S2 (English),kin_ink_width_ratio_mean,Descriptive Only,0.824,N/A (Descriptive),0.891,N/A (Descriptive),0.067,hybrid_ridge_k24
+S2 (English),kin_ink_width_ratio_std,Descriptive Only,0.594,N/A (Descriptive),0.862,N/A (Descriptive),0.269,hybrid_ridge_k24
