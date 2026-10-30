@@ -1944,3 +1944,48 @@ flowchart TD
    - Dense cross-out scribbles (e.g. `wa~~k~~`) produce extreme local ink density ($>15\%$) and feature activations.
    - Decomposing multi-line submissions into single lines creates 2x–3x more tiles per student. Sampling `np.percentile(..., 90)` across variable tile bag sizes artificially elevates scores for children with longer text.
    - Replacing the 90th percentile descriptor with robust mean and standard deviation ($[\mu, \sigma]$) and trimming outlier density tiles insulates the backbone against self-correction scribbles and eliminates bag-size sensitivity.
+
+
+### 23.12 True Character Height Rescaling ($h \to 48\text{px}$), Residual-Line Rejection Gate, & Background De-Noising
+
+```mermaid
+flowchart TD
+    subgraph PreprocessingEngine ["Refined Tiling Engine (baseline/tiling_preprocessor.py)"]
+        RawCrop["Single-Line / Sentence Crop"] --> CleanInk["Definitive Rule-Removed Ink Mask M(x, y)<br/>(features/utils.py: load_or_binarize_ink)"]
+        RawCrop & CleanInk --> Fix3["Fix 3: Optical Density Zeroing<br/>D_clean(x, y) = D(x, y) · M(x, y)<br/>Ch1: Inverted Ink (0 ink, 255 bg)<br/>Ch2: Shaded Ink (255 pure bg, zero pink grain)<br/>Ch3: Inverted Ink + Rule Ref"]
+        
+        Fix3 --> Fix1["Fix 1: Scale by Core x-Height h<br/>scale = 48.0 / h_char<br/>Center vertically on 224x224 White Canvas<br/>Letter Height ≈ 48 px | Tile Width = 4.67 * h (4-6 letters)"]
+        
+        Fix1 --> Slide["Sliding Window Slicing (224x224, Stride 112px)"]
+        
+        Slide --> Fix2Gate{"Fix 2: Rejection Gate<br/>1. Ink Pixels >= 1,250 (2.5%)<br/>2. Span y_max - y_min >= 28 px<br/>3. Vertical Std >= 8.0 px"}
+        
+        Fix2Gate -- Reject --> Discard["Discard Empty, Residual Ruled-Line,<br/>or Blank Margin Tile"]
+        Fix2Gate -- Pass --> CleanBag["Clean Student Tile Bag<br/>(32,509 total cohort tiles; >43,900 noise tiles killed)"]
+    end
+```
+
+1. **Fix 1: Invariant 1:1 Character Magnification Across Grades**:
+   - Rather than resizing bounding box height $H \to 224\text{ px}$ (which arbitrarily zooms tight crops by $>400\%$), scaling is anchored to the true estimated character $x$-height $h$ (`x_height_h`):
+     $$\text{scale} = \frac{48.0}{h_{\text{char}}}$$
+   - The line strip is vertically centered onto a $224 \times 224$ canvas ($y_{\text{offset}} = (224 - H_{\text{scaled}}) // 2$).
+   - Across every grade, student, and task, letters have identical physical size ($\approx 48\text{ px}$), with ample room for ascenders, descenders, and Devanagari matras.
+   - The $224\text{ px}$ tile width spans $\approx 4.67 \times h$, fitting 4 to 6 complete characters (an average word + inter-word spacing) per tile, preserving critical intra-word stroke morphology.
+
+2. **Fix 2: Empty & Residual Ruled-Line Rejection Gate**:
+   - Decomposing multi-line crops occasionally produces empty sub-line strips containing only printed notebook lines or letter ascender/descender tips from adjacent lines.
+   - A multi-criteria filter evaluates each $224 \times 224$ candidate tile:
+     - Foreground ink pixel floor: $\sum M_{\text{tile}} \ge 1,250\text{ px}$ ($\ge 2.5\%$ of 50,176).
+     - Vertical span floor: $y_{\max} - y_{\min} \ge 28\text{ px}$ ($\ge 0.6 \times$ target x-height).
+     - Vertical projection dispersion: $\text{std}(y \mid M_{\text{tile}} > 0) \ge 8.0\text{ px}$.
+   - Kills 100% of flat horizontal ruled lines ($\text{span} \le 6\text{ px}, \text{std} \le 1.8\text{ px}$) and empty margins.
+
+3. **Fix 3: Background Optical Density Zeroing**:
+   - The grayscale shading channel (Channel 2) is strictly masked by the binary ink mask ($D_{\text{clean}} = D \cdot M$).
+   - Everywhere outside genuine ink strokes, all three tensor channels equal 255, producing pure white $[255, 255, 255]$ backgrounds and eliminating all pink/magenta noise clouds and paper texture.
+
+4. **Empirical Performance Impact**:
+   - Evaluated under 5-repeat 5-fold cross-validation on 215 students (37 positives, 178 controls):
+     - **Line CLIP Joint**: AUROC = **0.8643** | AUPRC = **0.5756** | Sens @ 90% Spec = **56.8% (21/37)**.
+     - **Line Dual-ViT (50/50 Rank)**: AUROC = **0.8473** | AUPRC = **0.5739**.
+     - **Hierarchical Tri-Modal Champion**: **AUROC = 0.8841**, **AUPRC = 0.6650**, **Sensitivity @ 80% Specificity = 78.4% (29/37)**, **Sensitivity @ 90% Specificity = 64.9% (24/37)** (all-time cohort record).

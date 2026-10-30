@@ -1,16 +1,19 @@
-"""Tiling & Native Stroke-Scale Preprocessor for Experiment 7.
+"""Tiling & Native Stroke-Scale Preprocessor for Vision Models.
 
 Performs:
-1. White-Canvas Rendering (H x W x 3):
-   - Ch1: Clean Inverted Binary Ink (255 background, 0 ink) with ruled lines removed
-   - Ch2: Natural Grayscale Shading strictly inside ink (255 background, optical density inside ink)
-   - Ch3: Clean Ink + 0.7 Gray Guideline Reference (255 background, 178 guideline, 0 ink)
-2. Aspect-Preserving Height Normalization:
-   - Rescales line strip proportionally so height = 224px (preserving 1:1 letter aspect ratio)
-3. Overlapping Square Tiling:
-   - Slides a 224x224 window horizontally with 50% stride (step = 112px)
-   - Right-pads boundary tiles with white background (255)
-   - Filters completely blank margin tiles (requiring min_ink_pixels >= 50)
+1. Fix 3: White-Canvas Rendering (H x W x 3) with Pure White Background [255, 255, 255]:
+   - Ch1: Clean Inverted Binary Ink (255 background, 0 ink) with ruled lines removed.
+   - Ch2: Natural Grayscale Shading strictly inside ink (255 background, optical density inside ink).
+          D_clean(x, y) = D(x, y) * M(x, y) so zero paper texture or pink clouds leak into background.
+   - Ch3: Clean Ink + optional Guideline Reference (255 background, 178 guideline, 0 ink).
+2. Fix 1: True Character Height (h) Rescaling & Vertical Centering:
+   - Rescales strip so character x-height h maps to target_x_height = 48 px.
+   - Centers the line vertically on a clean white 224 x 224 canvas.
+   - Guarantees uniform 1:1 physical magnification across all students, lines, and grades (~4.6 letters per tile).
+3. Fix 2: Empty & Residual-Line Tile Rejection Gate:
+   - Minimum foreground ink pixels: >= 1,250 px (>= 2.5% of 50,176).
+   - Vertical span gate: (y_max - y_min) >= 28 px (>= 0.6 * target x-height).
+   - Vertical projection variance / std gate: std(y | ink) >= 8.0 px to 100% reject flat ruled lines.
 """
 
 from __future__ import annotations
@@ -18,7 +21,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
@@ -26,28 +29,90 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
+def estimate_strip_x_height(ink_mask: np.ndarray, default: float = 40.0) -> float:
+    """Robustly estimate character x-height h from a binary ink mask (1=ink, 0=bg)."""
+    if ink_mask is None or np.sum(ink_mask > 0) < 50:
+        return default
+
+    # 1. Connected components analysis
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(
+        ink_mask.astype(np.uint8), connectivity=8
+    )
+    if num_labels > 2:
+        heights = []
+        for i in range(1, num_labels):
+            w = stats[i, cv2.CC_STAT_WIDTH]
+            h = stats[i, cv2.CC_STAT_HEIGHT]
+            # Ignore tiny speckles (< 8px) and extremely wide flat lines (aspect > 6 and h < 14)
+            if h >= 8 and (w / max(1, h)) < 6.0:
+                heights.append(h)
+        if len(heights) >= 3:
+            med_h = float(np.median(heights))
+            if 18.0 <= med_h <= 85.0:
+                return med_h
+
+    # 2. Vertical projection profile fallback
+    v_proj = np.sum(ink_mask > 0, axis=1).astype(float)
+    if np.max(v_proj) > 0:
+        v_smooth = np.convolve(v_proj, np.ones(5) / 5.0, mode="same")
+        densest = int(np.argmax(v_smooth))
+        peak = v_smooth[densest]
+        down = np.where(v_smooth[densest:] < 0.3 * peak)[0]
+        y_base = densest + down[0] if len(down) > 0 else len(v_smooth) * 0.8
+        up = np.where(v_smooth[:densest] < 0.3 * peak)[0]
+        y_top = up[-1] if len(up) > 0 else len(v_smooth) * 0.2
+        est = float(max(18.0, y_base - y_top))
+        if 18.0 <= est <= 85.0:
+            return est
+
+    return default
+
+
 def build_white_canvas_strip(
-    clean_mask_path: Path,
-    raw_gray_path: Path,
-    json_path: Optional[Path] = None,
+    clean_mask_or_path: Union[Path, str, np.ndarray],
+    raw_gray_or_path: Union[Path, str, np.ndarray],
+    json_path: Optional[Union[Path, str]] = None,
 ) -> np.ndarray:
     """Construct custom 3-channel white-canvas line strip with ruled lines removed.
+
+    Fix 3: Strictly zeros optical density outside the binary ink mask:
+    D_clean(x, y) = D(x, y) * M(x, y) so background is pure [255, 255, 255] everywhere.
 
     Returns:
         np.ndarray of shape (H, W, 3) with dtype uint8 (values 0..255).
         Background = 255 (pure white canvas).
         Ink = dark strokes (0..128).
     """
-    # 1. Load clean ink mask (0 = ink, 255 = background/erased rules)
-    mask_gray = cv2.imread(str(clean_mask_path), cv2.IMREAD_GRAYSCALE)
-    if mask_gray is None:
-        raise FileNotFoundError(f"Missing clean ink mask: {clean_mask_path}")
-    ink_bin = (mask_gray < 128).astype(np.float32)
+    # 1. Load clean ink mask (0 = ink, 255 = background/erased rules, or binary 1=ink, 0=bg)
+    if isinstance(clean_mask_or_path, (Path, str)):
+        mask_gray = cv2.imread(str(clean_mask_or_path), cv2.IMREAD_GRAYSCALE)
+        if mask_gray is None:
+            raise FileNotFoundError(f"Missing clean ink mask: {clean_mask_or_path}")
+        ink_bin = (mask_gray < 128).astype(np.float32)
+    elif isinstance(clean_mask_or_path, np.ndarray):
+        if clean_mask_or_path.dtype == bool:
+            ink_bin = clean_mask_or_path.astype(np.float32)
+        elif np.max(clean_mask_or_path) <= 1:
+            ink_bin = (clean_mask_or_path > 0).astype(np.float32)
+        else:
+            # Assume 0=ink, 255=bg if mean < 200, or 255=ink if inverted
+            ink_bin = (clean_mask_or_path < 128).astype(np.float32)
+    else:
+        raise ValueError(f"Invalid clean mask type: {type(clean_mask_or_path)}")
 
     # 2. Load raw grayscale crop
-    raw_gray = cv2.imread(str(raw_gray_path), cv2.IMREAD_GRAYSCALE)
-    if raw_gray is None:
-        raise FileNotFoundError(f"Missing raw gray crop: {raw_gray_path}")
+    if isinstance(raw_gray_or_path, (Path, str)):
+        raw_gray = cv2.imread(str(raw_gray_or_path), cv2.IMREAD_GRAYSCALE)
+        if raw_gray is None:
+            raise FileNotFoundError(f"Missing raw gray crop: {raw_gray_path}")
+    elif isinstance(raw_gray_or_path, np.ndarray):
+        raw_gray = (
+            cv2.cvtColor(raw_gray_or_path, cv2.COLOR_BGR2GRAY)
+            if raw_gray_or_path.ndim == 3
+            else raw_gray_or_path.copy()
+        )
+    else:
+        raise ValueError(f"Invalid raw gray type: {type(raw_gray_or_path)}")
 
     if ink_bin.shape != raw_gray.shape:
         ink_bin = cv2.resize(
@@ -63,39 +128,43 @@ def build_white_canvas_strip(
     # Channel 1: Clean Inverted Binary Ink (255 background, 0 ink)
     ch1 = np.where(ink_bin > 0, 0.0, 255.0).astype(np.float32)
 
-    # Channel 2: Natural Normalized Grayscale Shading inside ink
+    # Channel 2: Fix 3 - Optical density strictly zeroed outside ink mask
     non_ink = raw_gray[ink_bin == 0]
     bg_level = float(np.percentile(non_ink, 90)) if len(non_ink) > 50 else 255.0
     bg_level = max(128.0, bg_level)
     optical_density = np.clip((bg_level - raw_gray.astype(np.float32)) / bg_level, 0.0, 1.0)
-    ink_intensity = 255.0 * (1.0 - optical_density)
-    ch2 = np.where(ink_bin > 0, ink_intensity, 255.0).astype(np.float32)
+    # Strictly zero out optical density outside ink mask
+    optical_density_clean = optical_density * ink_bin
+    ink_intensity = 255.0 * (1.0 - optical_density_clean)
+    ch2 = ink_intensity.clip(0.0, 255.0).astype(np.float32)
 
     # Channel 3: Clean Ink + 0.7 Gray Ruled Guideline Reference
     rule_map = np.zeros((h, w), dtype=np.float32)
     has_rule = False
 
-    if json_path is not None and json_path.exists():
-        try:
-            with open(json_path) as f:
-                meta = json.load(f)
-            bbox = meta.get("crop_bbox", [0, 0, w, h])
-            bx, by = bbox[0], bbox[1]
-            lines = meta.get("physical_lines", [])
-            for pl in lines:
-                slope = pl.get("baseline_slope")
-                intercept = pl.get("baseline_intercept")
-                if slope is not None and intercept is not None:
-                    xs = np.arange(w)
-                    ys = np.round(slope * (xs + bx) + intercept - by).astype(int)
-                    valid = (ys >= 0) & (ys < h)
-                    for x_val, y_val in zip(xs[valid], ys[valid]):
-                        y_lo = max(0, y_val - 1)
-                        y_hi = min(h, y_val + 2)
-                        rule_map[y_lo:y_hi, x_val] = 1.0
-                    has_rule = True
-        except Exception:
-            pass
+    if json_path is not None:
+        jp = Path(json_path)
+        if jp.exists():
+            try:
+                with open(jp, encoding="utf-8") as f:
+                    meta = json.load(f)
+                bbox = meta.get("crop_bbox", [0, 0, w, h])
+                bx, by = bbox[0], bbox[1]
+                lines = meta.get("physical_lines", [])
+                for pl in lines:
+                    slope = pl.get("baseline_slope")
+                    intercept = pl.get("baseline_intercept")
+                    if slope is not None and intercept is not None:
+                        xs = np.arange(w)
+                        ys = np.round(slope * (xs + bx) + intercept - by).astype(int)
+                        valid = (ys >= 0) & (ys < h)
+                        for x_val, y_val in zip(xs[valid], ys[valid]):
+                            y_lo = max(0, y_val - 1)
+                            y_hi = min(h, y_val + 2)
+                            rule_map[y_lo:y_hi, x_val] = 1.0
+                        has_rule = True
+            except Exception:
+                pass
 
     if not has_rule or np.count_nonzero(rule_map) < 50:
         no_ink = raw_gray.copy()
@@ -119,50 +188,125 @@ def extract_tiles_from_strip(
     canvas_strip: np.ndarray,
     target_height: int = 224,
     stride: int = 112,
-    min_ink_pixels: int = 40,
+    x_height: Optional[float] = None,
+    target_x_height: float = 48.0,
+    min_ink_pixels: int = 1250,
+    min_vertical_span: int = 28,
+    min_vertical_std: float = 8.0,
+    ink_mask: Optional[np.ndarray] = None,
+    allow_empty: bool = True,
 ) -> Tuple[List[np.ndarray], List[Tuple[int, int]]]:
-    """Scales line strip proportionally to target_height and slices overlapping square tiles.
+    """Scales line strip by true character height h and slices overlapping square tiles.
+
+    Fix 1: Scales by True Character Height h, mapping h -> 48 px on a 224 px canvas.
+           Centers the line vertically with clean white padding [255, 255, 255].
+    Fix 2: Rejection Gate rejects empty tiles, flat horizontal ruled-line tiles,
+           and boundary margin tiles without sufficient letter stroke ink:
+           - min_ink_pixels: >= 1,250 px (2.5% of 50,176).
+           - min_vertical_span: (y_max - y_min) >= 28 px.
+           - min_vertical_std: std(y | ink) >= 8.0 px.
 
     Args:
-        canvas_strip: np.ndarray of shape (H, W, 3), background=255.
-        target_height: Target height for 1:1 aspect ratio tiles (default 224).
+        canvas_strip: np.ndarray of shape (H, W, 3) or (H, W), background=255.
+        target_height: Target tile height/width (default 224).
         stride: Horizontal step size in pixels (default 112 for 50% overlap).
-        min_ink_pixels: Minimum number of ink pixels (where ch1 < 128) to retain a tile.
+        x_height: Estimated x-height h in unscaled pixels. If None, estimated automatically.
+        target_x_height: Target letter x-height inside tile canvas (default 48.0 px).
+        min_ink_pixels: Minimum number of foreground ink pixels (default 1,250).
+        min_vertical_span: Minimum vertical bounding span (y_max - y_min) in pixels (default 28).
+        min_vertical_std: Minimum vertical coordinate standard deviation in pixels (default 8.0).
+        ink_mask: Optional binary mask (1=ink, 0=bg). If None, extracted from canvas_strip Ch1.
+        allow_empty: If True (default), strips with 0 valid handwriting tiles return empty list.
 
     Returns:
         tiles: List of np.ndarray of shape (target_height, target_height, 3).
         coordinates: List of (x_start, x_end) in scaled coordinate space.
     """
+    if canvas_strip.ndim == 2:
+        canvas_strip = np.stack([canvas_strip, canvas_strip, canvas_strip], axis=-1)
+
     h, w, c = canvas_strip.shape
-    scale = target_height / float(h)
+
+    # Extract or validate binary ink mask
+    if ink_mask is None:
+        # Channel 0 is inverted ink: 0=ink, 255=bg
+        ink_mask = (canvas_strip[:, :, 0] < 128).astype(np.uint8)
+    else:
+        if ink_mask.dtype == bool:
+            ink_mask = ink_mask.astype(np.uint8)
+        elif np.max(ink_mask) > 1:
+            ink_mask = (ink_mask < 128).astype(np.uint8)
+
+    # Fix 1: Determine character x-height h
+    if x_height is None or float(x_height) < 10.0:
+        h_char = estimate_strip_x_height(ink_mask, default=40.0)
+    else:
+        h_char = float(x_height)
+
+    h_char = float(np.clip(h_char, 18.0, 90.0))
+    scale = target_x_height / h_char
+
     w_scaled = max(target_height, int(round(w * scale)))
+    h_scaled = max(1, int(round(h * scale)))
 
     interp = cv2.INTER_AREA if scale < 1.0 else cv2.INTER_LINEAR
-    resized_strip = cv2.resize(canvas_strip, (w_scaled, target_height), interpolation=interp)
+    resized_strip = cv2.resize(canvas_strip, (w_scaled, h_scaled), interpolation=interp)
+    resized_mask = cv2.resize(ink_mask, (w_scaled, h_scaled), interpolation=cv2.INTER_NEAREST)
+
+    # Center vertically on a clean white 224 px canvas
+    if h_scaled <= target_height:
+        canvas = np.full((target_height, w_scaled, c), 255, dtype=np.uint8)
+        canvas_m = np.zeros((target_height, w_scaled), dtype=np.uint8)
+        y_offset = (target_height - h_scaled) // 2
+        canvas[y_offset : y_offset + h_scaled, :, :] = resized_strip
+        canvas_m[y_offset : y_offset + h_scaled, :] = resized_mask
+    else:
+        # If scaled strip exceeds 224 px, center-crop vertically
+        y_start = (h_scaled - target_height) // 2
+        canvas = resized_strip[y_start : y_start + target_height, :, :].copy()
+        canvas_m = resized_mask[y_start : y_start + target_height, :].copy()
 
     tiles: List[np.ndarray] = []
     coords: List[Tuple[int, int]] = []
 
+    # Slide horizontal window with stride
     for x in range(0, w_scaled, stride):
         x_end = x + target_height
         if x_end <= w_scaled:
-            tile = resized_strip[:, x:x_end, :].copy()
+            tile = canvas[:, x:x_end, :].copy()
+            tile_m = canvas_m[:, x:x_end].copy()
         else:
-            # Right-pad with pure white canvas (255)
-            tile_slice = resized_strip[:, x:w_scaled, :]
+            # Right-pad with pure white canvas (255) and zero mask
+            tile_slice = canvas[:, x:w_scaled, :]
             pad_w = target_height - tile_slice.shape[1]
             pad = np.full((target_height, pad_w, c), 255, dtype=np.uint8)
             tile = np.concatenate([tile_slice, pad], axis=1)
 
-        # Check ink presence (Channel 1 < 128 represents dark ink)
-        ink_count = int(np.count_nonzero(tile[:, :, 0] < 128))
-        if ink_count >= min_ink_pixels or len(tiles) == 0:
-            tiles.append(tile)
-            coords.append((x, min(x_end, w_scaled)))
+            m_slice = canvas_m[:, x:w_scaled]
+            pad_m = np.zeros((target_height, pad_w), dtype=np.uint8)
+            tile_m = np.concatenate([m_slice, pad_m], axis=1)
 
-    # Ensure at least one tile is returned
-    if len(tiles) == 0:
-        first_tile = resized_strip[:, :target_height, :].copy()
+        # Fix 2: Rejection Gate on tile_m
+        n_ink = int(np.sum(tile_m > 0))
+        if n_ink < min_ink_pixels:
+            continue
+
+        ys, _ = np.where(tile_m > 0)
+        span_y = int(np.max(ys) - np.min(ys)) if len(ys) > 0 else 0
+        if span_y < min_vertical_span:
+            continue
+
+        std_y = float(np.std(ys)) if len(ys) > 0 else 0.0
+        if std_y < min_vertical_std:
+            continue
+
+        # All gates passed: genuine handwriting letter tile
+        tiles.append(tile)
+        coords.append((x, min(x_end, w_scaled)))
+
+    # Fallback only if allow_empty is False and no tiles passed
+    if len(tiles) == 0 and not allow_empty:
+        first_tile = canvas[:, :target_height, :].copy()
         if first_tile.shape[1] < target_height:
             pad = np.full((target_height, target_height - first_tile.shape[1], c), 255, dtype=np.uint8)
             first_tile = np.concatenate([first_tile, pad], axis=1)
@@ -170,4 +314,3 @@ def extract_tiles_from_strip(
         coords.append((0, min(target_height, w_scaled)))
 
     return tiles, coords
-

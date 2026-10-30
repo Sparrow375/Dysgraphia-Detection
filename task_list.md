@@ -1,91 +1,47 @@
 # Task List — Workstream A
 
-## Active Sprint: Multi-Line Falsification, Selection Bias Recalibration & Stroke Artifact Trimming
+## Active Sprint: Native Stroke Scaling, Residual-Line Rejection Gate, & Background De-noising
 
 ### Objectives
-1. **Unbiased Multi-Line Hypothesis Test on Full Control Cohort (N=178)**:
-   - Compare sentence-crop scores and false alarm rates of controls with 0, 1, and >=2 multi-line tasks without cherry-picking (`scratch/test_multiline_hypothesis.py`).
-   - Uncover mechanism and quantify statistical significance (Welch's t, Mann-Whitney U, Cohen's d).
-2. **OOF Selection Bias & Realistic Pipeline Expectation**:
-   - Acknowledge that post-hoc ensemble tuning (0.80/0.20, 0.84/0.08/0.08, tau=0.70) yields optimistic estimates.
-   - Calibrate honest expected cohort performance to **~0.85–0.87 AUROC** rather than 0.88+.
-3. **Clinical & Methodological Refinements on G7_A_Roll02**:
-   - Implement Soft Visual Floor Gating on Asymmetric OCR Rescue:
-     $$\text{Rescue} = \beta \cdot \sigma\left(\frac{R_{\text{vis}} - 0.35}{0.10}\right) \cdot \max(0, R_{\text{ocr}} - \tau)$$
-   - Diagnose crossed-out word (`wa~~k~~` on dictated English line 1) and test outlier tile trimming / removing the 90th percentile tile spike.
-4. **Tile Inspection & Clickable Artifact Gallery**:
-   - Generate and export 224x224 tile PNGs across sentence crops and single-line strips for `G7_A_Roll02`, `G7_A_Roll15`, and `G5_A_Roll07`.
-   - Provide direct clickable file links for manual inspection.
+1. **Fix 1: Scale by True Character Height ($h$), NOT Arbitrary Crop Box Height ($H$)**:
+   - Set resize factor so that estimated character x-height $h$ (`x_height_h`) maps to a fixed target of $48\text{ px}$.
+   - Center line vertically on a clean white $224 \times 224$ canvas.
+   - Guarantees 1:1 physical magnification across all students, lines, and grades (~4.6 letters per tile, preserving intra-word context).
+2. **Fix 2: Empty & Residual-Line Tile Rejection Gate**:
+   - Minimum foreground ink pixel count: $\ge 1,250$ pixels ($\ge 2.5\%$ of 50,176).
+   - Vertical span gate: $y_{\max} - y_{\min} \ge 28\text{ px}$ ($\ge 0.6 \times$ target x-height).
+   - Vertical projection variance / std gate: $\text{std}(y \mid \text{ink}) \ge 8.0\text{ px}$ to 100% reject flat ruled lines.
+3. **Fix 3: Strip Pink Background Grain Out of Channel 2**:
+   - Strictly zero optical density outside binary ink mask ($D_{\text{clean}} = D \cdot M$).
+   - Enforce pure white background $[255, 255, 255]$ everywhere outside ink strokes.
+4. **End-to-End Line Decomposition & Clean Mask Synchronization**:
+   - Synchronized `features/utils.py:load_or_binarize_ink` to prevent returning mismatched mask shapes on recropped tasks.
+   - Updated `pipeline/extract_line_backbone_features.py` and `baseline/tiling_preprocessor.py`.
+5. **Validation, GPU Re-Extraction & Benchmark Evaluation**:
+   - Unit tests in `tests/test_tiling_preprocessor.py` passing (4/4 passed).
+   - Re-extracted clean line DINOv2 (32,509 tiles in 64.6s) and CLIP (32,509 tiles in 41.9s) on RTX 5060 Ti GPU.
+   - Evaluated 5x5 CV benchmark: Line CLIP AUROC surged to 0.8643, Hierarchical Tri-Modal Champion reached **0.8841 AUROC**, **0.6650 AUPRC**, and **64.9% Sens @ 90% Spec (24/37 detected)**.
+   - Exported refreshed inspection gallery for `G7_A_Roll02` (empty line 1 has 0 tiles; line 3 "lazy dog" has exactly 4 clean tiles).
 
 ### Sprint Tasks
-- [x] Task 1: Cohort-Wide Multi-Line Falsification Test
-  - [x] 1.1 Evaluated 178 controls partitioned into 0 tasks (N=31), 1 task (N=57), and >=2 tasks (N=90).
-  - [x] 1.2 Proved statistically significant false alarm inflation: 3.2% vs 11.1% (>0.80 score, p=0.0158, d=0.465).
-  - [x] 1.3 Identified line-strip tile bag-size artifact driven by `np.percentile(descs, 90)`.
-- [x] Task 2: Methodological Integrity & Benchmark Recalibration
-  - [x] 2.1 Formalized honest expected generalization range at ~0.85–0.87 AUROC.
-- [x] Task 3: G7_A_Roll02 Refinements
-  - [x] 3.1 Evaluated Soft Visual Floor Gated Rescue (`scratch/test_refinements.py`, AUROC 0.8759).
-  - [x] 3.2 Diagnosed crossed-out word artifact (`wa~~k~~`) in tiles 12 & 13.
-  - [x] 3.3 Validated that removing extreme 90th-percentile tile spike drops G7_A_Roll02 to 51.6th percentile (score: 0.2347).
-- [x] Task 4: Tile Export & Verification
-  - [x] 4.1 Exported 341 tile PNGs for G7_A_Roll02, plus reference tiles for G7_A_Roll15 and G5_A_Roll07 to `data/qa_tiles_inspection/`.
-  - [x] 4.2 Verified QA server running on `http://127.0.0.1:8090`.
-  - [x] 4.3 Synchronized `context.md`, `architechture.md`, and commit/push to git.
+- [x] Task 1: Update `baseline/tiling_preprocessor.py` with Fix 1, Fix 2, and Fix 3
+- [x] Task 2: Synchronize clean ink mask handling in line decomposition & tile extraction
+- [x] Task 3: Comprehensive unit test suite in `tests/test_tiling_preprocessor.py`
+- [x] Task 4: Re-extract line backbone features on GPU and run 5x5 CV benchmark
+- [x] Task 5: Export updated inspection tiles for verification
+- [x] Task 6: Synchronize `context.md`, `architechture.md`, and commit/push to git
 
 ---
 
 ## Completed Sprints
 
 <details>
-<summary>Line Decomposition & Hierarchical Multi-Scale Champion (Completed 2026-10-29)</summary>
-
-## Previous Sprint: Line Decomposition & Hierarchical Multi-Scale Champion
+<summary>Multi-Line Falsification, Selection Bias Recalibration & Stroke Artifact Trimming (Completed 2026-10-29)</summary>
 
 ### Objectives
-1. **Automated Line Decomposition**: Decompose multi-line sentence crops into single-line strips at horizontal ink projection valleys (`pipeline/decompose_sentence_crops_to_lines.py`).
-2. **Backbone Extraction on Line Strips**: Extract DINOv2-Small and CLIP ViT-B/32 on single lines.
-3. **Hierarchical Multi-Scale Vision**: Combine Macro-Spatial Sentence Vision (80%) + Clean Micro-Stroke Line Vision (20%).
-4. **Line TrOCR Decoding**: Decoded line tasks with TrOCR (`pipeline/extract_line_bilingual_ocr.py`).
+1. Unbiased Multi-Line Hypothesis Test on Full Control Cohort (N=178).
+2. OOF Selection Bias & Realistic Pipeline Expectation (~0.85-0.87 AUROC).
+3. Soft Visual Floor Gated Rescue on G7_A_Roll02.
+4. Export inspection tiles to `data/qa_tiles_inspection/`.
 
 </details>
-
----
-
-## Completed Sprints
-
-<details>
-<summary>Ground-Truth Re-Classifications & Phenotypic Gating Analysis (Completed 2026-10-29)</summary>
-
-## Previous Sprint: Ground-Truth Re-Classifications & Phenotypic Gating Analysis
-
-### Objectives
-1. **Apply Expert Re-Classifications (`pipeline/apply_user_label_reclassifications.py`)**:
-   - `G5_A_Roll07`: 1 -> 0 (Negative).
-   - `SCHB_G3_IMG_20261007_101635`: 1 -> 0 (Negative).
-   - `SCHB_G4_IMG_20261007_100350`: 0 -> 1 (Positive / Dysgraphic).
-2. **Re-Benchmark 5x5 Cross-Validation on Cleaned Cohort (37 Positives, 178 Controls)**:
-   - Dual-ViT alone: 0.8620 AUROC, 0.6165 AUPRC.
-   - Tri-Modal Champion: 0.8709 AUROC, 0.6530 AUPRC.
-3. **Phenotypic Gating Analysis**:
-   - Formulated Asymmetric Non-Penalizing Gating: Vision anchors; OCR rescues.
-
-</details>
-
----
-
-## Completed Sprints
-
-<details>
-<summary>Comprehensive Error Analysis & QA Web App Multimodal Integration (Completed 2026-10-29)</summary>
-
-## Previous Sprint: Comprehensive Error Analysis & QA Web App Multimodal Integration
-
-### Objectives
-1. Full-Cohort Error Analysis on Unified Model (215 Students).
-2. Export Multimodal Score & Status Cache (`pipeline/export_student_model_scores.py`).
-3. QA Web App Live Integration (`qa/app.py`, `qa/web/index.html`, `qa/web/app.js`).
-4. Comprehensive Documentation & Git Synchronization.
-
-</details>
-

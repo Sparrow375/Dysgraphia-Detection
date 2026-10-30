@@ -15,33 +15,34 @@ warnings.filterwarnings('ignore')
 import numpy as np
 import pandas as pd
 from scipy.stats import rankdata
-from baseline.evaluate_bilingual_ocr_fusion import run_5x5_cv_probe
 
 def main():
     oof_data = np.load("data/features/exp7_all_models_oof_probs.npz")
+    line_oof = np.load("data/features/exp7_line_dual_vit_oof.npz")
+
     student_ids = list(oof_data["student_ids"])
     y = oof_data["y_true"]
+    n = len(student_ids)
 
     p_dino = oof_data["dinov2_joint"]
     p_clip = oof_data["clip_blend"]
-    p_dual = oof_data["dual_vit_50_50_rank"]
+    p_dual_sent = oof_data["dual_vit_50_50_rank"]
+    p_line_dual = line_oof["line_dual_vit_rank"]
+    p_en_ocr = oof_data["line_english_ocr_prob"]
     p_tab = oof_data["tabular_top30"]
 
-    ocr_npz = np.load("data/features/exp7_bilingual_ocr_student_features.npz")
-    fold_df = pd.DataFrame({"student_id": student_ids})
-    for r in range(5):
-        fold_df[f"repeat_{r}_fold"] = ocr_npz[f"repeat_{r}_fold"]
+    r_dino = rankdata(p_dino) / n
+    r_clip = rankdata(p_clip) / n
+    r_dual_sent = rankdata(p_dual_sent) / n
+    r_line_dual = rankdata(p_line_dual) / n
+    r_hier = 0.80 * r_dual_sent + 0.20 * r_line_dual
 
-    p_en_ocr = run_5x5_cv_probe(ocr_npz["X_english_ocr"], y, fold_df, n_components=12, C=0.1)
+    r_en_ocr = rankdata(p_en_ocr) / n
+    r_tab = rankdata(p_tab) / n
 
-    r_dino = rankdata(p_dino) / len(p_dino)
-    r_clip = rankdata(p_clip) / len(p_clip)
-    r_dual = rankdata(p_dual) / len(p_dual)
-    r_en_ocr = rankdata(p_en_ocr) / len(p_en_ocr)
-    r_tab = rankdata(p_tab) / len(p_tab)
-
-    p_tri = 0.84 * r_dual + 0.08 * r_en_ocr + 0.08 * r_tab
-    r_tri = rankdata(p_tri) / len(p_tri)
+    # Hierarchical Tri-Modal Champion
+    p_tri = 0.84 * r_hier + 0.08 * r_en_ocr + 0.08 * r_tab
+    r_tri = rankdata(p_tri) / n
 
     th80_tri = float(np.percentile(p_tri[y == 0], 80.0))
     th90_tri = float(np.percentile(p_tri[y == 0], 90.0))
@@ -86,8 +87,11 @@ def main():
             "tool": tool_dict.get(sid, "unknown"),
             "tri_score": round(score_tri, 4),
             "tri_rank": round(rank_tri, 4),
-            "dual_score": round(float(p_dual[i]), 4),
-            "dual_rank": round(float(r_dual[i]), 4),
+            "hier_score": round(float(r_hier[i]), 4),
+            "dual_sent_score": round(float(p_dual_sent[i]), 4),
+            "dual_sent_rank": round(float(r_dual_sent[i]), 4),
+            "line_dual_score": round(float(p_line_dual[i]), 4),
+            "line_dual_rank": round(float(r_line_dual[i]), 4),
             "dino_rank": round(float(r_dino[i]), 4),
             "clip_rank": round(float(r_clip[i]), 4),
             "ocr_score": round(float(p_en_ocr[i]), 4),
@@ -116,4 +120,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

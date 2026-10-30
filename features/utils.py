@@ -83,12 +83,19 @@ def load_or_binarize_ink(
     school = sentence_json.get("school", "school_a")
 
     # Priority 1: Check for clean ink image on disk
-    if crop_fn and sid:
+    if crop_fn and sid and image_crop is None:
         clean_fn = Path(crop_fn).stem + "_clean_ink.png"
         clean_path = Path(data_root) / school / sid / clean_fn
         if clean_path.exists():
             clean_gray = cv2.imread(str(clean_path), cv2.IMREAD_GRAYSCALE)
             if clean_gray is not None:
+                return (clean_gray < 128).astype(np.uint8)
+    elif crop_fn and sid and image_crop is not None:
+        clean_fn = Path(crop_fn).stem + "_clean_ink.png"
+        clean_path = Path(data_root) / school / sid / clean_fn
+        if clean_path.exists():
+            clean_gray = cv2.imread(str(clean_path), cv2.IMREAD_GRAYSCALE)
+            if clean_gray is not None and clean_gray.shape[:2] == image_crop.shape[:2]:
                 return (clean_gray < 128).astype(np.uint8)
 
     # Priority 2: Use provided image_crop or load crop from disk

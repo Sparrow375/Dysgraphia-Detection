@@ -1,10 +1,15 @@
 """
 Extract DINOv2 and CLIP tile descriptors on the decomposed single-line dataset.
+Incorporates:
+- Fix 1: True Character Height Scaling (h -> 48px, vertical centering on 224px canvas)
+- Fix 2: Rejection Gate (min 1,250 ink pixels, vertical span >= 28px, vertical std >= 8.0px)
+- Fix 3: Clean White Canvas with strictly zeroed optical density outside ink mask (pure [255, 255, 255] bg)
 Saves to data/features/exp7_line_dinov2_small_tiles.npz and exp7_line_clip_tiles.npz.
 """
 import sys
 import logging
 import time
+import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -18,7 +23,8 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from transformers import AutoModel, CLIPVisionModelWithProjection
-from baseline.tiling_preprocessor import extract_tiles_from_strip
+from baseline.tiling_preprocessor import build_white_canvas_strip, extract_tiles_from_strip
+from features.utils import get_x_height, load_or_binarize_ink
 
 logging.basicConfig(
     level=logging.INFO,
@@ -81,6 +87,7 @@ def extract_for_backbone(
     tile_schools = []
 
     student_metadata = {}
+    x_height_cache = {}
 
     for _, row in df_lines.iterrows():
         sid = str(row["student_id"])
@@ -90,6 +97,7 @@ def extract_for_backbone(
         luid = str(row["line_uid"])
         script = str(row.get("script", "devanagari"))
         rel = str(row["line_rel_path"])
+        tid = str(row.get("task_id", ""))
         img_p = LINES_DIR / rel
 
         if sid not in student_metadata:
@@ -111,14 +119,48 @@ def extract_for_backbone(
         if img is None:
             continue
 
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        ink = (gray < 200).astype(np.float32)
-        ch1 = np.where(ink > 0, 0, 255).astype(np.uint8)
-        ch2 = gray
-        ch3 = ch1
-        strip = np.stack([ch1, ch2, ch3], axis=-1)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img.ndim == 3 else img.copy()
 
-        tiles, _ = extract_tiles_from_strip(strip, target_height=224, stride=112)
+        # Load x_height from sentence schema
+        cache_key = (sch, sid, tid)
+        json_p = DATA_DIR / "processed" / sch / sid / f"{tid}.json"
+        if cache_key not in x_height_cache:
+            x_h = 40.0
+            if json_p.exists():
+                try:
+                    with open(json_p, encoding="utf-8") as f:
+                        jdata = json.load(f)
+                    x_h = get_x_height(jdata, default=40.0)
+                except Exception:
+                    pass
+            x_height_cache[cache_key] = x_h
+        x_h = x_height_cache[cache_key]
+
+        # 1. Clean ink mask with ruled line removal
+        ink_mask = load_or_binarize_ink(
+            {"crop_filename": f"{tid}.png", "student_id": sid, "school": sch},
+            image_crop=gray,
+        )
+        if ink_mask is None:
+            ink_mask = (gray < 200).astype(np.uint8)
+
+        # 2. Fix 3: Build 3-channel white canvas strip with strictly zeroed background optical density
+        strip = build_white_canvas_strip(ink_mask, gray, json_path=json_p)
+
+        # 3. Fix 1 (scale h -> 48px, vertical centering) and Fix 2 (rejection gate)
+        tiles, _ = extract_tiles_from_strip(
+            strip,
+            target_height=224,
+            stride=112,
+            x_height=x_h,
+            target_x_height=48.0,
+            min_ink_pixels=1250,
+            min_vertical_span=28,
+            min_vertical_std=8.0,
+            ink_mask=ink_mask,
+            allow_empty=True,
+        )
+
         for tile in tiles:
             all_tiles.append(tile)
             tile_student_ids.append(sid)
@@ -129,7 +171,7 @@ def extract_for_backbone(
             tile_schools.append(sch)
 
     total_tiles = len(all_tiles)
-    logger.info("Total line tiles: %d (in %.1fs)", total_tiles, time.time() - t0)
+    logger.info("Total clean line tiles: %d (in %.1fs)", total_tiles, time.time() - t0)
 
     # 3. GPU Batch Inference
     tile_desc_list = []
@@ -160,7 +202,7 @@ def extract_for_backbone(
                         (min(i + batch_size, total_tiles) / total_tiles) * 100,
                         elapsed, min(i + batch_size, total_tiles) / max(elapsed, 0.01))
 
-    all_desc = np.concatenate(tile_desc_list, axis=0)
+    all_desc = np.concatenate(tile_desc_list, axis=0) if tile_desc_list else np.empty((0, 1152), dtype=np.float32)
 
     # 4. Student-Level Aggregation
     unique_students = sorted(list(student_metadata.keys()))
@@ -176,7 +218,7 @@ def extract_for_backbone(
     student_schools = []
     repeat_folds = {f"repeat_{r}_fold": [] for r in range(5)}
 
-    desc_dim = all_desc.shape[1]
+    desc_dim = all_desc.shape[1] if all_desc.ndim > 1 else 1152
 
     for sid in unique_students:
         meta = student_metadata[sid]
@@ -243,4 +285,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

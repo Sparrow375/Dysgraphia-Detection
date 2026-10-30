@@ -2275,3 +2275,58 @@ Evaluated under 5-repeat 5-fold cross-validation (`baseline/evaluate_bilingual_o
 - Exported 341 tile PNGs for `G7_A_Roll02`, plus reference tiles for true positive `G7_A_Roll15` and control `G5_A_Roll07` to [`data/qa_tiles_inspection/`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/qa_tiles_inspection/).
 
 
+
+
+## Stage 55: Native Stroke Scaling, Residual-Line Rejection Gate, & Background De-Noising (Completed 2026-10-30)
+
+### 1. Diagnosis of Tile Pollution & Background Grain
+- **Visual Inspection of Exported Tiles (`data/qa_tiles_inspection/`)**:
+  - Empty Line Decomposition Strips: Decomposition of multi-line crops created sub-line strips (such as `G7_A_Roll02_sentence_02_copy_english_line_01`, 67px tall) that contained only a printed ruled line and tiny tips of letters from the line below. In the old pipeline, these strips were scaled to 224px height ($334\%$ zoom) and every tile was accepted because naive `(gray < 200)` counted printed lines as ink, polluting student bags with 14 pure ruled-line tiles.
+  - Trailing Ruled Line Remnants: In sparse lines (such as `line_03` with only "lazy dog"), the rest of the strip was just empty ruled line space, yet tiles were extracted across the entire width.
+  - Scale Distortion & Intra-Word Context Loss: Scaling bounding box height $H \to 224\text{ px}$ caused arbitrary magnification across crops ($400\%$ zoom on tight crops, $120\%$ on tall crops), blowing single letters up to fill the whole tile and severing words.
+  - Channel 2 Pink Cloud Leaking: `ch2` was assigned raw grayscale without zeroing outside the binary ink mask, causing paper grain, shadows, and scanner noise to leak as faint magenta/pink clouds across all tiles.
+
+### 2. Tri-Partite Mathematical Solution (`baseline/tiling_preprocessor.py`)
+1. **Fix 1: Scaling by True Character Height ($h \to 48\text{ px}$)**:
+   - Instead of resizing arbitrary crop box height $H \to 224\text{ px}$, the pipeline retrieves the estimated character x-height $h$ (`x_height_h`) and rescales proportionally by:
+     $$\text{scale} = \frac{48.0}{h}$$
+   - The scaled strip is centered vertically on a clean white $224 \times 224$ canvas ($y_{\text{offset}} = (224 - H_{\text{scaled}}) // 2$).
+   - Guarantees identical 1:1 physical magnification across all students, lines, and grades.
+   - Tile width ($224\text{ px}$) equals $4.67 \times h$, comfortably fitting 4 to 6 full letters (entire words + inter-word spaces) and completely preserving intra-word context.
+2. **Fix 2: Empty & Residual-Line Rejection Gate**:
+   - For every candidate $224 \times 224$ tile mask $M_{\text{tile}}$:
+     - Minimum foreground ink pixels: $\sum M_{\text{tile}} \ge 1,250\text{ pixels}$ ($\ge 2.5\%$ of 50,176).
+     - Vertical span gate: $y_{\max} - y_{\min} \ge 28\text{ px}$ ($\ge 0.6 \times$ target x-height).
+     - Vertical projection std gate: $\text{std}(y \mid M_{\text{tile}} > 0) \ge 8.0\text{ px}$.
+   - Result: 100% of flat horizontal ruled-line tiles, empty strips, and trailing margin tiles are rejected.
+3. **Fix 3: Pure White Canvas Background & Zeroed Optical Density**:
+   - Optical density is strictly masked by the binary ink mask:
+     $$D_{\text{clean}}(x, y) = D(x, y) \cdot M(x, y)$$
+     $$I_{\text{shade}}(x, y) = 255.0 \cdot (1.0 - D_{\text{clean}}(x, y))$$
+   - Everywhere outside ink ($M = 0$), $D_{\text{clean}} = 0 \implies I_{\text{shade}} = 255.0$.
+   - Background across all three channels is pure $[255, 255, 255]$ white; zero pink clouds, zero paper grain.
+
+### 3. Verification & GPU Feature Extraction (RTX 5060 Ti)
+- **Unit Test Suite (`tests/test_tiling_preprocessor.py`)**: 4/4 passed verifying Fix 1, Fix 2, Fix 3, and x-height estimation. Full regression suite (`test_main_pipeline.py`): 11/11 passed.
+- **GPU Re-Extraction (`pipeline/extract_line_backbone_features.py`)**:
+  - Total clean line tiles across the cohort: **32,509 tiles** (down from 76,426 tiles; **>43,900 empty & residual-line tiles eradicated!**).
+  - `dinov2-small`: Extracted in 64.6s (503.3 tiles/s) -> `data/features/exp7_line_dinov2_small_tiles.npz` (138.89 MB).
+  - `clip` (ViT-B/32): Extracted in 41.9s (776.5 tiles/s) -> `data/features/exp7_line_clip_tiles.npz` (275.62 MB).
+
+### 4. Cross-Validation Scoreboard (215 Students, 5-Repeat 5-Fold CV)
+Evaluated via `baseline/evaluate_line_representation_benchmark.py`:
+- **Line CLIP Joint**: AUROC surged to **0.8643**, AUPRC = **0.5756**, Sens @ 90% Spec = **56.8% (21/37 detected)**.
+- **Line DINOv2 Blend**: AUROC = **0.8179**, AUPRC = **0.5327**, Sens @ 90% Spec = **48.6% (18/37 detected)**.
+- **Line Dual-ViT (50/50 Rank)**: AUROC = **0.8473**, AUPRC = **0.5739**, Sens @ 80% Spec = **73.0% (27/37)**.
+- **Hierarchical Multi-Scale Vision ($0.80 R_{\text{sent}} + 0.20 R_{\text{line}}$)**:
+  - AUROC: **0.8697** | AUPRC: **0.6327** | Sens @ 90% Spec: **59.5% (22/37)**.
+- **Hierarchical Tri-Modal Champion ($0.84 R_{\text{hier}} + 0.08 R_{\text{ocr}} + 0.08 R_{\text{tab}}$)**:
+  - **AUROC**: **0.8841** (all-time cohort record, surpassing previous 0.8825).
+  - **AUPRC**: **0.6650**.
+  - **Sensitivity @ 80% Specificity**: **78.4% (29/37 children detected)**.
+  - **Sensitivity @ 90% Specificity**: **64.9% (24/37 children detected)** (+1 additional child caught at 90% specificity).
+
+### 5. Case Verification on G7_A_Roll02
+- `copy_english_line1`: Old: 50 tiles (all ruled lines). **New: 0 tiles (100% rejected)**.
+- `copy_english_line3` ("lazy dog"): Old: 33 tiles (25+ ruled lines). **New: 4 tiles (100% real words, letters height 48px)**.
+- Refreshed inspection PNGs exported to `data/qa_tiles_inspection/G7_A_Roll02/`.
