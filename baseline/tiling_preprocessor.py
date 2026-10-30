@@ -72,11 +72,24 @@ def build_white_canvas_strip(
     clean_mask_or_path: Union[Path, str, np.ndarray],
     raw_gray_or_path: Union[Path, str, np.ndarray],
     json_path: Optional[Union[Path, str]] = None,
+    ch1_mode: str = "binary",
+    include_guideline: bool = True,
 ) -> np.ndarray:
     """Construct custom 3-channel white-canvas line strip with ruled lines removed.
 
     Fix 3: Strictly zeros optical density outside the binary ink mask:
     D_clean(x, y) = D(x, y) * M(x, y) so background is pure [255, 255, 255] everywhere.
+
+    Args:
+        clean_mask_or_path: Path or array of clean ink mask (0=bg, 1=ink).
+        raw_gray_or_path: Path or array of raw grayscale line crop.
+        json_path: Optional path to sentence JSON schema containing physical lines.
+        ch1_mode: "binary" (default: inverted binary ink mask, 255 bg, 0 ink) or
+                  "raw" (natural grayscale crop, background normalized to 255) or
+                  "raw_exact" (unscaled raw grayscale crop) or
+                  "raw_all" (replicate raw grayscale across all 3 channels).
+        include_guideline: If True (default), Channel 3 contains 0.7 gray ruled guideline.
+                           If False, Channel 3 contains no guideline (duplicates Ch1).
 
     Returns:
         np.ndarray of shape (H, W, 3) with dtype uint8 (values 0..255).
@@ -104,7 +117,7 @@ def build_white_canvas_strip(
     if isinstance(raw_gray_or_path, (Path, str)):
         raw_gray = cv2.imread(str(raw_gray_or_path), cv2.IMREAD_GRAYSCALE)
         if raw_gray is None:
-            raise FileNotFoundError(f"Missing raw gray crop: {raw_gray_path}")
+            raise FileNotFoundError(f"Missing raw gray crop: {raw_gray_or_path}")
     elif isinstance(raw_gray_or_path, np.ndarray):
         raw_gray = (
             cv2.cvtColor(raw_gray_or_path, cv2.COLOR_BGR2GRAY)
@@ -125,9 +138,6 @@ def build_white_canvas_strip(
 
     h, w = raw_gray.shape
 
-    # Channel 1: Clean Inverted Binary Ink (255 background, 0 ink)
-    ch1 = np.where(ink_bin > 0, 0.0, 255.0).astype(np.float32)
-
     # Channel 2: Fix 3 - Optical density strictly zeroed outside ink mask
     non_ink = raw_gray[ink_bin == 0]
     bg_level = float(np.percentile(non_ink, 90)) if len(non_ink) > 50 else 255.0
@@ -138,47 +148,64 @@ def build_white_canvas_strip(
     ink_intensity = 255.0 * (1.0 - optical_density_clean)
     ch2 = ink_intensity.clip(0.0, 255.0).astype(np.float32)
 
-    # Channel 3: Clean Ink + 0.7 Gray Ruled Guideline Reference
-    rule_map = np.zeros((h, w), dtype=np.float32)
-    has_rule = False
+    # Channel 1: Clean Inverted Binary Ink or Raw Grayscale
+    if ch1_mode == "raw":
+        bg_scale = 255.0 / max(bg_level, 1.0)
+        ch1 = np.clip(raw_gray.astype(np.float32) * bg_scale, 0.0, 255.0)
+    elif ch1_mode == "raw_exact":
+        ch1 = raw_gray.astype(np.float32).clip(0.0, 255.0)
+    elif ch1_mode == "raw_all":
+        bg_scale = 255.0 / max(bg_level, 1.0)
+        ch1 = np.clip(raw_gray.astype(np.float32) * bg_scale, 0.0, 255.0)
+        ch2 = ch1.copy()
+    else:  # "binary"
+        ch1 = np.where(ink_bin > 0, 0.0, 255.0).astype(np.float32)
 
-    if json_path is not None:
-        jp = Path(json_path)
-        if jp.exists():
-            try:
-                with open(jp, encoding="utf-8") as f:
-                    meta = json.load(f)
-                bbox = meta.get("crop_bbox", [0, 0, w, h])
-                bx, by = bbox[0], bbox[1]
-                lines = meta.get("physical_lines", [])
-                for pl in lines:
-                    slope = pl.get("baseline_slope")
-                    intercept = pl.get("baseline_intercept")
-                    if slope is not None and intercept is not None:
-                        xs = np.arange(w)
-                        ys = np.round(slope * (xs + bx) + intercept - by).astype(int)
-                        valid = (ys >= 0) & (ys < h)
-                        for x_val, y_val in zip(xs[valid], ys[valid]):
-                            y_lo = max(0, y_val - 1)
-                            y_hi = min(h, y_val + 2)
-                            rule_map[y_lo:y_hi, x_val] = 1.0
-                        has_rule = True
-            except Exception:
-                pass
+    # Channel 3: Clean Ink + optional 0.7 Gray Ruled Guideline Reference
+    if not include_guideline or ch1_mode == "raw_all":
+        # Guideline removed: duplicate Ch1
+        ch3 = ch1.copy()
+    else:
+        rule_map = np.zeros((h, w), dtype=np.float32)
+        has_rule = False
 
-    if not has_rule or np.count_nonzero(rule_map) < 50:
-        no_ink = raw_gray.copy()
-        no_ink[ink_bin > 0] = 255
-        inverted = 255 - no_ink
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (41, 1))
-        opened = cv2.morphologyEx(inverted, cv2.MORPH_OPEN, kernel)
-        _, bin_rule = cv2.threshold(opened, 25, 1.0, cv2.THRESH_BINARY)
-        rule_map = bin_rule.astype(np.float32)
+        if json_path is not None:
+            jp = Path(json_path)
+            if jp.exists():
+                try:
+                    with open(jp, encoding="utf-8") as f:
+                        meta = json.load(f)
+                    bbox = meta.get("crop_bbox", [0, 0, w, h])
+                    bx, by = bbox[0], bbox[1]
+                    lines = meta.get("physical_lines", [])
+                    for pl in lines:
+                        slope = pl.get("baseline_slope")
+                        intercept = pl.get("baseline_intercept")
+                        if slope is not None and intercept is not None:
+                            xs = np.arange(w)
+                            ys = np.round(slope * (xs + bx) + intercept - by).astype(int)
+                            valid = (ys >= 0) & (ys < h)
+                            for x_val, y_val in zip(xs[valid], ys[valid]):
+                                y_lo = max(0, y_val - 1)
+                                y_hi = min(h, y_val + 2)
+                                rule_map[y_lo:y_hi, x_val] = 1.0
+                            has_rule = True
+                except Exception:
+                    pass
 
-    # Background = 255, guideline = 178 (0.7 intensity), ink = 0 over rule
-    ch3 = np.full((h, w), 255.0, dtype=np.float32)
-    ch3[rule_map > 0] = 178.0
-    ch3[ink_bin > 0] = 0.0
+        if not has_rule or np.count_nonzero(rule_map) < 50:
+            no_ink = raw_gray.copy()
+            no_ink[ink_bin > 0] = 255
+            inverted = 255 - no_ink
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (41, 1))
+            opened = cv2.morphologyEx(inverted, cv2.MORPH_OPEN, kernel)
+            _, bin_rule = cv2.threshold(opened, 25, 1.0, cv2.THRESH_BINARY)
+            rule_map = bin_rule.astype(np.float32)
+
+        # Background = 255, guideline = 178 (0.7 intensity), ink = 0 over rule
+        ch3 = np.full((h, w), 255.0, dtype=np.float32)
+        ch3[rule_map > 0] = 178.0
+        ch3[ink_bin > 0] = 0.0
 
     tensor = np.stack([ch1, ch2, ch3], axis=-1).clip(0.0, 255.0).astype(np.uint8)
     return tensor
@@ -229,8 +256,12 @@ def extract_tiles_from_strip(
 
     # Extract or validate binary ink mask
     if ink_mask is None:
-        # Channel 0 is inverted ink: 0=ink, 255=bg
-        ink_mask = (canvas_strip[:, :, 0] < 128).astype(np.uint8)
+        if c >= 2 and np.any(canvas_strip[:, :, 1] < 200):
+            # Channel 1 is shaded optical density with strictly white 255 background
+            ink_mask = (canvas_strip[:, :, 1] < 200).astype(np.uint8)
+        else:
+            # Channel 0 is inverted ink: 0=ink, 255=bg
+            ink_mask = (canvas_strip[:, :, 0] < 128).astype(np.uint8)
     else:
         if ink_mask.dtype == bool:
             ink_mask = ink_mask.astype(np.uint8)

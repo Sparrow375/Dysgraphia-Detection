@@ -1,0 +1,17 @@
+{
+  "tag": "raw_no_guideline",
+  "line_dino_joint_auroc": 0.7666261767385364,
+  "line_dino_blend_auroc": 0.7842392954752506,
+  "line_clip_joint_auroc": 0.8343455815365929,
+  "line_clip_blend_auroc": 0.8615244457941088,
+  "line_dual_vit_auroc": 0.8266778013969025,
+  "line_dual_vit_auprc": 0.5303534765755549,
+  "line_dual_vit_sens80": 0.6486486486486487,
+  "line_dual_vit_sens90": 0.4594594594594595,
+  "hierarchical_vision_auroc": 0.8696477376252657,
+  "hierarchical_vision_sens90": 0.6216216216216216,
+  "hierarchical_tri_modal_auroc": 0.8824779836015791,
+  "hierarchical_tri_modal_auprc": 0.677987493228116,
+  "hierarchical_tri_modal_sens80": 0.7837837837837838,
+  "hierarchical_tri_modal_sens90": 0.6216216216216216
+}

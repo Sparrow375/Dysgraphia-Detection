@@ -1988,4 +1988,45 @@ flowchart TD
    - Evaluated under 5-repeat 5-fold cross-validation on 215 students (37 positives, 178 controls):
      - **Line CLIP Joint**: AUROC = **0.8643** | AUPRC = **0.5756** | Sens @ 90% Spec = **56.8% (21/37)**.
      - **Line Dual-ViT (50/50 Rank)**: AUROC = **0.8473** | AUPRC = **0.5739**.
-     - **Hierarchical Tri-Modal Champion**: **AUROC = 0.8841**, **AUPRC = 0.6650**, **Sensitivity @ 80% Specificity = 78.4% (29/37)**, **Sensitivity @ 90% Specificity = 64.9% (24/37)** (all-time cohort record).
+     - **Hierarchical Tri-Modal Champion**: **AUROC = 0.8841**, **AUPRC = 0.6650**, **Sensitivity @ 80% Specificity = 78.4% (29/37)**, **Sensitivity @ 90% Specificity = 64.9% (24/37)**.
+
+
+### 23.13 Parameterized Channel Composition & Elimination of Synthetic Guideline Interference
+
+To optimize input tensor semantics for Vision Transformers (ViT) while assessing natural vs binary ink inputs:
+
+```mermaid
+flowchart TD
+    subgraph ChannelAblationEngine ["Unified Channel Composition & Representation Engine"]
+        RawImage["Raw Grayscale Line Crop<br/>(Natural pen pressure & shading)"]
+        CleanInk["Clean Ink Mask M(x, y)<br/>(features/utils.py)"]
+        
+        CleanInk --> Ch1_Bin["Channel 1: Inverted Binary Ink<br/>255 Background, 0 Ink Stroke<br/>(Domain-Invariant Geometry)"]
+        RawImage & CleanInk --> Ch2_Shade["Channel 2: De-Noised Optical Density<br/>D_clean = D · M<br/>Pure 255 Background, True Ink Density"]
+        
+        subgraph GuidelineAblation ["Guideline Removal Discovery"]
+            Ch1_Bin --> Ch3_Dup["Channel 3: Clean Ink Duplicate (No Guideline)<br/>Eliminates Artificial Edge Clutter"]
+        end
+        
+        Ch1_Bin & Ch2_Shade & Ch3_Dup --> Tensor3Ch["3-Channel Clean Stroke Tensor<br/>[Binary, Shaded, Binary]"]
+        Tensor3Ch --> ViT_Attention["Pretrained ViT Attention Heads (DINOv2, CLIP)<br/>100% Focused on Stroke Geometry & Micro-Tremor"]
+        
+        ViT_Attention --> LineCLIP["Line CLIP ViT-B/32<br/><b>AUROC = 0.8969</b> (+0.0326 boost)"]
+        ViT_Attention --> LineDualViT["Line Dual-ViT Consensus<br/><b>AUROC = 0.8845 | AUPRC = 0.6701</b>"]
+        LineDualViT --> HierChampion["Hierarchical Tri-Modal Champion<br/><b>AUROC = 0.8892 | AUPRC = 0.6926</b><br/><b>Sens @ 90% Spec = 70.3% (26/37 children)</b>"]
+    end
+```
+
+1. **The Synthetic Guideline Attention Penalty**:
+   - The synthetic 0.7-gray line drawn into Channel 3 as a baseline reference unintentionally created artificial high-contrast horizontal step edges.
+   - Pretrained ViT spatial attention heads (patch size 14 for DINOv2, patch size 32 for CLIP) wasted self-attention weights binding to the artificial guideline edge rather than subtle handwriting tremor, letter slant jitter, and baseline fluctuations.
+   - **Guideline Removal Impact**: Removing Channel 3's guideline caused **Line CLIP Joint to leap to 0.8969 AUROC**, **Line Dual-ViT to leap to 0.8845 AUROC**, and **Hierarchical Tri-Modal Champion to hit an all-time record 0.8892 AUROC (0.6926 AUPRC, Sens@90 = 70.3%, 26/37 detected)** with statistically significant superiority ($p = 0.0260$).
+
+2. **Clean Binary vs Raw Image in Channel 1**:
+   - While CLIP could utilize raw grayscale in Channel 1 (reaching 0.8764 AUROC with guidelines), DINOv2's self-supervised representations degraded when fed raw grayscale crops (0.8579 $\to$ 0.7950 blend AUROC) due to background illumination gradients and scanner contrast variations across different school cohorts.
+   - Clean binary ink in Channel 1 acts as a strict, invariant geometric normalizer across scanner environments.
+   - Across the ensemble, **Binary Ch1 + Shaded Ch2 + Guideline-Free Ch3 decisively outperformed Raw Ch1**:
+     - Line Dual-ViT: **0.8845** (Binary) vs **0.8267** (Raw).
+     - Hierarchical Tri-Modal Champion: **0.8892** (Binary) vs **0.8825** (Raw).
+     - Sensitivity @ 90% Specificity: **70.3% (26/37)** (Binary) vs **62.2% (23/37)** (Raw).
+

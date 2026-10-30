@@ -1,12 +1,12 @@
 {
   "hierarchical_vision": {
-    "auroc": 0.8724567263893106,
-    "auprc": 0.6537450939302141,
-    "brier": 0.2247617393732071,
+    "auroc": 0.8773914363802005,
+    "auprc": 0.6646204452537565,
+    "brier": 0.22459830343723297,
     "sens_at_80": 0.7567567567567568,
     "det_at_80": 28,
-    "sens_at_90": 0.5945945945945946,
-    "det_at_90": 22
+    "sens_at_90": 0.6486486486486487,
+    "det_at_90": 24
   },
   "line_english_ocr": {
     "auroc": 0.744002429395688,
@@ -27,34 +27,34 @@
     "det_at_90": 22
   },
   "hierarchical_tri_modal": {
-    "auroc": 0.882477983601579,
-    "auprc": 0.6775913023330753,
-    "brier": 0.21795758605003357,
+    "auroc": 0.8891588217430915,
+    "auprc": 0.692637223243877,
+    "brier": 0.21693263947963715,
     "sens_at_80": 0.7837837837837838,
     "det_at_80": 29,
-    "sens_at_90": 0.6216216216216216,
-    "det_at_90": 23
+    "sens_at_90": 0.7027027027027027,
+    "det_at_90": 26
   },
   "hierarchical_asymmetric_rescue": {
-    "auroc": 0.8761008199210447,
-    "auprc": 0.6687084460439915,
-    "brier": 0.21191377937793732,
+    "auroc": 0.8812632857576678,
+    "auprc": 0.6762870588343765,
+    "brier": 0.21127437055110931,
     "sens_at_80": 0.7837837837837838,
     "det_at_80": 29,
-    "sens_at_90": 0.6216216216216216,
-    "det_at_90": 23
+    "sens_at_90": 0.6756756756756757,
+    "det_at_90": 25
   },
   "bootstrap_hier_vs_prev": {
-    "delta_auroc_mean": 0.006018675979350133,
-    "delta_auroc_ci_low": -0.006984512602490114,
-    "delta_auroc_ci_high": 0.018072426358943166,
-    "delta_auprc_mean": 0.018358202849672402,
-    "p_value": 0.356
+    "delta_auroc_mean": 0.01274696325539022,
+    "delta_auroc_ci_low": 0.0010628606134223118,
+    "delta_auroc_ci_high": 0.025660491952626766,
+    "delta_auprc_mean": 0.032074376082172965,
+    "p_value": 0.026
   },
   "cutoffs_at_90_spec": {
     "prev": 0.7797023057937622,
-    "hier": 0.7598995566368103,
-    "asym": 0.7566210031509399
+    "hier": 0.7452148795127869,
+    "asym": 0.7475841641426086
   },
   "key_students": [
     {
@@ -62,8 +62,8 @@
       "label": 0,
       "note": "Control - Multi-line prompt",
       "prev_score": 0.8786045908927917,
-      "hier_score": 0.8274231553077698,
-      "asym_score": 0.8302006125450134,
+      "hier_score": 0.8641487956047058,
+      "asym_score": 0.8701284527778625,
       "hier_status": "FALSE ALARM"
     },
     {
@@ -71,8 +71,8 @@
       "label": 0,
       "note": "Control - Multi-line prompt",
       "prev_score": 0.8759069442749023,
-      "hier_score": 0.8384000062942505,
-      "asym_score": 0.8680046796798706,
+      "hier_score": 0.8641860485076904,
+      "asym_score": 0.8960390686988831,
       "hier_status": "FALSE ALARM"
     },
     {
@@ -80,8 +80,8 @@
       "label": 0,
       "note": "Control - Fancy handwriting",
       "prev_score": 0.9745115637779236,
-      "hier_score": 0.9436464905738831,
-      "asym_score": 0.9411701560020447,
+      "hier_score": 0.9315348267555237,
+      "asym_score": 0.9280024766921997,
       "hier_status": "FALSE ALARM"
     },
     {
@@ -89,8 +89,8 @@
       "label": 1,
       "note": "Positive - 0 word space, baseline drift",
       "prev_score": 0.6589767336845398,
-      "hier_score": 0.6074046492576599,
-      "asym_score": 0.5663161873817444,
+      "hier_score": 0.6175627708435059,
+      "asym_score": 0.5773600339889526,
       "hier_status": "CLEAN/MISSED"
     },
     {
@@ -98,8 +98,8 @@
       "label": 1,
       "note": "Positive - Butchered Hindi",
       "prev_score": 0.590883731842041,
-      "hier_score": 0.6190139651298523,
-      "asym_score": 0.619093120098114,
+      "hier_score": 0.623702347278595,
+      "asym_score": 0.6241902709007263,
       "hier_status": "CLEAN/MISSED"
     },
     {
@@ -107,8 +107,8 @@
       "label": 1,
       "note": "Positive - Newly reclassified",
       "prev_score": 0.9065115451812744,
-      "hier_score": 0.8920557498931885,
-      "asym_score": 0.8761813640594482,
+      "hier_score": 0.9026045799255371,
+      "asym_score": 0.8876500129699707,
       "hier_status": "CAUGHT"
     },
     {
@@ -116,8 +116,8 @@
       "label": 1,
       "note": "Positive - Pure motor dysgraphia",
       "prev_score": 0.7773022651672363,
-      "hier_score": 0.7714418172836304,
-      "asym_score": 0.7790166139602661,
+      "hier_score": 0.7812092900276184,
+      "asym_score": 0.7896357178688049,
       "hier_status": "CAUGHT"
     },
     {
@@ -125,8 +125,8 @@
       "label": 1,
       "note": "Positive - Variable English letters",
       "prev_score": 0.6092092990875244,
-      "hier_score": 0.6510139107704163,
-      "asym_score": 0.639694094657898,
+      "hier_score": 0.6424185633659363,
+      "asym_score": 0.630349338054657,
       "hier_status": "CLEAN/MISSED"
     }
   ]

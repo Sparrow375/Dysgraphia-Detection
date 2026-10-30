@@ -1,47 +1,46 @@
 # Task List — Workstream A
 
-## Active Sprint: Native Stroke Scaling, Residual-Line Rejection Gate, & Background De-noising
+## Active Sprint: Channel Ablation Suite — Raw Image in Ch1 & Ruled Guideline Removal
 
 ### Objectives
-1. **Fix 1: Scale by True Character Height ($h$), NOT Arbitrary Crop Box Height ($H$)**:
-   - Set resize factor so that estimated character x-height $h$ (`x_height_h`) maps to a fixed target of $48\text{ px}$.
-   - Center line vertically on a clean white $224 \times 224$ canvas.
-   - Guarantees 1:1 physical magnification across all students, lines, and grades (~4.6 letters per tile, preserving intra-word context).
-2. **Fix 2: Empty & Residual-Line Tile Rejection Gate**:
-   - Minimum foreground ink pixel count: $\ge 1,250$ pixels ($\ge 2.5\%$ of 50,176).
-   - Vertical span gate: $y_{\max} - y_{\min} \ge 28\text{ px}$ ($\ge 0.6 \times$ target x-height).
-   - Vertical projection variance / std gate: $\text{std}(y \mid \text{ink}) \ge 8.0\text{ px}$ to 100% reject flat ruled lines.
-3. **Fix 3: Strip Pink Background Grain Out of Channel 2**:
-   - Strictly zero optical density outside binary ink mask ($D_{\text{clean}} = D \cdot M$).
-   - Enforce pure white background $[255, 255, 255]$ everywhere outside ink strokes.
-4. **End-to-End Line Decomposition & Clean Mask Synchronization**:
-   - Synchronized `features/utils.py:load_or_binarize_ink` to prevent returning mismatched mask shapes on recropped tasks.
-   - Updated `pipeline/extract_line_backbone_features.py` and `baseline/tiling_preprocessor.py`.
-5. **Validation, GPU Re-Extraction & Benchmark Evaluation**:
-   - Unit tests in `tests/test_tiling_preprocessor.py` passing (4/4 passed).
-   - Re-extracted clean line DINOv2 (32,509 tiles in 64.6s) and CLIP (32,509 tiles in 41.9s) on RTX 5060 Ti GPU.
-   - Evaluated 5x5 CV benchmark: Line CLIP AUROC surged to 0.8643, Hierarchical Tri-Modal Champion reached **0.8841 AUROC**, **0.6650 AUPRC**, and **64.9% Sens @ 90% Spec (24/37 detected)**.
-   - Exported refreshed inspection gallery for `G7_A_Roll02` (empty line 1 has 0 tiles; line 3 "lazy dog" has exactly 4 clean tiles).
+1. **Support Parameterized Channel Composition (`baseline/tiling_preprocessor.py`)**:
+   - `ch1_mode`: `"binary"` (clean inverted binary ink) vs `"raw"` (natural grayscale image fed directly into Channel 1).
+   - `include_guideline`: `True` (0.7 gray guideline reference in Ch3) vs `False` (ruled guideline channel completely removed).
+2. **Update Extraction CLI (`pipeline/extract_line_backbone_features.py`)**:
+   - Add `--ch1-mode [binary, raw]`, `--no-guideline`, and `--tag <str>`.
+3. **Execute Test 1: Raw Image in Channel 1 (`--ch1-mode raw`)**:
+   - Extract DINOv2-Small and CLIP ViT-B/32 on RTX 5060 Ti GPU.
+   - Evaluate 5x5 repeated cross-validation on 215 students.
+4. **Execute Test 2: Guideline Channel Removed (`--no-guideline`)**:
+   - Extract DINOv2-Small and CLIP ViT-B/32 on RTX 5060 Ti GPU.
+   - Evaluate 5x5 repeated cross-validation on 215 students.
+5. **Execute Test 3: Raw Image + Guideline Removed (`--ch1-mode raw --no-guideline`)**:
+   - Extract DINOv2-Small and CLIP ViT-B/32 on RTX 5060 Ti GPU.
+   - Evaluate 5x5 repeated cross-validation on 215 students.
+6. **Synthesize Comparative Scoreboard & Clinical Analysis**:
+   - Compare Line CLIP, Line DINOv2, Dual-ViT, Hierarchical Vision, and Tri-Modal Champion across all variants.
+   - Update `context.md`, `architechture.md`, and commit/push to git.
 
 ### Sprint Tasks
-- [x] Task 1: Update `baseline/tiling_preprocessor.py` with Fix 1, Fix 2, and Fix 3
-- [x] Task 2: Synchronize clean ink mask handling in line decomposition & tile extraction
-- [x] Task 3: Comprehensive unit test suite in `tests/test_tiling_preprocessor.py`
-- [x] Task 4: Re-extract line backbone features on GPU and run 5x5 CV benchmark
-- [x] Task 5: Export updated inspection tiles for verification
-- [x] Task 6: Synchronize `context.md`, `architechture.md`, and commit/push to git
+- [x] Task 1: Update `baseline/tiling_preprocessor.py` with `ch1_mode` and `include_guideline`
+- [x] Task 2: Update `pipeline/extract_line_backbone_features.py` with CLI flags and tagging
+- [x] Task 3: Run Test 1 (Raw Image in Ch1) on GPU & evaluate 5x5 CV
+- [x] Task 4: Run Test 2 (No Guideline in Ch3) on GPU & evaluate 5x5 CV
+- [x] Task 5: Run Test 3 (Raw in Ch1 + No Guideline in Ch3) on GPU & evaluate 5x5 CV
+- [x] Task 6: Compile comparative ablation scoreboard & analyze findings
+- [x] Task 7: Update `context.md`, `architechture.md`, and commit/push to git
 
 ---
 
 ## Completed Sprints
 
 <details>
-<summary>Multi-Line Falsification, Selection Bias Recalibration & Stroke Artifact Trimming (Completed 2026-10-29)</summary>
+<summary>Native Stroke Scaling, Residual-Line Rejection Gate, & Background De-noising (Completed 2026-10-30)</summary>
 
 ### Objectives
-1. Unbiased Multi-Line Hypothesis Test on Full Control Cohort (N=178).
-2. OOF Selection Bias & Realistic Pipeline Expectation (~0.85-0.87 AUROC).
-3. Soft Visual Floor Gated Rescue on G7_A_Roll02.
-4. Export inspection tiles to `data/qa_tiles_inspection/`.
+1. Fix 1: True character height scaling ($h \to 48\text{px}$, vertical centering on 224px canvas).
+2. Fix 2: Empty & residual ruled-line tile rejection gate ($\ge 1,250$ ink px, span $\ge 28\text{px}$, std $\ge 8.0\text{px}$).
+3. Fix 3: Pure white canvas background ($D_{\text{clean}} = D \cdot M$, zero pink grain).
+4. GPU re-extraction on 215 students: Hierarchical Tri-Modal Champion reached 0.8841 AUROC and 64.9% Sens @ 90% Spec.
 
 </details>

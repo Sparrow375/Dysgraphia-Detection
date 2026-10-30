@@ -1,0 +1,133 @@
+{
+  "hierarchical_vision": {
+    "auroc": 0.8714697843911328,
+    "auprc": 0.6505488440130782,
+    "brier": 0.22487413883209229,
+    "sens_at_80": 0.7297297297297297,
+    "det_at_80": 27,
+    "sens_at_90": 0.6486486486486487,
+    "det_at_90": 24
+  },
+  "line_english_ocr": {
+    "auroc": 0.744002429395688,
+    "auprc": 0.318440532440917,
+    "brier": 0.20230066776275635,
+    "sens_at_80": 0.43243243243243246,
+    "det_at_80": 16,
+    "sens_at_90": 0.21621621621621623,
+    "det_at_90": 8
+  },
+  "previous_champion": {
+    "auroc": 0.8765563316125113,
+    "auprc": 0.6540172337383594,
+    "brier": 0.222260519862175,
+    "sens_at_80": 0.7837837837837838,
+    "det_at_80": 29,
+    "sens_at_90": 0.5945945945945946,
+    "det_at_90": 22
+  },
+  "hierarchical_tri_modal": {
+    "auroc": 0.8856665654418463,
+    "auprc": 0.6810132427398351,
+    "brier": 0.21761105954647064,
+    "sens_at_80": 0.7567567567567568,
+    "det_at_80": 28,
+    "sens_at_90": 0.6486486486486487,
+    "det_at_90": 24
+  },
+  "hierarchical_asymmetric_rescue": {
+    "auroc": 0.8774673549954448,
+    "auprc": 0.6515511985673681,
+    "brier": 0.21179606020450592,
+    "sens_at_80": 0.7567567567567568,
+    "det_at_80": 28,
+    "sens_at_90": 0.6216216216216216,
+    "det_at_90": 23
+  },
+  "bootstrap_hier_vs_prev": {
+    "delta_auroc_mean": 0.009133920437291219,
+    "delta_auroc_ci_low": -0.0030405405405404314,
+    "delta_auroc_ci_high": 0.021416641360461584,
+    "delta_auprc_mean": 0.021884781855305374,
+    "p_value": 0.133
+  },
+  "cutoffs_at_90_spec": {
+    "prev": 0.7797023057937622,
+    "hier": 0.7406120300292969,
+    "asym": 0.7338642477989197
+  },
+  "key_students": [
+    {
+      "student_id": "G7_A_Roll02",
+      "label": 0,
+      "note": "Control - Multi-line prompt",
+      "prev_score": 0.8786045908927917,
+      "hier_score": 0.8672743439674377,
+      "asym_score": 0.8735265731811523,
+      "hier_status": "FALSE ALARM"
+    },
+    {
+      "student_id": "SCHB_G6_IMG_20261007_102238",
+      "label": 0,
+      "note": "Control - Multi-line prompt",
+      "prev_score": 0.8759069442749023,
+      "hier_score": 0.8282418251037598,
+      "asym_score": 0.8569607734680176,
+      "hier_status": "FALSE ALARM"
+    },
+    {
+      "student_id": "G3_A_Roll05",
+      "label": 0,
+      "note": "Control - Fancy handwriting",
+      "prev_score": 0.9745115637779236,
+      "hier_score": 0.9502882957458496,
+      "asym_score": 0.9483911991119385,
+      "hier_status": "FALSE ALARM"
+    },
+    {
+      "student_id": "G3_A_Roll12",
+      "label": 1,
+      "note": "Positive - 0 word space, baseline drift",
+      "prev_score": 0.6589767336845398,
+      "hier_score": 0.6597581505775452,
+      "asym_score": 0.6232345104217529,
+      "hier_status": "CLEAN/MISSED"
+    },
+    {
+      "student_id": "SCHB_G7_IMG_20261007_105512",
+      "label": 1,
+      "note": "Positive - Butchered Hindi",
+      "prev_score": 0.590883731842041,
+      "hier_score": 0.6115906834602356,
+      "asym_score": 0.6110225915908813,
+      "hier_status": "CLEAN/MISSED"
+    },
+    {
+      "student_id": "SCHB_G4_IMG_20261007_100350",
+      "label": 1,
+      "note": "Positive - Newly reclassified",
+      "prev_score": 0.9065115451812744,
+      "hier_score": 0.8693952560424805,
+      "asym_score": 0.8515450358390808,
+      "hier_status": "CAUGHT"
+    },
+    {
+      "student_id": "G7_A_Roll15",
+      "label": 1,
+      "note": "Positive - Pure motor dysgraphia",
+      "prev_score": 0.7773022651672363,
+      "hier_score": 0.7858976125717163,
+      "asym_score": 0.7947328686714172,
+      "hier_status": "CAUGHT"
+    },
+    {
+      "student_id": "SCHB_G6_IMG_20261007_102039",
+      "label": 1,
+      "note": "Positive - Variable English letters",
+      "prev_score": 0.6092092990875244,
+      "hier_score": 0.5720930099487305,
+      "asym_score": 0.5538918375968933,
+      "hier_status": "CLEAN/MISSED"
+    }
+  ]
+}

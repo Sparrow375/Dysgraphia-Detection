@@ -161,10 +161,13 @@ def paired_bootstrap_delta(
     }
 
 
-def evaluate():
+def evaluate(line_vision_path: Optional[Path] = None, tag: Optional[str] = None):
     logger.info("Loading OOF caches and feature representations...")
+    vis_path = line_vision_path if line_vision_path is not None else LINE_VISION_NPZ
+    logger.info("Using line vision OOF: %s (tag=%s)", vis_path, tag)
+
     oof_data = np.load(OOF_NPZ)
-    line_vis = np.load(LINE_VISION_NPZ)
+    line_vis = np.load(vis_path)
     line_ocr = np.load(LINE_OCR_NPZ)
 
     sids = list(oof_data["student_ids"])
@@ -278,23 +281,34 @@ def evaluate():
         "key_students": student_records,
     }
 
-    with open(OUTPUT_JSON, "w") as f:
+    out_json = REPORTS_DIR / f"exp7_hierarchical_line_champion_results_{tag}.json" if tag else OUTPUT_JSON
+    with open(out_json, "w") as f:
         json.dump(results_payload, f, indent=2)
-    logger.info("Saved benchmark JSON to %s", OUTPUT_JSON)
+    logger.info("Saved benchmark JSON to %s", out_json)
 
-    # Update exp7_all_models_oof_probs.npz with new hierarchical columns
-    oof_dict = {k: oof_data[k] for k in oof_data.files}
-    oof_dict["hierarchical_champion_prob"] = p_hier_champ
-    oof_dict["hierarchical_asym_rescue_prob"] = p_asym_rescue
-    oof_dict["line_english_ocr_prob"] = p_line_en_ocr
-    oof_dict["hierarchical_vision_prob"] = r_vis_hier
-    np.savez_compressed(OOF_NPZ, **oof_dict)
-    logger.info("Updated %s with hierarchical champion probabilities", OOF_NPZ)
+    if tag is None:
+        # Update exp7_all_models_oof_probs.npz with new hierarchical columns for default model
+        oof_dict = {k: oof_data[k] for k in oof_data.files}
+        oof_dict["hierarchical_champion_prob"] = p_hier_champ
+        oof_dict["hierarchical_asym_rescue_prob"] = p_asym_rescue
+        oof_dict["line_english_ocr_prob"] = p_line_en_ocr
+        oof_dict["hierarchical_vision_prob"] = r_vis_hier
+        np.savez_compressed(OOF_NPZ, **oof_dict)
+        logger.info("Updated %s with hierarchical champion probabilities", OOF_NPZ)
 
-    # Update QA web app score cache
-    from pipeline.export_student_model_scores import main as export_scores
-    export_scores()
-    logger.info("Exported updated scores to QA web app")
+        # Update QA web app score cache
+        from pipeline.export_student_model_scores import main as export_scores
+        export_scores()
+        logger.info("Exported updated scores to QA web app")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--line-vision-npz", type=str, default=str(LINE_VISION_NPZ))
+    parser.add_argument("--tag", type=str, default=None)
+    args = parser.parse_args()
+
+    evaluate(line_vision_path=Path(args.line_vision_npz), tag=args.tag)
 
 
 if __name__ == "__main__":

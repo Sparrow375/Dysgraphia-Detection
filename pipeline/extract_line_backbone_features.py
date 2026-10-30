@@ -53,9 +53,13 @@ def extract_for_backbone(
     backbone_name: str,
     batch_size: int = 64,
     device_str: str = "cuda",
+    ch1_mode: str = "binary",
+    include_guideline: bool = True,
+    tag: Optional[str] = None,
 ):
     device = torch.device(device_str if torch.cuda.is_available() else "cpu")
-    logger.info("Extracting %s on %s...", backbone_name, device)
+    logger.info("Extracting %s on %s (ch1_mode=%s, include_guideline=%s, tag=%s)...",
+                backbone_name, device, ch1_mode, include_guideline, tag)
 
     # 1. Load model
     if backbone_name == "dinov2-small":
@@ -63,15 +67,17 @@ def extract_for_backbone(
         model.eval()
         mean_rgb = torch.tensor([0.485, 0.456, 0.406], device=device).view(1, 3, 1, 1)
         std_rgb = torch.tensor([0.229, 0.224, 0.225], device=device).view(1, 3, 1, 1)
-        out_name = "exp7_line_dinov2_small_tiles.npz"
+        base_name = "exp7_line_dinov2_small_tiles"
     elif backbone_name == "clip":
         clip_model = CLIPVisionModelWithProjection.from_pretrained("openai/clip-vit-base-patch32").to(device)
         clip_model.eval()
         mean_rgb = torch.tensor([0.48145466, 0.4578275, 0.40821073], device=device).view(1, 3, 1, 1)
         std_rgb = torch.tensor([0.26862954, 0.26130258, 0.27577711], device=device).view(1, 3, 1, 1)
-        out_name = "exp7_line_clip_tiles.npz"
+        base_name = "exp7_line_clip_tiles"
     else:
         raise ValueError(f"Unknown backbone: {backbone_name}")
+
+    out_name = f"{base_name}_{tag}.npz" if tag else f"{base_name}.npz"
 
     df_lines = pd.read_csv(LINES_INDEX)
     logger.info("Loaded %d single lines from %s", len(df_lines), LINES_INDEX)
@@ -144,8 +150,14 @@ def extract_for_backbone(
         if ink_mask is None:
             ink_mask = (gray < 200).astype(np.uint8)
 
-        # 2. Fix 3: Build 3-channel white canvas strip with strictly zeroed background optical density
-        strip = build_white_canvas_strip(ink_mask, gray, json_path=json_p)
+        # 2. Build 3-channel white canvas strip with parameterized channel composition
+        strip = build_white_canvas_strip(
+            ink_mask,
+            gray,
+            json_path=json_p,
+            ch1_mode=ch1_mode,
+            include_guideline=include_guideline,
+        )
 
         # 3. Fix 1 (scale h -> 48px, vertical centering) and Fix 2 (rejection gate)
         tiles, _ = extract_tiles_from_strip(
@@ -279,9 +291,18 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--backbone", choices=["dinov2-small", "clip"], required=True)
     parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument("--ch1-mode", choices=["binary", "raw", "raw_exact", "raw_all"], default="binary")
+    parser.add_argument("--no-guideline", action="store_true", default=False)
+    parser.add_argument("--tag", type=str, default=None)
     args = parser.parse_args()
 
-    extract_for_backbone(args.backbone, batch_size=args.batch_size)
+    extract_for_backbone(
+        args.backbone,
+        batch_size=args.batch_size,
+        ch1_mode=args.ch1_mode,
+        include_guideline=not args.no_guideline,
+        tag=args.tag,
+    )
 
 if __name__ == "__main__":
     main()

@@ -131,3 +131,36 @@ def test_estimate_strip_x_height():
     est = estimate_strip_x_height(mask)
     assert 38.0 <= est <= 46.0, f"Expected x_height ~42, got {est}"
 
+
+def test_ch1_raw_mode_and_no_guideline_channel():
+    """Verify parameterized channel composition: raw image in Ch1 and no guideline in Ch3."""
+    h, w = 100, 300
+    raw_gray = np.full((h, w), 220, dtype=np.uint8)
+    ink_mask = np.zeros((h, w), dtype=np.uint8)
+    ink_mask[30:70, 50:150] = 1
+    raw_gray[ink_mask == 1] = 60  # dark handwriting stroke
+
+    # 1. Test raw mode in Ch1 with guideline
+    strip_raw = build_white_canvas_strip(
+        clean_mask_or_path=ink_mask,
+        raw_gray_or_path=raw_gray,
+        ch1_mode="raw",
+        include_guideline=True,
+    )
+    assert strip_raw.shape == (h, w, 3)
+    # Background in Ch1 should be normalized close to 255
+    assert np.all(strip_raw[ink_mask == 0, 0] >= 250)
+    # Stroke in Ch1 should have raw gray values preserved (~69)
+    assert np.all(strip_raw[ink_mask == 1, 0] < 100)
+
+    # 2. Test no guideline in Ch3
+    strip_no_guide = build_white_canvas_strip(
+        clean_mask_or_path=ink_mask,
+        raw_gray_or_path=raw_gray,
+        ch1_mode="binary",
+        include_guideline=False,
+    )
+    # Ch3 should duplicate Ch1 when guideline is removed
+    np.testing.assert_array_equal(strip_no_guide[:, :, 2], strip_no_guide[:, :, 0])
+
+

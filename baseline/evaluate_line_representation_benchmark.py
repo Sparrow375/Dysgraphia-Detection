@@ -157,7 +157,21 @@ def calc_metrics(y_true: np.ndarray, y_score: np.ndarray) -> Dict[str, float]:
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dino-npz", type=str, default=str(LINE_DINO_NPZ))
+    parser.add_argument("--clip-npz", type=str, default=str(LINE_CLIP_NPZ))
+    parser.add_argument("--tag", type=str, default=None)
+    args = parser.parse_args()
+
+    dino_path = Path(args.dino_npz)
+    clip_path = Path(args.clip_npz)
+    oof_out_name = f"exp7_line_dual_vit_oof_{args.tag}.npz" if args.tag else "exp7_line_dual_vit_oof.npz"
+    oof_out_path = FEATURES_DIR / oof_out_name
+
     logger.info("Loading baseline and line features...")
+    logger.info("DINOv2 source: %s", dino_path)
+    logger.info("CLIP source:   %s", clip_path)
     oof_data = np.load(OOF_NPZ)
     sids_benchmark = list(oof_data["student_ids"])
     y_true = oof_data["y_true"]
@@ -165,7 +179,7 @@ def main():
     logger.info("Cohort size: %d students (%d pos, %d neg)", n_cohort, int(np.sum(y_true == 1)), int(np.sum(y_true == 0)))
 
     # Fold dataframe for the 215 students
-    dino_raw = np.load(LINE_DINO_NPZ)
+    dino_raw = np.load(dino_path)
     line_sids_map = {sid: i for i, sid in enumerate(dino_raw["student_ids"])}
 
     align_idx = [line_sids_map[s] for s in sids_benchmark]
@@ -180,7 +194,7 @@ def main():
     X_dino_j = dino_raw["joint_student_features"][align_idx]
 
     # Align CLIP
-    clip_raw = np.load(LINE_CLIP_NPZ)
+    clip_raw = np.load(clip_path)
     clip_sids_map = {sid: i for i, sid in enumerate(clip_raw["student_ids"])}
     clip_align_idx = [clip_sids_map[s] for s in sids_benchmark]
 
@@ -249,14 +263,14 @@ def main():
 
     # Save line Dual-ViT out-of-fold predictions
     np.savez_compressed(
-        FEATURES_DIR / "exp7_line_dual_vit_oof.npz",
+        oof_out_path,
         student_ids=sids_benchmark,
         y_true=y_true,
         line_dinov2_joint=dino_oofs["joint"],
         line_clip_joint=clip_oofs["joint"],
         line_dual_vit_rank=p_line_dual,
     )
-    logger.info("Saved line Dual-ViT OOF to %s", FEATURES_DIR / "exp7_line_dual_vit_oof.npz")
+    logger.info("Saved line Dual-ViT OOF to %s", oof_out_path)
 
 
 if __name__ == "__main__":
