@@ -1,34 +1,45 @@
 # Task List — Workstream A
 
-## Active Sprint: Channel Ablation Suite — Raw Image in Ch1 & Ruled Guideline Removal
+## Active Sprint: Production Inference Engine & Interactive Upload/Crop Web App
 
 ### Objectives
-1. **Support Parameterized Channel Composition (`baseline/tiling_preprocessor.py`)**:
-   - `ch1_mode`: `"binary"` (clean inverted binary ink) vs `"raw"` (natural grayscale image fed directly into Channel 1).
-   - `include_guideline`: `True` (0.7 gray guideline reference in Ch3) vs `False` (ruled guideline channel completely removed).
-2. **Update Extraction CLI (`pipeline/extract_line_backbone_features.py`)**:
-   - Add `--ch1-mode [binary, raw]`, `--no-guideline`, and `--tag <str>`.
-3. **Execute Test 1: Raw Image in Channel 1 (`--ch1-mode raw`)**:
-   - Extract DINOv2-Small and CLIP ViT-B/32 on RTX 5060 Ti GPU.
-   - Evaluate 5x5 repeated cross-validation on 215 students.
-4. **Execute Test 2: Guideline Channel Removed (`--no-guideline`)**:
-   - Extract DINOv2-Small and CLIP ViT-B/32 on RTX 5060 Ti GPU.
-   - Evaluate 5x5 repeated cross-validation on 215 students.
-5. **Execute Test 3: Raw Image + Guideline Removed (`--ch1-mode raw --no-guideline`)**:
-   - Extract DINOv2-Small and CLIP ViT-B/32 on RTX 5060 Ti GPU.
-   - Evaluate 5x5 repeated cross-validation on 215 students.
-6. **Synthesize Comparative Scoreboard & Clinical Analysis**:
-   - Compare Line CLIP, Line DINOv2, Dual-ViT, Hierarchical Vision, and Tri-Modal Champion across all variants.
+1. **Answer Production Status**: Clarify the status of the production line (line representation promoted; full end-to-end single-image inference being deployed now).
+2. **Build Production Inference Engine (`pipeline/inference_engine.py`)**:
+   - Fit and freeze the reference cohort 5x5 CV probe heads (StandardScaler + PCA + LogisticRegression) for CLIP, DINOv2, and Dual-ViT across all configurations (`no_guideline`, `baseline`, `raw_ch1`, `raw_no_guideline`).
+   - Implement single-crop feature extraction, physical x-height scaling ($h \to 48\text{px}$), rejection gate, and ensemble inference.
+   - Return probabilities, cohort percentiles, clinical tiers, and base64 tile images for visual inspection.
+3. **Build Interactive Web Application (`qa/inference_app.py` + `qa/web/inference.html`)**:
+   - Drag & drop image upload.
+   - Interactive HTML5 canvas manual crop selector with draggable handles and live crop preview.
+   - Model and preprocessing configuration selectors (CLIP, DINOv2, Dual-ViT; No Guideline, Baseline, Raw).
+   - Real-time screening dashboard with clinical risk gauge (Tier 1 vs Tier 2), score cards, and tile inspection gallery (showing Ch1, Ch2, Ch3, and RGB tensor).
+4. **Unit & Integration Testing**:
+   - Verify inference on sample crops from School A and School B.
+   - Test server launch and API endpoints.
+5. **Update Documentation & Git**:
    - Update `context.md`, `architechture.md`, and commit/push to git.
 
 ### Sprint Tasks
-- [x] Task 1: Update `baseline/tiling_preprocessor.py` with `ch1_mode` and `include_guideline`
-- [x] Task 2: Update `pipeline/extract_line_backbone_features.py` with CLI flags and tagging
-- [x] Task 3: Run Test 1 (Raw Image in Ch1) on GPU & evaluate 5x5 CV
-- [x] Task 4: Run Test 2 (No Guideline in Ch3) on GPU & evaluate 5x5 CV
-- [x] Task 5: Run Test 3 (Raw in Ch1 + No Guideline in Ch3) on GPU & evaluate 5x5 CV
-- [x] Task 6: Compile comparative ablation scoreboard & analyze findings
-- [x] Task 7: Update `context.md`, `architechture.md`, and commit/push to git
+- [x] Task 1: Build `pipeline/inference_engine.py` with frozen probe ensembles and live extraction
+- [x] Task 2: Build `qa/web/inference.html` with interactive canvas crop tool and results dashboard
+- [x] Task 3: Build `qa/inference_app.py` aiohttp server with `/api/screen` and `/api/health`
+- [x] Task 4: Verify end-to-end inference on sample handwriting images and run unit tests
+- [x] Task 5: Update `context.md`, `architechture.md`, and commit/push to git
+
+---
+
+## Completed Sprints
+
+<details>
+<summary>Channel Ablation Suite — Raw Images in Ch1 & Ruled Guideline Removal (Completed 2026-10-30)</summary>
+
+### Objectives
+1. Parameterized channel composition in `baseline/tiling_preprocessor.py`.
+2. Extracted DINOv2 and CLIP on RTX 5060 Ti GPU across 3 ablation conditions.
+3. Test 2 (`no_guideline`) achieved all-time records: Line CLIP Joint 0.8969, Line Dual-ViT 0.8845, and Tri-Modal Champion 0.8892 AUROC (AUPRC 0.6926, Sens@90: 70.3%, $p=0.0260$).
+4. Promoted `no_guideline` representation to production.
+
+</details>
 
 ---
 

@@ -2384,3 +2384,32 @@ Across all tests, the character x-height scaling ($h \to 48\text{ px}$) and mult
 - Primary benchmark [`reports/exp7_hierarchical_line_champion_results.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/reports/exp7_hierarchical_line_champion_results.json) and cohort probabilities [`data/features/exp7_all_models_oof_probs.npz`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/features/exp7_all_models_oof_probs.npz) updated.
 - QA web app scores [`data/features/exp7_student_model_scores.json`](file:///f:/Avaneesh/projects/Dysgraphia/Dysgraphia-Detection/data/features/exp7_student_model_scores.json) exported.
 
+
+## Stage 57: Production Inference Engine & Interactive Screening Studio Web App (Completed 2026-10-30)
+
+### 1. Objective & Capabilities
+- Deployed a production-ready end-to-end inference engine and web studio allowing users to:
+  1. Upload arbitrary scans or smartphone photos of student handwriting sheets.
+  2. Interactively crop any handwriting text / line region using an in-browser HTML5 canvas with live coordinate feedback and real-time crop thumbnails.
+  3. Select and execute multiple models and channel configurations:
+     - Models: **Line CLIP ViT-B/32** (0.8969 AUROC), **Line DINOv2-Small** (0.8579 AUROC), and **Consensus Line Dual-ViT** (0.8845 AUROC).
+     - Preprocessing Configs: **Champion No-Guideline** (Test 2), **Baseline** (with guidelines), and **Raw Grayscale** (Test 1 / Test 3).
+  4. Inspect the exact $224 \times 224\text{ px}$ tiles generated, with interactive per-tile channel toggles (RGB Tensor, Ch1 Binary/Raw Ink, Ch2 Shaded Optical Density, Ch3 Guideline/Duplicate).
+  5. View calibrated risk probabilities, cohort percentile ranks, and clinical two-tier screening determinations (Tier 1 Safe Rule-Out vs Tier 1 Community Alert vs Tier 2 Specialist Referral).
+
+### 2. Architecture Components
+- **Inference Engine (`pipeline/inference_engine.py`)**:
+  - Class `InferenceEngine`: Singleton manager with lazy loading of CLIP and DINOv2 on CUDA (`NVIDIA GeForce RTX 5060 Ti`).
+  - Pre-fits and caches 25 outer-fold probe heads (StandardScaler + PCA + LogisticRegression) across outer cross-validation folds on the reference cohort (215 students).
+  - Normalizes candidate lines with character x-height scaling ($h \to 48\text{ px}$), applies the 3-gate rejection filter, extracts patch tokens with GeM/mean/std pooling, and predicts calibrated dysgraphia probabilities.
+- **Web Application GUI (`qa/web/inference.html`)**:
+  - Drag & drop upload container.
+  - Interactive HTML5 canvas with box drawing, full-sheet toggle, and live zoom crop preview.
+  - Results dashboard with clinical gauge, score cards, and channel inspection gallery.
+- **REST Server (`qa/inference_app.py`)**:
+  - High-performance `aiohttp.web` server listening on `http://127.0.0.1:8080/`.
+  - Endpoints: `GET /` (Studio GUI), `GET /api/health` (device/GPU telemetry), `POST /api/screen` (live image multipart inference).
+- **Validation Suite (`tests/test_inference_app.py`)**:
+  - 3/3 passed verifying health status, index page rendering, and live synthetic handwriting screening.
+
+

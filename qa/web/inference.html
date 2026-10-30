@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dysgraphia Detection — Interactive Screening Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .crop-handle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #3b82f6;
+      border: 1.5px solid #ffffff;
+      border-radius: 2px;
+    }
+    .checkerboard {
+      background-color: #f8fafc;
+      background-image: linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+                        linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+                        linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-slate-800/90 border-b border-slate-700/80 sticky top-0 z-50 backdrop-blur px-6 py-4 flex items-center justify-between shadow-lg">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-md">
+        <i class="fa-solid fa-pen-nib text-white text-lg"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
+          Dysgraphia Screening Studio
+        </h1>
+        <p class="text-xs text-slate-400">Multilingual Static Handwriting AI • Production Live Inference</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-2 text-xs">
+      <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-medium flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        RTX 5060 Ti GPU Ready
+      </span>
+      <span class="px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 font-medium">
+        Champion: 0.8892 AUROC
+      </span>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left Column: Upload & Crop Canvas (7 cols) -->
+    <div class="lg:col-span-7 flex flex-col space-y-4">
+      
+      <!-- Upload Card -->
+      <div class="bg-slate-800/80 rounded-2xl border border-slate-700 p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-up text-blue-400"></i> Step 1: Upload Handwriting Scan or Photo
+          </h2>
+          <span id="file-name" class="text-xs text-slate-400 truncate max-w-[200px]">No file selected</span>
+        </div>
+
+        <div id="dropzone" class="border-2 border-dashed border-slate-600 hover:border-blue-500/70 transition-colors rounded-xl p-6 text-center cursor-pointer bg-slate-900/40">
+          <input type="file" id="file-input" accept="image/*" class="hidden">
+          <i class="fa-solid fa-image text-4xl text-slate-500 mb-2"></i>
+          <p class="text-sm font-medium text-slate-200">Click or Drag & Drop handwriting image here</p>
+          <p class="text-xs text-slate-400 mt-1">Supports PNG, JPG, JPEG (Full page scan, smartphone photo, or single line)</p>
+        </div>
+      </div>
+
+      <!-- Interactive Canvas Card -->
+      <div class="bg-slate-800/80 rounded-2xl border border-slate-700 p-5 shadow-sm flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center space-x-2">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <i class="fa-solid fa-crop-simple text-indigo-400"></i> Step 2: Select / Crop Handwriting Text
+            </h2>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button id="btn-use-all" class="px-3 py-1 text-xs rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 transition font-medium">
+              <i class="fa-solid fa-expand mr-1"></i> Use Full Image
+            </button>
+            <button id="btn-reset-crop" class="px-3 py-1 text-xs rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 transition font-medium">
+              <i class="fa-solid fa-rotate-left mr-1"></i> Reset Box
+            </button>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-400 mb-2">
+          Click and drag a box across any single line of handwriting. The model will scale letters to true character height ($h \to 48\text{px}$).
+        </p>
+
+        <!-- Canvas Container -->
+        <div id="canvas-container" class="relative overflow-hidden rounded-xl border border-slate-700 bg-slate-950 flex-1 min-h-[380px] flex items-center justify-center">
+          <div id="canvas-placeholder" class="text-center text-slate-500 p-8">
+            <i class="fa-solid fa-arrow-up-from-bracket text-3xl mb-2 text-slate-600"></i>
+            <p class="text-sm">Upload an image above to start manual crop selection</p>
+          </div>
+          <canvas id="crop-canvas" class="hidden cursor-crosshair max-w-full max-h-[500px] object-contain"></canvas>
+        </div>
+
+        <!-- Crop Preview Bar -->
+        <div id="crop-preview-bar" class="mt-3 p-3 rounded-xl bg-slate-900/70 border border-slate-700/60 hidden flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <img id="crop-thumb" class="h-12 w-auto max-w-[200px] rounded border border-slate-600 object-contain bg-white">
+            <div>
+              <p class="text-xs font-semibold text-slate-200">Selected Crop Region</p>
+              <p id="crop-coords" class="text-[11px] text-slate-400 font-mono">x: 0, y: 0, w: 0, h: 0</p>
+            </div>
+          </div>
+          <span class="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+            Ready to analyze
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Right Column: Model Configs & Live Results (5 cols) -->
+    <div class="lg:col-span-5 flex flex-col space-y-4">
+      
+      <!-- Model Settings Card -->
+      <div class="bg-slate-800/80 rounded-2xl border border-slate-700 p-5 shadow-sm space-y-4">
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-purple-400"></i> Step 3: Screening Model & Representation
+        </h2>
+
+        <!-- Config Selector -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Preprocessing & Channel Mode</label>
+          <select id="config-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+            <option value="no_guideline" selected>🏆 Test 2: Guideline Removed (0.8892 Champion, 70.3% Sens@90)</option>
+            <option value="baseline">Baseline: Binary Ink + 0.7 Ruled Guideline (0.8841 AUROC)</option>
+            <option value="raw_ch1">Test 1: Raw Grayscale in Ch1 + Guideline (0.8857 AUROC)</option>
+            <option value="raw_no_guideline">Test 3: Raw Grayscale in Ch1 + No Guideline (0.8825 AUROC)</option>
+          </select>
+          <p class="text-[11px] text-slate-400 mt-1">
+            <b>Champion Note:</b> Removing synthetic ruled lines prevents ViT attention tokens from being distracted by artificial edges.
+          </p>
+        </div>
+
+        <!-- Model Selector -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Vision Model Architecture</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 cursor-pointer hover:border-blue-500/60 transition">
+              <input type="radio" name="model" value="all" checked class="text-blue-500">
+              <span class="font-medium text-slate-200">Ensemble / All Models</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 cursor-pointer hover:border-blue-500/60 transition">
+              <input type="radio" name="model" value="clip" class="text-blue-500">
+              <span class="font-medium text-slate-200">CLIP ViT-B/32 (0.8969)</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 cursor-pointer hover:border-blue-500/60 transition">
+              <input type="radio" name="model" value="dual_vit" class="text-blue-500">
+              <span class="font-medium text-slate-200">Line Dual-ViT (0.8845)</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 cursor-pointer hover:border-blue-500/60 transition">
+              <input type="radio" name="model" value="dinov2" class="text-blue-500">
+              <span class="font-medium text-slate-200">DINOv2-Small (0.8579)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button id="btn-run" disabled class="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed transition shadow-md shadow-indigo-900/30 flex items-center justify-center space-x-2 text-white">
+          <i class="fa-solid fa-play"></i>
+          <span>Run Screening Analysis</span>
+        </button>
+      </div>
+
+      <!-- Results Card -->
+      <div id="results-card" class="bg-slate-800/80 rounded-2xl border border-slate-700 p-5 shadow-sm space-y-4 hidden">
+        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-square-poll-vertical text-emerald-400"></i> Screening Diagnostic Outcome
+          </h2>
+          <span id="tier-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider"></span>
+        </div>
+
+        <!-- Risk Gauge & Primary Score -->
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-700/80 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-slate-400">Dysgraphia Vulnerability Score</p>
+            <div class="flex items-baseline space-x-2 mt-0.5">
+              <span id="primary-score" class="text-3xl font-extrabold text-white">0.00</span>
+              <span id="percentile-label" class="text-xs font-semibold text-slate-400"></span>
+            </div>
+            <p id="tier-description" class="text-xs font-medium mt-1"></p>
+          </div>
+          <div class="w-16 h-16 rounded-full border-4 border-slate-700 flex items-center justify-center text-center p-2" id="gauge-circle">
+            <span id="percentile-val" class="text-sm font-black text-slate-200">0%</span>
+          </div>
+        </div>
+
+        <!-- Scores Breakdown -->
+        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+          <div class="p-2.5 rounded-xl bg-slate-900/50 border border-slate-700/60">
+            <p class="text-[10px] text-slate-400 font-semibold uppercase">CLIP ViT-B/32</p>
+            <p id="score-clip" class="text-base font-bold text-slate-200 mt-0.5">-</p>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900/50 border border-slate-700/60">
+            <p class="text-[10px] text-slate-400 font-semibold uppercase">DINOv2-Small</p>
+            <p id="score-dino" class="text-base font-bold text-slate-200 mt-0.5">-</p>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900/50 border border-slate-700/60">
+            <p class="text-[10px] text-slate-400 font-semibold uppercase">Dual-ViT Rank</p>
+            <p id="score-dual" class="text-base font-bold text-slate-200 mt-0.5">-</p>
+          </div>
+        </div>
+
+        <!-- Stroke Diagnostics -->
+        <div class="p-3 rounded-xl bg-slate-900/40 border border-slate-700/50 text-xs space-y-1.5 text-slate-300">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Estimated Character x-Height ($h$):</span>
+            <span id="diag-xheight" class="font-mono font-medium">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Accepted Handwriting Tiles:</span>
+            <span id="diag-tiles" class="font-mono font-medium text-emerald-400">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Stroke Magnification:</span>
+            <span class="font-mono font-medium text-indigo-300">Target $h = 48\text{px}$ (1:1 Unified)</span>
+          </div>
+        </div>
+
+        <!-- Tile Gallery Inspection -->
+        <div>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
+            <span>Preprocessed $224 \times 224$ Tiles (Channel Breakdown)</span>
+            <span class="text-[10px] text-slate-500 lowercase">click tile to switch view</span>
+          </h3>
+          <div id="tile-gallery" class="grid grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-1"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Script for Canvas Cropping & API Calls -->
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const dropzone = document.getElementById('dropzone');
+    const fileName = document.getElementById('file-name');
+    const canvasContainer = document.getElementById('canvas-container');
+    const canvasPlaceholder = document.getElementById('canvas-placeholder');
+    const canvas = document.getElementById('crop-canvas');
+    const ctx = canvas.getContext('2d');
+    const cropPreviewBar = document.getElementById('crop-preview-bar');
+    const cropThumb = document.getElementById('crop-thumb');
+    const cropCoords = document.getElementById('crop-coords');
+    const btnUseAll = document.getElementById('btn-use-all');
+    const btnResetCrop = document.getElementById('btn-reset-crop');
+    const btnRun = document.getElementById('btn-run');
+    const configSelect = document.getElementById('config-select');
+    const resultsCard = document.getElementById('results-card');
+
+    let loadedImage = null;
+    let isDrawing = false;
+    let startX = 0, startY = 0;
+    let cropBox = null; // { x, y, width, height } in natural image coordinates
+    let scaleX = 1, scaleY = 1;
+
+    // File Upload handling
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-blue-500'); });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('border-blue-500'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-blue-500');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) handleFile(fileInput.files[0]);
+    });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file (PNG, JPG, JPEG).');
+        return;
+      }
+      fileName.textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          loadedImage = img;
+          canvasPlaceholder.classList.add('hidden');
+          canvas.classList.remove('hidden');
+          setupCanvas();
+          // Default: use full image initially
+          cropBox = { x: 0, y: 0, width: img.naturalWidth, height: img.naturalHeight };
+          updateCropPreview();
+          btnRun.disabled = false;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function setupCanvas() {
+      if (!loadedImage) return;
+      const maxW = canvasContainer.clientWidth - 20;
+      const maxH = 500;
+      let w = loadedImage.naturalWidth;
+      let h = loadedImage.naturalHeight;
+      const ratio = Math.min(maxW / w, maxH / h, 1.0);
+
+      canvas.width = Math.round(w * ratio);
+      canvas.height = Math.round(h * ratio);
+      scaleX = loadedImage.naturalWidth / canvas.width;
+      scaleY = loadedImage.naturalHeight / canvas.height;
+      drawCanvas();
+    }
+
+    function drawCanvas() {
+      if (!loadedImage) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(loadedImage, 0, 0, canvas.width, canvas.height);
+
+      if (cropBox) {
+        const cx = cropBox.x / scaleX;
+        const cy = cropBox.y / scaleY;
+        const cw = cropBox.width / scaleX;
+        const ch = cropBox.height / scaleY;
+
+        // Darken outside
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+        ctx.fillRect(0, 0, canvas.width, cy);
+        ctx.fillRect(0, cy + ch, canvas.width, canvas.height - (cy + ch));
+        ctx.fillRect(0, cy, cx, ch);
+        ctx.fillRect(cx + cw, cy, canvas.width - (cx + cw), ch);
+
+        // Highlight box
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(cx, cy, cw, ch);
+      }
+    }
+
+    // Canvas Mouse Events for Interactive Box Crop
+    canvas.addEventListener('mousedown', (e) => {
+      if (!loadedImage) return;
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      startX = e.clientX - rect.left;
+      startY = e.clientY - rect.top;
+      cropBox = null;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing) return;
+      const rect = canvas.getBoundingClientRect();
+      const curX = Math.max(0, Math.min(canvas.width, e.clientX - rect.left));
+      const curY = Math.max(0, Math.min(canvas.height, e.clientY - rect.top));
+
+      const bx = Math.min(startX, curX) * scaleX;
+      const by = Math.min(startY, curY) * scaleY;
+      const bw = Math.abs(curX - startX) * scaleX;
+      const bh = Math.abs(curY - startY) * scaleY;
+
+      cropBox = { x: Math.round(bx), y: Math.round(by), width: Math.round(bw), height: Math.round(bh) };
+      drawCanvas();
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      if (cropBox && (cropBox.width < 10 || cropBox.height < 10)) {
+        cropBox = { x: 0, y: 0, width: loadedImage.naturalWidth, height: loadedImage.naturalHeight };
+      }
+      updateCropPreview();
+      drawCanvas();
+    });
+
+    btnUseAll.addEventListener('click', () => {
+      if (!loadedImage) return;
+      cropBox = { x: 0, y: 0, width: loadedImage.naturalWidth, height: loadedImage.naturalHeight };
+      updateCropPreview();
+      drawCanvas();
+    });
+
+    btnResetCrop.addEventListener('click', () => {
+      if (!loadedImage) return;
+      cropBox = { x: 0, y: 0, width: loadedImage.naturalWidth, height: loadedImage.naturalHeight };
+      updateCropPreview();
+      drawCanvas();
+    });
+
+    function updateCropPreview() {
+      if (!cropBox || !loadedImage) return;
+      cropPreviewBar.classList.remove('hidden');
+      cropCoords.textContent = `x: ${cropBox.x}, y: ${cropBox.y}, w: ${cropBox.width}, h: ${cropBox.height}`;
+
+      // Render crop to thumb
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = Math.max(1, cropBox.width);
+      offCanvas.height = Math.max(1, cropBox.height);
+      const offCtx = offCanvas.getContext('2d');
+      offCtx.drawImage(
+        loadedImage,
+        cropBox.x, cropBox.y, cropBox.width, cropBox.height,
+        0, 0, offCanvas.width, offCanvas.height
+      );
+      cropThumb.src = offCanvas.toDataURL();
+    }
+
+    // Run Screening Analysis API Call
+    btnRun.addEventListener('click', async () => {
+      if (!loadedImage || !cropBox) return;
+
+      btnRun.disabled = true;
+      btnRun.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Analyzing Handwriting...</span>';
+
+      const selectedModel = document.querySelector('input[name="model"]:checked').value;
+      const selectedConfig = configSelect.value;
+
+      try {
+        const formData = new FormData();
+        // Convert cropped region to blob
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = Math.max(1, cropBox.width);
+        offCanvas.height = Math.max(1, cropBox.height);
+        const offCtx = offCanvas.getContext('2d');
+        offCtx.drawImage(
+          loadedImage,
+          cropBox.x, cropBox.y, cropBox.width, cropBox.height,
+          0, 0, offCanvas.width, offCanvas.height
+        );
+
+        const blob = await new Promise(resolve => offCanvas.toBlob(resolve, 'image/png'));
+        formData.append('image', blob, 'crop.png');
+        formData.append('config', selectedConfig);
+        formData.append('model', selectedModel);
+
+        const res = await fetch('/api/screen', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (!data.success) {
+          alert('Analysis Error: ' + (data.error || 'Unknown error occurred.'));
+          return;
+        }
+
+        renderResults(data);
+
+      } catch (err) {
+        console.error(err);
+        alert('Server communication error: ' + err.message);
+      } finally {
+        btnRun.disabled = false;
+        btnRun.innerHTML = '<i class="fa-solid fa-play"></i><span>Run Screening Analysis</span>';
+      }
+    });
+
+    function renderResults(data) {
+      resultsCard.classList.remove('hidden');
+      resultsCard.scrollIntoView({ behavior: 'smooth' });
+
+      // Tier badge & circle styling
+      const tierBadge = document.getElementById('tier-badge');
+      const tierDesc = document.getElementById('tier-description');
+      const gaugeCircle = document.getElementById('gauge-circle');
+
+      if (data.tier === 'TIER_2_REFERRAL') {
+        tierBadge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30';
+        tierBadge.textContent = 'Tier 2 Referral (High Risk)';
+        tierDesc.textContent = 'Severe motor/stroke breakdown detected. Prioritize clinical OT assessment.';
+        tierDesc.className = 'text-xs font-medium text-red-400 mt-1';
+        gaugeCircle.className = 'w-16 h-16 rounded-full border-4 border-red-500 flex items-center justify-center text-center p-2 bg-red-500/10';
+      } else if (data.tier === 'TIER_1_ALERT') {
+        tierBadge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30';
+        tierBadge.textContent = 'Tier 1 Alert (Community Triage)';
+        tierDesc.textContent = 'Moderate dysgraphic features detected. Flagged for targeted school monitoring.';
+        tierDesc.className = 'text-xs font-medium text-amber-400 mt-1';
+        gaugeCircle.className = 'w-16 h-16 rounded-full border-4 border-amber-500 flex items-center justify-center text-center p-2 bg-amber-500/10';
+      } else {
+        tierBadge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+        tierBadge.textContent = 'Tier 1 Safe (Low Risk)';
+        tierDesc.textContent = 'Stroke motor morphology within neurotypical control range.';
+        tierDesc.className = 'text-xs font-medium text-emerald-400 mt-1';
+        gaugeCircle.className = 'w-16 h-16 rounded-full border-4 border-emerald-500 flex items-center justify-center text-center p-2 bg-emerald-500/10';
+      }
+
+      document.getElementById('primary-score').textContent = (data.scores.primary_score || data.scores.clip_score || 0).toFixed(4);
+      document.getElementById('percentile-label').textContent = `${data.overall_percentile}th %ile in Cohort`;
+      document.getElementById('percentile-val').textContent = `${Math.round(data.overall_percentile)}%`;
+
+      document.getElementById('score-clip').textContent = data.scores.clip_score ? data.scores.clip_score.toFixed(4) : '-';
+      document.getElementById('score-dino').textContent = data.scores.dinov2_score ? data.scores.dinov2_score.toFixed(4) : '-';
+      document.getElementById('score-dual').textContent = data.scores.dual_vit_rank ? (data.scores.dual_vit_rank * 100).toFixed(1) + '%' : '-';
+
+      document.getElementById('diag-xheight').textContent = data.meta.x_height ? data.meta.x_height.toFixed(1) + ' px' : '-';
+      document.getElementById('diag-tiles').textContent = `${data.meta.tile_count} clean square tiles`;
+
+      // Tile Gallery
+      const gallery = document.getElementById('tile-gallery');
+      gallery.innerHTML = '';
+      if (data.preview_tiles && data.preview_tiles.length > 0) {
+        data.preview_tiles.forEach((t, idx) => {
+          const item = document.createElement('div');
+          item.className = 'p-2 rounded-xl bg-slate-900/80 border border-slate-700/60 flex flex-col space-y-1.5';
+          item.innerHTML = `
+            <div class="flex items-center justify-between text-[10px] text-slate-400">
+              <span>Tile #${idx + 1}</span>
+              <span class="text-indigo-400 font-mono">224×224</span>
+            </div>
+            <img id="tile-img-${idx}" src="${t.rgb_b64}" class="w-full h-24 object-contain rounded bg-white border border-slate-600">
+            <div class="flex justify-between text-[9px] pt-0.5">
+              <button onclick="document.getElementById('tile-img-${idx}').src='${t.rgb_b64}'" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium">RGB</button>
+              <button onclick="document.getElementById('tile-img-${idx}').src='${t.ch1_b64}'" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium">Ch1 (Ink)</button>
+              <button onclick="document.getElementById('tile-img-${idx}').src='${t.ch2_b64}'" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium">Ch2 (Shade)</button>
+              <button onclick="document.getElementById('tile-img-${idx}').src='${t.ch3_b64}'" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium">Ch3</button>
+            </div>
+          `;
+          gallery.appendChild(item);
+        });
+      } else {
+        gallery.innerHTML = '<p class="text-xs text-slate-500 italic col-span-2">No preview tiles available.</p>';
+      }
+    }
+  </script>
+</body>
+</html>
